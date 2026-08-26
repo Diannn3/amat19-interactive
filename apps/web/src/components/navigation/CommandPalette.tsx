@@ -72,6 +72,7 @@ export default function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [input, setInput] = useState('');
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [hydrated, setHydrated] = useState(false);
   const results = useMemo(() => getSearchResults(input), [input]);
 
   useEffect(() => {
@@ -79,6 +80,7 @@ export default function CommandPalette() {
   }, [input]);
 
   useEffect(() => {
+    setHydrated(true);
     const open = () => {
       if (dialogRef.current?.open) return;
       setInput('');
@@ -137,7 +139,7 @@ export default function CommandPalette() {
   })).filter((entry) => entry.results.length > 0);
 
   return (
-    <dialog ref={dialogRef} className="command-dialog" aria-labelledby="command-dialog-title">
+    <dialog ref={dialogRef} className="command-dialog" aria-labelledby="command-dialog-title" data-hydrated={hydrated ? 'true' : undefined}>
       <div className="command-dialog__header">
         <h2 id="command-dialog-title" className="sr-only">Search AMAT 19</h2>
         <Search size={18} aria-hidden="true" />

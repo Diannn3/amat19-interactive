@@ -45,6 +45,7 @@ test('primary navigation marks the current route and mobile navigation is a moda
 
 test('command palette groups results and supports arrow-key selection', async ({ page }) => {
   await page.goto('/');
+  await expect(page.locator('.command-dialog[data-hydrated="true"]')).toBeAttached();
   await page.getByRole('button', { name: 'Search AMAT 19' }).click();
 
   const palette = page.getByRole('dialog', { name: /Search AMAT 19/i });
@@ -81,6 +82,23 @@ test('home and progress have no serious automated accessibility violations', asy
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter((violation) => ['critical', 'serious'].includes(violation.impact ?? '')), route).toEqual([]);
   }
+});
+
+test('progress leads with needs attention and can reveal full core evidence', async ({ page }) => {
+  await page.goto('/progress');
+  const dashboard = page.getByTestId('progress-dashboard');
+  const attention = dashboard.getByTestId('progress-attention');
+  const skills = attention.locator('.progress-focus-skill');
+
+  await expect(attention).toBeVisible();
+  await expect(attention.getByRole('heading', { name: 'Needs attention' })).toBeVisible();
+  await expect(skills).toHaveCount(6);
+
+  const showAll = attention.getByRole('button', { name: /Show all \d+ core skills/i });
+  await expect(showAll).toBeVisible();
+  await showAll.click();
+  await expect(skills).toHaveCount(20);
+  await expect(attention.getByRole('button', { name: /Show fewer skills/i })).toBeVisible();
 });
 
 test('mobile routes do not create page-level horizontal overflow', async ({ page }) => {
@@ -127,6 +145,7 @@ test('reference browser searches, filters by module, and expands assumptions', a
 test('@core mixed course check withholds explanations until submission', async ({ page }) => {
   await page.goto('/exam');
   const exam = page.getByTestId('mixed-exam');
+  await expect(exam).toHaveAttribute('data-hydrated', 'true');
   await expect(exam.getByText('Correct.', { exact: true })).toHaveCount(0);
   await exam.getByRole('radio').first().check();
   await exam.getByRole('button', { name: /Submit all answers/i }).click();
@@ -137,6 +156,7 @@ test('@core mixed course check withholds explanations until submission', async (
 test('practice focuses one question and advances after checking', async ({ page }) => {
   await page.goto('/practice');
   const practice = page.getByTestId('mixed-practice');
+  await expect(practice).toHaveAttribute('data-hydrated', 'true');
   const stage = practice.locator('.mixed-question-stage');
 
   await expect(stage).toBeVisible();
@@ -159,6 +179,7 @@ test('exam keeps one question in view and exposes a jump navigator', async ({ pa
   const exam = page.getByTestId('mixed-exam');
   const stage = exam.locator('.mixed-question-stage');
 
+  await expect(exam).toHaveAttribute('data-hydrated', 'true');
   await expect(stage.locator('.mixed-question')).toHaveCount(1);
   await expect(exam.locator('.exam-question-nav')).toBeVisible();
   await expect(exam.locator('.exam-question-nav button')).toHaveCount(12);
