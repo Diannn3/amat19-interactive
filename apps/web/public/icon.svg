@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="AMAT 19 Study Lab">
+  <rect width="512" height="512" rx="112" fill="#7b1113"/>
+  <path d="M120 166h272v24H120zm0 78h272v24H120zm0 78h272v24H120z" fill="#fff9f1" opacity=".22"/>
+  <text x="256" y="305" text-anchor="middle" font-family="system-ui,sans-serif" font-size="168" font-weight="800" fill="#fff9f1">19</text>
+</svg>

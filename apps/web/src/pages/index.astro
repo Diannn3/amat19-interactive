@@ -1,0 +1,34 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+---
+
+<AppLayout title="Home">
+  <section class="page-width page-intro">
+    <p class="eyebrow">Finite mathematics · interactive study environment</p>
+    <h1 class="display-title">See the rule, not just the answer.</h1>
+    <p class="lede">
+      AMAT 19 Study Lab turns course ideas into inspectable mathematical objects. The first production slice is
+      propositional logic: build a truth table, select any result, and trace exactly why that value appears.
+    </p>
+  </section>
+
+  <section class="page-width" aria-labelledby="routes-heading">
+    <h2 id="routes-heading" class="sr-only">Available study routes</h2>
+    <div class="route-grid">
+      <a class="route-link" href="/labs/truth-table">
+        <span>
+          <strong>Truth Table Lab</strong>
+          <small>Parse propositions, inspect subexpressions, practice the final column, and classify the result.</small>
+        </span>
+        <span class="status-pill">Live</span>
+      </a>
+      <a class="route-link" href="/modules/logic">
+        <span>
+          <strong>Logic module map</strong>
+          <small>Course-aligned logic skills and the implementation status of each learning tool.</small>
+        </span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+</AppLayout>

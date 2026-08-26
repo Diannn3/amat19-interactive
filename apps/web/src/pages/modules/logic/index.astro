@@ -1,0 +1,44 @@
+---
+import { logicSkills } from '@amat19/course-content';
+import { getCollection } from 'astro:content';
+import AppLayout from '../../../layouts/AppLayout.astro';
+
+const lessons = (await getCollection('lessons'))
+  .filter((entry) => entry.data.module === 'logic')
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<AppLayout title="Logic module">
+  <section class="page-width page-intro">
+    <p class="eyebrow">Module 01 · Logic</p>
+    <h1 class="display-title">Reason with structure.</h1>
+    <p class="lede">
+      The engine and teaching surfaces are separate on purpose: the mathematical result is deterministic, while the
+      explanation layer can show why a connective, row, or argument behaves the way it does.
+    </p>
+  </section>
+
+  <section class="page-width" aria-labelledby="skills-heading">
+    <h2 id="skills-heading">Skill map</h2>
+    <div class="route-grid">
+      {logicSkills.map((skill) => (
+        <div class="route-link">
+          <span>
+            <strong>{skill.title}</strong>
+            <small>{skill.source}</small>
+          </span>
+          <span class="status-pill">{skill.status}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {lessons.length > 0 && (
+    <section class="page-width" style="padding-block: 2.5rem;">
+      <h2>Course notes in this build</h2>
+      <ul>
+        {lessons.map((lesson) => <li>{lesson.data.title} — {lesson.data.status}</li>)}
+      </ul>
+    </section>
+  )}
+</AppLayout>

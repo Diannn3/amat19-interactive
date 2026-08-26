@@ -1,0 +1,33 @@
+:root {
+  color-scheme: light;
+  --background: #fff9f1;
+  --surface: #fffdf9;
+  --surface-muted: #f5eadf;
+  --foreground: #292725;
+  --foreground-muted: #675f59;
+  --border: #d9c9bb;
+  --border-strong: #aa8f7b;
+  --primary: #7b1113;
+  --primary-foreground: #fff9f1;
+  --primary-hover: #651013;
+  --accent: #c76a2a;
+  --accent-soft: #f6dfcd;
+  --success: #176b43;
+  --success-soft: #e1f2e9;
+  --destructive: #a32929;
+  --destructive-soft: #f7dddd;
+  --focus: #145da0;
+  --shadow: 0 8px 24px rgb(66 44 31 / 0.08);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --content-max: 80rem;
+}
+
+@media (forced-colors: active) {
+  :root {
+    --border: CanvasText;
+    --border-strong: CanvasText;
+    --focus: Highlight;
+  }
+}

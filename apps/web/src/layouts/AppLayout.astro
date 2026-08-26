@@ -1,0 +1,55 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/sora';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Interactive, course-aligned AMAT 19 finite mathematics study tools.'
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#7b1113" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>{title} · AMAT 19 Study Lab</title>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="site-header__inner">
+          <a class="wordmark" href="/" aria-label="AMAT 19 Study Lab home">
+            <span class="wordmark__course">AMAT 19</span>
+            <span class="wordmark__descriptor">STUDY LAB</span>
+          </a>
+          <nav class="site-nav" aria-label="Primary navigation">
+            <a href="/modules/logic">Logic</a>
+            <a href="/labs/truth-table">Truth Table</a>
+          </nav>
+        </div>
+      </header>
+      <main>
+        <slot />
+      </main>
+    </div>
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {
+            // Offline enhancement failure must not block the study tool.
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
