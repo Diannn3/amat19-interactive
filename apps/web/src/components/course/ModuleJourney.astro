@@ -1,6 +1,6 @@
 ---
 import { currentCourseProfile, getModuleSkillGraph, type ModuleId } from '@amat19/course-content';
-import { ArrowRight, BookOpen, FlaskConical, Route } from 'lucide-react';
+import { ArrowRight, FlaskConical, Route } from 'lucide-react';
 
 interface Props {
   moduleId: ModuleId;
@@ -17,13 +17,20 @@ const skills = getModuleSkillGraph(moduleId);
 const current = skills.filter((skill) => skill.scope === 'current');
 const supplemental = skills.filter((skill) => skill.scope === 'supplemental');
 ---
-<section class="page-width page-intro">
+<section class="page-width page-intro module-overview" data-testid="module-overview">
+  <div class="module-overview__copy">
   <p class="eyebrow">Module {moduleNumber} · {eyebrow ?? module.title}</p>
   <h1 class="display-title">{headline}</h1>
   <p class="lede">{lede}</p>
   <div class="hero-actions">
     <a class="hero-action hero-action--primary" href={current[0]?.labHref ?? labs[0]?.href}><FlaskConical size={17} /> Start the first lab</a>
     <a class="hero-action hero-action--secondary" href={`/practice?preset=${moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-drill`}`}><Route size={17} /> Practice this module</a>
+  </div>
+  </div>
+  <div class="module-journey__metrics" aria-label={`${module.title} contents`}>
+    <div><strong>{current.length}</strong><span>core skills</span></div>
+    <div><strong>{labs.length}</strong><span>labs</span></div>
+    <div><strong>{lessons.length}</strong><span>notes</span></div>
   </div>
 </section>
 
@@ -45,13 +52,12 @@ const supplemental = skills.filter((skill) => skill.scope === 'supplemental');
     </div>
   </div>
   <aside class="module-journey__aside math-panel">
-    <div class="math-panel__head"><div><p class="section-label">How to use this module</p><h3>Learn → explore → practice</h3></div><BookOpen size={20} /></div>
-    <ul>
-      <li>Read the short concept note when a rule is unfamiliar.</li>
-      <li>Use the lab to manipulate the same mathematical object.</li>
-      <li>Practice until you can solve without a hint or reveal.</li>
-      <li>Return through Study when a skill is due for repair or review.</li>
-    </ul>
+    <div class="math-panel__head"><div><p class="section-label">Study pattern</p><h3>See → try → repair</h3></div></div>
+    <ol class="module-loop">
+      <li><span>01</span><div><strong>See</strong><small>Read the rule beside the object.</small></div></li>
+      <li><span>02</span><div><strong>Try</strong><small>Change one input in the lab.</small></div></li>
+      <li><span>03</span><div><strong>Repair</strong><small>Practice the exact weak link.</small></div></li>
+    </ol>
   </aside>
 </section>
 

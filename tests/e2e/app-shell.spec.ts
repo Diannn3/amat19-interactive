@@ -11,6 +11,19 @@ test('@core course shell exposes Logic, Probability, and local progress routes',
   await expect(page.getByTestId('data-manager')).toBeVisible();
 });
 
+test('home and module journeys lead with visual study cues instead of long text blocks', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByTestId('home-study-snapshot')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Study snapshot/i })).toBeVisible();
+  await expect(page.locator('.home-loop')).toBeVisible();
+  await expect(page.locator('.module-spotlight-link')).toHaveCount(5);
+
+  await page.goto('/modules/logic');
+  await expect(page.getByTestId('module-overview')).toBeVisible();
+  await expect(page.locator('.module-journey__metrics')).toBeVisible();
+  await expect(page.locator('.module-loop')).toBeVisible();
+});
+
 test('primary navigation marks the current route and mobile navigation is a modal sheet', async ({ page }) => {
   await page.goto('/progress');
   await expect(page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
