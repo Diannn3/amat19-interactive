@@ -21,6 +21,7 @@ export function PracticePanel({
   if (!row || !targetColumn || !targetColumn.nodeId) return null;
 
   const expected = row.values[targetColumn.id]!;
+  const columnId = targetColumn.id;
   const completed = Object.values(state.practiceGuesses).filter((guess) => guess.status === 'correct').length;
   const evaluation = evaluateLogic(table.ast, row.assignment);
   const hint = evaluation.byNodeId[targetColumn.nodeId]?.explanation;
@@ -30,7 +31,7 @@ export function PracticePanel({
       expected,
       guess,
       rowIndex: row.index,
-      objectId: targetColumn.id
+      objectId: columnId
     });
     dispatch({
       type: 'record-practice-guess',
