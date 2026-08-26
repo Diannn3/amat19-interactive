@@ -3,18 +3,30 @@ import AppLayout from '../layouts/AppLayout.astro';
 import ModuleSpotlightGrid from '../components/home/ModuleSpotlightGrid';
 ---
 <AppLayout title="Home">
-  <section class="page-width hero-stage">
+  <section class="page-width hero-stage home-hero">
     <div class="hero-stage__grid">
       <div class="hero-stage__copy">
         <span class="hero-kicker">Finite mathematics · built for studying</span>
-        <h1 class="hero-title">See the <span class="gradient-text">rule</span>, then work it yourself.</h1>
-        <p class="hero-subtitle">A local-first AMAT 19 course companion for logic, probability, finance, matrices, and applications. Every result comes from deterministic math; the interface exposes the structure, legal steps, and repair path behind it.</p>
+        <h1 class="hero-title">See the <span class="gradient-text">rule</span>. Work it yourself.</h1>
+        <p class="hero-subtitle">A focused course companion for logic, probability, finance, matrices, and applications. See the object, change one thing, and make the next step yours.</p>
         <div class="hero-actions"><a class="hero-action hero-action--primary" href="/study">Start today’s study →</a><a class="hero-action hero-action--secondary" href="/course">Browse the course</a></div>
-        <div class="hero-stage__meta"><span class="status-pill">No account</span><span class="status-pill">Works offline after caching</span><span class="status-pill">Original practice</span></div>
+        <div class="hero-stage__meta"><span class="status-pill">Local-first</span><span class="status-pill">Exact arithmetic</span><span class="status-pill">Original practice</span></div>
       </div>
+      <aside class="home-study-snapshot" data-testid="home-study-snapshot" aria-labelledby="home-snapshot-title">
+        <div class="home-study-snapshot__head"><div><p class="eyebrow">Study snapshot</p><h2 id="home-snapshot-title">Study snapshot: one row can explain the rule.</h2></div><span class="status-pill">Logic · explore</span></div>
+        <div class="home-study-snapshot__formula" aria-label="The proposition P implies Q">P → Q</div>
+        <div class="home-study-snapshot__table" role="img" aria-label="Truth table preview for P implies Q">
+          <span>P</span><span>Q</span><span>P → Q</span>
+          <strong>T</strong><strong>T</strong><strong class="is-true">T</strong>
+          <strong>T</strong><strong>F</strong><strong class="is-false">F</strong>
+          <strong>F</strong><strong>T</strong><strong class="is-true">T</strong>
+          <strong>F</strong><strong>F</strong><strong class="is-true">T</strong>
+        </div>
+        <div class="home-study-snapshot__note"><span>Next move</span><strong>Find the one false row before memorizing the definition.</strong></div>
+      </aside>
     </div>
   </section>
-  <section class="page-width section-shell" aria-labelledby="modules-heading"><div class="section-heading"><div><p class="eyebrow">Course map</p><h2 id="modules-heading">Five modules, one connected skill graph.</h2></div><a href="/course">Open roadmap →</a></div><ModuleSpotlightGrid client:visible /></section>
-  <section class="page-width section-shell" aria-labelledby="loop-heading"><div class="section-heading"><div><p class="eyebrow">Learning loop</p><h2 id="loop-heading">Learn → manipulate → practice → repair → retrieve.</h2></div></div><div class="route-grid"><a class="route-link" href="/study"><span><strong>Study Queue</strong><small>Continue unfinished work, repair recent misses, and surface the next useful skill.</small></span><span aria-hidden="true">→</span></a><a class="route-link" href="/practice"><span><strong>Adaptive Practice</strong><small>Quick 5, weak areas, module drills, and whole-course retrieval generated from the skill graph.</small></span><span aria-hidden="true">→</span></a><a class="route-link" href="/progress"><span><strong>Skill Evidence</strong><small>Track New, Learning, Developing, and Secure evidence without pretending it is a course grade.</small></span><span aria-hidden="true">→</span></a></div></section>
-  <section class="page-width feature-band" aria-labelledby="principles-heading"><div><p class="eyebrow">Product principles</p><h2 id="principles-heading">An interactive mathematics tool, not a calculator skin.</h2></div><div class="feature-band__grid"><p><strong>Deterministic first.</strong> Truth tables, exact fractions, row operations, and optimization decisions are produced by explicit domain engines.</p><p><strong>Local first.</strong> Progress, drafts, saved items, and study sessions stay in this browser unless you export them.</p><p><strong>Course aware.</strong> Current requirements and older supplemental depth stay visibly separated.</p></div></section>
+  <section class="page-width section-shell" aria-labelledby="modules-heading"><div class="section-heading"><div><p class="eyebrow">Course map</p><h2 id="modules-heading">Choose a doorway.</h2></div><a class="text-link" href="/course">Open roadmap →</a></div><ModuleSpotlightGrid client:visible /></section>
+  <section class="page-width section-shell home-loop" aria-labelledby="loop-heading"><div class="section-heading"><div><p class="eyebrow">Three moves</p><h2 id="loop-heading">Pick up where you are.</h2></div><p class="section-heading__note">Short path, visible reasoning.</p></div><div class="home-loop__grid"><a class="home-loop__item" href="/study"><span class="home-loop__number">01</span><span><strong>Study</strong><small>Take the next useful skill.</small></span><span aria-hidden="true">→</span></a><a class="home-loop__item" href="/practice"><span class="home-loop__number">02</span><span><strong>Practice</strong><small>Retrieve it without the long list.</small></span><span aria-hidden="true">→</span></a><a class="home-loop__item" href="/progress"><span class="home-loop__number">03</span><span><strong>Repair</strong><small>Return to the exact weak link.</small></span><span aria-hidden="true">→</span></a></div></section>
+  <section class="page-width principle-strip" aria-labelledby="principles-heading"><div class="principle-strip__heading"><p class="eyebrow">Built for the work</p><h2 id="principles-heading">An instrument, not a calculator skin.</h2></div><div class="principle-strip__items"><div><strong>Deterministic</strong><span>Every result exposes its structure.</span></div><div><strong>Local-first</strong><span>Your study evidence stays in this browser.</span></div><div><strong>Course-aware</strong><span>Core and supplemental topics stay distinct.</span></div></div></section>
 </AppLayout>
