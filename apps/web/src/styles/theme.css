@@ -1,5 +1,23 @@
 :root {
   color-scheme: light;
+  /* Pass 6 shell tokens follow the Elbi AI workspace relationship while keeping
+     the AMAT surface names semantic and independent from that product's copy. */
+  --shell-maroon-950: #2e080d;
+  --shell-maroon-900: #451016;
+  --shell-maroon-800: #5c1016;
+  --shell-maroon-700: #74131b;
+  --shell-maroon-600: #9b111e;
+  --shell-orange: #e66a19;
+  --shell-orange-soft: #f4a15f;
+  --shell-cream: #fff9f1;
+  --shell-sand: #f2e8dc;
+  --shell-paper: #fbf4ea;
+  --shell-line: #e2d5c6;
+  --sidebar-width: 288px;
+  --sidebar-width-collapsed: 86px;
+  --topbar-height: 72px;
+  --workspace-radius: 26px;
+  --shell-ease: cubic-bezier(.2, .8, .2, 1);
   --background: #fff9f1;
   --background-deep: #f8ede2;
   --surface: #fffdf9;
@@ -8,14 +26,14 @@
   --surface-maroon: #f6e6e4;
   --foreground: #2e2523;
   --foreground-muted: #6e5b54;
-  --foreground-soft: #8d766c;
+  --foreground-soft: #735c53;
   --border: #dfcec0;
   --border-strong: #b99b87;
   --primary: #7b1113;
   --primary-foreground: #fff9f1;
   --primary-hover: #651013;
   --primary-soft: #f1d8d7;
-  --accent: #c76a2a;
+  --accent: #e66a19;
   --accent-strong: #994719;
   --accent-soft: #f7dfcb;
   --olive: #617040;
