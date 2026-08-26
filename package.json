@@ -1,0 +1,33 @@
+{
+  "name": "amat19-interactive",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.23.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --filter @amat19/web dev",
+    "build": "pnpm -r build",
+    "check": "pnpm -r check",
+    "test": "pnpm run test:node && pnpm run test:vitest",
+    "test:node": "node --experimental-strip-types --test packages/math-core/test/*.test.ts packages/domain-logic/test/*.test.ts packages/learning-engine/test/*.test.ts packages/persistence/test/*.test.ts",
+    "test:vitest": "vitest run",
+    "test:e2e": "playwright test",
+    "audit:architecture": "node scripts/audit-architecture.mjs",
+    "verify": "pnpm run test:node && pnpm run audit:architecture && pnpm run check && pnpm run build"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.62.1",
+    "@types/node": "22.20.1",
+    "fast-check": "4.9.0",
+    "typescript": "6.0.3",
+    "vitest": "4.1.11"
+  }
+}
