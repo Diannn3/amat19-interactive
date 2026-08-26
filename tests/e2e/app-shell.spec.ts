@@ -84,7 +84,7 @@ test('home and progress have no serious automated accessibility violations', asy
 });
 
 test('mobile routes do not create page-level horizontal overflow', async ({ page }) => {
-  for (const route of ['/', '/modules/logic', '/labs/truth-table', '/labs/formal-proof', '/labs/counting', '/labs/conditional-probability', '/practice', '/exam', '/progress']) {
+  for (const route of ['/', '/modules/logic', '/labs/truth-table', '/labs/formal-proof', '/labs/counting', '/labs/conditional-probability', '/practice', '/exam', '/reference', '/progress']) {
     await page.goto(route);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow, route).toBe(false);
@@ -98,6 +98,30 @@ test('@core practice, mixed check, and reference surfaces render', async ({ page
   await expect(page.getByTestId('mixed-exam')).toBeVisible();
   await page.goto('/reference');
   await expect(page.getByRole('heading', { name: /map of the symbols/i })).toBeVisible();
+});
+
+test('reference browser searches, filters by module, and expands assumptions', async ({ page }) => {
+  await page.goto('/reference');
+  const reference = page.getByTestId('reference-browser');
+  const search = reference.getByRole('searchbox', { name: 'Search reference' });
+  const filter = reference.getByRole('combobox', { name: 'Filter by module' });
+
+  await expect(search).toBeVisible();
+  await expect(filter).toBeVisible();
+  await expect(reference.locator('.reference-entry')).toHaveCount(28);
+
+  const firstEntry = reference.locator('.reference-entry').first();
+  await firstEntry.getByText(/∼P/).click();
+  await expect(firstEntry.locator('.reference-entry__body')).toBeVisible();
+
+  await search.fill('conditional');
+  await expect(reference.locator('.reference-entry')).toHaveCount(2);
+  await expect(reference.getByText('P(A|B) = P(A∩B) / P(B)', { exact: true })).toBeVisible();
+
+  await search.fill('');
+  await filter.selectOption('Logic');
+  await expect(reference.locator('.reference-entry')).toHaveCount(5);
+  await expect(reference.locator('.reference-entry[data-module="Probability"]')).toHaveCount(0);
 });
 
 test('@core mixed course check withholds explanations until submission', async ({ page }) => {

@@ -1037,3 +1037,120 @@ body {
   .choice-option:has(input:checked) { forced-color-adjust: none; border-color: Highlight; background: Canvas; color: CanvasText; }
   .mixed-question { box-shadow: none; }
 }
+
+/* Pass 5 reference browser: scan the formula first, expand only the context needed. */
+.reference-browser {
+  display: grid;
+  gap: 1rem;
+}
+
+.reference-browser__controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem) auto;
+  align-items: end;
+  gap: .75rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.reference-browser__field {
+  display: grid;
+  min-width: 0;
+  gap: .35rem;
+}
+
+.reference-browser__field > span {
+  color: var(--foreground-muted);
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.reference-browser__field input,
+.reference-browser__field select {
+  width: 100%;
+  min-height: 2.85rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: .55rem .7rem;
+  background: var(--surface);
+  color: var(--foreground);
+}
+
+.reference-browser__field input:focus-visible,
+.reference-browser__field select:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.reference-browser__controls > .amat-button { min-height: 2.85rem; }
+
+.reference-browser__summary {
+  color: var(--foreground-muted);
+  font-size: .85rem;
+}
+
+.reference-browser__summary strong { color: var(--primary); }
+
+.reference-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .65rem;
+  align-items: start;
+}
+
+.reference-entry {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.reference-entry summary {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .8rem;
+  min-height: 5rem;
+  padding: .85rem 2.75rem .85rem 1rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.reference-entry summary::-webkit-details-marker { display: none; }
+.reference-entry summary::after { content: "+"; position: absolute; top: 50%; right: 1rem; color: var(--primary); font-size: 1.3rem; line-height: 1; transform: translateY(-50%); }
+.reference-entry[open] summary::after { content: "−"; }
+.reference-entry summary:hover,
+.reference-entry summary:focus-visible { background: var(--surface-muted); }
+.reference-entry summary:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+.reference-entry__summary { display: grid; min-width: 0; gap: .25rem; }
+.reference-entry__summary code { overflow-wrap: anywhere; color: var(--primary); font: 750 1rem/1.35 ui-monospace, monospace; }
+.reference-entry__summary strong { line-height: 1.35; }
+.reference-entry__module { max-width: 9rem; color: var(--foreground-soft); font-size: .66rem; font-weight: 800; letter-spacing: .06em; line-height: 1.3; text-align: right; text-transform: uppercase; }
+
+.reference-entry__body {
+  display: grid;
+  gap: .8rem;
+  padding: 0 1rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.reference-entry__body > p { margin-top: .9rem; color: var(--foreground-muted); line-height: 1.55; }
+.reference-entry__assumption { display: grid; gap: .25rem; border-left: 3px solid var(--accent); padding: .55rem .7rem; background: var(--accent-soft); }
+.reference-entry__assumption span { color: var(--accent-strong); font-size: .67rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.reference-entry__assumption strong { font-size: .85rem; line-height: 1.45; }
+
+@media (max-width: 760px) {
+  .reference-browser__controls { grid-template-columns: 1fr; align-items: stretch; }
+  .reference-browser__controls > .amat-button { justify-self: start; }
+  .reference-entry-grid { grid-template-columns: 1fr; }
+}
+
+@media (forced-colors: active) {
+  .reference-browser__field input,
+  .reference-browser__field select,
+  .reference-entry,
+  .reference-browser__controls { forced-color-adjust: none; border-color: CanvasText; background: Canvas; }
+  .reference-entry__assumption { forced-color-adjust: none; border-left-color: Highlight; background: Canvas; }
+}
