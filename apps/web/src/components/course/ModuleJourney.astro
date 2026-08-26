@@ -1,0 +1,79 @@
+---
+import { currentCourseProfile, getModuleSkillGraph, type ModuleId } from '@amat19/course-content';
+import { ArrowRight, BookOpen, FlaskConical, Route } from 'lucide-react';
+
+interface Props {
+  moduleId: ModuleId;
+  moduleNumber: string;
+  eyebrow?: string;
+  headline: string;
+  lede: string;
+  lessons: Array<{ id: string; data: { title: string; description?: string; scope?: string } }>;
+}
+const { moduleId, moduleNumber, eyebrow, headline, lede, lessons } = Astro.props;
+const module = currentCourseProfile.modules.find((item) => item.id === moduleId)!;
+const labs = currentCourseProfile.labs.filter((lab) => lab.module === moduleId);
+const skills = getModuleSkillGraph(moduleId);
+const current = skills.filter((skill) => skill.scope === 'current');
+const supplemental = skills.filter((skill) => skill.scope === 'supplemental');
+---
+<section class="page-width page-intro">
+  <p class="eyebrow">Module {moduleNumber} · {eyebrow ?? module.title}</p>
+  <h1 class="display-title">{headline}</h1>
+  <p class="lede">{lede}</p>
+  <div class="hero-actions">
+    <a class="hero-action hero-action--primary" href={current[0]?.labHref ?? labs[0]?.href}><FlaskConical size={17} /> Start the first lab</a>
+    <a class="hero-action hero-action--secondary" href={`/practice?preset=${moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-drill`}`}><Route size={17} /> Practice this module</a>
+  </div>
+</section>
+
+<section class="page-width module-section module-journey" aria-labelledby={`${moduleId}-journey`}>
+  <div>
+    <div class="section-heading"><div><p class="eyebrow">Prerequisite-aware path</p><h2 id={`${moduleId}-journey`}>Build the ideas in order</h2></div></div>
+    <div class="skill-flow">
+      {current.map((skill, index) => (
+        <a class="skill-flow__item" href={skill.labHref}>
+          <span class="skill-flow__number">{String(index + 1).padStart(2, '0')}</span>
+          <span>
+            <strong>{skill.title}</strong>
+            <small>{skill.description}</small>
+            {skill.prerequisiteIds.length > 0 && <span class="skill-flow__prereq">Builds on {skill.prerequisiteIds.map((id) => skills.find((candidate) => candidate.id === id)?.title ?? id).join(' · ')}</span>}
+          </span>
+          <ArrowRight size={17} aria-hidden="true" />
+        </a>
+      ))}
+    </div>
+  </div>
+  <aside class="module-journey__aside math-panel">
+    <div class="math-panel__head"><div><p class="section-label">How to use this module</p><h3>Learn → explore → practice</h3></div><BookOpen size={20} /></div>
+    <ul>
+      <li>Read the short concept note when a rule is unfamiliar.</li>
+      <li>Use the lab to manipulate the same mathematical object.</li>
+      <li>Practice until you can solve without a hint or reveal.</li>
+      <li>Return through Study when a skill is due for repair or review.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="page-width module-section" aria-labelledby={`${moduleId}-labs`}>
+  <div class="section-heading"><div><p class="eyebrow">Interactive workspaces</p><h2 id={`${moduleId}-labs`}>Labs</h2></div></div>
+  <div class="route-grid">
+    {labs.map((lab) => <a class="route-link" href={lab.href}><span><strong>{lab.title}</strong><small>{lab.skillIds.join(' · ')}</small></span><span class="status-pill">{lab.status}</span></a>)}
+  </div>
+</section>
+
+<section class="page-width module-section" aria-labelledby={`${moduleId}-lessons`}>
+  <div class="section-heading"><div><p class="eyebrow">Concept notes</p><h2 id={`${moduleId}-lessons`}>Read before or after the lab</h2></div></div>
+  <ol class="lesson-list">
+    {lessons.map((lesson) => <li><a href={`/lessons/${lesson.id}`}><span>{lesson.data.title}</span><span>Read →</span></a></li>)}
+  </ol>
+</section>
+
+{supplemental.length > 0 && (
+  <section class="page-width module-section">
+    <div class="section-heading"><div><p class="eyebrow">Supplemental depth</p><h2>Optional extensions</h2></div></div>
+    <div class="skill-grid">
+      {supplemental.map((skill) => <article class="skill-item"><span class="status-pill">supplemental</span><h3>{skill.title}</h3><p>{skill.description}</p><a class="text-link" href={skill.labHref}>Open extension →</a></article>)}
+    </div>
+  </section>
+)}

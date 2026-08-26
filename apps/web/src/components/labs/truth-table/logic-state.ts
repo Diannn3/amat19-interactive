@@ -1,6 +1,6 @@
 import type { CheckResult } from '@amat19/learning-engine';
 
-export type LabMode = 'explore' | 'practice' | 'argument';
+export type LabMode = 'explore' | 'build' | 'practice' | 'argument';
 export type SelectedCell = { rowIndex: number; columnId: string; nodeId?: string; };
 export type PracticeGuess = { value: boolean; status: 'correct' | 'wrong'; };
 

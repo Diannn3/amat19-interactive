@@ -1,204 +1,37 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { CheckCircle2, Lightbulb, Plus, RotateCcw, Trash2 } from 'lucide-react';
-import {
-  PROOF_RULES,
-  proofReachesConclusion,
-  validateProofLine,
-  type CheckedProofLine,
-  type ProofRuleId
-} from '@amat19/domain-logic';
+import { Brackets, CheckCircle2, CornerDownLeft, Lightbulb, Plus, RotateCcw, ShieldCheck } from 'lucide-react';
+import { PROOF_RULES, addScopedProofLine, closeProofScope, createScopedProof, openProofAssumption, scopedProofAvailableReferences, scopedProofComplete, type ProofMethod, type ProofRuleId, type ScopedProofState } from '@amat19/domain-logic';
 import { Button } from '../../ui/Button';
+import { Badge } from '../../ui/Badge';
 import { Feedback } from '../../ui/Feedback';
-import { loadDraft, saveDraft } from '../../../lib/draft';
 import { recordAttempt, recordSkillEvidence } from '../../../lib/local-progress';
 
-const LAB_ID = 'logic.formal-proof';
-const CONTENT_VERSION = '2';
+type Problem={method:ProofMethod;premises:string[];goal:string;title:string;description:string;hints:string[];skillId:string};
+const PROBLEMS:Record<ProofMethod,Problem>={
+ direct:{method:'direct',premises:['A -> B','~B','C'],goal:'~A & C',title:'Direct proof',description:'Derive the goal only from premises and earlier valid lines.',hints:['A → B and ∼B fit Modus Tollens.','Use MT to derive ∼A.','Combine ∼A with C using Conjunction.'],skillId:'logic.proof.direct'},
+ conditional:{method:'conditional',premises:['P -> Q','Q -> R'],goal:'P -> R',title:'Conditional Proof',description:'Assume the antecedent, derive the consequent inside the subproof, then discharge the assumption.',hints:['Open the CP subproof by assuming P.','Use MP with P → Q and the assumption P.','Use MP again with Q → R, then close the scope.'],skillId:'logic.proof.conditional'},
+ indirect:{method:'indirect',premises:['P -> Q','~Q'],goal:'~P',title:'Indirect Proof',description:'Assume the negation of the target, derive an explicit contradiction, then discharge the assumption.',hints:['The negation of ∼P is ∼∼P. Open the IP scope with that preliminary assumption.','Use DN to derive P, then MP to derive Q.','Conjoin Q with premise ∼Q to make Q ∧ ∼Q, then close IP.'],skillId:'logic.proof.indirect'}
+};
+const selectableRules=PROOF_RULES.filter(rule=>rule.family!=='method'&&rule.id!=='Premise');
 
-const PREMISES = ['A -> B', '~B', 'C'];
-const CONCLUSION = '~A & C';
-
-function startingLines(): CheckedProofLine[] {
-  const lines: CheckedProofLine[] = [];
-  for (const expression of PREMISES) {
-    lines.push(validateProofLine(lines, { expression, ruleId: 'Premise', references: [] }));
-  }
-  return lines;
-}
-
-type Draft = { lines: CheckedProofLine[]; hintLevel?: number };
-
-const HINTS = [
-  'Look for a cited conditional whose consequent is contradicted by another premise.',
-  'Premises 1 and 2 fit Modus Tollens, which can derive ∼A.',
-  'Once ∼A is available, combine it with premise C using Conjunction.'
-];
-
-export default function FormalProofLab() {
-  const [lines, setLines] = useState<CheckedProofLine[]>(startingLines);
-  const [expression, setExpression] = useState('');
-  const [ruleId, setRuleId] = useState<ProofRuleId>('MT');
-  const [references, setReferences] = useState('1, 2');
-  const [restored, setRestored] = useState(false);
-  const [hintLevel, setHintLevel] = useState(0);
-  const recordedRef = useRef(false);
-
-  useEffect(() => {
-    loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((draft) => {
-      if (draft?.lines && draft.lines.length >= PREMISES.length) setLines(draft.lines);
-      if (draft?.hintLevel) setHintLevel(Math.min(draft.hintLevel, HINTS.length));
-      setRestored(true);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!restored) return;
-    const timer = window.setTimeout(() => void saveDraft(LAB_ID, CONTENT_VERSION, { lines, hintLevel }), 250);
-    return () => window.clearTimeout(timer);
-  }, [lines, hintLevel, restored]);
-
-  const complete = useMemo(() => proofReachesConclusion(lines, CONCLUSION), [lines]);
-
-  useEffect(() => {
-    if (!complete || recordedRef.current) return;
-    recordedRef.current = true;
-    const score = Math.max(0.7, 1 - hintLevel * 0.08);
-    void Promise.all([
-      recordAttempt({ prefix:'formal-proof', exerciseId:'logic.formal-proof.direct-1', module:'logic', finalState:'correct', payload:{ lines, hintsUsed:hintLevel } }),
-      recordSkillEvidence('logic.formal-proof', score)
-    ]).catch(() => undefined);
-  }, [complete, hintLevel, lines]);
-
-  function parseReferences(): number[] {
-    if (!references.trim()) return [];
-    return references.split(',').map((part) => Number(part.trim())).filter((value) => Number.isFinite(value));
-  }
-
-  function addLine() {
-    if (!expression.trim()) return;
-    const checked = validateProofLine(lines, { expression, ruleId, references: parseReferences() });
-    setLines((current) => [...current, checked]);
-    if (checked.ok) setExpression('');
-  }
-
-  function reset() {
-    setLines(startingLines());
-    setExpression('');
-    setRuleId('MT');
-    setReferences('1, 2');
-    setHintLevel(0);
-    recordedRef.current = false;
-  }
-
-  const selectableRules = PROOF_RULES.filter((rule) => rule.id !== 'Premise' && rule.id !== 'PA' && rule.id !== 'CP' && rule.id !== 'IP');
-
-  return (
-    <section className="proof-lab" data-testid="formal-proof-lab">
-      <header className="proof-lab__goal">
-        <div>
-          <p className="section-label">Direct proof · production-ready</p>
-          <h2>Derive the goal one justified line at a time.</h2>
-          <p>Every accepted line must follow from its cited earlier lines under the exact AMAT rule you select.</p>
-        </div>
-        <div className="goal-card" aria-label="Current proof goal">
-          <span>Goal</span>
-          <strong>{CONCLUSION}</strong>
-        </div>
-      </header>
-
-      <div className="proof-table-wrap">
-        <table className="proof-table">
-          <caption className="sr-only">Formal proof lines with statements, justifications, references, and validation status.</caption>
-          <thead><tr><th>#</th><th>Statement</th><th>Justification</th><th>Status</th></tr></thead>
-          <tbody>
-            {lines.map((line) => (
-              <tr key={line.lineNumber} data-valid={line.ok}>
-                <th scope="row">{line.lineNumber}</th>
-                <td className="logic-expression">{line.expression}</td>
-                <td>{line.ruleId}{line.references.length ? ` · ${line.references.join(', ')}` : ''}</td>
-                <td>
-                  <span className="proof-status" data-valid={line.ok}>{line.ok ? 'Valid' : 'Needs revision'}</span>
-                  {!line.ok && <small>{line.message}</small>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {complete && (
-        <Feedback tone="success">
-          <CheckCircle2 size={18} aria-hidden="true" />
-          <strong>QED.</strong> The last valid line matches the goal.
-        </Feedback>
-      )}
-
-      <form className="proof-editor" onSubmit={(event) => { event.preventDefault(); addLine(); }}>
-        <div className="proof-editor__statement">
-          <label className="form-field">
-            <span className="form-field__label">Next statement</span>
-            <input
-              className="text-input logic-input"
-              value={expression}
-              onChange={(event) => setExpression(event.target.value)}
-              placeholder="e.g. ~A"
-              aria-label="Next proof statement"
-            />
-            <span className="form-field__hint">Aliases: ~ / ¬, & / ∧, | / ∨, -&gt; / →, &lt;-&gt; / ↔</span>
-          </label>
-        </div>
-        <label className="form-field">
-          <span className="form-field__label">Rule</span>
-          <select className="select-input" value={ruleId} onChange={(event) => setRuleId(event.target.value as ProofRuleId)} aria-label="Proof rule">
-            {selectableRules.map((rule) => <option key={rule.id} value={rule.id}>{rule.id} · {rule.name}</option>)}
-          </select>
-        </label>
-        <label className="form-field">
-          <span className="form-field__label">Cited lines</span>
-          <input className="text-input" value={references} onChange={(event) => setReferences(event.target.value)} placeholder="1, 2" aria-label="Cited line numbers" />
-          <span className="form-field__hint">Only earlier valid lines can be cited.</span>
-        </label>
-        <div className="action-row proof-editor__actions">
-          <Button variant="primary" type="submit" disabled={!expression.trim()}><Plus size={16} aria-hidden="true" /> Add checked line</Button>
-          {lines.length > PREMISES.length && (
-            <Button variant="ghost" type="button" onClick={() => setLines((current) => current.slice(0, -1))}>
-              <Trash2 size={16} aria-hidden="true" /> Undo last line
-            </Button>
-          )}
-          <Button variant="ghost" type="button" onClick={reset}><RotateCcw size={16} aria-hidden="true" /> Reset proof</Button>
-        </div>
-      </form>
-
-
-      <div className="proof-hints" aria-live="polite">
-        <div className="action-row">
-          <Button variant="ghost" type="button" disabled={hintLevel >= HINTS.length} onClick={() => setHintLevel((level) => Math.min(HINTS.length, level + 1))}>
-            <Lightbulb size={16} aria-hidden="true" /> {hintLevel === 0 ? 'Reveal one hint' : 'Reveal next hint'}
-          </Button>
-          {hintLevel > 0 && <span>{hintLevel}/{HINTS.length} hints revealed</span>}
-        </div>
-        {hintLevel > 0 && <ol>{HINTS.slice(0, hintLevel).map((hint) => <li key={hint}>{hint}</li>)}</ol>}
-      </div>
-
-      <aside className="proof-reference">
-        <p className="section-label">Rule reference</p>
-        <div className="rule-grid">
-          {PROOF_RULES.filter((rule) => rule.family !== 'method').map((rule) => (
-            <details key={rule.id}>
-              <summary><strong>{rule.id}</strong> · {rule.name}</summary>
-              <p>{rule.description}</p>
-            </details>
-          ))}
-        </div>
-        <details className="experimental-note">
-          <summary>Conditional and indirect proof status</summary>
-          <p>
-            Direct proof is fully checked in this pass. Conditional and indirect proof require reference-scope
-            enforcement before they can be learner-facing, so they remain deliberately disabled rather than accepting
-            invalid cross-scope citations.
-          </p>
-        </details>
-      </aside>
-    </section>
-  );
+export default function FormalProofLab(){
+ const[method,setMethod]=useState<ProofMethod>('direct');const[state,setState]=useState<ScopedProofState>(()=>createScopedProof('direct',PROBLEMS.direct.premises,PROBLEMS.direct.goal));const[expression,setExpression]=useState('');const[ruleId,setRuleId]=useState<ProofRuleId>('MT');const[references,setReferences]=useState('1, 2');const[feedback,setFeedback]=useState<string>();const[hintLevel,setHintLevel]=useState(0);const recordedRef=useRef(false);
+ const problem=PROBLEMS[method];const complete=useMemo(()=>scopedProofComplete(state),[state]);const available=useMemo(()=>scopedProofAvailableReferences(state),[state]);const currentScope=state.currentScopeId!=='root';
+ useEffect(()=>{if(!complete||recordedRef.current)return;recordedRef.current=true;const score=Math.max(.68,1-hintLevel*.08);void Promise.all([recordAttempt({prefix:'formal-proof',exerciseId:`${problem.skillId}.guided`,module:'logic',finalState:'correct',payload:{method,lines:state.lines,hintsUsed:hintLevel},skillIds:[problem.skillId],difficulty:method==='direct'?'standard':'challenge'}),recordSkillEvidence(problem.skillId,score,{independent:hintLevel===0})]).catch(()=>undefined)},[complete,hintLevel,method,problem.skillId,state.lines]);
+ function switchMethod(next:ProofMethod){const p=PROBLEMS[next];setMethod(next);setState(createScopedProof(next,p.premises,p.goal));setExpression('');setRuleId(next==='indirect'?'DN':'MP');setReferences('');setFeedback(undefined);setHintLevel(0);recordedRef.current=false}
+ function refs(){return references.split(',').map(part=>Number(part.trim())).filter(Number.isInteger)}
+ function addLine(){if(!expression.trim())return;try{const next=addScopedProofLine(state,{expression,ruleId,references:refs()});const line=next.lines.at(-1)!;setState(next);setFeedback(line.message);if(line.ok)setExpression('')}catch(error){setFeedback(error instanceof Error?error.message:'That proof line could not be added.')}}
+ function openScope(){try{const next=openProofAssumption(state);setState(next);setFeedback(next.lines.at(-1)!.message);setReferences('');setRuleId(method==='indirect'?'DN':'MP')}catch(error){setFeedback(error instanceof Error?error.message:'The subproof could not be opened.')}}
+ function closeScope(){try{const next=closeProofScope(state);setState(next);setFeedback(next.lines.at(-1)!.message)}catch(error){setFeedback(error instanceof Error?error.message:'The subproof is not ready to close.')}}
+ function reset(){switchMethod(method)}
+ return <section className="proof-lab" data-testid="formal-proof-lab">
+  <header className="proof-lab__goal"><div><p className="section-label">Scoped formal proof workspace</p><h2>Derive the goal one justified line at a time.</h2><p>{problem.description}</p><div className="logic-mode-tabs">{(['direct','conditional','indirect'] as ProofMethod[]).map(value=><Button key={value} variant={method===value?'primary':'secondary'} onClick={()=>switchMethod(value)}>{value==='direct'?<ShieldCheck size={15}/>:<Brackets size={15}/>} {PROBLEMS[value].title}</Button>)}</div></div><div className="goal-card"><span>Goal</span><strong>{problem.goal}</strong><Badge>{currentScope?'subproof open':'root scope'}</Badge></div></header>
+  <div className="proof-table-wrap"><table className="proof-table"><caption className="sr-only">Scoped formal proof lines.</caption><thead><tr><th>#</th><th>Statement</th><th>Justification</th><th>Scope / status</th></tr></thead><tbody>{state.lines.map(line=><tr key={line.lineNumber} data-valid={line.ok}><th>{line.lineNumber}</th><td className="logic-expression"><span style={{display:'inline-block',paddingInlineStart:`${line.scopeDepth*1.35}rem`}}>{line.scopeDepth>0?'│ ':''}{line.expression}</span></td><td>{line.ruleId}{line.references.length?` · ${line.references.join(', ')}`:''}</td><td><span className="proof-status" data-valid={line.ok}>{line.ok?line.role==='assumption'?'Assumption':line.role==='closure'?'Scope discharged':'Valid':'Needs revision'}</span>{!line.ok&&<small>{line.message}</small>}</td></tr>)}</tbody></table></div>
+  {complete&&<Feedback tone="success"><CheckCircle2 size={18}/><strong>QED.</strong> The final valid root-scope line matches the goal.</Feedback>}
+  {method!=='direct'&&!currentScope&&!complete&&<div className="math-panel"><p className="section-label">Proof method</p><p>{method==='conditional'?'Conditional Proof begins by assuming the antecedent of the target implication.':'Indirect Proof begins by assuming the negation of the target.'}</p><Button variant="primary" onClick={openScope}><CornerDownLeft size={16}/> Open preliminary assumption</Button></div>}
+  <form className="proof-editor" onSubmit={event=>{event.preventDefault();addLine()}}><div className="proof-editor__statement"><label className="form-field"><span className="form-field__label">Next statement</span><input className="text-input logic-input" value={expression} onChange={event=>setExpression(event.target.value)} placeholder={method==='indirect'?'e.g. ~~P or P':'e.g. Q'}/><span className="form-field__hint">Aliases: ~ / ¬, & / ∧, | / ∨, -&gt; / →, &lt;-&gt; / ↔</span></label></div><label className="form-field"><span className="form-field__label">Rule</span><select className="select-input" value={ruleId} onChange={event=>setRuleId(event.target.value as ProofRuleId)}>{selectableRules.map(rule=><option key={rule.id} value={rule.id}>{rule.id} · {rule.name}</option>)}</select></label><label className="form-field"><span className="form-field__label">Cited lines</span><input className="text-input" value={references} onChange={event=>setReferences(event.target.value)} placeholder={available.slice(-2).join(', ')}/><span className="form-field__hint">Available here: {available.length?available.join(', '):'none'}</span></label><div className="action-row proof-editor__actions"><Button variant="primary" type="submit" disabled={!expression.trim()||complete}><Plus size={16}/> Add checked line</Button>{currentScope&&<Button variant="secondary" type="button" onClick={closeScope}><CornerDownLeft size={16}/> Close {method==='conditional'?'CP':'IP'} scope</Button>}<Button variant="ghost" type="button" onClick={reset}><RotateCcw size={16}/> Reset</Button></div></form>
+  {feedback&&<Feedback tone={state.lines.at(-1)?.ok?'neutral':'error'}>{feedback}</Feedback>}
+  <div className="proof-hints"><div className="action-row"><Button variant="ghost" disabled={hintLevel>=problem.hints.length} onClick={()=>setHintLevel(level=>Math.min(problem.hints.length,level+1))}><Lightbulb size={16}/> Reveal {hintLevel?'next ':''}hint</Button>{hintLevel>0&&<span>{hintLevel}/{problem.hints.length} hints revealed</span>}</div>{hintLevel>0&&<ol>{problem.hints.slice(0,hintLevel).map(hint=><li key={hint}>{hint}</li>)}</ol>}</div>
+  <aside className="proof-reference"><p className="section-label">Rule reference</p><div className="rule-grid">{PROOF_RULES.filter(rule=>rule.family!=='method').map(rule=><details key={rule.id}><summary><strong>{rule.id}</strong> · {rule.name}</summary><p>{rule.description}</p></details>)}</div></aside>
+ </section>
 }

@@ -30,3 +30,26 @@ export function rref(input:Matrix):RrefResult {const s=shape(input);let current=
 export function inverse(input:Matrix):{inverse:Matrix;steps:RowReductionStep[]}|null {const s=shape(input);if(s.rows!==s.cols)throw new RangeError('Only square matrices can have inverses.');const augmented=input.map((row,r)=>[...row,...identity(s.rows)[r]!]);const reduced=rref(augmented);const left=reduced.matrix.map(row=>row.slice(0,s.cols)),I=identity(s.rows);const okay=left.every((row,r)=>row.every((v,c)=>v.equals(I[r]![c]!)));if(!okay)return null;return{inverse:reduced.matrix.map(row=>row.slice(s.cols)),steps:reduced.steps};}
 export function solveLinearSystem(augmented:Matrix):LinearSystemResult {const s=shape(augmented);if(s.cols<2)throw new RangeError('An augmented system needs at least one variable column and one constant column.');const variables=s.cols-1,reduced=rref(augmented);let inconsistent=false;for(const row of reduced.matrix){if(row.slice(0,variables).every(v=>v.isZero())&&!row[variables]!.isZero())inconsistent=true;}if(inconsistent)return{kind:'inconsistent',rref:reduced.matrix,rank:reduced.rank,variableCount:variables,steps:reduced.steps};const variablePivots=reduced.pivotColumns.filter(c=>c<variables);if(variablePivots.length<variables)return{kind:'infinite',rref:reduced.matrix,rank:variablePivots.length,variableCount:variables,steps:reduced.steps};const solution=Array.from({length:variables},()=>Rational.zero());for(let r=0;r<reduced.matrix.length;r++){const pivot=variablePivots[r];if(pivot===undefined)break;solution[pivot]=reduced.matrix[r]![variables]!;}return{kind:'unique',rref:reduced.matrix,rank:variables,variableCount:variables,solution,steps:reduced.steps};}
 export function matrixToStrings(input:Matrix):string[][]{return input.map(row=>row.map(v=>v.toString()));}
+
+export type RowOperationInput=
+ | {kind:'swap';rowA:number;rowB:number}
+ | {kind:'scale';row:number;factor:RationalLike}
+ | {kind:'replace';targetRow:number;sourceRow:number;factor:RationalLike};
+/** Apply one learner-selected elementary row operation and return the exact resulting matrix plus its normalized label. */
+export function applyRowOperation(input:Matrix,operation:RowOperationInput):{matrix:Matrix;operation:RowOperation}{
+ const s=shape(input);const validRow=(row:number)=>Number.isInteger(row)&&row>=0&&row<s.rows;
+ if(operation.kind==='swap'){
+  if(!validRow(operation.rowA)||!validRow(operation.rowB))throw new RangeError('Both swap rows must exist.');
+  if(operation.rowA===operation.rowB)throw new RangeError('Choose two different rows to swap.');
+  return{matrix:opSwap(input,operation.rowA,operation.rowB),operation:{...operation,label:`R${operation.rowA+1} ↔ R${operation.rowB+1}`}};
+ }
+ if(operation.kind==='scale'){
+  if(!validRow(operation.row))throw new RangeError('The scaled row must exist.');const factor=Rational.from(operation.factor);if(factor.isZero())throw new RangeError('Scaling by 0 is not an elementary row operation.');
+  return{matrix:opScale(input,operation.row,factor),operation:{kind:'scale',row:operation.row,factor,label:`R${operation.row+1} ← (${factor.toString()})R${operation.row+1}`}};
+ }
+ if(!validRow(operation.targetRow)||!validRow(operation.sourceRow))throw new RangeError('Both replacement rows must exist.');
+ if(operation.targetRow===operation.sourceRow)throw new RangeError('The source and target rows must be different.');
+ const factor=Rational.from(operation.factor);if(factor.isZero())throw new RangeError('Use a nonzero multiple of the source row for replacement.');
+ return{matrix:opReplace(input,operation.targetRow,operation.sourceRow,factor),operation:{kind:'replace',targetRow:operation.targetRow,sourceRow:operation.sourceRow,factor,label:`R${operation.targetRow+1} ← R${operation.targetRow+1} + (${factor.toString()})R${operation.sourceRow+1}`}};
+}
+export function matricesEqual(a:Matrix,b:Matrix):boolean{const sa=shape(a),sb=shape(b);return sa.rows===sb.rows&&sa.cols===sb.cols&&a.every((row,r)=>row.every((value,c)=>value.equals(b[r]![c]!)));}

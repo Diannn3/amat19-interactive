@@ -17,3 +17,16 @@ export function analyzeDiscreteDistribution(entries: Array<{ value: RationalLike
   const variance = secondMoment.subtract(expectedValue.multiply(expectedValue));
   return { outcomes, expectedValue, secondMoment, variance };
 }
+
+/** Exact finite Binomial(n,p) distribution for moderate educational n. */
+export function binomialDistribution(n:number,p:RationalLike):DistributionAnalysis{
+ if(!Number.isInteger(n)||n<0||n>200)throw new RangeError('Binomial n must be an integer from 0 to 200.');
+ const probability=Rational.from(p);if(!probability.isProbability())throw new RangeError('Binomial p must lie between 0 and 1.');
+ const complement=Rational.one().subtract(probability);
+ // Imported lazily at module level would create a circular source dependency; the compact multiplicative helper is exact here.
+ const choose=(nn:number,rr:number)=>{const k=Math.min(rr,nn-rr);let out=1n;for(let i=1;i<=k;i++)out=out*BigInt(nn-k+i)/BigInt(i);return out;};
+ return analyzeDiscreteDistribution(Array.from({length:n+1},(_,k)=>({value:k,probability:new Rational(choose(n,k)).multiply(probability.pow(k)).multiply(complement.pow(n-k))})));
+}
+export function distributionCdf(analysis:DistributionAnalysis):Array<{value:Rational;probability:Rational;cumulative:Rational}>{
+ let cumulative=Rational.zero();return analysis.outcomes.map(outcome=>{cumulative=cumulative.add(outcome.probability);return{...outcome,cumulative};});
+}

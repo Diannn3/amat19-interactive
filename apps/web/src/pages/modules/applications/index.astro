@@ -1,14 +1,9 @@
 ---
-import { currentCourseProfile, applicationSkills } from '@amat19/course-content';
 import { getCollection } from 'astro:content';
 import AppLayout from '../../../layouts/AppLayout.astro';
-const lessons=(await getCollection('lessons')).filter(e=>e.data.module==='applications').sort((a,b)=>a.data.order-b.data.order);
-const labs=currentCourseProfile.labs.filter(l=>l.module==='applications');
+import ModuleJourney from '../../../components/course/ModuleJourney.astro';
+const lessons=(await getCollection('lessons')).filter((entry)=>entry.data.module==='applications').sort((a,b)=>a.data.order-b.data.order);
 ---
 <AppLayout title="Applications module">
-<section class="page-width page-intro"><p class="eyebrow">Module 05 · Applications</p><h1 class="display-title">Model the feasible choices before optimizing them.</h1><p class="lede">Use matrices and inequalities to study graphical linear programming and zero-sum game theory, with clearly labeled supplemental simplex and Markov tools.</p></section>
-<section class="page-width module-section"><div class="section-heading"><div><p class="eyebrow">Interactive tools</p><h2>Labs</h2></div></div><div class="route-grid">{labs.map(l=><a class="route-link" href={l.href}><span><strong>{l.title}</strong><small>{l.skillIds.join(' · ')}</small></span><span class="status-pill">{l.status}</span></a>)}</div></section>
-<section class="page-width module-section"><div class="section-heading"><div><p class="eyebrow">Course skills</p><h2>Skills</h2></div></div><div class="skill-grid">{applicationSkills.map(s=><article class="skill-item"><span class="status-pill">{s.status}</span><h3>{s.title}</h3><p>{s.description}</p></article>)}</div></section>
-<section class="page-width module-section"><div class="section-heading"><div><p class="eyebrow">Original reference notes</p><h2>Lessons</h2></div></div><ol class="lesson-list">{lessons.map(l=><li><a href={`/lessons/${l.id}`}><span>{l.data.title}</span><span>Read →</span></a></li>)}</ol></section>
-<section class="page-width feature-band"><div><p class="eyebrow">Scope boundary</p><h2>Graphs are named in the course description, but no authoritative graph-theory unit is available in the supplied corpus.</h2></div><div class="feature-band__grid"><p><strong>Implemented current applications:</strong> graphical Linear Programming and a zero-sum Game Theory foundation.</p><p><strong>Supplemental older depth:</strong> simplex and Markov tools remain labeled supplemental.</p><p><strong>Not invented:</strong> a graph-theory lab will stay out of the learner-facing curriculum until current source material or instructor confirmation defines its actual scope.</p></div></section>
+  <ModuleJourney moduleId="applications" moduleNumber="05" eyebrow="Applications" headline="Model the feasible choices before optimizing them." lede="Use linear systems, inequalities, payoff matrices, and state transitions to connect AMAT tools to decision models." lessons={lessons} />
 </AppLayout>
