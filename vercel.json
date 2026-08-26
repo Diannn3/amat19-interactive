@@ -1,0 +1,5 @@
+{
+  "buildCommand": "pnpm -r build",
+  "outputDirectory": "apps/web/dist",
+  "framework": "astro"
+}
