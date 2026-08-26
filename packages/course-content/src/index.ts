@@ -27,6 +27,7 @@ export const currentCourseProfile:CourseProfile={
   {id:'probability.independence',module:'probability',title:'Independence',description:'Test independence by exact probability identities.',status:'implemented',prerequisiteIds:['probability.conditional'],relatedLab:'/labs/conditional-probability'},
   {id:'probability.distribution',module:'probability',title:'Discrete distributions',description:'Supplemental expected value and variance with exact rational probabilities.',status:'supplemental',prerequisiteIds:['probability.basic'],relatedLab:'/labs/distribution'},
   {id:'probability.simulation',module:'probability',title:'Probability simulation',description:'Supplemental seeded simulation comparing empirical frequency with theoretical probability.',status:'supplemental',prerequisiteIds:['probability.basic'],relatedLab:'/labs/probability-simulation'},
+  {id:'probability.bayes',module:'probability',title:'Bayes & total probability',description:'Supplemental prior-to-posterior updating with exact tree and table representations.',status:'supplemental',prerequisiteIds:['probability.conditional'],relatedLab:'/labs/bayes'},
   {id:'finance.interest',module:'finance',title:'Interest measurement',description:'Distinguish simple, effective compound, and nominal-rate accumulation.',status:'implemented',prerequisiteIds:[],relatedLab:'/labs/interest'},
   {id:'finance.rate-equivalence',module:'finance',title:'Equivalent rates',description:'Convert nominal and annual effective rates by matching one-year accumulation.',status:'implemented',prerequisiteIds:['finance.interest'],relatedLab:'/labs/interest'},
   {id:'finance.tvm',module:'finance',title:'Time value of money',description:'Move cash flows to a common focal date before comparing or combining them.',status:'implemented',prerequisiteIds:['finance.interest'],relatedLab:'/labs/interest'},
@@ -50,6 +51,7 @@ export const currentCourseProfile:CourseProfile={
   {id:'conditional-probability',module:'probability',title:'Conditional Probability Lab',href:'/labs/conditional-probability',skillIds:['probability.basic','probability.conditional','probability.independence'],status:'live'},
   {id:'distribution',module:'probability',title:'Discrete Distribution Lab',href:'/labs/distribution',skillIds:['probability.distribution'],status:'supplemental'},
   {id:'probability-simulation',module:'probability',title:'Probability Simulation Lab',href:'/labs/probability-simulation',skillIds:['probability.simulation'],status:'supplemental'},
+  {id:'bayes',module:'probability',title:'Bayes Update Lab',href:'/labs/bayes',skillIds:['probability.bayes'],status:'supplemental'},
   {id:'interest',module:'finance',title:'Interest & Time Value Lab',href:'/labs/interest',skillIds:['finance.interest','finance.rate-equivalence','finance.tvm'],status:'live'},
   {id:'annuity',module:'finance',title:'Annuity Timeline Lab',href:'/labs/annuity',skillIds:['finance.annuity'],status:'live'},
   {id:'bonds',module:'finance',title:'Bond Pricing Lab',href:'/labs/bonds',skillIds:['finance.bonds'],status:'supplemental'},
@@ -68,3 +70,6 @@ export const linearSkills=currentCourseProfile.skills.filter(s=>s.module==='line
 export const applicationSkills=currentCourseProfile.skills.filter(s=>s.module==='applications');
 export const liveLabs=currentCourseProfile.labs.filter(l=>l.status==='live');
 export const allAvailableLabs=currentCourseProfile.labs.filter(l=>l.status==='live'||l.status==='supplemental');
+
+export * from './skill-graph.ts';
+export * from './presets.ts';

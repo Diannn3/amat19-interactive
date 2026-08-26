@@ -147,13 +147,20 @@ function gameExercise(random: () => number, index: number): AssessmentExercise {
   }, random);
 }
 
-export function generateMixedAssessment(seed: string, count = 10): AssessmentExercise[] {
-  const random = createSeededRandom(seed);
-  const factories = [logicExercise, countingExercise, conditionalExercise, financeExercise, matrixExercise, systemExercise, lpExercise, gameExercise];
-  const exercises: AssessmentExercise[] = [];
-  for (let index = 0; index < count; index += 1) {
-    const factory = factories[index % factories.length]!;
-    exercises.push(factory(random, index));
-  }
-  return exercises;
+type ExerciseFactory={module:AssessmentModule;build:(random:()=>number,index:number)=>AssessmentExercise};
+const exerciseFactories:ExerciseFactory[]=[
+ {module:'logic',build:logicExercise},
+ {module:'probability',build:countingExercise},{module:'probability',build:conditionalExercise},
+ {module:'finance',build:financeExercise},
+ {module:'linear',build:matrixExercise},{module:'linear',build:systemExercise},
+ {module:'applications',build:lpExercise},{module:'applications',build:gameExercise}
+];
+export type AssessmentGenerationOptions={modules?:AssessmentModule[];skillId?:string};
+export function generateMixedAssessment(seed:string,count=10,options:AssessmentGenerationOptions={}):AssessmentExercise[]{
+ const random=createSeededRandom(seed);
+ let factories=options.modules?.length?exerciseFactories.filter(factory=>options.modules!.includes(factory.module)):exerciseFactories;
+ if(!factories.length)factories=exerciseFactories;
+ const exercises:AssessmentExercise[]=[];
+ for(let index=0;index<count;index+=1){const factory=factories[index%factories.length]!;const exercise=factory.build(random,index);exercises.push(options.skillId?{...exercise,skillId:options.skillId}:exercise);}
+ return exercises;
 }

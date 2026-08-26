@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { analyzeTwoWayTable, makeTwoWayTable } from '@amat19/domain-probability';
+import { Rational } from '@amat19/math-core';
 import { Button } from '../../ui/Button';
 import { Feedback } from '../../ui/Feedback';
 import { recordAttempt, recordSkillEvidence } from '../../../lib/local-progress';
@@ -20,8 +21,10 @@ function countInput(value: string): number {
 }
 
 const LAB_ID = 'probability.conditional';
-const CONTENT_VERSION = '2';
-type ConditionalDraft = { counts:Record<CellKey,number>; conditionOn:'B'|'A'; view:'table'|'tree' };
+const CONTENT_VERSION = '3';
+type FormatMode='counts'|'fractions'|'percentages';
+type ConditionalDraft = { counts:Record<CellKey,number>; conditionOn:'B'|'A'; view:'table'|'tree'; formatMode?:FormatMode };
+function formatRegion(value:number|bigint,total:bigint,mode:FormatMode){const n=BigInt(value);if(mode==='counts')return n.toString();const r=new Rational(n,total);return mode==='fractions'?r.toString():`${(r.toNumber()*100).toFixed(1)}%`;}
 
 export default function ConditionalProbabilityLab() {
   const [counts, setCounts] = useState<Record<CellKey, number>>({
@@ -32,6 +35,7 @@ export default function ConditionalProbabilityLab() {
   });
   const [conditionOn, setConditionOn] = useState<'B' | 'A'>('B');
   const [view, setView] = useState<'table' | 'tree'>('table');
+  const [formatMode,setFormatMode]=useState<FormatMode>('counts');
   const [prediction, setPrediction] = useState<'independent' | 'dependent'>();
   const [revealed, setRevealed] = useState(false);
   const [restored, setRestored] = useState(false);
@@ -64,8 +68,8 @@ export default function ConditionalProbabilityLab() {
     setRevealed(true);
     await Promise.all([
       recordAttempt({ prefix:'independence', exerciseId:'probability.independence.twoway', module:'probability', finalState:predictionCorrect?'correct':'incomplete', payload:{ counts,prediction,independent:analysis.value.independent } }),
-      recordSkillEvidence('probability.independence', predictionCorrect ? 1 : 0),
-      recordSkillEvidence('probability.conditional', activeConditional ? 1 : 0.5)
+      recordSkillEvidence('probability.independence.test', predictionCorrect ? 1 : 0, { independent: predictionCorrect }),
+      recordSkillEvidence('probability.conditional.denominator', activeConditional ? 1 : 0.5, { independent: Boolean(activeConditional) })
     ]).catch(() => undefined);
   }
 
@@ -76,16 +80,16 @@ export default function ConditionalProbabilityLab() {
 
   useEffect(() => {
     loadDraft<ConditionalDraft>(LAB_ID, CONTENT_VERSION).then((draft) => {
-      if (draft) { setCounts(draft.counts); setConditionOn(draft.conditionOn); setView(draft.view); }
+      if (draft) { setCounts(draft.counts); setConditionOn(draft.conditionOn); setView(draft.view); if(draft.formatMode)setFormatMode(draft.formatMode); }
       setRestored(true);
     });
   }, []);
 
   useEffect(() => {
     if (!restored) return;
-    const timer = window.setTimeout(() => void saveDraft(LAB_ID, CONTENT_VERSION, { counts, conditionOn, view }), 300);
+    const timer = window.setTimeout(() => void saveDraft(LAB_ID, CONTENT_VERSION, { counts, conditionOn, view, formatMode }), 300);
     return () => window.clearTimeout(timer);
-  }, [restored,counts,conditionOn,view]);
+  }, [restored,counts,conditionOn,view,formatMode]);
 
   return (
     <section className="probability-lab" data-testid="conditional-probability-lab">
@@ -130,6 +134,9 @@ export default function ConditionalProbabilityLab() {
           <Button variant={view === 'table' ? 'primary' : 'secondary'} type="button" onClick={() => setView('table')}>Table</Button>
           <Button variant={view === 'tree' ? 'primary' : 'secondary'} type="button" onClick={() => setView('tree')}>Tree</Button>
         </div>
+        <div className="view-switch" role="group" aria-label="Probability number format">
+          {(['counts','fractions','percentages'] as FormatMode[]).map(mode=><Button key={mode} variant={formatMode===mode?'primary':'secondary'} type="button" onClick={()=>setFormatMode(mode)}>{mode[0]!.toUpperCase()+mode.slice(1)}</Button>)}
+        </div>
       </div>
 
       <div className="probability-lab__visual">
@@ -149,12 +156,12 @@ export default function ConditionalProbabilityLab() {
                   <tbody>
                     <tr data-active={conditionOn === 'A'}>
                       <th>A</th>
-                      <td data-intersection="true">{counts.aAndB}</td>
-                      <td>{counts.aAndNotB}</td>
-                      <td>{analysis.value.countA.toString()}</td>
+                      <td data-intersection="true">{formatRegion(counts.aAndB,analysis.value.total,formatMode)}</td>
+                      <td>{formatRegion(counts.aAndNotB,analysis.value.total,formatMode)}</td>
+                      <td>{formatRegion(analysis.value.countA,analysis.value.total,formatMode)}</td>
                     </tr>
-                    <tr><th>not A</th><td>{counts.notAAndB}</td><td>{counts.notAAndNotB}</td><td>{(BigInt(counts.notAAndB)+BigInt(counts.notAAndNotB)).toString()}</td></tr>
-                    <tr><th>Total</th><td>{analysis.value.countB.toString()}</td><td>{(BigInt(counts.aAndNotB)+BigInt(counts.notAAndNotB)).toString()}</td><td>{analysis.value.total.toString()}</td></tr>
+                    <tr><th>not A</th><td>{formatRegion(counts.notAAndB,analysis.value.total,formatMode)}</td><td>{formatRegion(counts.notAAndNotB,analysis.value.total,formatMode)}</td><td>{formatRegion(BigInt(counts.notAAndB)+BigInt(counts.notAAndNotB),analysis.value.total,formatMode)}</td></tr>
+                    <tr><th>Total</th><td>{formatRegion(analysis.value.countB,analysis.value.total,formatMode)}</td><td>{formatRegion(BigInt(counts.aAndNotB)+BigInt(counts.notAAndNotB),analysis.value.total,formatMode)}</td><td>{formatMode==='counts'?analysis.value.total.toString():formatMode==='fractions'?'1':'100%'}</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -183,6 +190,13 @@ export default function ConditionalProbabilityLab() {
                 </figcaption>
               </figure>
             )}
+
+            <div className="security-grid" aria-label="Marginal and joint probabilities">
+              <div className="formula-callout"><span>P(A)</span><strong>{analysis.value.pA.toString()}</strong><small>≈ {analysis.value.pA.toDecimal(4)}</small></div>
+              <div className="formula-callout"><span>P(B)</span><strong>{analysis.value.pB.toString()}</strong><small>≈ {analysis.value.pB.toDecimal(4)}</small></div>
+              <div className="formula-callout"><span>P(A∩B)</span><strong>{analysis.value.pIntersection.toString()}</strong><small>intersection / total</small></div>
+              <div className="formula-callout"><span>P(A∪B)</span><strong>{analysis.value.pA.add(analysis.value.pB).subtract(analysis.value.pIntersection).toString()}</strong><small>inclusion–exclusion</small></div>
+            </div>
 
             <div className="formula-stack" aria-label="Conditional probability calculations">
               <div className="formula-callout" data-active={conditionOn === 'B'}>

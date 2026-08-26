@@ -1,13 +1,9 @@
 ---
-import { currentCourseProfile, linearSkills } from '@amat19/course-content';
 import { getCollection } from 'astro:content';
 import AppLayout from '../../../layouts/AppLayout.astro';
-const lessons=(await getCollection('lessons')).filter(e=>e.data.module==='linear').sort((a,b)=>a.data.order-b.data.order);
-const labs=currentCourseProfile.labs.filter(l=>l.module==='linear');
+import ModuleJourney from '../../../components/course/ModuleJourney.astro';
+const lessons=(await getCollection('lessons')).filter((entry)=>entry.data.module==='linear').sort((a,b)=>a.data.order-b.data.order);
 ---
-<AppLayout title="Linear module">
-<section class="page-width page-intro"><p class="eyebrow">Module 04 · Matrices & Systems</p><h1 class="display-title">Do the row operation, then inspect what stayed invariant.</h1><p class="lede">Use exact rational arithmetic for matrix operations, multiplication, Gauss–Jordan elimination, inverses, and solution classification.</p></section>
-<section class="page-width module-section"><div class="section-heading"><div><p class="eyebrow">Interactive tools</p><h2>Labs</h2></div></div><div class="route-grid">{labs.map(l=><a class="route-link" href={l.href}><span><strong>{l.title}</strong><small>{l.skillIds.join(' · ')}</small></span><span class="status-pill">{l.status}</span></a>)}</div></section>
-<section class="page-width module-section"><div class="section-heading"><div><p class="eyebrow">Course skills</p><h2>Skills</h2></div></div><div class="skill-grid">{linearSkills.map(s=><article class="skill-item"><span class="status-pill">{s.status}</span><h3>{s.title}</h3><p>{s.description}</p></article>)}</div></section>
-<section class="page-width module-section"><div class="section-heading"><div><p class="eyebrow">Original reference notes</p><h2>Lessons</h2></div></div><ol class="lesson-list">{lessons.map(l=><li><a href={`/lessons/${l.id}`}><span>{l.data.title}</span><span>Read →</span></a></li>)}</ol></section>
+<AppLayout title="Matrices & Systems module">
+  <ModuleJourney moduleId="linear" moduleNumber="04" eyebrow="Matrices & Systems" headline="Do the row operation, then inspect what stayed invariant." lede="Work with exact matrices, row-by-column products, Gauss–Jordan operations, inverses, and the structure of linear systems." lessons={lessons} />
 </AppLayout>

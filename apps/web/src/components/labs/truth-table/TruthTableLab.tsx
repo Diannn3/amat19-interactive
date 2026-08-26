@@ -9,6 +9,7 @@ import {
 } from '@amat19/domain-logic';
 import { useEffect, useMemo, useReducer, useState } from 'react';
 import { ArgumentMode } from './ArgumentMode';
+import { BuildModePanel } from './BuildModePanel';
 import { ClassificationPanel } from './ClassificationPanel';
 import { ExpressionInput } from './ExpressionInput';
 import { EvaluationPanel } from './EvaluationPanel';
@@ -81,9 +82,10 @@ export default function TruthTableLab() {
 
   return (
     <div className="truth-lab" data-testid="truth-table-lab">
-      <Tabs value={state.mode} onValueChange={(mode) => dispatch({ type: 'set-mode', mode: mode as 'explore' | 'practice' | 'argument' })}>
+      <Tabs value={state.mode} onValueChange={(mode) => dispatch({ type: 'set-mode', mode: mode as 'explore' | 'build' | 'practice' | 'argument' })}>
         <TabsList aria-label="Truth table mode">
           <TabsTrigger value="explore">Explore</TabsTrigger>
+          <TabsTrigger value="build">Build</TabsTrigger>
           <TabsTrigger value="practice">Practice</TabsTrigger>
           <TabsTrigger value="argument">Argument</TabsTrigger>
         </TabsList>
@@ -107,6 +109,9 @@ export default function TruthTableLab() {
                 <span>{isComputing ? 'Computing…' : state.persistenceStatus === 'saved' ? 'Draft saved locally' : state.persistenceStatus === 'unavailable' ? 'Local save unavailable' : ''}</span>
               </div>
 
+              {state.mode === 'build' ? (
+                <BuildModePanel table={visibleTable} />
+              ) : (<>
               <RowPatternExplainer symbols={visibleTable.symbols} />
               <StructureStrip ast={visibleTable.ast} selectedNodeId={state.selectedNodeId} onSelect={(nodeId) => dispatch({ type: 'select-node', nodeId })} />
 
@@ -132,6 +137,7 @@ export default function TruthTableLab() {
               </div>
 
               <ClassificationPanel table={visibleTable} />
+              </>)}
             </>
           )}
         </>

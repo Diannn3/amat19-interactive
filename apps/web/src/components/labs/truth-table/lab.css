@@ -566,3 +566,15 @@
     margin-left: 0;
   }
 }
+.truth-build { display:grid; grid-template-columns:minmax(15rem,.55fr) minmax(0,1fr); gap:1rem; margin-top:1rem; }
+.build-stage-list { display:grid; gap:.45rem; padding:0; margin:0; list-style:none; }
+.build-stage-list li { display:grid; gap:.15rem; padding:.65rem .75rem; border-left:3px solid var(--border); color:var(--foreground-muted); }
+.build-stage-list li[data-active="true"] { border-left-color:var(--primary); color:var(--foreground); background:var(--primary-soft); }
+.build-stage-list small { color:var(--foreground-soft); }
+.truth-build__work { display:grid; align-content:start; gap:1rem; }
+.truth-build__row-picker { display:flex; flex-wrap:wrap; gap:.35rem; }
+.truth-build__row-picker button { min-width:2.7rem; min-height:2.5rem; border:1px solid var(--border); border-radius:.5rem; background:var(--surface); font-weight:800; cursor:pointer; }
+.truth-build__row-picker button[data-active="true"] { outline:3px solid var(--focus); }
+.truth-build__row-picker button[data-status="correct"] { background:var(--success-soft); border-color:var(--success); }
+.truth-build__row-picker button[data-status="wrong"] { background:var(--destructive-soft); border-color:var(--destructive); }
+@media(max-width:760px){.truth-build{grid-template-columns:1fr}}
