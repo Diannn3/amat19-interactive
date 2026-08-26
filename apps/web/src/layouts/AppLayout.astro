@@ -4,27 +4,28 @@ import '@fontsource-variable/sora';
 import '../styles/global.css';
 import '../styles/pass4.css';
 import CommandPalette from '../components/navigation/CommandPalette';
+import NavGlyph from '../components/navigation/NavGlyph.astro';
 
 interface Props { title: string; description?: string; }
-type NavItem = { href: string; label: string };
+type NavItem = { href: string; label: string; mobileLabel: string; icon: string };
 
 const { title, description = 'Interactive, course-aligned AMAT 19 finite mathematics study tools.' } = Astro.props;
 const primaryNavigation: NavItem[] = [
-  { href: '/study', label: 'Study' },
-  { href: '/course', label: 'Course' },
-  { href: '/practice', label: 'Practice' },
-  { href: '/progress', label: 'Progress' },
-  { href: '/reference', label: 'Reference' },
-];
-const mobileNavigation: NavItem[] = [
-  ...primaryNavigation.slice(0, 3),
-  { href: '/exam', label: 'Mixed Check' },
-  ...primaryNavigation.slice(3),
-  { href: '/saved', label: 'Saved' },
-  { href: '/settings', label: 'Settings' },
+  { href: '/study', label: 'Study', mobileLabel: 'Study', icon: 'study' },
+  { href: '/course', label: 'Course', mobileLabel: 'Course', icon: 'course' },
+  { href: '/practice', label: 'Practice', mobileLabel: 'Practice', icon: 'practice' },
+  { href: '/progress', label: 'Progress', mobileLabel: 'Progress', icon: 'progress' },
+  { href: '/reference', label: 'Reference', mobileLabel: 'Ref', icon: 'reference' },
+  { href: '/saved', label: 'Saved', mobileLabel: 'Saved', icon: 'saved' },
+  { href: '/settings', label: 'Settings', mobileLabel: 'Settings', icon: 'settings' },
 ];
 const currentPath = Astro.url.pathname;
-const isCurrent = (href: string) => href === '/' ? currentPath === '/' : currentPath === href || currentPath.startsWith(`${href}/`);
+const isCurrent = (href: string) => {
+  if (href === '/course') return currentPath === '/course' || currentPath.startsWith('/modules/') || currentPath.startsWith('/lessons/');
+  if (href === '/practice') return currentPath === '/practice' || currentPath === '/exam';
+  if (href === '/study') return currentPath === '/study';
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+};
 ---
 <!doctype html>
 <html lang="en">
@@ -32,7 +33,7 @@ const isCurrent = (href: string) => href === '/' ? currentPath === '/' : current
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#7b1113" />
+    <meta name="theme-color" content="#2e080d" />
     <meta name="color-scheme" content="light" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
@@ -40,85 +41,146 @@ const isCurrent = (href: string) => href === '/' ? currentPath === '/' : current
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
-    <div class="site-shell">
-      <header class="site-header">
-        <div class="site-header__inner">
+    <div class="site-shell app-frame" data-shell>
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand-row">
           <a class="wordmark" href="/" aria-label="AMAT 19 Study Lab home">
-            <span class="wordmark__course">AMAT 19</span>
-            <span class="wordmark__descriptor">STUDY LAB</span>
+            <span class="brand-route" aria-hidden="true"><span></span></span>
+            <span class="brand-copy">
+              <span class="wordmark__course">AMAT<span>19</span></span>
+              <span class="wordmark__descriptor">STUDY LAB</span>
+            </span>
           </a>
-
-          <nav class="site-nav" aria-label="Primary navigation">
-            {primaryNavigation.map((item) => (
-              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
-            ))}
-            <button class="site-nav__command" type="button" data-command-button aria-haspopup="dialog" aria-label="Search AMAT 19">
-              <span aria-hidden="true">⌘K / Ctrl K</span>
-            </button>
-          </nav>
-
-          <button class="mobile-nav__trigger" type="button" data-mobile-nav-trigger aria-expanded="false" aria-controls="mobile-navigation" aria-label="Open navigation">
-            <span class="mobile-nav__icon" aria-hidden="true"><span></span><span></span><span></span></span>
+          <button class="icon-button sidebar-toggle" type="button" data-sidebar-toggle aria-controls="primary-navigation" aria-expanded="true" aria-label="Collapse navigation">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M5 5h14v14H5zM13 9l-2 3 2 3" /></svg>
           </button>
-          <dialog id="mobile-navigation" class="mobile-nav__dialog" aria-labelledby="mobile-navigation-title">
-            <div class="mobile-nav__sheet">
-              <div class="mobile-nav__head">
-                <div>
-                  <p class="eyebrow">AMAT 19 · Study Lab</p>
-                  <h2 id="mobile-navigation-title">Navigate</h2>
-                </div>
-                <button class="mobile-nav__close" type="button" data-mobile-nav-close aria-label="Close navigation">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
-                </button>
-              </div>
-              <nav class="mobile-nav__panel" aria-label="Mobile navigation">
-                {mobileNavigation.map((item) => (
-                  <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
-                ))}
-              </nav>
-              <div class="mobile-nav__footer">
-                <button class="mobile-nav__command" type="button" data-command-button aria-haspopup="dialog">
-                  <span>Search the study lab</span>
-                  <kbd>⌘K / Ctrl K</kbd>
-                </button>
-              </div>
-            </div>
-          </dialog>
         </div>
-      </header>
 
-      <div id="pwa-update" class="update-banner" hidden role="status" aria-live="polite">
-        <span><strong>Update ready.</strong> Your current page will reload only when you choose.</span>
-        <button id="pwa-update-button" type="button">Save & update</button>
-        <button id="pwa-update-dismiss" type="button">Later</button>
-      </div>
-      <div id="network-status" class="network-status" hidden role="status" aria-live="polite">Offline · using saved app resources</div>
-      <main id="main-content"><slot /></main>
-      <footer class="site-footer">
-        <div class="site-footer__inner">
-          <span>AMAT 19 Study Lab · local-first deterministic learning tools</span>
-          <span><a href="/settings">Settings</a> · <a href="/saved">Saved</a> · <a href="/progress">Local data</a></span>
+        <div class="sidebar-context" aria-label="Course context">
+          <span class="sidebar-context__mark" aria-hidden="true">19</span>
+          <span><strong>Finite Mathematics</strong><small>AY 2025–2026</small></span>
         </div>
-      </footer>
+
+        <nav class="nav-stack" id="primary-navigation" aria-label="Primary navigation">
+          {primaryNavigation.map((item) => (
+            <a class:list={['nav-link', { 'is-active': isCurrent(item.href) }]} href={item.href} title={item.label} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              <span class="nav-active-rail" aria-hidden="true"></span>
+              <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+              <span class="nav-label">{item.label}</span>
+            </a>
+          ))}
+        </nav>
+
+        <div class="sidebar-footer">
+          <a class="sidebar-profile" href="/settings" aria-label="Open local-first settings">
+            <span class="avatar" aria-hidden="true">A19</span>
+            <span class="profile-copy"><strong>Local-first workspace</strong><small>Browser data only</small></span>
+          </a>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <div class="topbar-leading">
+            <button class="mobile-nav__trigger" type="button" data-mobile-nav-trigger aria-expanded="false" aria-controls="mobile-navigation" aria-label="Open navigation">
+              <span class="mobile-nav__icon" aria-hidden="true"><span></span><span></span><span></span></span>
+            </button>
+            <div class="topbar-heading">
+              <span class="topbar-kicker">AMAT 19</span>
+              <span class="topbar-title">{title}</span>
+            </div>
+          </div>
+
+          <div class="topbar-actions">
+            <button class="topbar-search" type="button" data-command-button aria-haspopup="dialog" aria-label="Search AMAT 19">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+              <span>Search study tools</span>
+              <kbd>Ctrl K</kbd>
+            </button>
+            <span class="topbar-status"><span class="status-dot" aria-hidden="true"></span><span>Local first</span></span>
+            <a class="topbar-icon" href="/saved" aria-label="Open saved study objects" title="Saved study objects">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A2.5 2.5 0 0 1 8.5 2h7A2.5 2.5 0 0 1 18 4.5V21l-6-3-6 3V4.5Z" /></svg>
+            </a>
+            <a class="top-avatar" href="/settings" aria-label="Open settings" title="Settings">19</a>
+          </div>
+        </header>
+
+        <dialog id="mobile-navigation" class="mobile-nav__dialog" aria-labelledby="mobile-navigation-title">
+          <div class="mobile-nav__sheet">
+            <div class="mobile-nav__head">
+              <div>
+                <p class="eyebrow">AMAT 19 · Study Lab</p>
+                <h2 id="mobile-navigation-title">Navigate</h2>
+              </div>
+              <button class="mobile-nav__close" type="button" data-mobile-nav-close aria-label="Close navigation">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+              </button>
+            </div>
+            <nav class="mobile-nav__panel" aria-label="Mobile navigation menu">
+              {primaryNavigation.map((item) => (
+                <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}><span class="nav-icon"><NavGlyph name={item.icon} /></span><span>{item.label}</span></a>
+              ))}
+            </nav>
+            <div class="mobile-nav__footer">
+              <button class="mobile-nav__command" type="button" data-command-button aria-haspopup="dialog">
+                <span>Search the study lab</span>
+                <kbd>Ctrl K</kbd>
+              </button>
+            </div>
+          </div>
+        </dialog>
+
+        <div class="workspace-scroll">
+          <div id="pwa-update" class="update-banner" hidden role="status" aria-live="polite">
+            <span><strong>Update ready.</strong> Your current page will reload only when you choose.</span>
+            <button id="pwa-update-button" type="button">Save & update</button>
+            <button id="pwa-update-dismiss" type="button">Later</button>
+          </div>
+          <div id="network-status" class="network-status" hidden role="status" aria-live="polite">Offline · using saved app resources</div>
+          <main id="main-content"><slot /></main>
+          <footer class="site-footer">
+            <div class="site-footer__inner">
+              <span>AMAT 19 Study Lab · local-first deterministic learning tools</span>
+              <span><a href="/settings">Settings</a> · <a href="/saved">Saved</a> · <a href="/progress">Local data</a></span>
+            </div>
+          </footer>
+        </div>
+      </div>
+
+      <nav class="mobile-nav" aria-label="Mobile navigation">
+        {primaryNavigation.map((item) => (
+          <a class:list={['mobile-nav-link', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+            <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+            <span>{item.mobileLabel}</span>
+          </a>
+        ))}
+      </nav>
     </div>
 
     <CommandPalette client:load />
     <script is:inline>
       (() => {
+        const frame = document.querySelector('[data-shell]');
+        const sidebarToggle = document.querySelector('[data-sidebar-toggle]');
+        const sidebarStorageKey = 'amat19.sidebar.collapsed';
+        const setCollapsed = (collapsed, persist = true) => {
+          frame?.classList.toggle('nav-collapsed', collapsed);
+          sidebarToggle?.setAttribute('aria-expanded', String(!collapsed));
+          sidebarToggle?.setAttribute('aria-label', collapsed ? 'Expand navigation' : 'Collapse navigation');
+          if (persist) {
+            try { window.localStorage.setItem(sidebarStorageKey, String(collapsed)); } catch { /* storage is optional */ }
+          }
+        };
+        try { setCollapsed(window.localStorage.getItem(sidebarStorageKey) === 'true', false); } catch { /* storage is optional */ }
+        sidebarToggle?.addEventListener('click', () => setCollapsed(!frame?.classList.contains('nav-collapsed')));
+
         const mobileDialog = document.getElementById('mobile-navigation');
         const mobileTrigger = document.querySelector('[data-mobile-nav-trigger]');
         const mobileClose = document.querySelector('[data-mobile-nav-close]');
         let returnFocus = null;
-
         const focusableIn = () => [...(mobileDialog?.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])') ?? [])];
-        const restoreFocus = () => {
-          if (returnFocus instanceof HTMLElement) returnFocus.focus();
-          returnFocus = null;
-        };
-        const closeMobile = () => {
-          if (!(mobileDialog instanceof HTMLDialogElement) || !mobileDialog.open) return;
-          mobileDialog.close();
-        };
+        const restoreFocus = () => { if (returnFocus instanceof HTMLElement) returnFocus.focus(); returnFocus = null; };
+        const closeMobile = () => { if (mobileDialog instanceof HTMLDialogElement && mobileDialog.open) mobileDialog.close(); };
         const openMobile = () => {
           if (!(mobileDialog instanceof HTMLDialogElement) || mobileDialog.open) return;
           returnFocus = document.activeElement;
@@ -126,29 +188,16 @@ const isCurrent = (href: string) => href === '/' ? currentPath === '/' : current
           mobileTrigger?.setAttribute('aria-expanded', 'true');
           window.requestAnimationFrame(() => mobileClose instanceof HTMLElement && mobileClose.focus());
         };
-
         mobileTrigger?.addEventListener('click', openMobile);
         mobileClose?.addEventListener('click', closeMobile);
-        mobileDialog?.addEventListener('cancel', (event) => {
-          event.preventDefault();
-          closeMobile();
-        });
-        mobileDialog?.addEventListener('click', (event) => {
-          if (event.target === mobileDialog) closeMobile();
-        });
+        mobileDialog?.addEventListener('cancel', (event) => { event.preventDefault(); closeMobile(); });
+        mobileDialog?.addEventListener('click', (event) => { if (event.target === mobileDialog) closeMobile(); });
         mobileDialog?.addEventListener('keydown', (event) => {
           if (event.key !== 'Tab') return;
-          const items = focusableIn();
-          if (!items.length) return;
-          const first = items[0];
-          const last = items[items.length - 1];
-          if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-          } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-          }
+          const items = focusableIn(); if (!items.length) return;
+          const first = items[0]; const last = items[items.length - 1];
+          if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+          else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
         });
         mobileDialog?.addEventListener('close', () => {
           mobileTrigger?.setAttribute('aria-expanded', 'false');
@@ -156,10 +205,7 @@ const isCurrent = (href: string) => href === '/' ? currentPath === '/' : current
         });
 
         document.querySelectorAll('[data-command-button]').forEach((button) => {
-          button.addEventListener('click', () => {
-            closeMobile();
-            window.dispatchEvent(new CustomEvent('amat:command'));
-          });
+          button.addEventListener('click', () => { closeMobile(); window.dispatchEvent(new CustomEvent('amat:command')); });
         });
 
         const status = document.getElementById('network-status');
@@ -168,7 +214,10 @@ const isCurrent = (href: string) => href === '/' ? currentPath === '/' : current
         if (!('serviceWorker' in navigator)) return;
         const banner = document.getElementById('pwa-update'); const updateButton = document.getElementById('pwa-update-button'); const dismissButton = document.getElementById('pwa-update-dismiss'); let waitingWorker; let reloadForUpdate = false;
         const showUpdate = (worker) => { waitingWorker = worker; if (banner) banner.hidden = false; };
-        navigator.serviceWorker.register('/sw.js').then((registration) => { if (registration.waiting) showUpdate(registration.waiting); registration.addEventListener('updatefound', () => { const installing = registration.installing; if (!installing) return; installing.addEventListener('statechange', () => { if (installing.state === 'installed' && navigator.serviceWorker.controller) showUpdate(installing); }); }); }).catch(() => {});
+        navigator.serviceWorker.register('/sw.js').then((registration) => {
+          if (registration.waiting) showUpdate(registration.waiting);
+          registration.addEventListener('updatefound', () => { const installing = registration.installing; if (!installing) return; installing.addEventListener('statechange', () => { if (installing.state === 'installed' && navigator.serviceWorker.controller) showUpdate(installing); }); });
+        }).catch(() => {});
         updateButton?.addEventListener('click', () => { if (!waitingWorker) return; reloadForUpdate = true; window.dispatchEvent(new CustomEvent('amat:before-update')); updateButton.disabled = true; updateButton.textContent = 'Saving…'; window.setTimeout(() => waitingWorker.postMessage({ type: 'SKIP_WAITING' }), 450); });
         dismissButton?.addEventListener('click', () => { if (banner) banner.hidden = true; });
         navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloadForUpdate) window.location.reload(); });

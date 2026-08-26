@@ -48,6 +48,32 @@ test('primary navigation marks the current route and mobile navigation is a moda
   await expect(trigger).toBeFocused();
 });
 
+test('Elbi workspace shell exposes desktop navigation, collapse state, and mobile dock', async ({ page }) => {
+  await page.goto('/');
+
+  const frame = page.locator('.app-frame');
+  const sidebar = page.locator('.sidebar');
+  const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
+  const toggle = page.getByRole('button', { name: /Collapse navigation/i });
+
+  await expect(frame).toBeVisible();
+  await expect(sidebar).toBeVisible();
+  await expect(primaryNavigation.getByRole('link', { name: 'Study' })).toBeVisible();
+  await expect(page.locator('.workspace')).toBeVisible();
+  await expect(page.locator('.topbar-search')).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+  await toggle.click();
+  await expect(frame).toHaveClass(/nav-collapsed/);
+  await expect(page.getByRole('button', { name: /Expand navigation/i })).toHaveAttribute('aria-expanded', 'false');
+
+  await page.setViewportSize({ width: 375, height: 667 });
+  await expect(sidebar).toBeHidden();
+  await expect(page.locator('.mobile-nav')).toBeVisible();
+  await expect(page.locator('.mobile-nav').getByRole('link', { name: 'Study' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Open navigation/i })).toBeVisible();
+});
+
 test('shell honors media preferences and keeps mobile navigation keyboard-contained', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
