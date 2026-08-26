@@ -1,0 +1,4 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro'; import ProbabilitySimulationLab from '../../components/labs/simulation/ProbabilitySimulationLab';
+---
+<AppLayout title="Probability Simulation Lab"><section class="page-width page-intro"><p class="eyebrow">Probability · supplemental simulation</p><h1 class="display-title">Theoretical Probability vs Empirical Frequency</h1><p class="lede">Run reproducible seeded experiments in a Web Worker and see why simulation can build intuition without replacing exact probability reasoning.</p></section><section class="page-width lab-route"><ProbabilitySimulationLab client:load /></section></AppLayout>

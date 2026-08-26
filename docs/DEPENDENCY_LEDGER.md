@@ -1,21 +1,41 @@
-# Dependency ledger — Pass 1
+# Dependency Ledger — Pass 3
 
-Only dependencies with concrete Pass 1 use are included.
+## Application/runtime
 
-| Package | Role | Pass 1 decision |
-|---|---|---|
-| Astro 7.2.6 | static app shell/content | Adopt |
-| @astrojs/react 6.0.4 | one React root per lab | Adopt |
-| React / React DOM 19.2.8 | lab runtime | Adopt |
-| Tailwind CSS 4.3.3 + @tailwindcss/vite 4.3.3 | CSS-first utility/design-token pipeline | Adopt |
-| @radix-ui/react-tabs | accessible Explore/Practice/Argument mode tabs | Adopt, intentionally Radix |
-| lucide-react | one icon family | Adopt |
-| Fontsource Inter Variable + Sora Variable | self-hosted body/display typography | Adopt; OFL-1.1 font licensing |
-| Dexie | IndexedDB persistence adapter | Adopt behind port |
-| TypeScript 6.0.3 | strict TS baseline compatible with current Astro checker line | Adopt |
-| Vitest | workspace unit/property runner after install | Adopt |
-| fast-check | mathematical properties beyond examples | Adopt |
-| Playwright | E2E/multi-viewport QA | Adopt |
-| @axe-core/playwright | automated a11y checks | Adopt |
+- Astro 7.2.6 — static/content shell and routing
+- React 19.2.8 / React DOM — interactive lab roots only
+- @astrojs/react 6.0.4
+- Tailwind CSS 4.3.3 / @tailwindcss/vite 4.3.3
+- Radix Tabs 1.1.21 — owned tab primitive
+- Lucide React 1.34.0 — icons
+- Inter Variable / Sora Variable — local package fonts
+- Dexie 4.4.5 — IndexedDB adapter
 
-Deferred until a module proves need: MathLive, Fraction.js, Decimal.js, Mafs, Cytoscape.js, LP solver/WASM, Nano Stores, React Bits. This keeps Pass 1 dependency pressure aligned with actual shipped behavior rather than speculative architecture.
+## Test/dev
+
+- TypeScript 6.0.3
+- Vitest 4.1.11
+- fast-check 4.9.0
+- Playwright 1.62.1
+- @axe-core/playwright 4.13.0
+
+## Deliberately project-owned / no external solver dependency
+
+- propositional logic parser/evaluator/proof rules
+- BigInt Rational arithmetic
+- combinatorics/probability
+- finance teaching traces
+- matrix/RREF/system engine
+- 2D graphical LP engine
+- bounded educational simplex routine
+- zero-sum 2×2 game engine
+- Markov primitives
+- seeded mixed assessment generator
+
+## Deferred dependency decisions
+
+- arbitrary-precision decimal package for production Finance accuracy: required decision before public correctness release
+- general LP oracle such as HiGHS WASM: defer until arbitrary/high-dimensional LP becomes a real learner requirement
+- Mafs: no dependency added; current visualizations use accessible SVG/table mirrors
+- MathLive: no dependency added because current text/symbol inputs remain sufficient
+- Nano Stores: no cross-island real-time state requirement yet

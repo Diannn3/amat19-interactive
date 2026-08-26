@@ -1,0 +1,5 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import MarkovLab from '../../components/labs/applications/MarkovLab';
+---
+<AppLayout title="Markov Chain Lab" description="Move exact probability distributions through a two-state transition matrix and inspect k-step and stationary behavior."><article class="lab-route"><nav class="lab-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/modules/applications">Applications</a><span aria-hidden="true">/</span><span aria-current="page">Markov Chain Lab</span></nav><header class="lab-route__header"><p class="eyebrow">Supplemental · Markov chains</p><h1>Markov Chain Lab</h1><p>Move exact probability distributions through a two-state transition matrix and inspect k-step and stationary behavior.</p></header><MarkovLab client:load /></article></AppLayout>

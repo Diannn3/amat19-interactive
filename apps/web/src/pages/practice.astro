@@ -1,0 +1,14 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import MixedPracticeRunner from '../components/practice/MixedPracticeRunner';
+---
+<AppLayout title="Practice Center">
+  <section class="page-width page-intro">
+    <p class="eyebrow">Cross-domain practice · locally saved evidence</p>
+    <h1 class="display-title">Mix the skills, then repair the weak link.</h1>
+    <p class="lede">This practice center generates original AMAT-aligned items across Logic, Probability, Financial Mathematics, Matrices, and Applications. It does not reproduce instructor assessments.</p>
+  </section>
+  <section class="page-width module-section">
+    <MixedPracticeRunner client:load mode="practice" questionCount={10} />
+  </section>
+</AppLayout>

@@ -1,44 +1,46 @@
 ---
-import { logicSkills } from '@amat19/course-content';
+import { currentCourseProfile, logicSkills } from '@amat19/course-content';
 import { getCollection } from 'astro:content';
 import AppLayout from '../../../layouts/AppLayout.astro';
 
-const lessons = (await getCollection('lessons'))
-  .filter((entry) => entry.data.module === 'logic')
-  .sort((a, b) => a.data.order - b.data.order);
+const lessons = (await getCollection('lessons')).filter((entry) => entry.data.module === 'logic').sort((a, b) => a.data.order - b.data.order);
+const labs = currentCourseProfile.labs.filter((lab) => lab.module === 'logic');
 ---
 
 <AppLayout title="Logic module">
   <section class="page-width page-intro">
     <p class="eyebrow">Module 01 · Logic</p>
     <h1 class="display-title">Reason with structure.</h1>
-    <p class="lede">
-      The engine and teaching surfaces are separate on purpose: the mathematical result is deterministic, while the
-      explanation layer can show why a connective, row, or argument behaves the way it does.
-    </p>
+    <p class="lede">Move from controlled language to symbols, truth values, equivalence, argument validity, and line-by-line proof.</p>
   </section>
 
-  <section class="page-width" aria-labelledby="skills-heading">
-    <h2 id="skills-heading">Skill map</h2>
+  <section class="page-width module-section" aria-labelledby="logic-labs-heading">
+    <div class="section-heading"><div><p class="eyebrow">Interactive tools</p><h2 id="logic-labs-heading">Logic labs</h2></div></div>
     <div class="route-grid">
-      {logicSkills.map((skill) => (
-        <div class="route-link">
-          <span>
-            <strong>{skill.title}</strong>
-            <small>{skill.source}</small>
-          </span>
-          <span class="status-pill">{skill.status}</span>
-        </div>
+      {labs.map((lab) => (
+        <a class="route-link" href={lab.href}><span><strong>{lab.title}</strong><small>{lab.skillIds.join(' · ')}</small></span><span class="status-pill">{lab.status}</span></a>
       ))}
     </div>
   </section>
 
-  {lessons.length > 0 && (
-    <section class="page-width" style="padding-block: 2.5rem;">
-      <h2>Course notes in this build</h2>
-      <ul>
-        {lessons.map((lesson) => <li>{lesson.data.title} — {lesson.data.status}</li>)}
-      </ul>
-    </section>
-  )}
+  <section class="page-width module-section" aria-labelledby="skills-heading">
+    <div class="section-heading"><div><p class="eyebrow">Prerequisite map</p><h2 id="skills-heading">Skills</h2></div></div>
+    <div class="skill-grid">
+      {logicSkills.map((skill) => (
+        <article class="skill-item">
+          <span class="status-pill">{skill.status}</span>
+          <h3>{skill.title}</h3>
+          <p>{skill.description}</p>
+          {skill.prerequisiteIds.length > 0 && <small>Builds on: {skill.prerequisiteIds.join(', ')}</small>}
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="page-width module-section" aria-labelledby="logic-lessons-heading">
+    <div class="section-heading"><div><p class="eyebrow">Original reference notes</p><h2 id="logic-lessons-heading">Lessons</h2></div></div>
+    <ol class="lesson-list">
+      {lessons.map((lesson) => <li><a href={`/lessons/${lesson.id}`}><span>{lesson.data.title}</span><span>Read →</span></a></li>)}
+    </ol>
+  </section>
 </AppLayout>

@@ -1,0 +1,16 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import FormalProofLab from '../../components/labs/formal-proof/FormalProofLab';
+---
+
+<AppLayout title="Formal Proof Workspace" description="Build a direct formal proof using exact AMAT rule names, legal earlier-line citations, and deterministic step validation.">
+  <article class="lab-route">
+    <nav class="lab-breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a><span aria-hidden="true">/</span>
+      <a href="/modules/logic">Logic</a><span aria-hidden="true">/</span>
+      <span aria-current="page">Formal Proof Workspace</span>
+    </nav>
+    <header class="lab-route__header"><p class="eyebrow">Logic · Rules of equivalence and inference</p><h1>Formal Proof Workspace</h1><p>Build a direct formal proof using exact AMAT rule names, legal earlier-line citations, and deterministic step validation.</p></header>
+    <FormalProofLab client:load />
+  </article>
+</AppLayout>

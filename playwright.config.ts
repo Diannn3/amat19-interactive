@@ -1,11 +1,15 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
+  forbidOnly: Boolean(process.env.CI),
+  retries: process.env.CI ? 1 : 0,
+  reporter: process.env.CI ? [['html', { open: 'never' }], ['list']] : 'list',
   use: {
     baseURL: 'http://127.0.0.1:4321',
-    trace: 'retain-on-failure'
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure'
   },
   webServer: {
     command: 'pnpm --filter @amat19/web dev --host 127.0.0.1',
@@ -13,10 +17,12 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI
   },
   projects: [
-    { name: 'mobile-375', use: { viewport: { width: 375, height: 667 } } },
-    { name: 'small-640', use: { viewport: { width: 640, height: 480 } } },
-    { name: 'tablet-768', use: { viewport: { width: 768, height: 1024 } } },
-    { name: 'desktop-1280', use: { viewport: { width: 1280, height: 720 } } },
-    { name: 'desktop-1920', use: { viewport: { width: 1920, height: 1080 } } }
+    { name: 'mobile-375', use: { browserName: 'chromium', viewport: { width: 375, height: 667 } } },
+    { name: 'small-640', use: { browserName: 'chromium', viewport: { width: 640, height: 480 } } },
+    { name: 'tablet-768', use: { browserName: 'chromium', viewport: { width: 768, height: 1024 } } },
+    { name: 'desktop-1280', use: { browserName: 'chromium', viewport: { width: 1280, height: 720 } } },
+    { name: 'desktop-1920', use: { browserName: 'chromium', viewport: { width: 1920, height: 1080 } } },
+    { name: 'firefox-desktop', use: { browserName: 'firefox', viewport: { width: 1280, height: 720 } } },
+    { name: 'webkit-mobile', use: { ...devices['iPhone 13'], browserName: 'webkit' } }
   ]
 });

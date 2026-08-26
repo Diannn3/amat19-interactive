@@ -1,90 +1,103 @@
-# AMAT 19 architecture — implemented Pass 1
+# AMAT 19 Architecture — Pass 3
 
-## Runtime boundary
-
-```text
-Astro route (static HTML)
-├─ course/module context
-├─ no-JS connective reference
-└─ TruthTableLab client:load  ← exactly one React root
-   ├─ lab reducer: interaction state only
-   ├─ @amat19/domain-logic    ← mathematical authority
-   ├─ @amat19/learning-engine ← checking/feedback/attempt semantics
-   ├─ Worker adapter          ← larger truth tables
-   └─ @amat19/persistence     ← IndexedDB/Dexie port
-```
-
-The React tree may render or explain mathematical state, but it does not define truth semantics. `domain-logic` has no DOM, Astro, React, IndexedDB, or renderer imports and is guarded by `scripts/audit-architecture.mjs`.
-
-## Domain data flow
+## Product boundary
 
 ```text
-raw expression
-   │
-   ▼
-tokenize → recursive-descent parse → Proposition AST
-                                      │
-                      ┌───────────────┼────────────────┐
-                      ▼               ▼                ▼
-                 evaluator       symbol set      display nodes
-                      │               │                │
-                      └───────┬───────┘                │
-                              ▼                        │
-                       assignment rows                 │
-                              │                        │
-                              ▼                        │
-                         truth table ◄─────────────────┘
-                              │
-                ┌─────────────┼──────────────┐
-                ▼             ▼              ▼
-          classification  explanation   learner checker
+Astro shell / content routes
+│
+├─ course map + lessons + reference
+├─ practice / mixed-check / progress surfaces
+└─ one React application root per complex lab
+      │
+      ├─ interaction reducer/local UI state
+      ├─ deterministic domain package
+      ├─ teaching / attempt layer
+      ├─ persistence adapter
+      └─ Worker adapter when computation is meaningfully heavy
 ```
 
-## Canonical logic state
+React is not the mathematical source of truth. Domain packages remain importable/testable without a browser.
 
-The AST is the source of truth. Display strings are generated from it; table columns are derived from AST traversal; evaluation reads the AST directly. The app never reparses a rendered column label to determine its value.
-
-Every node carries:
-
-- a stable id derived from kind/source span,
-- source start/end offsets,
-- its operator/identifier type,
-- child relationships.
-
-This supports later source highlighting and proof/trace UI without rewriting the evaluator.
-
-## State ownership
-
-| State | Owner | Persistence |
-|---|---|---|
-| input selection/cell selection | React lab reducer | no |
-| current proposition | React lab reducer + AST derived state | draft autosave |
-| mathematical truth table | domain engine | recomputed deterministically |
-| practice guesses/feedback | learning UI/reducer | attempt schema is ready; UI write-through is next |
-| lab drafts | persistence port | IndexedDB/Dexie |
-| attempt/mastery/settings/content metadata | persistence port | schema implemented |
-| course copy/status | Astro content + course-content package | build artifact |
-| cross-island global state | none yet | Nano Stores intentionally deferred |
-
-## Worker policy
-
-The truth-table engine caps the current learner-facing lab at eight unique symbols. Expressions with five or more symbols are sent through `truth-table.worker.ts`; failure/timeouts fall back to the pure synchronous engine. The Worker wrapper contains no mathematical rules.
-
-The same seam is reserved for:
-
-- large Monte Carlo simulations,
-- optimization solvers,
-- other bounded computation that would otherwise block input/rendering.
-
-## Future domain package pattern
-
-Do **not** add empty packages early. When reuse pressure exists, future modules should mirror the boundary rather than copy the UI:
+## Pure package graph
 
 ```text
-packages/
-├─ domain-probability/
-├─ domain-finance/
-└─ domain-linear/
+@amat19/math-core
+  ├─ seeded RNG
+  └─ exact Rational
+
+@amat19/domain-logic
+@amat19/domain-probability ──> math-core
+@amat19/domain-finance
+@amat19/domain-linear ───────> math-core
+@amat19/domain-games ────────> math-core
+
+@amat19/learning-engine
+@amat19/course-content
+
+browser edge only:
+@amat19/persistence ── Dexie / IndexedDB
+apps/web ───────────── Astro + React + UI + Workers
 ```
 
-Probability can then adopt `BigInt`/exact rational adapters; finance can adopt arbitrary-precision decimal arithmetic; optimization can add a Web Worker + HiGHS WASM oracle while retaining a custom pedagogical trace.
+## Domain responsibilities
+
+### Logic
+AST is canonical. Rendered text is never reparsed to decide truth. Proof validation checks the selected AMAT rule and cited lines, not merely semantic equivalence of the final expressions.
+
+### Probability
+Combinatorics use BigInt. Rational probabilities, conditionals and distribution moments remain exact. Seeded simulation is an explicitly empirical layer and runs in a Worker.
+
+### Finance
+Cash flows are represented by timestamps/model parameters and every teaching trace resolves a focal-date transformation. Current numeric exponentiation uses JavaScript `number`; see the precision decision below.
+
+### Linear algebra
+Matrix elements use exact Rational values. RREF generates an immutable chronological row-operation trace. System classification derives from exact RREF structure.
+
+### LP
+The graphical engine owns the current learner-facing P0 result for two variables. The simplex engine is an educational exact-tableau implementation for a deliberately bounded standard maximization subset. It is not presented as a universal arbitrary LP solver.
+
+### Games
+The current foundation is two-player zero-sum matrix games: security levels, pure saddle points, dominance, and exact supported 2×2 mixtures.
+
+### Markov
+Supplemental transition analysis is matrix-based and exact where rational inputs are used.
+
+## Cross-domain practice architecture
+
+`apps/web/src/lib/mixed-assessment.ts` generates original deterministic questions from the same domain engines used by the labs. The mixed runner has two UX modes:
+
+- practice: per-item deterministic feedback immediately
+- mixed course check: explanations remain hidden until submission
+
+Both write ordinary local attempts/mastery evidence; neither is described as an official course assessment.
+
+## Persistence
+
+Persistence is a port, not a domain dependency. IndexedDB stores:
+- lab drafts
+- attempts
+- mastery evidence
+- settings
+- content/schema metadata
+
+Snapshot export/import is validated and local-only. Cloud sync remains absent.
+
+## PWA/update policy
+
+The custom service worker uses:
+- network-first navigations with an offline page fallback
+- cache-first same-origin static assets
+- explicit versioned caches
+- waiting-worker activation
+
+An installed update never calls `skipWaiting()` automatically during an active study session. The page prompts the learner, dispatches `amat:before-update`, then activates the waiting worker only after the learner chooses.
+
+## Current/supplemental curriculum boundary
+
+AY 2025–2026 current guide = primary current-scope authority.
+
+Older handouts may add depth, but the course-content package marks that depth `supplemental`. Formal proof depth, distributions/simulation, bonds, simplex and Markov can therefore exist without falsely claiming that every current section requires them.
+
+## Finance precision decision
+
+Pass 3 deliberately records a remaining architectural debt: Finance currently uses JavaScript numeric exponentiation. Course-style rounding occurs only at display/final-answer boundaries, but a public correctness release should adopt or independently verify an arbitrary-precision decimal implementation for rates/money. Exact Rational is retained for domains where exact rational arithmetic naturally models the course objects.

@@ -48,8 +48,8 @@ test('evaluation emits a trace for every AST node', () => {
   assert.match(result.byNodeId[ast.id]?.explanation ?? '', /antecedent is true/i);
 });
 
-test('sample AMAT Exam 1 argument is valid under the handout truth-table semantics', () => {
-  const result = checkArgumentValidity(['~P | (Q -> R)', '~R'], '~(P & Q)');
+test('multi-premise valid argument has no counterexample', () => {
+  const result = checkArgumentValidity(['A -> B', 'A | C'], 'B | C');
   assert.equal(result.valid, true);
   assert.deepEqual(result.counterexamples, []);
 });
