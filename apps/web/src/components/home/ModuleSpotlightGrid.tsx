@@ -16,7 +16,7 @@ export default function ModuleSpotlightGrid() {
     const Icon = icons[module.id];
     const labCount = currentCourseProfile.labs.filter((lab) => lab.module === module.id).length;
 
-    return <SpotlightCard key={module.id}><a className="module-spotlight-link" href={module.href}>
+    return <SpotlightCard key={module.id} className={`module-tile module-tile--${module.id}`}><a className="module-spotlight-link" href={module.href}>
       <div>
         <div className="module-spotlight-link__top"><span className="module-index">0{index + 1}</span><Icon size={21} aria-hidden="true" /></div>
         <h3>{module.title}</h3>

@@ -74,6 +74,19 @@ test('Elbi workspace shell exposes desktop navigation, collapse state, and mobil
   await expect(page.getByRole('button', { name: /Open navigation/i })).toBeVisible();
 });
 
+test('home presents an Elbi-style bento briefing around real AMAT course objects', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('.home-hero')).toBeVisible();
+  await expect(page.locator('.home-bento')).toBeVisible();
+  await expect(page.locator('.home-bento .bento-briefing')).toBeVisible();
+  await expect(page.locator('.home-bento .bento-attention')).toBeVisible();
+  await expect(page.locator('.home-bento .metric-card')).toHaveCount(3);
+  await expect(page.getByTestId('home-study-snapshot')).toBeVisible();
+  await expect(page.locator('.module-spotlight-grid')).toBeVisible();
+  await expect(page.locator('.home-bento a[href="/study"]')).toBeVisible();
+});
+
 test('shell honors media preferences and keeps mobile navigation keyboard-contained', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
