@@ -21,7 +21,6 @@ import { computeTruthTable } from './truth-table-compute';
 import { TruthTableView } from './TruthTableView';
 import { useDraftPersistence } from './useDraftPersistence';
 import { useTruthPracticePersistence } from './useTruthPracticePersistence';
-import { Tabs, TabsList, TabsTrigger } from '../../ui/Tabs';
 import './lab.css';
 
 function parseErrorDetails(error: unknown): { message: string; span?: { start: number; end: number } } {
@@ -82,14 +81,20 @@ export default function TruthTableLab() {
 
   return (
     <div className="truth-lab" data-testid="truth-table-lab">
-      <Tabs value={state.mode} onValueChange={(mode) => dispatch({ type: 'set-mode', mode: mode as 'explore' | 'build' | 'practice' | 'argument' })}>
-        <TabsList aria-label="Truth table mode">
-          <TabsTrigger value="explore">Explore</TabsTrigger>
-          <TabsTrigger value="build">Build</TabsTrigger>
-          <TabsTrigger value="practice">Practice</TabsTrigger>
-          <TabsTrigger value="argument">Argument</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className="amat-tabs" role="group" aria-label="Truth table mode">
+        {(['explore', 'build', 'practice', 'argument'] as const).map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            className="amat-tabs__trigger"
+            data-state={state.mode === mode ? 'active' : 'inactive'}
+            aria-pressed={state.mode === mode}
+            onClick={() => dispatch({ type: 'set-mode', mode })}
+          >
+            {mode[0].toUpperCase() + mode.slice(1)}
+          </button>
+        ))}
+      </div>
 
       {state.mode === 'argument' ? <ArgumentMode /> : (
         <>
