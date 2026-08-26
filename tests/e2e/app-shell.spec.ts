@@ -11,6 +11,25 @@ test('@core course shell exposes Logic, Probability, and local progress routes',
   await expect(page.getByTestId('data-manager')).toBeVisible();
 });
 
+test('primary navigation marks the current route and mobile navigation is a modal sheet', async ({ page }) => {
+  await page.goto('/progress');
+  await expect(page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
+
+  await page.setViewportSize({ width: 375, height: 667 });
+  const trigger = page.getByRole('button', { name: /Open navigation/i });
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+
+  const sheet = page.getByRole('dialog', { name: /Navigate/i });
+  await expect(sheet).toBeVisible();
+  await expect(sheet.getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
+  await expect(sheet.getByRole('button', { name: /Close navigation/i })).toBeFocused();
+
+  await page.keyboard.press('Escape');
+  await expect(sheet).toBeHidden();
+  await expect(trigger).toBeFocused();
+});
+
 test('lesson routes render original content collection entries', async ({ page }) => {
   await page.goto('/lessons/logic/truth-tables');
   await expect(page.getByRole('heading', { name: 'Truth Values and Truth Tables' })).toBeVisible();
