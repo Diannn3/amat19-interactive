@@ -375,7 +375,7 @@
 }
 
 .amat-tabs {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .truth-table__practice-cell[aria-pressed="true"] {

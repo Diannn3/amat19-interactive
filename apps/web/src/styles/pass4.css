@@ -432,6 +432,11 @@ body {
 }
 
 @media (forced-colors: active) {
+  .mobile-nav__icon span {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
   .site-nav a[aria-current="page"],
   .mobile-nav__panel a[aria-current="page"] {
     border-color: Highlight;
