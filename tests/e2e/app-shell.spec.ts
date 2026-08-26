@@ -102,7 +102,8 @@ test('progress leads with needs attention and can reveal full core evidence', as
 });
 
 test('mobile routes do not create page-level horizontal overflow', async ({ page }) => {
-  for (const route of ['/', '/modules/logic', '/labs/truth-table', '/labs/formal-proof', '/labs/counting', '/labs/conditional-probability', '/practice', '/exam', '/reference', '/progress']) {
+  await page.setViewportSize({ width: 375, height: 812 });
+  for (const route of ['/', '/modules/logic', '/labs/annuity', '/labs/bayes', '/labs/bonds', '/labs/cashflow-timeline', '/labs/conditional-probability', '/labs/counting', '/labs/distribution', '/labs/equivalence', '/labs/formal-proof', '/labs/game-theory', '/labs/interest', '/labs/linear-programming', '/labs/logic-basics', '/labs/markov', '/labs/matrix-operations', '/labs/probability-simulation', '/labs/row-reduction', '/labs/truth-table', '/practice', '/exam', '/reference', '/progress']) {
     await page.goto(route);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow, route).toBe(false);

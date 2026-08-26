@@ -1201,6 +1201,8 @@ body {
 .progress-focus > .study-panel__body > .amat-button,
 .progress-focus .study-panel__body > .amat-button { margin-top: 1rem; }
 
+.matrix-lab > * { min-width: 0; }
+
 @media (max-width: 760px) {
   .progress-focus__header { grid-template-columns: 1fr; }
   .progress-focus__stats { min-width: 0; width: 100%; }
