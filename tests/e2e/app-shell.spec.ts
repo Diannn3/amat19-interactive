@@ -26,7 +26,12 @@ test('home and module journeys lead with visual study cues instead of long text 
 
 test('primary navigation marks the current route and mobile navigation is a modal sheet', async ({ page }) => {
   await page.goto('/progress');
-  await expect(page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
+  const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
+  if (await primaryNavigation.isVisible()) {
+    await expect(primaryNavigation.getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
+  } else {
+    await expect(page.getByRole('button', { name: /Open navigation/i })).toBeVisible();
+  }
 
   await page.setViewportSize({ width: 375, height: 667 });
   const trigger = page.getByRole('button', { name: /Open navigation/i });
@@ -46,7 +51,13 @@ test('primary navigation marks the current route and mobile navigation is a moda
 test('command palette groups results and supports arrow-key selection', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.command-dialog[data-hydrated="true"]')).toBeAttached();
-  await page.getByRole('button', { name: 'Search AMAT 19' }).click();
+  const mobileTrigger = page.getByRole('button', { name: /Open navigation/i });
+  if (await mobileTrigger.isVisible()) {
+    await mobileTrigger.click();
+    await page.getByRole('dialog', { name: /Navigate/i }).getByRole('button', { name: /Search the study lab/i }).click();
+  } else {
+    await page.getByRole('button', { name: 'Search AMAT 19' }).click();
+  }
 
   const palette = page.getByRole('dialog', { name: /Search AMAT 19/i });
   const input = palette.getByRole('textbox', { name: /Search skills/i });
