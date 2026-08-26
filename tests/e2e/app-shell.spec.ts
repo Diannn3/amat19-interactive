@@ -130,6 +130,15 @@ test('@core practice, mixed check, and reference surfaces render', async ({ page
   await expect(page.getByRole('heading', { name: /map of the symbols/i })).toBeVisible();
 });
 
+test('@core truth table mode switch is keyboard-accessible', async ({ page }) => {
+  await page.goto('/labs/truth-table');
+  const modes = page.getByRole('group', { name: 'Truth table mode' });
+  await expect(modes.getByRole('button', { name: 'Explore' })).toHaveAttribute('aria-pressed', 'true');
+  await modes.getByRole('button', { name: 'Build' }).click();
+  await expect(modes.getByRole('button', { name: 'Build' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('region', { name: 'Guided truth table builder' })).toBeVisible();
+});
+
 test('reference browser searches, filters by module, and expands assumptions', async ({ page }) => {
   await page.goto('/reference');
   const reference = page.getByTestId('reference-browser');
