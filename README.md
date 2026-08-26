@@ -40,6 +40,16 @@ The product is intentionally **not** a dashboard of black-box calculators. Every
 - `/progress` transparent local mastery evidence plus export/import/clear controls
 - PWA/offline shell and user-controlled update activation
 
+## Pass 5 UI/UX consolidation
+
+- responsive, accessible AppLayout navigation with a mobile dialog sheet
+- grouped keyboard command palette for course, lab, lesson, reference, and action destinations
+- one shared context shell across all 18 lab routes, with current/supplemental scope made explicit
+- visual course/module journeys that foreground the study loop instead of long text blocks
+- one-question practice and exam stages with preserved progress, feedback, and repair links
+- searchable reference browser and progress-first repair queue
+- mobile overflow containment, reduced-motion/forced-colors handling, hydration guards, and lab control accessibility fixes
+
 ## Architecture
 
 ```text
@@ -92,9 +102,20 @@ pnpm test:e2e:core
 
 ## Verification state of this snapshot
 
-The dependency-free semantic suite currently passes **74/74 tests**, the architecture audit passes across **8 framework-independent packages** and **16 lab routes**, the learner-facing content audit passes, and the local app TypeScript integration check passes using temporary external-library stubs.
+Pass 5 was implemented on branch `pass5/uiux-consolidation` and is locally verified with the installed dependency tree:
 
-A real frozen-lockfile dependency install, Astro build/check, Vitest/fast-check through the installed dependency graph, Playwright browser runs, axe, offline/PWA validation, and visual QA still need to run in a networked environment before this snapshot should be called a release candidate. See `VERIFICATION.md`.
+- direct Node semantic suite: **75/75 passed**
+- direct Vitest/fast-check property suite: **5/5 passed**
+- architecture audit: **8 framework-independent packages**, **18 lab routes**, one `client:load` root per lab
+- content audit: **PASS**
+- `astro check`: **0 errors, 0 warnings, 7 non-blocking hints**
+- `astro build`: **57 static pages built**
+- Playwright app-shell suite: **64/64 passed** across 375, 640, 768, and 1920px projects
+- full-course browser suite: **19/19 passed** at 1280px
+- all-lab mobile overflow and critical/serious axe audit: **36/36 passed** at 375 and 1280px
+- visual review completed for the primary mobile, tablet, desktop, forced-colors, reduced-motion, truth-table, linear-programming, and progress surfaces
+
+The local `pnpm` wrapper did not produce output in this host, so the final semantic, Vitest, Astro, and Playwright checks were invoked directly through the installed Node CLIs. Firefox/WebKit projects, a fresh frozen-lockfile install, Lighthouse, and real service-worker install/update/offline certification remain outside this local evidence. This branch has not been deployed or pushed. See `VERIFICATION.md` and `IMPLEMENTATION_REPORT.md`.
 
 ## Important numerical note
 
