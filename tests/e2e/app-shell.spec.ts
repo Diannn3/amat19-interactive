@@ -7,7 +7,7 @@ test('@core course shell exposes Logic, Probability, and local progress routes',
   await expect(page.getByRole('link', { name: /Logic/ }).first()).toBeVisible();
   await expect(page.getByRole('link', { name: /Probability/ }).first()).toBeVisible();
   await page.goto('/progress');
-  await expect(page.getByTestId('progress-summary')).toBeVisible();
+  await expect(page.getByTestId('progress-dashboard')).toBeVisible();
   await expect(page.getByTestId('data-manager')).toBeVisible();
 });
 
@@ -84,7 +84,7 @@ test('home and progress have no serious automated accessibility violations', asy
 });
 
 test('mobile routes do not create page-level horizontal overflow', async ({ page }) => {
-  for (const route of ['/', '/modules/logic', '/labs/truth-table', '/labs/formal-proof', '/labs/counting', '/labs/conditional-probability', '/progress']) {
+  for (const route of ['/', '/modules/logic', '/labs/truth-table', '/labs/formal-proof', '/labs/counting', '/labs/conditional-probability', '/practice', '/exam', '/progress']) {
     await page.goto(route);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow, route).toBe(false);
@@ -108,4 +108,40 @@ test('@core mixed course check withholds explanations until submission', async (
   await exam.getByRole('button', { name: /Submit all answers/i }).click();
   await expect(exam.locator('.mixed-practice__score')).toBeVisible();
   await expect(exam.locator('.mixed-question__result').first()).toBeVisible();
+});
+
+test('practice focuses one question and advances after checking', async ({ page }) => {
+  await page.goto('/practice');
+  const practice = page.getByTestId('mixed-practice');
+  const stage = practice.locator('.mixed-question-stage');
+
+  await expect(stage).toBeVisible();
+  await expect(stage.locator('.mixed-question')).toHaveCount(1);
+  await expect(practice.getByText(/^Question 1 of \d+$/, { exact: true })).toBeVisible();
+  await expect(practice.getByRole('button', { name: 'Check item' })).toBeDisabled();
+
+  await stage.getByRole('radio').first().check();
+  await practice.getByRole('button', { name: 'Check item' }).click();
+  await expect(stage.locator('.mixed-question__result')).toBeVisible();
+  await expect(practice.getByRole('button', { name: /Next question/i })).toBeVisible();
+
+  await practice.getByRole('button', { name: /Next question/i }).click();
+  await expect(practice.getByText(/^Question 2 of \d+$/, { exact: true })).toBeVisible();
+  await expect(stage.locator('.mixed-question')).toHaveCount(1);
+});
+
+test('exam keeps one question in view and exposes a jump navigator', async ({ page }) => {
+  await page.goto('/exam');
+  const exam = page.getByTestId('mixed-exam');
+  const stage = exam.locator('.mixed-question-stage');
+
+  await expect(stage.locator('.mixed-question')).toHaveCount(1);
+  await expect(exam.locator('.exam-question-nav')).toBeVisible();
+  await expect(exam.locator('.exam-question-nav button')).toHaveCount(12);
+  await expect(exam.locator('.exam-question-nav button').first()).toHaveAttribute('aria-current', 'step');
+
+  await exam.locator('.exam-question-nav button').nth(1).click();
+  await expect(exam.getByText('Question 2 of 12', { exact: true })).toBeVisible();
+  await expect(stage.locator('.mixed-question')).toHaveCount(1);
+  await expect(exam.locator('.mixed-question__result')).toHaveCount(0);
 });
