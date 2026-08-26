@@ -35,6 +35,9 @@ export default function TruthTableLab() {
   const [table, setTable] = useState<TruthTable>(() => buildTruthTable(initialTruthLabState.expression));
   const [computeError, setComputeError] = useState<{ message: string; span?: { start: number; end: number } }>();
   const [isComputing, setIsComputing] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => { setHydrated(true); }, []);
 
   useDraftPersistence(state.expression, dispatch);
 
@@ -80,7 +83,7 @@ export default function TruthTableLab() {
   useTruthPracticePersistence(state, visibleTable, selectedPracticeColumn?.id);
 
   return (
-    <div className="truth-lab" data-testid="truth-table-lab">
+    <div className="truth-lab" data-testid="truth-table-lab" data-hydrated={hydrated ? 'true' : undefined}>
       <div className="amat-tabs" role="group" aria-label="Truth table mode">
         {(['explore', 'build', 'practice', 'argument'] as const).map((mode) => (
           <button
