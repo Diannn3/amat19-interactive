@@ -154,6 +154,8 @@ test('@core practice, mixed check, and reference surfaces render', async ({ page
 
 test('@core truth table mode switch is keyboard-accessible', async ({ page }) => {
   await page.goto('/labs/truth-table');
+  const lab = page.getByTestId('truth-table-lab');
+  await expect(lab).toHaveAttribute('data-hydrated', 'true');
   const modes = page.getByRole('group', { name: 'Truth table mode' });
   await expect(modes.getByRole('button', { name: 'Explore' })).toHaveAttribute('aria-pressed', 'true');
   await modes.getByRole('button', { name: 'Build' }).click();
