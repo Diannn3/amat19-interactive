@@ -1,5 +1,10 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
+import LabShell from '../../components/course/LabShell.astro';
 import AnnuityLab from '../../components/labs/finance/AnnuityLab';
 ---
-<AppLayout title="Annuity Timeline Lab" description="Place level payments on a timeline, distinguish immediate from due timing, and solve present value, future value, or payment."><article class="lab-route"><nav class="lab-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/modules/finance">Financial Mathematics</a><span aria-hidden="true">/</span><span aria-current="page">Annuity Timeline Lab</span></nav><header class="lab-route__header"><p class="eyebrow">Finance · Annuities</p><h1>Annuity Timeline Lab</h1><p>Place level payments on a timeline, distinguish immediate from due timing, and solve present value, future value, or payment.</p></header><AnnuityLab client:load /></article></AppLayout>
+<AppLayout title="Annuity Timeline Lab" description="Place level payments on a timeline, distinguish immediate from due timing, and solve present value, future value, or payment.">
+  <LabShell moduleId="finance" moduleLabel="Financial Mathematics" scope="current" eyebrow="Finance · Annuities" title="Annuity Timeline Lab" description="Place level payments on a timeline, distinguish immediate from due timing, and solve present value, future value, or payment." lessonHref="/lessons/finance/annuities">
+    <AnnuityLab client:load />
+  </LabShell>
+</AppLayout>

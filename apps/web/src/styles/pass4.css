@@ -413,8 +413,8 @@ body {
 
 @media (max-width: 900px) {
   .site-nav { display: none; }
-  .mobile-nav__trigger { display: grid; }
-  .site-header__inner { min-height: 4.5rem; }
+  .mobile-nav__trigger { display: grid; flex: 0 0 auto; align-self: center; }
+  .site-header__inner { min-height: 4.5rem; flex-direction: row; align-items: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -504,5 +504,145 @@ body {
     outline-color: Highlight;
     background: Canvas;
     forced-color-adjust: none;
+  }
+}
+
+/* Pass 5 lab frame: keep context compact so the mathematical workspace leads. */
+.lab-route {
+  width: min(calc(100% - 2rem), var(--content-max));
+  padding-block: .75rem 4rem;
+}
+
+.lab-breadcrumbs {
+  min-height: 2.5rem;
+  gap: .55rem;
+  font-size: .78rem;
+}
+
+.lab-breadcrumbs a {
+  color: var(--foreground-muted);
+  text-decoration: none;
+}
+
+.lab-breadcrumbs a:hover,
+.lab-breadcrumbs a:focus-visible {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.lab-route__header {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1.25rem 2rem;
+  padding-block: 1rem 1.25rem;
+}
+
+.lab-route__heading {
+  min-width: 0;
+}
+
+.lab-route__eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem;
+}
+
+.lab-route__eyebrow .eyebrow {
+  margin: 0;
+}
+
+.lab-route__scope {
+  display: inline-flex;
+  min-height: 1.7rem;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .2rem .55rem;
+  color: var(--foreground-muted);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.lab-route__header h1 {
+  max-width: 24ch;
+  margin-top: .55rem;
+  font-size: clamp(2rem, 5vw, 4.4rem);
+  text-wrap: balance;
+}
+
+.lab-route__header p {
+  max-width: 66ch;
+  margin-top: .7rem;
+  line-height: 1.55;
+}
+
+.lab-route__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: .35rem;
+  max-width: 24rem;
+}
+
+.lab-route__links a {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .45rem .75rem;
+  background: var(--surface);
+  color: var(--primary);
+  font-size: .78rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.lab-route__links a:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
+}
+
+.lab-route__workspace {
+  min-width: 0;
+  padding-top: 1rem;
+}
+
+.lab-route__workspace > :first-child {
+  margin-top: 0;
+}
+
+[data-lab-scope="supplemental"] .lab-route__scope {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+@media (max-width: 760px) {
+  .lab-route {
+    width: min(calc(100% - 1.25rem), var(--content-max));
+  }
+
+  .lab-route__header {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .lab-route__links {
+    justify-content: flex-start;
+    max-width: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .lab-route__scope,
+  .lab-route__links a {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+    color: CanvasText;
+    background: Canvas;
   }
 }

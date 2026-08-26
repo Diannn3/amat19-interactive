@@ -1,4 +1,10 @@
 ---
-import AppLayout from '../../layouts/AppLayout.astro'; import ProbabilitySimulationLab from '../../components/labs/simulation/ProbabilitySimulationLab';
+import AppLayout from '../../layouts/AppLayout.astro';
+import LabShell from '../../components/course/LabShell.astro';
+import ProbabilitySimulationLab from '../../components/labs/simulation/ProbabilitySimulationLab';
 ---
-<AppLayout title="Probability Simulation Lab"><section class="page-width page-intro"><p class="eyebrow">Probability · supplemental simulation</p><h1 class="display-title">Theoretical Probability vs Empirical Frequency</h1><p class="lede">Run reproducible seeded experiments in a Web Worker and see why simulation can build intuition without replacing exact probability reasoning.</p></section><section class="page-width lab-route"><ProbabilitySimulationLab client:load /></section></AppLayout>
+<AppLayout title="Probability Simulation Lab" description="Run reproducible seeded experiments and compare empirical frequency with exact theoretical probability.">
+  <LabShell moduleId="probability" moduleLabel="Probability" scope="supplemental" eyebrow="Probability · supplemental simulation" title="Probability Simulation Lab" description="Run reproducible seeded experiments in a Web Worker and see why simulation can build intuition without replacing exact probability reasoning." lessonHref="/lessons/probability/simulation">
+    <ProbabilitySimulationLab client:load />
+  </LabShell>
+</AppLayout>
