@@ -1,68 +1,59 @@
-# Verification Snapshot — Pass 3 Full Course Foundation
+# Verification Snapshot — Pass 5 UI/UX Consolidation
 
-Date: 26 Aug 2026
+Date: 27 Aug 2026
+Branch: `pass5/uiux-consolidation`
 
-## Passed locally after the latest implementation edits
+## Local semantic and static gates
 
-### Mathematical / learning / persistence semantics
+### Deterministic Node suite
 
-Dependency-free Node suite:
+- **75 tests passed**
+- **0 failed, 0 cancelled, 0 skipped**
 
-- **74 tests**
-- **74 passed**
-- **0 failed**
+The suite covers exact Rational arithmetic and seeded RNG, AMAT Logic semantics/parser/truth tables/proofs, exact probability and Finance models, matrix/RREF/inverse/systems, graphical LP and supported simplex, zero-sum games, Markov analysis, learning attempts/hints/mastery, and persistence snapshot validation.
 
-Coverage includes:
-- exact Rational arithmetic and seeded RNG
-- AMAT Logic course semantics, parser precedence, truth-table row ordering, proof rules and invariants
-- BigInt counting, exact conditional probability/independence, exact distribution moments, seeded simulation reproducibility
-- simple/compound/nominal Finance, TVM, annuities, bond decomposition/classification
-- matrix multiplication/determinant/RREF/inverse/systems
-- graphical LP bounded/infeasible/unbounded cases and supported simplex optimum
-- zero-sum game saddle/dominance/mixed strategy
-- Markov exact k-step/stationary behavior
-- learning attempts/hints/mastery
-- local snapshot validation/roundtrip
+### Property tests
 
-### Architecture audit
+The installed Vitest/fast-check suite was run directly with a single fork worker:
 
-`node scripts/audit-architecture.mjs` → PASS
+`node node_modules/vitest/vitest.mjs run --reporter=verbose --pool=forks --maxWorkers=1`
 
-- 8 domain/content packages remain React/Astro/DOM independent
-- 16 `/labs/*` routes each hydrate exactly one `client:load` React root
-- no `eval`, `new Function`, unsafe raw HTML assignment, or overlapping monolithic UI suite detected
+- **2 files passed**
+- **5 tests passed**
 
-### Public-content audit
+### Architecture and content
 
-`node scripts/audit-content.mjs` → PASS
+- `node scripts/audit-architecture.mjs` → **PASS**
+  - 8 framework-independent packages remain free of React/Astro/DOM imports
+  - all 18 `/labs/*` routes hydrate exactly one `client:load` React root
+  - no unsafe eval, raw HTML assignment, or overlapping monolithic UI suite detected
+- `node scripts/audit-content.mjs` → **PASS**
+  - learner-facing examples remain original or synthesized rather than historical assessment text
 
-- learner-facing source uses original/synthesized examples rather than historical assessment text
+### Astro application
 
-### Type/syntax checks
+- direct `astro check` → **0 errors, 0 warnings, 7 non-blocking hints**
+- direct `astro build` → **57 static pages built**
 
-- framework-independent packages were typechecked successfully with the available TypeScript compiler
-- application TS/TSX integration check passed using local workspace source mappings plus temporary stubs for unavailable external React/Astro/Dexie modules
-- Astro page tag-balance sanity check passed for generated page structure
+## Browser and accessibility gates
 
-## Gates that are still pending
+The locally managed Astro server was exercised with the installed Playwright/Axe tooling:
 
-The execution environment cannot resolve `registry.npmjs.org`; Corepack fails while fetching pnpm 11.23.0. Therefore this report **does not claim**:
+- app-shell suite: **64/64 passed** across 375, 640, 768, and 1920px projects
+- full-course suite: **19/19 passed** at 1280px
+- all-lab audit: **36/36 passed** across 18 labs at 375 and 1280px, checking page overflow and critical/serious axe findings
+- responsive mobile navigation, command palette, practice/exam/reference/progress, media preferences, and truth-table mode behavior are covered by the focused suites
+- visual review covered home at 375/640/768/1280/1920, truth table at 375, linear programming at 1280, progress at 375, forced-colors, and reduced-motion probes
 
-- Pass 3 `pnpm-lock.yaml` regeneration/review
-- `pnpm install --frozen-lockfile`
-- real `astro check`
-- real production `astro build`
-- Vitest/fast-check through installed dependencies
-- Playwright execution
-- Chromium/Firefox/WebKit browser validation
-- axe execution in a real browser
-- keyboard-only manual completion
-- required multi-viewport screenshot review
-- forced-colors / reduced-motion manual review
-- service-worker install/update/offline browser validation
-- Lighthouse baseline
-- dependency advisory resolution from a fresh install
+## Not certified by this snapshot
 
-## Release interpretation
+- the local `pnpm` wrapper did not produce output in this host; direct installed Node CLIs were used for the final checks
+- Firefox and WebKit Playwright projects were not run in this pass
+- no fresh frozen-lockfile install or dependency advisory review was performed
+- no Lighthouse baseline was produced
+- real service-worker install/update/offline behavior was not certified beyond the tested application routes and existing PWA wiring
+- manual keyboard-only task completion was not claimed beyond automated focus/interaction coverage
+- Finance precision remains a recorded release concern because its engine uses JavaScript numeric exponentiation
+- no deployment, push, publication, merge, or production release certification was performed
 
-This snapshot is a **large implemented and semantically tested development checkpoint**, not yet a deployment-certified release. A networked verification/fix pass is the next mandatory gate before public deployment.
+This is a locally verified implementation handoff, not a deployment-certified release.

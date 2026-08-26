@@ -1,4 +1,6 @@
-# AMAT 19 Architecture — Pass 3
+# AMAT 19 Architecture — Pass 5
+
+Date: 27 Aug 2026
 
 ## Product boundary
 
@@ -7,6 +9,7 @@ Astro shell / content routes
 │
 ├─ course map + lessons + reference
 ├─ practice / mixed-check / progress surfaces
+├─ responsive AppLayout + command palette
 └─ one React application root per complex lab
       │
       ├─ interaction reducer/local UI state
@@ -16,7 +19,15 @@ Astro shell / content routes
       └─ Worker adapter when computation is meaningfully heavy
 ```
 
-React is not the mathematical source of truth. Domain packages remain importable/testable without a browser.
+React is not the mathematical source of truth. Domain packages remain importable/testable without a browser. All 18 lab pages have one intentional interactive root; shared framing lives in Astro so the UI contract is consistent without creating a monolithic React suite.
+
+## Shared UI system
+
+`AppLayout.astro` owns route-aware navigation, desktop command access, responsive mobile navigation, focus containment, Escape/backdrop dismissal, and update affordances. `CommandPalette.tsx` searches real destinations grouped by learner intent. `LabShell.astro` provides the common breadcrumb, scope, context, and workspace frame for every lab.
+
+Whole-course surfaces use a deliberately compact visual hierarchy: the home page exposes a study snapshot and three-step study loop; module pages expose metrics and journey actions; practice/exam use a one-question stage; reference is searchable; progress starts with a bounded repair queue. These are presentation changes only: domain calculations, persistence semantics, deterministic generation, and current/supplemental content boundaries remain authoritative.
+
+Interactive roots that restore local state asynchronously expose `data-hydrated` before tests or dependent actions proceed. This is used where early interaction could otherwise race draft restoration or client-only mode state.
 
 ## Pure package graph
 
@@ -29,7 +40,7 @@ React is not the mathematical source of truth. Domain packages remain importable
 @amat19/domain-probability ──> math-core
 @amat19/domain-finance
 @amat19/domain-linear ───────> math-core
-@amat19/domain-games ────────> math-core
+@amat19/domain-games ───────> math-core
 
 @amat19/learning-engine
 @amat19/course-content
@@ -98,6 +109,10 @@ AY 2025–2026 current guide = primary current-scope authority.
 
 Older handouts may add depth, but the course-content package marks that depth `supplemental`. Formal proof depth, distributions/simulation, bonds, simplex and Markov can therefore exist without falsely claiming that every current section requires them.
 
+## Pass 5 verification boundary
+
+Local evidence includes 75 deterministic tests, 5 property tests, architecture/content audits, a clean Astro check/build, 64 responsive app-shell checks, 19 full-course checks, and 36 all-lab mobile/axe checks. Firefox/WebKit, fresh-install dependency review, Lighthouse, real PWA lifecycle certification, and deployment remain unverified.
+
 ## Finance precision decision
 
-Pass 3 deliberately records a remaining architectural debt: Finance currently uses JavaScript numeric exponentiation. Course-style rounding occurs only at display/final-answer boundaries, but a public correctness release should adopt or independently verify an arbitrary-precision decimal implementation for rates/money. Exact Rational is retained for domains where exact rational arithmetic naturally models the course objects.
+Pass 5 retains the documented architectural debt: Finance currently uses JavaScript numeric exponentiation. Course-style rounding occurs only at display/final-answer boundaries, but a public correctness release should adopt or independently verify an arbitrary-precision decimal implementation for rates/money. Exact Rational is retained for domains where exact rational arithmetic naturally models the course objects.
