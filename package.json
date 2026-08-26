@@ -1,6 +1,6 @@
 {
   "name": "amat19-interactive",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.23.0",
@@ -15,12 +15,19 @@
     "dev": "pnpm --filter @amat19/web dev",
     "build": "pnpm -r build",
     "check": "pnpm -r check",
-    "test": "pnpm run test:node && pnpm run test:vitest",
-    "test:node": "node --experimental-strip-types --test packages/math-core/test/*.test.ts packages/domain-logic/test/*.test.ts packages/learning-engine/test/*.test.ts packages/persistence/test/*.test.ts",
+    "test": "pnpm run verify:unit",
+    "test:node": "node --experimental-strip-types --test packages/math-core/test/*.test.ts packages/domain-logic/test/*.test.ts packages/learning-engine/test/*.test.ts packages/persistence/test/*.test.ts packages/domain-probability/test/*.test.ts packages/domain-finance/test/*.test.ts packages/domain-linear/test/*.test.ts packages/domain-games/test/*.test.ts",
     "test:vitest": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:core": "playwright test --grep @core",
     "audit:architecture": "node scripts/audit-architecture.mjs",
-    "verify": "pnpm run test:node && pnpm run audit:architecture && pnpm run check && pnpm run build"
+    "verify:static": "pnpm run audit:architecture && pnpm run audit:content && pnpm run check",
+    "verify:unit": "pnpm run test:node && pnpm run test:vitest",
+    "verify:build": "pnpm run build",
+    "verify": "pnpm run verify:static && pnpm run verify:unit && pnpm run verify:build",
+    "verify:browser": "pnpm run test:e2e",
+    "verify:full": "pnpm run verify && pnpm run verify:browser",
+    "audit:content": "node scripts/audit-content.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",

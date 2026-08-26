@@ -1,0 +1,16 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import ConditionalProbabilityLab from '../../components/labs/conditional-probability/ConditionalProbabilityLab';
+---
+
+<AppLayout title="Conditional Probability Lab" description="See the active sample space change when conditioning, compare P(A|B) with P(B|A), and test independence exactly.">
+  <article class="lab-route">
+    <nav class="lab-breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a><span aria-hidden="true">/</span>
+      <a href="/modules/probability">Probability</a><span aria-hidden="true">/</span>
+      <span aria-current="page">Conditional Probability Lab</span>
+    </nav>
+    <header class="lab-route__header"><p class="eyebrow">Probability · Conditioning and independence</p><h1>Conditional Probability Lab</h1><p>See the active sample space change when conditioning, compare P(A|B) with P(B|A), and test independence exactly.</p></header>
+    <ConditionalProbabilityLab client:load />
+  </article>
+</AppLayout>

@@ -6,13 +6,18 @@ import {
   type Assignment,
   type LogicNode
 } from '@amat19/domain-logic';
-import { AlertTriangle, CheckCircle2, Plus, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { AlertTriangle, CheckCircle2, Plus, RotateCcw, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useReducer } from 'react';
 import { Button } from '../../ui/Button';
+import { Feedback } from '../../ui/Feedback';
+import { loadDraft, saveDraft } from '../../../lib/draft';
+import { recordSkillEvidence } from '../../../lib/local-progress';
+import { argumentReducer, initialArgumentState, type ArgumentState } from './argument-state';
 
-function tf(value: boolean): 'T' | 'F' {
-  return value ? 'T' : 'F';
-}
+const LAB_ID = 'logic.argument-validity';
+const CONTENT_VERSION = '2';
+
+function tf(value: boolean): 'T' | 'F' { return value ? 'T' : 'F'; }
 
 type ParsedArgument = {
   premises: LogicNode[];
@@ -23,106 +28,128 @@ type ParsedArgument = {
 };
 
 export function ArgumentMode() {
-  const [premises, setPremises] = useState(['~P | (Q -> R)', '~R']);
-  const [conclusion, setConclusion] = useState('~(P & Q)');
+  const [state, dispatch] = useReducer(argumentReducer, initialArgumentState);
 
-  const parsed = useMemo<{ value?: ParsedArgument; error?: string }>(() => {
+  useEffect(() => {
+    loadDraft<ArgumentState>(LAB_ID, CONTENT_VERSION).then((draft) => {
+      if (draft?.premises?.length && typeof draft.conclusion === 'string') dispatch({ type: 'restore', state: draft });
+    });
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => void saveDraft(LAB_ID, CONTENT_VERSION, state), 300);
+    return () => window.clearTimeout(timer);
+  }, [state]);
+
+  const parsed = useMemo<{ value?: ParsedArgument; error?: string; premiseErrors: Record<number, string>; conclusionError?: string }>(() => {
+    const premiseErrors: Record<number, string> = {};
+    const premiseNodes: LogicNode[] = [];
+    state.premises.forEach((premise, index) => {
+      if (!premise.trim()) { premiseErrors[index] = 'Enter a premise or remove this row.'; return; }
+      try { premiseNodes.push(parseLogic(premise)); }
+      catch (error) { premiseErrors[index] = error instanceof Error ? error.message : 'Invalid premise.'; }
+    });
+    let conclusionNode: LogicNode | undefined;
+    let conclusionError: string | undefined;
+    try { conclusionNode = parseLogic(state.conclusion); }
+    catch (error) { conclusionError = error instanceof Error ? error.message : 'Invalid conclusion.'; }
+
+    if (Object.keys(premiseErrors).length || !conclusionNode) {
+      return { error: 'Fix the marked expression before checking validity.', premiseErrors, conclusionError };
+    }
+
     try {
-      const result = checkArgumentValidity(premises.filter(Boolean), conclusion);
+      const result = checkArgumentValidity(state.premises, state.conclusion);
       return {
-        value: {
-          premises: premises.filter(Boolean).map(parseLogic),
-          conclusion: parseLogic(conclusion),
-          symbols: result.symbols,
-          counterexamples: result.counterexamples,
-          valid: result.valid
-        }
+        value: { premises: premiseNodes, conclusion: conclusionNode, symbols: result.symbols, counterexamples: result.counterexamples, valid: result.valid },
+        premiseErrors,
+        conclusionError
       };
     } catch (error) {
-      return { error: error instanceof Error ? error.message : 'The argument could not be parsed.' };
+      return { error: error instanceof Error ? error.message : 'The argument could not be parsed.', premiseErrors, conclusionError };
     }
-  }, [premises, conclusion]);
+  }, [state.premises, state.conclusion]);
 
   const rows = parsed.value ? generateAssignments(parsed.value.symbols) : [];
-  const counterexampleKeys = new Set(
-    parsed.value?.counterexamples.map((assignment) => JSON.stringify(assignment)) ?? []
-  );
+  const counterexampleKeys = new Set(parsed.value?.counterexamples.map((assignment) => JSON.stringify(assignment)) ?? []);
+  const predictionCorrect = parsed.value && state.prediction ? (state.prediction === 'valid') === parsed.value.valid : false;
 
-  function updatePremise(index: number, value: string): void {
-    setPremises((current) => current.map((premise, premiseIndex) => premiseIndex === index ? value : premise));
+  async function reveal() {
+    if (!parsed.value || !state.prediction) return;
+    dispatch({ type: 'reveal' });
+    if (predictionCorrect) await recordSkillEvidence('logic.argument-validity', 1).catch(() => undefined);
   }
 
   return (
-    <section className="truth-lab__argument" aria-labelledby="argument-heading">
+    <section className="truth-lab__argument" aria-labelledby="argument-heading" data-testid="argument-validity">
       <div className="truth-lab__argument-builder">
         <p className="truth-lab__section-label">Argument mode</p>
-        <h2 id="argument-heading">Test validity by counterexample</h2>
+        <h2 id="argument-heading">Look for one counterexample.</h2>
         <p>
           An argument is invalid exactly when at least one row makes <strong>every premise true</strong> and the
-          <strong> conclusion false</strong>. Those rows stay highlighted below.
+          <strong> conclusion false</strong>. The default example is original to this app.
         </p>
 
         <div className="truth-lab__argument-inputs">
-          {premises.map((premise, index) => (
-            <label key={index}>
-              <span>Premise {index + 1}</span>
+          {state.premises.map((premise, index) => (
+            <label key={index} className="form-field">
+              <span className="form-field__label">Premise {index + 1}</span>
               <span className="truth-lab__argument-input-row">
-                <input
-                  className="truth-lab__input"
-                  value={premise}
-                  onChange={(event) => updatePremise(index, event.target.value)}
-                  aria-label={`Premise ${index + 1}`}
-                />
-                {premises.length > 1 && (
-                  <Button
-                    variant="ghost"
-                    type="button"
-                    aria-label={`Remove premise ${index + 1}`}
-                    onClick={() => setPremises((current) => current.filter((_, itemIndex) => itemIndex !== index))}
-                  >
+                <input className="truth-lab__input" value={premise} onChange={(event) => dispatch({ type: 'set-premise', index, value: event.target.value })} aria-label={`Premise ${index + 1}`} aria-invalid={Boolean(parsed.premiseErrors[index])} />
+                {state.premises.length > 1 && (
+                  <Button variant="ghost" type="button" aria-label={`Remove premise ${index + 1}`} onClick={() => dispatch({ type: 'remove-premise', index })}>
                     <Trash2 size={17} aria-hidden="true" />
                   </Button>
                 )}
               </span>
+              {parsed.premiseErrors[index] && <span className="form-field__error" role="alert">{parsed.premiseErrors[index]}</span>}
             </label>
           ))}
-          <Button variant="ghost" type="button" onClick={() => setPremises((current) => [...current, ''])}>
-            <Plus size={16} aria-hidden="true" /> Add premise
-          </Button>
-          <label>
-            <span>Conclusion</span>
-            <input
-              className="truth-lab__input"
-              value={conclusion}
-              onChange={(event) => setConclusion(event.target.value)}
-              aria-label="Conclusion"
-            />
+          <Button variant="ghost" type="button" onClick={() => dispatch({ type: 'add-premise' })}><Plus size={16} aria-hidden="true" /> Add premise</Button>
+          <label className="form-field">
+            <span className="form-field__label">Conclusion</span>
+            <input className="truth-lab__input" value={state.conclusion} onChange={(event) => dispatch({ type: 'set-conclusion', value: event.target.value })} aria-label="Conclusion" aria-invalid={Boolean(parsed.conclusionError)} />
+            {parsed.conclusionError && <span className="form-field__error" role="alert">{parsed.conclusionError}</span>}
           </label>
         </div>
 
-        {parsed.error && <p className="truth-lab__error" role="alert">{parsed.error}</p>}
+        {parsed.error && <Feedback tone="error" role="alert">{parsed.error}</Feedback>}
+
         {parsed.value && (
+          <>
+            <fieldset className="prediction-fieldset">
+              <legend>Predict the argument</legend>
+              <label><input type="radio" name="argument-prediction" checked={state.prediction === 'valid'} onChange={() => dispatch({ type: 'predict', value: 'valid' })} /> Valid</label>
+              <label><input type="radio" name="argument-prediction" checked={state.prediction === 'invalid'} onChange={() => dispatch({ type: 'predict', value: 'invalid' })} /> Invalid</label>
+            </fieldset>
+            <div className="action-row">
+              <Button variant="primary" type="button" disabled={!state.prediction} onClick={reveal}>Check prediction</Button>
+              <Button variant="ghost" type="button" onClick={() => dispatch({ type: 'reset' })}><RotateCcw size={16} aria-hidden="true" /> Reset original example</Button>
+            </div>
+          </>
+        )}
+
+        {state.revealed && parsed.value && (
           <div className="truth-lab__argument-verdict" data-valid={parsed.value.valid} role="status">
             {parsed.value.valid ? <CheckCircle2 aria-hidden="true" /> : <AlertTriangle aria-hidden="true" />}
             <span>
               <strong>{parsed.value.valid ? 'Valid argument' : 'Invalid argument'}</strong>
-              {parsed.value.valid
-                ? ' — there is no row with all premises true and the conclusion false.'
-                : ` — ${parsed.value.counterexamples.length} counterexample row${parsed.value.counterexamples.length === 1 ? '' : 's'} found.`}
+              {parsed.value.valid ? ' — no row has all premises true and the conclusion false.' : ` — ${parsed.value.counterexamples.length} counterexample row${parsed.value.counterexamples.length === 1 ? '' : 's'} found.`}
+              {!predictionCorrect && ' Your prediction did not match the counterexample test.'}
             </span>
           </div>
         )}
       </div>
 
-      {parsed.value && (
+      {state.revealed && parsed.value && (
         <div className="truth-table-scroll" tabIndex={0} aria-label="Argument validity truth table">
           <table className="truth-table truth-table--argument">
             <caption className="sr-only">Truth table for the current argument. Counterexample rows are marked.</caption>
             <thead>
               <tr>
                 {parsed.value.symbols.map((symbol) => <th scope="col" key={symbol}>{symbol}</th>)}
-                {premises.filter(Boolean).map((premise, index) => <th scope="col" key={`p-${index}`}>Premise {index + 1}<br /><small>{premise}</small></th>)}
-                <th scope="col">Conclusion<br /><small>{conclusion}</small></th>
+                {state.premises.map((premise, index) => <th scope="col" key={`p-${index}`}>Premise {index + 1}<br /><small>{premise}</small></th>)}
+                <th scope="col">Conclusion<br /><small>{state.conclusion}</small></th>
                 <th scope="col">Validity test</th>
               </tr>
             </thead>

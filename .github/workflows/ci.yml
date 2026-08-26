@@ -2,26 +2,75 @@ name: AMAT 19 CI
 
 on:
   push:
-    branches: [main]
   pull_request:
 
+concurrency:
+  group: amat19-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  verify:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
       - uses: pnpm/action-setup@v4
         with:
           version: 11.23.0
           run_install: false
-      - run: pnpm install --no-frozen-lockfile # switch to --frozen-lockfile after the first reviewed lockfile is committed
-      - run: pnpm test:node
-      - run: pnpm audit:architecture
-      - run: pnpm test:vitest
-      - run: pnpm check
-      - run: pnpm build
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm verify
+      - name: Dependency audit
+        run: pnpm audit --audit-level high
+        continue-on-error: true
+
+  browser-chromium:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.23.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e --project=mobile-375 --project=desktop-1280
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-chromium-artifacts
+          path: |
+            playwright-report/
+            test-results/
+
+  browser-compat:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.23.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps firefox webkit
+      - run: pnpm test:e2e:core --project=firefox-desktop --project=webkit-mobile
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-compat-artifacts
+          path: |
+            playwright-report/
+            test-results/

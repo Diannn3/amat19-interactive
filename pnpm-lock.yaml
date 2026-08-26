@@ -32,12 +32,27 @@ importers:
       '@amat19/course-content':
         specifier: workspace:*
         version: link:../../packages/course-content
+      '@amat19/domain-finance':
+        specifier: workspace:*
+        version: link:../../packages/domain-finance
+      '@amat19/domain-games':
+        specifier: workspace:*
+        version: link:../../packages/domain-games
+      '@amat19/domain-linear':
+        specifier: workspace:*
+        version: link:../../packages/domain-linear
       '@amat19/domain-logic':
         specifier: workspace:*
         version: link:../../packages/domain-logic
+      '@amat19/domain-probability':
+        specifier: workspace:*
+        version: link:../../packages/domain-probability
       '@amat19/learning-engine':
         specifier: workspace:*
         version: link:../../packages/learning-engine
+      '@amat19/math-core':
+        specifier: workspace:*
+        version: link:../../packages/math-core
       '@amat19/persistence':
         specifier: workspace:*
         version: link:../../packages/persistence
@@ -87,7 +102,27 @@ importers:
 
   packages/course-content: {}
 
+  packages/domain-finance: {}
+
+  packages/domain-games:
+    dependencies:
+      '@amat19/math-core':
+        specifier: workspace:*
+        version: link:../math-core
+
+  packages/domain-linear:
+    dependencies:
+      '@amat19/math-core':
+        specifier: workspace:*
+        version: link:../math-core
+
   packages/domain-logic: {}
+
+  packages/domain-probability:
+    dependencies:
+      '@amat19/math-core':
+        specifier: workspace:*
+        version: link:../math-core
 
   packages/learning-engine: {}
 

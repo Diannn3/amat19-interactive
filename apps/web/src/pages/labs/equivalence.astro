@@ -1,0 +1,16 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import EquivalenceLab from '../../components/labs/equivalence/EquivalenceLab';
+---
+
+<AppLayout title="Equivalence Lab" description="Compare two propositions across every valuation and surface the first concrete counterexample when they differ.">
+  <article class="lab-route">
+    <nav class="lab-breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a><span aria-hidden="true">/</span>
+      <a href="/modules/logic">Logic</a><span aria-hidden="true">/</span>
+      <span aria-current="page">Equivalence Lab</span>
+    </nav>
+    <header class="lab-route__header"><p class="eyebrow">Logic · Equivalence</p><h1>Equivalence Lab</h1><p>Compare two propositions across every valuation and surface the first concrete counterexample when they differ.</p></header>
+    <EquivalenceLab client:load />
+  </article>
+</AppLayout>

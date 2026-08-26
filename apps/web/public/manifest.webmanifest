@@ -1,17 +1,15 @@
 {
   "name": "AMAT 19 Study Lab",
   "short_name": "AMAT 19",
-  "description": "Local-first interactive finite mathematics study tools.",
+  "description": "Interactive, deterministic finite-mathematics study tools aligned to the current AMAT 19 course scope.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#fff9f1",
   "theme_color": "#7b1113",
   "icons": [
-    {
-      "src": "/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

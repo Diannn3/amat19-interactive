@@ -1,17 +1,8 @@
 import type { CheckResult } from '@amat19/learning-engine';
 
 export type LabMode = 'explore' | 'practice' | 'argument';
-
-export type SelectedCell = {
-  rowIndex: number;
-  columnId: string;
-  nodeId?: string;
-};
-
-export type PracticeGuess = {
-  value: boolean;
-  status: 'correct' | 'wrong';
-};
+export type SelectedCell = { rowIndex: number; columnId: string; nodeId?: string; };
+export type PracticeGuess = { value: boolean; status: 'correct' | 'wrong'; };
 
 export type TruthLabState = {
   mode: LabMode;
@@ -22,6 +13,7 @@ export type TruthLabState = {
   practiceGuesses: Record<number, PracticeGuess>;
   feedback?: CheckResult;
   hintVisible: boolean;
+  revealedPractice: boolean;
   persistenceStatus: 'idle' | 'loading' | 'saved' | 'unavailable';
 };
 
@@ -35,6 +27,7 @@ export type TruthLabAction =
   | { type: 'restore-expression'; expression: string }
   | { type: 'set-persistence-status'; status: TruthLabState['persistenceStatus'] }
   | { type: 'reveal-hint' }
+  | { type: 'reveal-practice'; guesses: Record<number, PracticeGuess> }
   | { type: 'reset-practice' };
 
 export const initialTruthLabState: TruthLabState = {
@@ -43,6 +36,7 @@ export const initialTruthLabState: TruthLabState = {
   selectedPracticeRow: 0,
   practiceGuesses: {},
   hintVisible: false,
+  revealedPractice: false,
   persistenceStatus: 'loading'
 };
 
@@ -51,51 +45,24 @@ export function truthLabReducer(state: TruthLabState, action: TruthLabAction): T
     case 'set-mode':
       return { ...state, mode: action.mode, feedback: undefined, hintVisible: false };
     case 'set-expression':
-      return {
-        ...state,
-        expression: action.expression,
-        selectedNodeId: undefined,
-        selectedCell: undefined,
-        practiceGuesses: {},
-        selectedPracticeRow: 0,
-        feedback: undefined,
-        hintVisible: false
-      };
+      return { ...state, expression: action.expression, selectedNodeId: undefined, selectedCell: undefined, practiceGuesses: {}, selectedPracticeRow: 0, feedback: undefined, hintVisible: false, revealedPractice: false };
     case 'select-node':
-      return {
-        ...state,
-        selectedNodeId: action.nodeId,
-        practiceGuesses: state.mode === 'practice' ? {} : state.practiceGuesses,
-        feedback: state.mode === 'practice' ? undefined : state.feedback,
-        hintVisible: false
-      };
+      return { ...state, selectedNodeId: action.nodeId, practiceGuesses: state.mode === 'practice' ? {} : state.practiceGuesses, feedback: state.mode === 'practice' ? undefined : state.feedback, hintVisible: false, revealedPractice: false };
     case 'select-cell':
-      return {
-        ...state,
-        selectedCell: action.cell,
-        selectedNodeId: action.cell.nodeId ?? state.selectedNodeId,
-        hintVisible: false
-      };
+      return { ...state, selectedCell: action.cell, selectedNodeId: action.cell.nodeId ?? state.selectedNodeId, hintVisible: false };
     case 'select-practice-row':
       return { ...state, selectedPracticeRow: action.rowIndex, feedback: undefined, hintVisible: false };
     case 'record-practice-guess':
-      return {
-        ...state,
-        practiceGuesses: {
-          ...state.practiceGuesses,
-          [action.rowIndex]: { value: action.value, status: action.status }
-        },
-        feedback: action.feedback,
-        selectedPracticeRow: action.rowIndex,
-        hintVisible: false
-      };
+      return { ...state, practiceGuesses: { ...state.practiceGuesses, [action.rowIndex]: { value: action.value, status: action.status } }, feedback: action.feedback, selectedPracticeRow: action.rowIndex, hintVisible: false };
     case 'restore-expression':
       return { ...state, expression: action.expression, persistenceStatus: 'saved' };
     case 'set-persistence-status':
       return { ...state, persistenceStatus: action.status };
     case 'reveal-hint':
       return { ...state, hintVisible: true };
+    case 'reveal-practice':
+      return { ...state, practiceGuesses: action.guesses, revealedPractice: true, feedback: { ok: false, scope: {}, kind: 'strategy', message: 'The column was revealed. Try another expression to build independent evidence.' } };
     case 'reset-practice':
-      return { ...state, practiceGuesses: {}, selectedPracticeRow: 0, feedback: undefined, hintVisible: false };
+      return { ...state, practiceGuesses: {}, selectedPracticeRow: 0, feedback: undefined, hintVisible: false, revealedPractice: false };
   }
 }

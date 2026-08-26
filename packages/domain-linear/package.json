@@ -1,0 +1,5 @@
+{
+  "name":"@amat19/domain-linear","version":"0.1.0","private":true,"type":"module","exports":{".":"./src/index.ts"},
+  "dependencies":{"@amat19/math-core":"workspace:*"},
+  "scripts":{"build":"tsc -p tsconfig.json","check":"tsc -p tsconfig.json --noEmit","test":"node --experimental-strip-types --test test/*.test.ts"}
+}

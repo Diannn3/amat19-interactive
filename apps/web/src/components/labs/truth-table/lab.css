@@ -471,3 +471,98 @@
   color: var(--foreground-muted);
   font-weight: 700;
 }
+
+/* Pass 2 truth-table learning additions */
+.parse-error-preview {
+  margin-top: 0.55rem;
+  border-left: 3px solid var(--destructive);
+  background: var(--destructive-soft);
+  padding: 0.55rem 0.7rem;
+  color: var(--foreground);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.parse-error-preview mark {
+  background: transparent;
+  color: var(--destructive);
+  text-decoration: underline 3px var(--destructive);
+  text-underline-offset: 0.2em;
+}
+
+.row-pattern {
+  border-block: 1px solid var(--border);
+  padding-block: 0.8rem;
+}
+
+.row-pattern__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+}
+
+.row-pattern__column {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 0.55rem;
+}
+
+.row-pattern__column strong,
+.row-pattern__column small {
+  display: block;
+}
+
+.row-pattern__column small {
+  margin-top: 0.25rem;
+  color: var(--foreground-muted);
+}
+
+.truth-lab__classification,
+.classification-practice {
+  border-top: 1px solid var(--border);
+  padding-top: 0.85rem;
+}
+
+.classification-practice {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.truth-lab__classification p,
+.classification-practice p {
+  margin: 0;
+  color: var(--foreground-muted);
+  line-height: 1.55;
+}
+
+.truth-lab__classification strong {
+  color: var(--foreground);
+}
+
+.truth-lab__argument .prediction-fieldset {
+  max-width: 34rem;
+}
+
+.truth-lab__error {
+  margin-top: 0.5rem;
+  color: var(--destructive);
+  font-weight: 700;
+}
+
+.truth-lab__structure-button[data-depth="1"] { margin-left: 0.4rem; }
+.truth-lab__structure-button[data-depth="2"] { margin-left: 0.8rem; }
+.truth-lab__structure-button[data-depth="3"] { margin-left: 1.2rem; }
+.truth-lab__structure-button[data-depth="4"] { margin-left: 1.6rem; }
+
+@media (max-width: 540px) {
+  .row-pattern__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .truth-lab__structure-button[data-depth] {
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,4 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro'; import BondLab from '../../components/labs/finance/BondLab';
+---
+<AppLayout title="Bond Pricing Lab"><section class="page-width page-intro"><p class="eyebrow">Financial Mathematics · supplemental</p><h1 class="display-title">Bond Pricing & Premium/Discount</h1><p class="lede">Treat the coupons as an annuity and redemption as one maturity cash flow. This older-handout topic is supplemental unless the current semester explicitly enables it.</p></section><section class="page-width lab-route"><BondLab client:load /></section></AppLayout>

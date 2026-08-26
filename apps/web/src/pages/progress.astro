@@ -1,0 +1,21 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import ProgressSummary from '../components/progress/ProgressSummary';
+import DataManager from '../components/DataManager';
+---
+
+<AppLayout title="Progress & local data">
+  <section class="page-width page-intro">
+    <p class="eyebrow">Local only · no account required</p>
+    <h1 class="display-title">Your study evidence stays with you.</h1>
+    <p class="lede">Progress is deliberately descriptive rather than a fake grade. “Secure” needs repeated correct evidence; revealing a worked answer does not count the same as independent completion.</p>
+  </section>
+  <section class="page-width module-section" aria-labelledby="progress-heading">
+    <div class="section-heading"><div><p class="eyebrow">Skill evidence</p><h2 id="progress-heading">Local progress</h2></div></div>
+    <ProgressSummary client:load />
+  </section>
+  <section class="page-width module-section" aria-labelledby="data-heading">
+    <div class="section-heading"><div><p class="eyebrow">Portability & privacy</p><h2 id="data-heading">Local data controls</h2></div></div>
+    <DataManager client:load />
+  </section>
+</AppLayout>

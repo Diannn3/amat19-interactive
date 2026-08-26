@@ -1,27 +1,36 @@
-# Security and correctness guardrails
+# Security & Correctness Guardrails — Pass 3
 
 ## Mathematical execution
+- no `eval`, `new Function`, or unrestricted expression evaluator
+- Logic parses only the AMAT propositional grammar
+- unsupported Logic tokens fail with source position
+- truth-table enumeration capped to bound `2^n` growth
+- heavy truth tables and probability simulations have Worker seams
+- probability/matrix/game rational computations are exact
+- RREF and proof lines preserve deterministic operation histories
+- graphical LP and simplex expose their supported problem boundaries instead of pretending universal solver coverage
 
-- No `eval`, `Function`, dynamic JavaScript compilation, or `mathjs` universal evaluator.
-- Only the AMAT propositional grammar is tokenized and parsed.
-- Unsupported characters fail with source positions.
-- Truth-table symbols are capped at eight in the learner-facing Pass 1 to bound `2^n` growth.
-- Larger supported tables use a Worker seam with timeout/fallback.
-- Assignment order and solution traces are deterministic.
+## Learning correctness
+- deterministic engines decide correctness; no LLM grades mathematical work
+- mixed practice answers are generated from the same canonical engines used by labs
+- exam-like surface is explicitly a study diagnostic, not an official assessment
+- current vs supplemental curriculum status is visible in the course-content profile
 
-## Dependency boundaries
+## Browser/data
+- no auth, remote analytics or cloud backend
+- drafts/attempts/mastery remain browser-local
+- import snapshots are schema-validated
+- service-worker update activation is learner controlled
+- fonts/runtime math do not require third-party CDNs
 
-- Domain code imports no React/Astro/DOM/persistence APIs.
-- Third-party UI/runtime packages live in the web/persistence edges.
-- Future visualization/solver dependencies must sit behind adapters rather than leak across domain modules.
-- No remote CDN is required for fonts, runtime JS, or mathematical functionality.
+## Content/IP
+- learner-facing examples are original/generated
+- historical handouts/exams are not published as a public archive/question bank
+- content audit checks obvious assessment leakage; human review remains required
 
-## Data/privacy
-
-- No account, analytics beacon, or backend exists in Pass 1.
-- Browser data is local-first and schema-versioned.
-- The persistence port makes later explicit export/sync possible without changing solver semantics.
-
-## Remaining browser gates
-
-A Content Security Policy, production asset headers, full offline precache validation, and dependency advisory audit belong to the first networked build/deployment pass. They are not falsely marked complete in this snapshot.
+## Remaining release checks
+- fresh dependency advisory audit
+- real CSP/security headers at deployment
+- real browser install/update/offline testing
+- arbitrary-precision or independent Finance numeric verification
+- browser-level accessibility and keyboard review

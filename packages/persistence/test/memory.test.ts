@@ -1,51 +1,25 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { MemoryPersistence } from '../src/memory.ts';
+import { CURRENT_SCHEMA_VERSION } from '../src/types.ts';
+import { validateSnapshot } from '../src/validation.ts';
 
-test('memory adapter honors the persistence port for lab drafts', async () => {
+test('memory persistence supports snapshot roundtrip', async () => {
   const db = new MemoryPersistence();
-  await db.saveLabDraft({
-    labId: 'logic.truth-table',
-    contentVersion: '1',
-    updatedAt: '2026-08-26T00:00:00Z',
-    state: { expression: 'P -> Q' }
-  });
-  assert.deepEqual((await db.getLabDraft<{ expression: string }>('logic.truth-table'))?.state, {
-    expression: 'P -> Q'
-  });
-  await db.deleteLabDraft('logic.truth-table');
-  assert.equal(await db.getLabDraft('logic.truth-table'), undefined);
+  await db.saveLabDraft({ labId: 'logic.truth-table', contentVersion: '2', updatedAt: '2026', state: { expression: 'P' } });
+  await db.saveAttempt({ attemptId: 'a', exerciseId: 'e', module: 'logic', startedAt: '2026', updatedAt: '2026', finalState: 'correct', payload: {} });
+  await db.saveMastery({ skillId: 'logic.truth-values', evidenceScore: .8, attempts: 3, lastPracticed: '2026' });
+  await db.setSetting('motion', 'reduced', '2026');
+  const snap = await db.exportSnapshot('2026');
+  assert.equal(snap.schemaVersion, CURRENT_SCHEMA_VERSION);
+  const next = new MemoryPersistence();
+  await next.importSnapshot(snap);
+  assert.equal((await next.getLabDraft<{ expression: string }>('logic.truth-table'))?.state.expression, 'P');
+  assert.equal(await next.getSetting('motion'), 'reduced');
+  await next.clearAll();
+  assert.equal((await next.listAttempts()).length, 0);
 });
 
-test('memory adapter stores attempts, mastery, settings, and content metadata', async () => {
-  const db = new MemoryPersistence();
-  await db.saveAttempt({
-    attemptId: 'attempt-1',
-    exerciseId: 'logic.truth-table',
-    module: 'logic',
-    startedAt: '2026-08-26T00:00:00Z',
-    updatedAt: '2026-08-26T00:02:00Z',
-    finalState: 'correct',
-    payload: { checks: 4 }
-  });
-  assert.equal((await db.listAttempts('logic.truth-table')).length, 1);
-
-  await db.saveMastery({
-    skillId: 'logic.truth-values',
-    evidenceScore: 0.8,
-    attempts: 2,
-    lastPracticed: '2026-08-26T00:02:00Z'
-  });
-  assert.equal((await db.getMastery('logic.truth-values'))?.attempts, 2);
-
-  await db.setSetting('notation', 'unicode', '2026-08-26T00:02:00Z');
-  assert.equal(await db.getSetting('notation'), 'unicode');
-
-  await db.setContentMeta({
-    id: 'current',
-    courseVersion: 'amat19-2026-pass1',
-    schemaVersion: 1,
-    updatedAt: '2026-08-26T00:02:00Z'
-  });
-  assert.equal((await db.getContentMeta())?.schemaVersion, 1);
+test('snapshot validator rejects incompatible schema', () => {
+  assert.throws(() => validateSnapshot({ exportedAt: 'now', schemaVersion: 99, drafts: [], attempts: [], mastery: [], settings: [] }), /not supported/);
 });

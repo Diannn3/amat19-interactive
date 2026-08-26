@@ -1,0 +1,37 @@
+---
+import { currentCourseProfile, probabilitySkills } from '@amat19/course-content';
+import { getCollection } from 'astro:content';
+import AppLayout from '../../../layouts/AppLayout.astro';
+
+const lessons = (await getCollection('lessons')).filter((entry) => entry.data.module === 'probability').sort((a, b) => a.data.order - b.data.order);
+const labs = currentCourseProfile.labs.filter((lab) => lab.module === 'probability');
+---
+
+<AppLayout title="Probability module">
+  <section class="page-width page-intro">
+    <p class="eyebrow">Module 02 · Probability</p>
+    <h1 class="display-title">Count the space before the chance.</h1>
+    <p class="lede">Use exact integer and rational arithmetic to choose counting models, restrict sample spaces, and reason about independence without rounding artifacts.</p>
+  </section>
+
+  <section class="page-width module-section">
+    <div class="section-heading"><div><p class="eyebrow">Interactive tools</p><h2>Probability labs</h2></div></div>
+    <div class="route-grid">
+      {labs.map((lab) => <a class="route-link" href={lab.href}><span><strong>{lab.title}</strong><small>{lab.skillIds.join(' · ')}</small></span><span class="status-pill">{lab.status}</span></a>)}
+    </div>
+  </section>
+
+  <section class="page-width module-section">
+    <div class="section-heading"><div><p class="eyebrow">Current-course skills</p><h2>Skills</h2></div></div>
+    <div class="skill-grid">
+      {probabilitySkills.map((skill) => <article class="skill-item"><span class="status-pill">{skill.status}</span><h3>{skill.title}</h3><p>{skill.description}</p></article>)}
+    </div>
+  </section>
+
+  <section class="page-width module-section">
+    <div class="section-heading"><div><p class="eyebrow">Original reference notes</p><h2>Lessons</h2></div></div>
+    <ol class="lesson-list">
+      {lessons.map((lesson) => <li><a href={`/lessons/${lesson.id}`}><span>{lesson.data.title}</span><span>Read →</span></a></li>)}
+    </ol>
+  </section>
+</AppLayout>

@@ -1,31 +1,68 @@
-# Verification snapshot — 26 Aug 2026
+# Verification Snapshot — Pass 3 Full Course Foundation
 
-## Passed in this implementation environment
+Date: 26 Aug 2026
 
-- Node semantic/unit tests: **30/30 passed; 0 failed**.
-- TypeScript/TSX syntax parse: **48 files parsed; 0 syntax failures**.
-- Pure-package type checks: **math-core, domain-logic, learning-engine, course-content passed** using the available TypeScript compiler.
-- Architecture audit: **passed**.
-  - mathematical/learning packages have no React/Astro/DOM imports,
-  - Truth Table Astro route hydrates exactly one React lab root,
-  - no overlapping monolithic UI suites are declared.
-- Static security guard: no `eval`, `new Function`, `dangerouslySetInnerHTML`, or direct `innerHTML=` path found in app/package source.
-- Assignment enumeration is capped at **8 unique symbols** to bound exponential truth-table work.
-- Current implementation size: approximately **4153 source/documentation lines** before this verification file (excluding generated dependencies/build output).
+## Passed locally after the latest implementation edits
 
-## Browser/dependency-backed gates scaffolded but not runnable here
+### Mathematical / learning / persistence semantics
 
-The npm registry is unreachable from the implementation container. Corepack could not download pnpm 11.23.0, so no reviewed lockfile or `node_modules` could be generated. Therefore the following are **not claimed as passed**:
+Dependency-free Node suite:
 
-- pnpm install / reviewed lockfile,
-- Astro 7.2.6 production build,
-- `astro check` with installed integration/types,
-- Vitest + fast-check through the real dependency graph,
-- Playwright multi-viewport browser journeys,
-- axe browser scan,
-- keyboard-only browser completion,
-- forced-colors/reduced-motion manual browser review,
-- service-worker offline/installability validation,
-- visual QA screenshots and Lighthouse baseline.
+- **74 tests**
+- **74 passed**
+- **0 failed**
 
-Run these gates immediately on a networked machine before treating Pass 1 as deployable. After the first reviewed install, commit `pnpm-lock.yaml` and change CI from `pnpm install --no-frozen-lockfile` to `pnpm install --frozen-lockfile`.
+Coverage includes:
+- exact Rational arithmetic and seeded RNG
+- AMAT Logic course semantics, parser precedence, truth-table row ordering, proof rules and invariants
+- BigInt counting, exact conditional probability/independence, exact distribution moments, seeded simulation reproducibility
+- simple/compound/nominal Finance, TVM, annuities, bond decomposition/classification
+- matrix multiplication/determinant/RREF/inverse/systems
+- graphical LP bounded/infeasible/unbounded cases and supported simplex optimum
+- zero-sum game saddle/dominance/mixed strategy
+- Markov exact k-step/stationary behavior
+- learning attempts/hints/mastery
+- local snapshot validation/roundtrip
+
+### Architecture audit
+
+`node scripts/audit-architecture.mjs` → PASS
+
+- 8 domain/content packages remain React/Astro/DOM independent
+- 16 `/labs/*` routes each hydrate exactly one `client:load` React root
+- no `eval`, `new Function`, unsafe raw HTML assignment, or overlapping monolithic UI suite detected
+
+### Public-content audit
+
+`node scripts/audit-content.mjs` → PASS
+
+- learner-facing source uses original/synthesized examples rather than historical assessment text
+
+### Type/syntax checks
+
+- framework-independent packages were typechecked successfully with the available TypeScript compiler
+- application TS/TSX integration check passed using local workspace source mappings plus temporary stubs for unavailable external React/Astro/Dexie modules
+- Astro page tag-balance sanity check passed for generated page structure
+
+## Gates that are still pending
+
+The execution environment cannot resolve `registry.npmjs.org`; Corepack fails while fetching pnpm 11.23.0. Therefore this report **does not claim**:
+
+- Pass 3 `pnpm-lock.yaml` regeneration/review
+- `pnpm install --frozen-lockfile`
+- real `astro check`
+- real production `astro build`
+- Vitest/fast-check through installed dependencies
+- Playwright execution
+- Chromium/Firefox/WebKit browser validation
+- axe execution in a real browser
+- keyboard-only manual completion
+- required multi-viewport screenshot review
+- forced-colors / reduced-motion manual review
+- service-worker install/update/offline browser validation
+- Lighthouse baseline
+- dependency advisory resolution from a fresh install
+
+## Release interpretation
+
+This snapshot is a **large implemented and semantically tested development checkpoint**, not yet a deployment-certified release. A networked verification/fix pass is the next mandatory gate before public deployment.

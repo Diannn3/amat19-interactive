@@ -1,0 +1,5 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import RowReductionLab from '../../components/labs/matrices/RowReductionLab';
+---
+<AppLayout title="Gauss–Jordan & Systems Lab" description="Inspect every elementary row operation, compute exact RREF, find inverses, and classify systems."><article class="lab-route"><nav class="lab-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/modules/linear">Matrices & Systems</a><span aria-hidden="true">/</span><span aria-current="page">Gauss–Jordan & Systems Lab</span></nav><header class="lab-route__header"><p class="eyebrow">Matrices · RREF, inverse & systems</p><h1>Gauss–Jordan & Systems Lab</h1><p>Inspect every elementary row operation, compute exact RREF, find inverses, and classify systems.</p></header><RowReductionLab client:load /></article></AppLayout>
