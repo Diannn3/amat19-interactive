@@ -30,6 +30,23 @@ test('primary navigation marks the current route and mobile navigation is a moda
   await expect(trigger).toBeFocused();
 });
 
+test('command palette groups results and supports arrow-key selection', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Search AMAT 19' }).click();
+
+  const palette = page.getByRole('dialog', { name: /Search AMAT 19/i });
+  const input = palette.getByRole('textbox', { name: /Search skills/i });
+  await expect(palette.getByRole('heading', { name: 'Study', exact: true })).toBeVisible();
+
+  await input.fill('conditional');
+  const result = palette.getByRole('link', { name: /Conditional Probability Lab/i }).first();
+  await expect(result).toBeVisible();
+  await page.keyboard.press('ArrowDown');
+  await expect(result).toHaveAttribute('aria-selected', 'true');
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/labs\/conditional-probability/);
+});
+
 test('lesson routes render original content collection entries', async ({ page }) => {
   await page.goto('/lessons/logic/truth-tables');
   await expect(page.getByRole('heading', { name: 'Truth Values and Truth Tables' })).toBeVisible();
