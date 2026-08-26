@@ -48,6 +48,28 @@ test('primary navigation marks the current route and mobile navigation is a moda
   await expect(trigger).toBeFocused();
 });
 
+test('shell honors media preferences and keeps mobile navigation keyboard-contained', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await expect.poll(() => page.evaluate(() => ({ reduced: matchMedia('(prefers-reduced-motion: reduce)').matches, transition: getComputedStyle(document.querySelector('.spotlight-card')!).transitionDuration }))).toEqual({ reduced: true, transition: '0s' });
+
+  await page.emulateMedia({ reducedMotion: 'no-preference', forcedColors: 'active' });
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => ({ forced: matchMedia('(forced-colors: active)').matches, icon: getComputedStyle(document.querySelector('.mobile-nav__icon span')!).backgroundColor }))).toEqual({ forced: true, icon: 'rgb(0, 0, 0)' });
+
+  await page.goto('/progress');
+  const trigger = page.getByRole('button', { name: /Open navigation/i });
+  await trigger.click();
+  const sheet = page.getByRole('dialog', { name: /Navigate/i });
+  const close = sheet.getByRole('button', { name: /Close navigation/i });
+  await close.focus();
+  await page.keyboard.press('Tab');
+  await expect.poll(() => page.evaluate(() => document.querySelector('#mobile-navigation')?.contains(document.activeElement))).toBe(true);
+  await page.keyboard.press('Shift+Tab');
+  await expect(close).toBeFocused();
+});
+
 test('command palette groups results and supports arrow-key selection', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.command-dialog[data-hydrated="true"]')).toBeAttached();
