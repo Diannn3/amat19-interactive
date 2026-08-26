@@ -26,6 +26,11 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (mode === 'exam') return;
@@ -126,7 +131,7 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
     }));
   }
 
-  return <div className="mixed-practice" data-testid={mode === 'exam' ? 'mixed-exam' : 'mixed-practice'}>
+  return <div className="mixed-practice" data-testid={mode === 'exam' ? 'mixed-exam' : 'mixed-practice'} data-hydrated={hydrated ? 'true' : undefined}>
     {mode === 'practice' && <div className="practice-presets" aria-label="Practice presets">
       {practicePresets.filter((preset) => preset.id !== 'exam-mix').map((preset) => <Button key={preset.id} variant={preset.id === presetId ? 'primary' : 'secondary'} onClick={() => choosePreset(preset.id)}>
         {preset.id === 'weak-areas' ? <Target size={15} aria-hidden="true" /> : preset.id === 'recent-mistakes' ? <History size={15} aria-hidden="true" /> : <Sparkles size={15} aria-hidden="true" />} {preset.label}
