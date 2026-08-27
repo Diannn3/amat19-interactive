@@ -3,6 +3,7 @@ import { ArrowRight, Check, Eye } from 'lucide-react';
 import { currentCourseProfile } from '@amat19/course-content';
 import { DexiePersistence, type MasteryRecord, type PersistedAttempt } from '@amat19/persistence';
 import { masteryLabel } from '../../lib/local-progress';
+import { aggregateMasteryForCourseSkill } from '../../lib/mastery-targets';
 import { Progress } from '../ui/Progress';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
@@ -23,7 +24,10 @@ export default function ProgressDashboard() {
     }).catch(() => setRecords([]));
   }, []);
 
-  const byId = useMemo(() => new Map((records ?? []).map((record) => [record.skillId, record])), [records]);
+  const byId = useMemo(() => new Map(coreSkills.flatMap((skill) => {
+    const record = aggregateMasteryForCourseSkill(skill.id, records ?? []);
+    return record ? [[skill.id, record] as const] : [];
+  })), [records]);
   const needsAttention = useMemo(() => coreSkills.filter((skill) => masteryLabel(byId.get(skill.id)) !== 'Secure'), [byId]);
   const prioritizedSkills = needsAttention.length ? needsAttention : coreSkills;
   const visibleSkills = showAll ? coreSkills : prioritizedSkills.slice(0, 6);

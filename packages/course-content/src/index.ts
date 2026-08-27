@@ -4,7 +4,7 @@ export type SkillDefinition = { id:string; module:ModuleId; title:string; descri
 export type ModuleDefinition = { id:ModuleId; order:number; title:string; description:string; status:ContentStatus; href:string };
 export type LabDefinition = { id:string; module:ModuleId; title:string; href:string; skillIds:string[]; status:'live'|'experimental'|'supplemental'|'planned' };
 export type CourseProfile = { id:string; label:string; authority:string; modules:ModuleDefinition[]; skills:SkillDefinition[]; labs:LabDefinition[]; featureFlags:Record<string,boolean> };
-export const COURSE_VERSION='amat19-2026-pass3-full-course';
+export const COURSE_VERSION='amat19-ay2025-2026-1s-v1';
 export const currentCourseProfile:CourseProfile={
  id:'ay-2025-2026-1s', label:'AMAT 19 · 1st Semester AY 2025–2026', authority:'Current course guide; original app explanations and generated practice',
  modules:[
@@ -61,7 +61,7 @@ export const currentCourseProfile:CourseProfile={
   {id:'game-theory',module:'applications',title:'Game Theory Lab',href:'/labs/game-theory',skillIds:['applications.game-theory'],status:'live'},
   {id:'markov',module:'applications',title:'Markov Chain Lab',href:'/labs/markov',skillIds:['applications.markov'],status:'supplemental'}
  ],
- featureFlags:{formalProofDirect:true,formalProofConditionalExperimental:false,formalProofIndirectExperimental:false,probabilityExpectedValueSupplemental:true,markovSupplemental:true,simplexSupplemental:true}
+ featureFlags:{formalProofDirect:true,formalProofConditionalExperimental:true,formalProofIndirectExperimental:true,probabilityExpectedValueSupplemental:true,markovSupplemental:true,simplexSupplemental:true}
 };
 export const logicSkills=currentCourseProfile.skills.filter(s=>s.module==='logic');
 export const probabilitySkills=currentCourseProfile.skills.filter(s=>s.module==='probability');

@@ -1,41 +1,44 @@
-# Dependency Ledger — Pass 3
+# Dependency Ledger — Current Hardening Baseline
 
 ## Application/runtime
-
-- Astro 7.2.6 — static/content shell and routing
-- React 19.2.8 / React DOM — interactive lab roots only
-- @astrojs/react 6.0.4
-- Tailwind CSS 4.3.3 / @tailwindcss/vite 4.3.3
-- Radix Tabs 1.1.21 — owned tab primitive
-- Lucide React 1.34.0 — icons
-- Inter Variable / Sora Variable — local package fonts
-- Dexie 4.4.5 — IndexedDB adapter
+- Astro 7.x — static/content shell and routing.
+- React 19.x / React DOM — interactive islands only.
+- `@astrojs/react` — Astro/React integration.
+- Tailwind CSS 4.x / `@tailwindcss/vite` — utility generation and project tokens.
+- Radix Tabs — owned accessible tab primitive.
+- Lucide React — iconography.
+- Inter Variable / Sora Variable — packaged local fonts.
+- Dexie 4.x — IndexedDB adapter behind the persistence port.
+- Motion — narrowly used for reduced-motion-aware headline behavior.
 
 ## Test/dev
+- TypeScript 6.x.
+- Vitest 4.x.
+- fast-check 4.x.
+- Playwright 1.62.x.
+- `@axe-core/playwright` 4.x.
 
-- TypeScript 6.0.3
-- Vitest 4.1.11
-- fast-check 4.9.0
-- Playwright 1.62.1
-- @axe-core/playwright 4.13.0
-
-## Deliberately project-owned / no external solver dependency
-
-- propositional logic parser/evaluator/proof rules
+## Deliberately project-owned
+- propositional parser/evaluator and named proof-rule validation
 - BigInt Rational arithmetic
-- combinatorics/probability
-- finance teaching traces
+- combinatorics and exact finite probability
+- finance teaching traces and fixed-point decimal layer
 - matrix/RREF/system engine
-- 2D graphical LP engine
+- two-variable graphical LP engine
 - bounded educational simplex routine
-- zero-sum 2×2 game engine
+- zero-sum 2x2 game engine
 - Markov primitives
-- seeded mixed assessment generator
+- seeded mixed-assessment generation
+- mastery/retrieval prioritization rules
 
-## Deferred dependency decisions
+## Deliberately deferred
+- General LP oracle such as HiGHS WASM until course requirements exceed the current 2D + bounded-simplex surface.
+- MathLive while text/symbol inputs remain sufficient.
+- Cross-island state library while the current architecture has no demonstrated need.
+- Cloud/backend dependencies until local-first workflows are validated.
 
-- arbitrary-precision decimal package for production Finance accuracy: required decision before public correctness release
-- general LP oracle such as HiGHS WASM: defer until arbitrary/high-dimensional LP becomes a real learner requirement
-- Mafs: no dependency added; current visualizations use accessible SVG/table mirrors
-- MathLive: no dependency added because current text/symbol inputs remain sufficient
-- Nano Stores: no cross-island real-time state requirement yet
+## Release policy
+- pnpm 11 is the package manager authority declared by root `package.json`.
+- CI uses the pnpm 11-native setup action and a clean frozen-lockfile install.
+- High-severity dependency audit is a blocking release check.
+- Do not add a dependency solely to replace a small deterministic domain function unless correctness, accessibility, security, or maintenance clearly improves.

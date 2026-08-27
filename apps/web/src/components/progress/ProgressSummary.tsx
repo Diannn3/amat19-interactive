@@ -2,16 +2,17 @@ import { useEffect, useState } from 'react';
 import { currentCourseProfile } from '@amat19/course-content';
 import { DexiePersistence, type MasteryRecord } from '@amat19/persistence';
 import { masteryLabel } from '../../lib/local-progress';
+import { aggregateMasteryForCourseSkill } from '../../lib/mastery-targets';
 
 export default function ProgressSummary() {
-  const [records, setRecords] = useState<Record<string, MasteryRecord>>({});
+  const [records, setRecords] = useState<MasteryRecord[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'unavailable'>('loading');
 
   useEffect(() => {
     try {
       const db = new DexiePersistence();
       db.listMastery().then((items) => {
-        setRecords(Object.fromEntries(items.map((item) => [item.skillId, item])));
+        setRecords(items);
         setStatus('ready');
       }).catch(() => setStatus('unavailable'));
     } catch {
@@ -27,7 +28,7 @@ export default function ProgressSummary() {
       {currentCourseProfile.skills
         .filter((skill) => skill.status === 'implemented' || skill.status === 'engine-ready')
         .map((skill) => {
-          const record = records[skill.id];
+          const record = aggregateMasteryForCourseSkill(skill.id, records);
           const label = masteryLabel(record);
           return (
             <a className="progress-row" href={skill.relatedLab ?? '#'} key={skill.id}>

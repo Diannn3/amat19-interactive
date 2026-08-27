@@ -1,36 +1,48 @@
-# Security & Correctness Guardrails — Pass 3
+# Security & Correctness Guardrails
 
 ## Mathematical execution
-- no `eval`, `new Function`, or unrestricted expression evaluator
-- Logic parses only the AMAT propositional grammar
-- unsupported Logic tokens fail with source position
-- truth-table enumeration capped to bound `2^n` growth
-- heavy truth tables and probability simulations have Worker seams
-- probability/matrix/game rational computations are exact
-- RREF and proof lines preserve deterministic operation histories
-- graphical LP and simplex expose their supported problem boundaries instead of pretending universal solver coverage
+- No `eval`, `new Function`, or unrestricted expression evaluator.
+- Logic accepts only the controlled propositional grammar and reports unsupported tokens with source position.
+- Truth-table enumeration is bounded.
+- Probability/matrix/game rational computations use exact arithmetic where mathematically appropriate.
+- Formal proof checks the cited rule and scope, not merely semantic equivalence.
+- LP/simplex/game helpers expose their supported boundaries instead of presenting themselves as universal solvers.
+- Finance uses a high-precision fixed-point decimal layer; remaining non-integer power/root fallbacks require explicit release tolerance review.
 
 ## Learning correctness
-- deterministic engines decide correctness; no LLM grades mathematical work
-- mixed practice answers are generated from the same canonical engines used by labs
-- exam-like surface is explicitly a study diagnostic, not an official assessment
-- current vs supplemental curriculum status is visible in the course-content profile
+- Deterministic engines decide correctness; no LLM grades mathematical work.
+- Generated questions retain the skill they actually assess.
+- Leaf mastery evidence rolls up to its parent course skill through one central mapping.
+- Mastery read/modify/write is atomic at the persistence adapter boundary.
+- `Secure` requires repeated, high-scoring independent evidence.
+- The exam-like surface remains a study diagnostic, not an official course examination.
 
 ## Browser/data
-- no auth, remote analytics or cloud backend
-- drafts/attempts/mastery remain browser-local
-- import snapshots are schema-validated
-- service-worker update activation is learner controlled
-- fonts/runtime math do not require third-party CDNs
+- No auth, remote analytics, or cloud backend is required.
+- Drafts, attempts, mastery, sessions, settings, and saved items remain browser-local.
+- Snapshot imports are schema-validated and collection-bounded before destructive replacement.
+- Snapshot replacement is transactional in Dexie.
+- Service-worker update activation remains learner controlled.
+- Navigation fallback ignores query strings and uses a bounded network-first wait.
+- Core fonts and runtime math do not require third-party CDNs.
+
+## Deployment and supply chain
+- GitHub workflow token is read-only unless a future job explicitly requires more.
+- External GitHub Actions are pinned to reviewed commit SHAs.
+- pnpm 11 uses the pnpm 11-native setup path.
+- High-severity dependency audit is release-blocking.
+- Vercel responses define explicit CSP, framing, MIME-sniffing, referrer, and permissions headers.
+- Service worker is configured for revalidation.
 
 ## Content/IP
-- learner-facing examples are original/generated
-- historical handouts/exams are not published as a public archive/question bank
-- content audit checks obvious assessment leakage; human review remains required
+- Learner-facing examples are original/generated.
+- Historical handouts/exams are not published as a public question bank.
+- Content audit is a heuristic safeguard; human review remains required.
+- React Bits adaptations/inspirations are documented in `THIRD_PARTY_NOTICES.md`.
 
 ## Remaining release checks
-- fresh dependency advisory audit
-- real CSP/security headers at deployment
-- real browser install/update/offline testing
-- arbitrary-precision or independent Finance numeric verification
-- browser-level accessibility and keyboard review
+- Exact merged-tree CI must be green.
+- Real installed PWA update/offline testing on production browsers remains required.
+- Browser-level screen-reader/keyboard review remains required.
+- Public Finance tolerance/certification must be decided.
+- Repository-level license must be chosen by the owner if redistribution is intended.
