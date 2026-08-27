@@ -79,8 +79,8 @@ export default function CountingLab() {
   return (
     <section className="learning-lab learning-lab--wide" data-testid="counting-lab">
       <div className="learning-lab__prompt">
-        <p className="section-label">Counting decision helper</p>
         <h2>Choose the model before touching the formula.</h2>
+        <p className="section-context">Counting decision helper</p>
         <p className="learning-lab__question">
           You have <strong>{n}</strong> available choices and need to fill/select <strong>{r}</strong> positions or objects.
           Describe what creates a new outcome.
@@ -145,8 +145,8 @@ export default function CountingLab() {
       <div className="learning-lab__full" id="inclusion-exclusion">
         <section className="sub-lab">
           <div>
-            <p className="section-label">Inclusion–exclusion</p>
             <h2>Subtract the overlap once.</h2>
+            <p className="section-context">Inclusion–exclusion</p>
             <p>When A and B overlap, |A| + |B| counts the intersection twice. The union is |A| + |B| − |A∩B|.</p>
           </div>
           <div className="number-triple">

@@ -83,8 +83,8 @@ export function ArgumentMode() {
   return (
     <section className="truth-lab__argument" aria-labelledby="argument-heading" data-testid="argument-validity">
       <div className="truth-lab__argument-builder">
-        <p className="truth-lab__section-label">Argument mode</p>
         <h2 id="argument-heading">Look for one counterexample.</h2>
+        <p className="truth-lab__section-label">Argument mode</p>
         <p>
           An argument is invalid exactly when at least one row makes <strong>every premise true</strong> and the
           <strong> conclusion false</strong>. The default example is original to this app.

@@ -44,8 +44,8 @@ export function PracticePanel({
 
   return (
     <aside className="truth-lab__panel" aria-labelledby="practice-heading">
-      <p className="truth-lab__section-label">Practice</p>
       <h2 id="practice-heading">Fill “{targetColumn.label}”</h2>
+      <p className="truth-lab__section-label">Practice</p>
       <p>
         Row {row.index + 1} of {table.rows.length}. Choose a different computed expression in the Structure strip to
         practice another column without changing the proposition.
