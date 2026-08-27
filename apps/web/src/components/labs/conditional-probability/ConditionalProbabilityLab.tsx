@@ -149,7 +149,7 @@ export default function ConditionalProbabilityLab() {
             </div>
 
             {view === 'table' ? (
-              <div className="two-way-wrap">
+              <div className="two-way-wrap" role="region" aria-label="Conditional probability table" tabIndex={0}>
                 <table className="two-way-table">
                   <caption>Counts for events A and B. The conditioning column/row is highlighted.</caption>
                   <thead><tr><th></th><th data-active={conditionOn === 'B'}>B</th><th>not B</th><th>Total</th></tr></thead>

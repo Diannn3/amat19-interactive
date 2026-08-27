@@ -29,11 +29,10 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (mode === 'exam') return;
+    if (mode === 'exam') {
+      setHydrated(true);
+      return;
+    }
     const params = new URLSearchParams(window.location.search);
     const requested = params.get('preset');
     const requestedSkill = params.get('skill') || undefined;
@@ -43,6 +42,7 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
       const node = skillGraph.find((skill) => skill.id === requestedSkill);
       if (node) setModules([node.module]);
     }
+    setHydrated(true);
   }, [mode]);
 
   useEffect(() => {
@@ -87,6 +87,10 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
   function choosePreset(id: string) {
     setPresetId(id);
     setSkillId(undefined);
+    const url = new URL(window.location.href);
+    url.searchParams.set('preset', id);
+    url.searchParams.delete('skill');
+    window.history.replaceState({}, '', url);
     setSeed(freshSeed(id));
     setAnswers({});
     setChecked({});
@@ -133,7 +137,7 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
 
   return <div className="mixed-practice" data-testid={mode === 'exam' ? 'mixed-exam' : 'mixed-practice'} data-hydrated={hydrated ? 'true' : undefined}>
     {mode === 'practice' && <div className="practice-presets" aria-label="Practice presets">
-      {practicePresets.filter((preset) => preset.id !== 'exam-mix').map((preset) => <Button key={preset.id} variant={preset.id === presetId ? 'primary' : 'secondary'} onClick={() => choosePreset(preset.id)}>
+      {practicePresets.filter((preset) => preset.id !== 'exam-mix').map((preset) => <Button key={preset.id} variant={preset.id === presetId ? 'primary' : 'secondary'} aria-pressed={preset.id === presetId} onClick={() => choosePreset(preset.id)}>
         {preset.id === 'weak-areas' ? <Target size={15} aria-hidden="true" /> : preset.id === 'recent-mistakes' ? <History size={15} aria-hidden="true" /> : <Sparkles size={15} aria-hidden="true" />} {preset.label}
       </Button>)}
     </div>}

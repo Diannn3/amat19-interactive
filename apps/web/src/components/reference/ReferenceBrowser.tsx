@@ -52,7 +52,15 @@ export default function ReferenceBrowser() {
   const [hydrated, setHydrated] = useState(false);
   const [query, setQuery] = useState('');
   const [module, setModule] = useState<'all' | ReferenceModule>('all');
-  useEffect(() => setHydrated(true), []);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requestedModule = params.get('module');
+    setQuery(params.get('q') ?? '');
+    if (requestedModule && modules.includes(requestedModule as 'all' | ReferenceModule)) {
+      setModule(requestedModule as 'all' | ReferenceModule);
+    }
+    setHydrated(true);
+  }, []);
   const normalizedQuery = query.trim().toLowerCase();
   const filteredEntries = useMemo(() => referenceEntries.filter((entry) => {
     const matchesModule = module === 'all' || entry.module === module;
@@ -60,20 +68,40 @@ export default function ReferenceBrowser() {
     return matchesModule && (!normalizedQuery || haystack.includes(normalizedQuery));
   }), [module, normalizedQuery]);
 
+  function syncUrl(nextQuery: string, nextModule: 'all' | ReferenceModule) {
+    const url = new URL(window.location.href);
+    if (nextQuery.trim()) url.searchParams.set('q', nextQuery.trim());
+    else url.searchParams.delete('q');
+    if (nextModule !== 'all') url.searchParams.set('module', nextModule);
+    else url.searchParams.delete('module');
+    window.history.replaceState({}, '', url);
+  }
+
+  function updateQuery(nextQuery: string) {
+    setQuery(nextQuery);
+    syncUrl(nextQuery, module);
+  }
+
+  function updateModule(nextModule: 'all' | ReferenceModule) {
+    setModule(nextModule);
+    syncUrl(query, nextModule);
+  }
+
   function clearFilters() {
     setQuery('');
     setModule('all');
+    syncUrl('', 'all');
   }
 
   return <div className="reference-browser" data-testid="reference-browser" data-hydrated={hydrated ? 'true' : undefined}>
     <div className="reference-browser__controls">
       <label className="reference-browser__field reference-browser__search">
         <span>Search reference</span>
-        <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try conditional, inverse, or P(A|B)" aria-label="Search reference" />
+        <input type="search" value={query} onChange={(event) => updateQuery(event.target.value)} placeholder="Try conditional, inverse, or P(A|B)…" aria-label="Search reference" />
       </label>
       <label className="reference-browser__field">
         <span>Filter by module</span>
-        <select value={module} onChange={(event) => setModule(event.target.value as 'all' | ReferenceModule)} aria-label="Filter by module">
+        <select value={module} onChange={(event) => updateModule(event.target.value as 'all' | ReferenceModule)} aria-label="Filter by module">
           {modules.map((item) => <option key={item} value={item}>{item === 'all' ? 'All modules' : item}</option>)}
         </select>
       </label>

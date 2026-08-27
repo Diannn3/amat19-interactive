@@ -5,7 +5,7 @@ import '../styles/global.css';
 import '../styles/pass4.css';
 import CommandPalette from '../components/navigation/CommandPalette';
 import NavGlyph from '../components/navigation/NavGlyph.astro';
-import { Bookmark, Menu, PanelLeftClose, Search, X } from 'lucide-react';
+import { PanelLeftClose, Search } from 'lucide-react';
 
 interface Props { title: string; description?: string; }
 type NavItem = { href: string; label: string; mobileLabel: string; icon: string };
@@ -16,6 +16,8 @@ const primaryNavigation: NavItem[] = [
   { href: '/course', label: 'Course', mobileLabel: 'Course', icon: 'course' },
   { href: '/practice', label: 'Practice', mobileLabel: 'Practice', icon: 'practice' },
   { href: '/progress', label: 'Progress', mobileLabel: 'Progress', icon: 'progress' },
+];
+const utilityNavigation: NavItem[] = [
   { href: '/reference', label: 'Reference', mobileLabel: 'Ref', icon: 'reference' },
   { href: '/saved', label: 'Saved', mobileLabel: 'Saved', icon: 'saved' },
   { href: '/settings', label: 'Settings', mobileLabel: 'Settings', icon: 'settings' },
@@ -27,6 +29,7 @@ const isCurrent = (href: string) => {
   if (href === '/study') return currentPath === '/study';
   return currentPath === href || currentPath.startsWith(`${href}/`);
 };
+const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
 ---
 <!doctype html>
 <html lang="en">
@@ -70,22 +73,35 @@ const isCurrent = (href: string) => {
               <span class="nav-label">{item.label}</span>
             </a>
           ))}
+          <details class="more-menu" data-more-menu open={utilityIsCurrent}>
+            <summary class:list={['more-menu__summary', { 'is-active': utilityIsCurrent }]} aria-label="More destinations">
+              <span class="nav-active-rail" aria-hidden="true"></span>
+              <span class="nav-icon"><NavGlyph name="more" /></span>
+              <span class="nav-label">More</span>
+              <span class="more-menu__chevron" aria-hidden="true">⌄</span>
+            </summary>
+            <div class="more-menu__panel">
+              {utilityNavigation.map((item) => (
+                <a class:list={['utility-nav-link', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                  <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+                  <span class="nav-label">{item.label}</span>
+                </a>
+              ))}
+            </div>
+          </details>
         </nav>
 
         <div class="sidebar-footer">
-          <a class="sidebar-profile" href="/settings" aria-label="Open local-first settings">
+          <div class="sidebar-profile" aria-label="Course storage">
             <span class="avatar" aria-hidden="true">A19</span>
             <span class="profile-copy"><strong>Local-first workspace</strong><small>Browser data only</small></span>
-          </a>
+          </div>
         </div>
       </aside>
 
       <div class="workspace">
         <header class="topbar">
           <div class="topbar-leading">
-            <button class="mobile-nav__trigger" type="button" data-mobile-nav-trigger aria-expanded="false" aria-controls="mobile-navigation" aria-label="Open navigation">
-              <Menu className="mobile-nav__icon" aria-hidden="true" size={19} strokeWidth={1.7} />
-            </button>
             <div class="topbar-heading">
               <span class="topbar-kicker">AMAT 19</span>
               <span class="topbar-title">{title}</span>
@@ -99,37 +115,8 @@ const isCurrent = (href: string) => {
               <kbd>Ctrl K</kbd>
             </button>
             <span class="topbar-status">Local first</span>
-            <a class="topbar-icon" href="/saved" aria-label="Open saved study objects" title="Saved study objects">
-              <Bookmark aria-hidden="true" size={17} strokeWidth={1.7} />
-            </a>
-            <a class="top-avatar" href="/settings" aria-label="Open settings" title="Settings">19</a>
           </div>
         </header>
-
-        <dialog id="mobile-navigation" class="mobile-nav__dialog" aria-labelledby="mobile-navigation-title">
-          <div class="mobile-nav__sheet">
-            <div class="mobile-nav__head">
-              <div>
-                <h2 id="mobile-navigation-title">Navigate</h2>
-                <p class="mobile-nav__context">AMAT 19 · Study Lab</p>
-              </div>
-              <button class="mobile-nav__close" type="button" data-mobile-nav-close aria-label="Close navigation">
-                <X aria-hidden="true" size={18} strokeWidth={1.7} />
-              </button>
-            </div>
-            <nav class="mobile-nav__panel" aria-label="Mobile navigation menu">
-              {primaryNavigation.map((item) => (
-                <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}><span class="nav-icon"><NavGlyph name={item.icon} /></span><span>{item.label}</span></a>
-              ))}
-            </nav>
-            <div class="mobile-nav__footer">
-              <button class="mobile-nav__command" type="button" data-command-button aria-haspopup="dialog">
-                <span>Search the study lab</span>
-                <kbd>Ctrl K</kbd>
-              </button>
-            </div>
-          </div>
-        </dialog>
 
         <div class="workspace-scroll">
           <div id="pwa-update" class="update-banner" hidden role="status" aria-live="polite">
@@ -155,6 +142,20 @@ const isCurrent = (href: string) => {
             <span>{item.mobileLabel}</span>
           </a>
         ))}
+        <details class="mobile-more-menu" data-more-menu open={utilityIsCurrent}>
+          <summary class:list={['mobile-nav-link', { 'is-active': utilityIsCurrent }]} aria-label="More destinations">
+            <span class="nav-icon"><NavGlyph name="more" /></span>
+            <span>More</span>
+          </summary>
+          <div class="mobile-more-menu__panel">
+            {utilityNavigation.map((item) => (
+              <a class="mobile-more-menu__link" href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+                <span>{item.label}</span>
+              </a>
+            ))}
+          </div>
+        </details>
       </nav>
     </div>
 
@@ -175,38 +176,8 @@ const isCurrent = (href: string) => {
         try { setCollapsed(window.localStorage.getItem(sidebarStorageKey) === 'true', false); } catch { /* storage is optional */ }
         sidebarToggle?.addEventListener('click', () => setCollapsed(!frame?.classList.contains('nav-collapsed')));
 
-        const mobileDialog = document.getElementById('mobile-navigation');
-        const mobileTrigger = document.querySelector('[data-mobile-nav-trigger]');
-        const mobileClose = document.querySelector('[data-mobile-nav-close]');
-        let returnFocus = null;
-        const focusableIn = () => [...(mobileDialog?.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])') ?? [])];
-        const restoreFocus = () => { if (returnFocus instanceof HTMLElement) returnFocus.focus(); returnFocus = null; };
-        const closeMobile = () => { if (mobileDialog instanceof HTMLDialogElement && mobileDialog.open) mobileDialog.close(); };
-        const openMobile = () => {
-          if (!(mobileDialog instanceof HTMLDialogElement) || mobileDialog.open) return;
-          returnFocus = mobileTrigger instanceof HTMLElement ? mobileTrigger : document.activeElement;
-          mobileDialog.showModal();
-          mobileTrigger?.setAttribute('aria-expanded', 'true');
-          window.requestAnimationFrame(() => mobileClose instanceof HTMLElement && mobileClose.focus());
-        };
-        mobileTrigger?.addEventListener('click', openMobile);
-        mobileClose?.addEventListener('click', closeMobile);
-        mobileDialog?.addEventListener('cancel', (event) => { event.preventDefault(); closeMobile(); });
-        mobileDialog?.addEventListener('click', (event) => { if (event.target === mobileDialog) closeMobile(); });
-        mobileDialog?.addEventListener('keydown', (event) => {
-          if (event.key !== 'Tab') return;
-          const items = focusableIn(); if (!items.length) return;
-          const first = items[0]; const last = items[items.length - 1];
-          if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-          else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-        });
-        mobileDialog?.addEventListener('close', () => {
-          mobileTrigger?.setAttribute('aria-expanded', 'false');
-          window.requestAnimationFrame(restoreFocus);
-        });
-
         document.querySelectorAll('[data-command-button]').forEach((button) => {
-          button.addEventListener('click', () => { closeMobile(); window.dispatchEvent(new CustomEvent('amat:command')); });
+          button.addEventListener('click', () => { window.dispatchEvent(new CustomEvent('amat:command')); });
         });
 
         const status = document.getElementById('network-status');

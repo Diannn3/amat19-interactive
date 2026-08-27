@@ -15,37 +15,27 @@ test('home and module journeys lead with visual study cues instead of long text 
   await page.goto('/');
   await expect(page.getByTestId('home-study-snapshot')).toBeVisible();
   await expect(page.getByRole('heading', { name: /Study snapshot/i })).toBeVisible();
-  await expect(page.locator('.home-loop')).toBeVisible();
+  await expect(page.locator('.home-hub')).toBeVisible();
   await expect(page.locator('.module-spotlight-link')).toHaveCount(5);
 
   await page.goto('/modules/logic');
   await expect(page.getByTestId('module-overview')).toBeVisible();
   await expect(page.locator('.module-journey__metrics')).toBeVisible();
-  await expect(page.locator('.module-loop')).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Module sections' })).toBeVisible();
+  await expect(page.locator('[data-module-view="overview"]')).toBeVisible();
 });
 
-test('primary navigation marks the current route and mobile navigation is a modal sheet', async ({ page }) => {
+test('primary navigation marks the current route and mobile navigation stays docked', async ({ page }) => {
   await page.goto('/progress');
+  await page.setViewportSize({ width: 1280, height: 800 });
   const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
-  if (await primaryNavigation.isVisible()) {
-    await expect(primaryNavigation.getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
-  } else {
-    await expect(page.getByRole('button', { name: /Open navigation/i })).toBeVisible();
-  }
+  await expect(primaryNavigation.getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
 
   await page.setViewportSize({ width: 375, height: 667 });
-  const trigger = page.getByRole('button', { name: /Open navigation/i });
-  await expect(trigger).toBeVisible();
-  await trigger.click();
-
-  const sheet = page.getByRole('dialog', { name: /Navigate/i });
-  await expect(sheet).toBeVisible();
-  await expect(sheet.getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
-  await expect(sheet.getByRole('button', { name: /Close navigation/i })).toBeFocused();
-
-  await page.keyboard.press('Escape');
-  await expect(sheet).toBeHidden();
-  await expect(trigger).toBeFocused();
+  const mobileNavigation = page.getByRole('navigation', { name: 'Mobile navigation' });
+  await expect(mobileNavigation).toBeVisible();
+  await expect(mobileNavigation.getByText('Progress', { exact: true })).toBeVisible();
+  await expect(mobileNavigation.locator('.mobile-nav-link')).toHaveCount(5);
 });
 
 test('Elbi workspace shell exposes desktop navigation, collapse state, and mobile dock', async ({ page }) => {
@@ -72,20 +62,19 @@ test('Elbi workspace shell exposes desktop navigation, collapse state, and mobil
   await expect(sidebar).toBeHidden();
   await expect(page.locator('.mobile-nav')).toBeVisible();
   await expect(page.locator('.mobile-nav').getByRole('link', { name: 'Study' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Open navigation/i })).toBeVisible();
+  await expect(page.locator('.mobile-nav').getByText('More', { exact: true })).toBeVisible();
 });
 
-test('home presents an Elbi-style bento briefing around real AMAT course objects', async ({ page }) => {
+test('home presents a compact Elbi-style hub around real AMAT course objects', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.locator('.home-hero')).toBeVisible();
-  await expect(page.locator('.home-bento')).toBeVisible();
-  await expect(page.locator('.home-bento .bento-briefing')).toBeVisible();
-  await expect(page.locator('.home-bento .bento-attention')).toBeVisible();
-  await expect(page.locator('.home-bento .metric-card')).toHaveCount(3);
+  await expect(page.locator('.home-hub')).toBeVisible();
+  await expect(page.locator('.home-facts')).toBeVisible();
   await expect(page.getByTestId('home-study-snapshot')).toBeVisible();
   await expect(page.locator('.module-spotlight-grid')).toBeVisible();
-  await expect(page.locator('.home-bento a[href="/study"]')).toBeVisible();
+  await expect(page.locator('.home-hub a[href="/study"]')).toBeVisible();
+  await expect(page.locator('.home-bento')).toHaveCount(0);
+  await expect(page.locator('.home-loop')).toHaveCount(0);
 });
 
 test('public surfaces obey the anti-vibecode hierarchy and status semantics', async ({ page }) => {
@@ -158,18 +147,16 @@ test('shell honors media preferences and keeps mobile navigation keyboard-contai
 
   await page.emulateMedia({ reducedMotion: 'no-preference', forcedColors: 'active' });
   await page.reload();
-  await expect.poll(() => page.evaluate(() => ({ forced: matchMedia('(forced-colors: active)').matches, icon: getComputedStyle(document.querySelector('.mobile-nav__icon')!).color }))).toEqual({ forced: true, icon: 'rgb(0, 0, 0)' });
+  await expect.poll(() => page.evaluate(() => ({ forced: matchMedia('(forced-colors: active)').matches, icon: getComputedStyle(document.querySelector('.mobile-nav .nav-icon')!).color }))).toEqual({ forced: true, icon: 'rgb(0, 0, 0)' });
 
   await page.goto('/progress');
-  const trigger = page.getByRole('button', { name: /Open navigation/i });
-  await trigger.click();
-  const sheet = page.getByRole('dialog', { name: /Navigate/i });
-  const close = sheet.getByRole('button', { name: /Close navigation/i });
-  await close.focus();
-  await page.keyboard.press('Tab');
-  await expect.poll(() => page.evaluate(() => document.querySelector('#mobile-navigation')?.contains(document.activeElement))).toBe(true);
-  await page.keyboard.press('Shift+Tab');
-  await expect(close).toBeFocused();
+  const mobile = page.getByRole('navigation', { name: 'Mobile navigation' });
+  const more = mobile.locator('.mobile-more-menu');
+  await more.locator('summary').focus();
+  await page.keyboard.press('Enter');
+  await expect(more.locator('.mobile-more-menu__panel')).toBeVisible();
+  await more.getByRole('link', { name: 'Settings' }).focus();
+  await expect.poll(() => page.evaluate(() => document.querySelector('.mobile-nav')?.contains(document.activeElement))).toBe(true);
 });
 
 test('command palette groups results and supports arrow-key selection', async ({ page }) => {
@@ -185,7 +172,7 @@ test('command palette groups results and supports arrow-key selection', async ({
 
   const palette = page.getByRole('dialog', { name: /Search AMAT 19/i });
   const input = palette.getByRole('textbox', { name: /Search skills/i });
-  await expect(palette.getByRole('heading', { name: 'Study', exact: true })).toBeVisible();
+  await expect(palette.getByRole('heading', { name: 'Workspace', exact: true })).toBeVisible();
 
   await input.fill('conditional');
   const result = palette.getByRole('link', { name: /Conditional Probability Lab/i }).first();

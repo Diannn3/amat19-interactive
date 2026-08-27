@@ -10,22 +10,24 @@ interface Props {
   lede: string;
   lessons: Array<{ id: string; data: { title: string; description?: string; scope?: string } }>;
 }
+
 const { moduleId, moduleNumber, eyebrow, headline, lede, lessons } = Astro.props;
 const module = currentCourseProfile.modules.find((item) => item.id === moduleId)!;
 const labs = currentCourseProfile.labs.filter((lab) => lab.module === moduleId);
 const skills = getModuleSkillGraph(moduleId);
 const current = skills.filter((skill) => skill.scope === 'current');
 const supplemental = skills.filter((skill) => skill.scope === 'supplemental');
+const firstLabHref = current[0]?.labHref ?? labs[0]?.href ?? module.href;
 ---
 <section class="page-width page-intro module-overview" data-testid="module-overview">
   <div class="module-overview__copy">
-  <h1 class="display-title">{headline}</h1>
-  <p class="lede">{lede}</p>
-  <p class="module-overview__context">Module {moduleNumber} · {eyebrow ?? module.title}</p>
-  <div class="hero-actions">
-    <a class="hero-action hero-action--primary" href={current[0]?.labHref ?? labs[0]?.href}><FlaskConical size={17} /> Start the first lab</a>
-    <a class="hero-action hero-action--secondary" href={`/practice?preset=${moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-drill`}`}><Route size={17} /> Practice this module</a>
-  </div>
+    <h1 class="display-title">{headline}</h1>
+    <p class="lede">{lede}</p>
+    <p class="module-overview__context">Module {moduleNumber} · {eyebrow ?? module.title}</p>
+    <div class="hero-actions">
+      <a class="hero-action hero-action--primary" href={firstLabHref}><FlaskConical size={17} /> Start a lab</a>
+      <a class="hero-action hero-action--secondary" href={`/practice?preset=${moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-drill`}`}><Route size={17} /> Practice module</a>
+    </div>
   </div>
   <div class="module-journey__metrics" aria-label={`${module.title} contents`}>
     <div><strong>{current.length}</strong><span>core skills</span></div>
@@ -34,52 +36,91 @@ const supplemental = skills.filter((skill) => skill.scope === 'supplemental');
   </div>
 </section>
 
-<section class="page-width module-section module-journey" aria-labelledby={`${moduleId}-journey`}>
-  <div>
-    <div class="section-heading"><div><h2 id={`${moduleId}-journey`}>Build the ideas in order</h2><p class="section-context">Prerequisite-aware path</p></div></div>
-    <div class="skill-flow">
-      {current.map((skill, index) => (
-        <a class="skill-flow__item" href={skill.labHref}>
-          <span class="skill-flow__number">{String(index + 1).padStart(2, '0')}</span>
-          <span>
-            <strong>{skill.title}</strong>
-            <small>{skill.description}</small>
-            {skill.prerequisiteIds.length > 0 && <span class="skill-flow__prereq">Builds on {skill.prerequisiteIds.map((id) => skills.find((candidate) => candidate.id === id)?.title ?? id).join(' · ')}</span>}
-          </span>
-          <ArrowRight size={17} aria-hidden="true" />
-        </a>
-      ))}
+<nav class="page-width module-tabs" aria-label="Module sections">
+  <a href={`/modules/${moduleId}?view=overview`} aria-current="page">Overview</a>
+  <a href={`/modules/${moduleId}?view=labs`}>Labs <span>({labs.length})</span></a>
+  <a href={`/modules/${moduleId}?view=notes`}>Notes <span>({lessons.length})</span></a>
+</nav>
+
+<section class="page-width module-view" data-module-view="overview" aria-labelledby={`${moduleId}-overview-heading`}>
+  <div class="section-heading">
+    <div>
+      <h2 id={`${moduleId}-overview-heading`}>Start with one object.</h2>
+      <p class="section-context">A short route into {module.title}</p>
+    </div>
+    <a class="text-link" href={`/modules/${moduleId}?view=labs`}>See all labs <ArrowRight size={16} aria-hidden="true" /></a>
+  </div>
+  <a class="module-next-step" href={firstLabHref}>
+    <span class="module-next-step__index">01</span>
+    <span><strong>{current[0]?.title ?? labs[0]?.title ?? 'Open the module'}</strong><small>{current[0]?.description ?? 'Choose a live workspace and keep the explanation beside the result.'}</small></span>
+    <ArrowRight size={18} aria-hidden="true" />
+  </a>
+  <div class="module-view-links">
+    <a href={`/modules/${moduleId}?view=notes`}><strong>Read the notes</strong><span>{lessons.length} concept notes</span><ArrowRight size={16} aria-hidden="true" /></a>
+    <a href="/reference"><strong>Check notation</strong><span>Formulas and assumptions</span><ArrowRight size={16} aria-hidden="true" /></a>
+  </div>
+</section>
+
+<section class="page-width module-view" data-module-view="labs" aria-labelledby={`${moduleId}-labs-heading`} hidden>
+  <div class="section-heading">
+    <div>
+      <h2 id={`${moduleId}-labs-heading`}>Interactive labs.</h2>
+      <p class="section-context">Change an input, inspect the reasoning.</p>
     </div>
   </div>
-  <aside class="module-journey__aside math-panel">
-    <div class="math-panel__head"><div><h3>See → try → repair</h3><p class="section-context">Study pattern</p></div></div>
-    <ol class="module-loop">
-      <li><span>01</span><div><strong>See</strong><small>Read the rule beside the object.</small></div></li>
-      <li><span>02</span><div><strong>Try</strong><small>Change one input in the lab.</small></div></li>
-      <li><span>03</span><div><strong>Repair</strong><small>Practice the exact weak link.</small></div></li>
-    </ol>
-  </aside>
-</section>
-
-<section class="page-width module-section" aria-labelledby={`${moduleId}-labs`}>
-  <div class="section-heading"><div><h2 id={`${moduleId}-labs`}>Labs</h2><p class="section-context">Interactive workspaces</p></div></div>
-  <div class="route-grid">
-    {labs.map((lab) => <a class="route-link" href={lab.href}><span><strong>{lab.title}</strong><small>{lab.skillIds.join(' · ')}</small></span><span class="status-pill">{lab.status}</span></a>)}
+  <div class="module-lab-list">
+    {labs.map((lab) => (
+      <a class="module-lab-link" href={lab.href}>
+        <span><strong>{lab.title}</strong><small>{lab.skillIds.join(' · ')}</small></span>
+        <span class="module-lab-status">{lab.status}</span>
+        <ArrowRight size={17} aria-hidden="true" />
+      </a>
+    ))}
   </div>
+  {supplemental.length > 0 && (
+    <details class="module-supplemental">
+      <summary>Optional extensions <span>({supplemental.length})</span></summary>
+      <div class="module-supplemental__list">
+        {supplemental.map((skill) => (
+          <a href={skill.labHref}><span><strong>{skill.title}</strong><small>{skill.description}</small></span><ArrowRight size={16} aria-hidden="true" /></a>
+        ))}
+      </div>
+    </details>
+  )}
 </section>
 
-<section class="page-width module-section" aria-labelledby={`${moduleId}-lessons`}>
-  <div class="section-heading"><div><h2 id={`${moduleId}-lessons`}>Read before or after the lab</h2><p class="section-context">Concept notes</p></div></div>
+<section class="page-width module-view" data-module-view="notes" aria-labelledby={`${moduleId}-notes-heading`} hidden>
+  <div class="section-heading">
+    <div>
+      <h2 id={`${moduleId}-notes-heading`}>Concept notes.</h2>
+      <p class="section-context">Read before or after a lab.</p>
+    </div>
+  </div>
   <ol class="lesson-list">
-    {lessons.map((lesson) => <li><a href={`/lessons/${lesson.id}`}><span>{lesson.data.title}</span><span>Read →</span></a></li>)}
+    {lessons.map((lesson) => <li><a href={`/lessons/${lesson.id}`}><span><strong>{lesson.data.title}</strong>{lesson.data.description && <small>{lesson.data.description}</small>}</span><span>Read <ArrowRight size={15} aria-hidden="true" /></span></a></li>)}
   </ol>
 </section>
 
-{supplemental.length > 0 && (
-  <section class="page-width module-section">
-    <div class="section-heading"><div><h2>Optional extensions</h2><p class="section-context">Supplemental depth</p></div></div>
-    <div class="skill-grid">
-      {supplemental.map((skill) => <article class="skill-item"><span class="status-pill">supplemental</span><h3>{skill.title}</h3><p>{skill.description}</p><a class="text-link" href={skill.labHref}>Open extension →</a></article>)}
-    </div>
-  </section>
-)}
+<script>
+  const moduleViews = Array.from(document.querySelectorAll<HTMLElement>('[data-module-view]'));
+  const moduleTabs = Array.from(document.querySelectorAll<HTMLAnchorElement>('.module-tabs a'));
+  const allowedViews = new Set(['overview', 'labs', 'notes']);
+
+  function applyModuleView(requested: string | null) {
+    const candidate = requested ?? 'overview';
+    const nextView = allowedViews.has(candidate) ? candidate : 'overview';
+    moduleViews.forEach((section) => {
+      const visible = section.getAttribute('data-module-view') === nextView;
+      section.toggleAttribute('hidden', !visible);
+      section.setAttribute('aria-hidden', String(!visible));
+    });
+    moduleTabs.forEach((tab) => {
+      const tabView = new URL(tab.href).searchParams.get('view') ?? 'overview';
+      if (tabView === nextView) tab.setAttribute('aria-current', 'page');
+      else tab.removeAttribute('aria-current');
+    });
+  }
+
+  applyModuleView(new URLSearchParams(window.location.search).get('view'));
+  window.addEventListener('popstate', () => applyModuleView(new URLSearchParams(window.location.search).get('view')));
+</script>

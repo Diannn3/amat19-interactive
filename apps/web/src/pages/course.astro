@@ -1,4 +1,90 @@
 ---
-import { currentCourseProfile } from '@amat19/course-content'; import AppLayout from '../layouts/AppLayout.astro';
+import { currentCourseProfile } from '@amat19/course-content';
+import AppLayout from '../layouts/AppLayout.astro';
 ---
-<AppLayout title="Course map"><section class="page-width page-intro"><h1 class="display-title">One finite-math path, five connected modules.</h1><p class="page-context">Current semester course map</p><p class="lede">The current AY 2025–2026 course guide is the scope authority. Older handout-only topics are labeled supplemental instead of silently treated as current requirements.</p></section><section class="page-width module-section"><div class="course-roadmap">{currentCourseProfile.modules.map((module,index)=><article class="roadmap-module"><span class="roadmap-module__number">0{index+1}</span><div><h2><a href={module.href}>{module.title}</a></h2><p>{module.description}</p><div class="roadmap-skills">{currentCourseProfile.skills.filter(s=>s.module===module.id).map(skill=><a href={skill.relatedLab||module.href}><span class="status-pill">{skill.status}</span>{skill.title}</a>)}</div></div></article>)}</div></section><section class="page-width module-section"><div class="section-heading"><div><h2>After the module labs</h2><p class="section-context">Whole-course practice</p></div></div><div class="route-grid"><a class="route-link" href="/practice"><span><strong>Mixed Practice</strong><small>Immediate feedback across the implemented core modules.</small></span><span aria-hidden="true">→</span></a><a class="route-link" href="/exam"><span><strong>Mixed Course Check</strong><small>Original generated set with feedback held until submission.</small></span><span aria-hidden="true">→</span></a><a class="route-link" href="/reference"><span><strong>Formula & Notation Reference</strong><small>Compact formulas with assumptions and links back to the live tools.</small></span><span aria-hidden="true">→</span></a><a class="route-link" href="/progress"><span><strong>Progress & Local Data</strong><small>Review transparent skill evidence and export your browser-local study data.</small></span><span aria-hidden="true">→</span></a></div></section><section class="page-width feature-band"><div><h2>Current guide first; older depth stays visible but labeled.</h2><p class="section-context">Scope policy</p></div><div class="feature-band__grid"><p><strong>Current core:</strong> Logic, Probability, Financial Mathematics, Matrices, Linear Programming and Game Theory.</p><p><strong>Supplemental:</strong> older-material topics such as expected value/variance, simplex and Markov chains remain useful but are visibly marked.</p><p><strong>Public content:</strong> examples are original. Uploaded handouts and exams are used for terminology, scope and assessment patterns—not republished as a question bank.</p></div></section></AppLayout>
+
+<AppLayout title="Course map">
+  <section class="page-width page-intro">
+    <h1 class="display-title">Five modules. One course map.</h1>
+    <p class="page-context">AY 2025–2026 scope</p>
+    <p class="lede">Open a module, pick a lab, and keep the next step close.</p>
+    <details class="route-note">
+      <summary>How scope is labeled</summary>
+      <p>The current AY 2025–2026 course guide is the scope authority. Older handout-only topics stay visible as supplemental instead of becoming hidden requirements.</p>
+    </details>
+  </section>
+
+  <section class="page-width module-section" aria-labelledby="course-modules-heading">
+    <div class="section-heading">
+      <div>
+        <h2 id="course-modules-heading">Open a module.</h2>
+        <p class="section-context">Five connected routes</p>
+      </div>
+    </div>
+    <div class="course-roadmap">
+      {currentCourseProfile.modules.map((module, index) => (
+        <article class="roadmap-module">
+          <span class="roadmap-module__number" aria-hidden="true">0{index + 1}</span>
+          <div>
+            <h2><a href={module.href}>{module.title}</a></h2>
+            <p>{module.description}</p>
+            <a class="text-link" href={module.href}>Open module <span aria-hidden="true">→</span></a>
+            <details class="roadmap-details">
+              <summary>{currentCourseProfile.skills.filter((skill) => skill.module === module.id).length} skills</summary>
+              <div class="roadmap-skills">
+                {currentCourseProfile.skills.filter((skill) => skill.module === module.id).map((skill) => (
+                  <a href={skill.relatedLab || module.href}>
+                    <span class="status-pill">{skill.status}</span>
+                    {skill.title}
+                  </a>
+                ))}
+              </div>
+            </details>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="page-width module-section" aria-labelledby="course-tools-heading">
+    <div class="section-heading">
+      <div>
+        <h2 id="course-tools-heading">Continue from here.</h2>
+        <p class="section-context">Whole-course tools</p>
+      </div>
+    </div>
+    <div class="route-grid">
+      <a class="route-link" href="/practice">
+        <span><strong>Mixed Practice</strong><small>Retrieve across the core modules.</small></span>
+        <span aria-hidden="true">→</span>
+      </a>
+      <a class="route-link" href="/exam">
+        <span><strong>Mixed Course Check</strong><small>Submit once, then review feedback.</small></span>
+        <span aria-hidden="true">→</span>
+      </a>
+      <a class="route-link" href="/reference">
+        <span><strong>Formula &amp; Notation</strong><small>Check symbols, assumptions, and live links.</small></span>
+        <span aria-hidden="true">→</span>
+      </a>
+      <a class="route-link" href="/progress">
+        <span><strong>Progress &amp; Local Data</strong><small>Review evidence and browser-local records.</small></span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="page-width feature-band course-policy">
+    <div>
+      <h2>Scope stays visible.</h2>
+      <p class="section-context">Course policy</p>
+    </div>
+    <details>
+      <summary>View the source boundaries</summary>
+      <div class="feature-band__grid">
+        <p><strong>Current core:</strong> Logic, Probability, Financial Mathematics, Matrices, Linear Programming, and Game Theory.</p>
+        <p><strong>Supplemental:</strong> older-material topics such as expected value/variance, simplex, and Markov chains remain labeled.</p>
+        <p><strong>Public content:</strong> examples are original. Uploaded handouts and exams guide terminology and scope; they are not republished as a question bank.</p>
+      </div>
+    </details>
+  </section>
+</AppLayout>
