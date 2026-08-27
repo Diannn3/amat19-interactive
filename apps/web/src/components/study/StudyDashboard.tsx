@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Bookmark, Clock3, RotateCcw, Sparkles } from 'lucide-react';
 import { buildStudyQueue } from '@amat19/learning-engine';
-import { currentCourseProfile, skillGraph } from '@amat19/course-content';
+import { skillGraph } from '@amat19/course-content';
 import { DexiePersistence, type MasteryRecord, type PersistedAttempt, type PersistedSession, type SavedItem } from '@amat19/persistence';
 import { Badge } from '../ui/Badge';import { Skeleton } from '../ui/Skeleton';
 import { masteryLabel } from '../../lib/local-progress';

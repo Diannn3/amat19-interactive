@@ -3,21 +3,21 @@ import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { BookOpen, Search, X } from 'lucide-react';
 import { currentCourseProfile, searchSkills } from '@amat19/course-content';
 
-type Group = 'Study' | 'Labs' | 'Lessons' | 'Reference' | 'Actions';
+type Group = 'Workspace' | 'Labs' | 'Lessons' | 'Library' | 'Practice';
 type Result = { id: string; title: string; subtitle: string; href: string; group: Group };
 
 const fixed: Result[] = [
-  { id: 'study', title: 'Study Queue', subtitle: 'Recommended next work and recent sessions', href: '/study', group: 'Study' },
-  { id: 'course', title: 'Course Map', subtitle: 'Five connected AMAT 19 modules', href: '/course', group: 'Study' },
-  { id: 'practice', title: 'Mixed Practice', subtitle: 'Adaptive whole-course retrieval', href: '/practice', group: 'Actions' },
-  { id: 'exam', title: 'Mixed Course Check', subtitle: 'Generated assessment with delayed feedback', href: '/exam', group: 'Actions' },
-  { id: 'progress', title: 'Progress', subtitle: 'Skill-level learning evidence', href: '/progress', group: 'Study' },
-  { id: 'saved', title: 'Saved', subtitle: 'Bookmarks and saved problems', href: '/saved', group: 'Actions' },
-  { id: 'reference', title: 'Formula & Notation Reference', subtitle: 'Symbols, formulas, and repair links', href: '/reference', group: 'Reference' },
-  { id: 'settings', title: 'Settings', subtitle: 'Notation, motion, practice, and display preferences', href: '/settings', group: 'Actions' },
+  { id: 'study', title: 'Study Queue', subtitle: 'Recommended next work and recent sessions', href: '/study', group: 'Workspace' },
+  { id: 'course', title: 'Course Map', subtitle: 'Five connected AMAT 19 modules', href: '/course', group: 'Workspace' },
+  { id: 'practice', title: 'Mixed Practice', subtitle: 'Adaptive whole-course retrieval', href: '/practice', group: 'Practice' },
+  { id: 'exam', title: 'Mixed Course Check', subtitle: 'Generated assessment with delayed feedback', href: '/exam', group: 'Practice' },
+  { id: 'progress', title: 'Progress', subtitle: 'Skill-level learning evidence', href: '/progress', group: 'Workspace' },
+  { id: 'saved', title: 'Saved', subtitle: 'Bookmarks and saved problems', href: '/saved', group: 'Library' },
+  { id: 'reference', title: 'Formula & Notation Reference', subtitle: 'Symbols, formulas, and repair links', href: '/reference', group: 'Library' },
+  { id: 'settings', title: 'Settings', subtitle: 'Notation, motion, practice, and display preferences', href: '/settings', group: 'Library' },
 ];
 
-const groupOrder: Group[] = ['Study', 'Labs', 'Lessons', 'Reference', 'Actions'];
+const groupOrder: Group[] = ['Workspace', 'Labs', 'Lessons', 'Library', 'Practice'];
 
 function includesQuery(result: Result, query: string) {
   return `${result.title} ${result.subtitle} ${result.group}`.toLowerCase().includes(query);

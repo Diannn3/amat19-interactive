@@ -23,6 +23,8 @@ const {
   referenceHref = '/reference',
 } = Astro.props;
 const moduleHref = `/modules/${moduleId}`;
+const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-drill`;
+const practiceHref = `/practice?preset=${practicePreset}`;
 ---
 <article class="lab-route" data-lab-shell={title} data-lab-scope={scope}>
   <nav class="lab-breadcrumbs" aria-label="Breadcrumb">
@@ -39,14 +41,36 @@ const moduleHref = `/modules/${moduleId}`;
       <p>{description}</p>
       <div class="lab-route__context"><span>{eyebrow}</span><span class="lab-route__scope">{scope === 'current' ? 'Current core' : 'Supplemental depth'}</span></div>
     </div>
-    <nav class="lab-route__links" aria-label="Lab context">
-      {lessonHref && <a href={lessonHref}>Read the concept</a>}
-      <a href={referenceHref}>Reference</a>
+    <nav class="lab-route__links" aria-label="Lab actions">
       <a href={moduleHref}>Back to {moduleLabel}</a>
+      <a href={referenceHref}>Reference</a>
     </nav>
   </header>
 
-  <div class="lab-route__workspace">
-    <slot />
+  <div class="lab-route__workspace lab-route__workspace-frame" data-lab-frame>
+    <aside class="lab-route__context-rail" aria-label="Lab context">
+      <p class="lab-rail-label">Lab context</p>
+      <strong>{moduleLabel}</strong>
+      <span>{scope === 'current' ? 'Core course path' : 'Optional course depth'}</span>
+      <nav aria-label="Lab context links">
+        {lessonHref && <a href={lessonHref}>Read the concept</a>}
+        <a href={referenceHref}>Check notation</a>
+        <a href={practiceHref}>Practice this module</a>
+        <a href={moduleHref}>All {moduleLabel} work</a>
+      </nav>
+    </aside>
+
+    <section class="lab-route__canvas" aria-label={`${title} workspace`}>
+      <slot />
+    </section>
+
+    <aside class="lab-route__support" aria-label="Lab support">
+      <h2>Need a reminder?</h2>
+      <p>Change one input, inspect the result, then read the explanation beside it.</p>
+      <details>
+        <summary>About this workspace</summary>
+        <p>Your work stays in this browser. The lab exposes its assumptions and exact steps as you explore.</p>
+      </details>
+    </aside>
   </div>
 </article>
