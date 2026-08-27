@@ -35,12 +35,9 @@ const moduleHref = `/modules/${moduleId}`;
 
   <header class="lab-route__header">
     <div class="lab-route__heading">
-      <div class="lab-route__eyebrow">
-        <p class="eyebrow">{eyebrow}</p>
-        <span class="lab-route__scope">{scope === 'current' ? 'Current core' : 'Supplemental depth'}</span>
-      </div>
       <h1>{title}</h1>
       <p>{description}</p>
+      <div class="lab-route__context"><span>{eyebrow}</span><span class="lab-route__scope">{scope === 'current' ? 'Current core' : 'Supplemental depth'}</span></div>
     </div>
     <nav class="lab-route__links" aria-label="Lab context">
       {lessonHref && <a href={lessonHref}>Read the concept</a>}

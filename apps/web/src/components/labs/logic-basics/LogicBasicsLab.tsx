@@ -37,7 +37,7 @@ export default function LogicBasicsLab(){
    <div className="logic-mode-tabs" aria-label="Logic basics practice mode">{(Object.keys(MODE_LABELS) as Mode[]).map(value=><Button key={value} variant={mode===value?'primary':'secondary'} onClick={()=>chooseMode(value)}>{value==='symbolize'||value==='translate'?<Languages size={15}/>:<Shapes size={15}/>} {MODE_LABELS[value]}</Button>)}</div>
   </div>
   <div className="learning-lab__prompt symbolization-card">
-   <div><p className="section-label">Controlled practice · {index+1}/{pool.length}</p><h2>{MODE_LABELS[mode]}</h2><p className="learning-lab__question">{exercise.prompt}</p></div>
+   <div><h2>{MODE_LABELS[mode]}</h2><p className="section-context">Controlled practice · {index+1}/{pool.length}</p><p className="learning-lab__question">{exercise.prompt}</p></div>
    {exercise.preview&&<div className="symbolization-preview" aria-label="Expression structure preview">{exercise.preview}</div>}
    <div className="choice-grid" role="radiogroup" aria-label="Answer choices">{exercise.options.map(value=><button key={value} type="button" className="choice-button" role="radio" aria-checked={selected===value} data-selected={selected===value} onClick={()=>{setSelected(value);setChecked(false)}}>{value}</button>)}</div>
    <div className="action-row"><Button variant="primary" type="button" disabled={!selected} onClick={check}>Check answer</Button><Button variant="ghost" type="button" onClick={()=>{setSelected(undefined);setChecked(false)}}><RotateCcw size={16}/> Reset</Button></div>

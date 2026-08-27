@@ -46,8 +46,8 @@ export default function ProgressDashboard() {
       <div className="study-panel__body">
         <div className="progress-focus__header">
           <div>
-            <p className="eyebrow">Priority queue</p>
             <h2>{needsAttention.length ? 'Needs attention' : 'Core skills are secure'}</h2>
+            <p className="section-context">Priority queue</p>
             <p className="lede">{needsAttention.length ? `${needsAttention.length} core skill${needsAttention.length === 1 ? '' : 's'} ${needsAttention.length === 1 ? 'is' : 'are'} below Secure. Start with one weak link, then return after an independent attempt.` : 'Every current core skill has Secure evidence. Keep retrieving to maintain it.'}</p>
           </div>
           <div className="progress-focus__stats" aria-label="Progress evidence summary">
@@ -63,7 +63,7 @@ export default function ProgressDashboard() {
             const label = masteryLabel(record);
             return <a className="progress-skill progress-focus-skill" href={skill.relatedLab ?? '#'} key={skill.id}>
               <span><strong>{skill.title}</strong><small>{record ? `${record.attempts} evidence update${record.attempts === 1 ? '' : 's'} · ${record.independentSuccesses ?? 0} independent success${(record.independentSuccesses ?? 0) === 1 ? '' : 'es'}` : 'No saved practice evidence yet'}</small></span>
-              <span className="progress-skill__status"><span className="mastery-dot" data-band={label.toLowerCase()} aria-hidden="true" /><Badge>{label}</Badge><ArrowRight size={15} aria-hidden="true" /></span>
+              <span className="progress-skill__status" data-band={label.toLowerCase()}><Badge>{label}</Badge><ArrowRight size={15} aria-hidden="true" /></span>
             </a>;
           })}
         </div> : <div className="empty-state"><strong>No current skills need attention.</strong><p>New evidence will appear here after you use a supported lab.</p></div>}
@@ -74,7 +74,7 @@ export default function ProgressDashboard() {
 
     <section className="study-panel">
       <div className="study-panel__body">
-        <div className="section-heading"><div><p className="eyebrow">Recent evidence</p><h2>Latest practice</h2></div></div>
+        <div className="section-heading"><div><h2>Latest practice</h2><p className="section-context">Recent evidence</p></div></div>
         {attempts.length ? <div className="saved-grid">{attempts.slice(0, 8).map((attempt) => <div className="saved-item" key={attempt.attemptId}><span><strong>{attempt.exerciseId}</strong><small>{attempt.module} · {new Date(attempt.updatedAt).toLocaleString()}</small></span><Badge>{attempt.finalState}</Badge></div>)}</div> : <div className="empty-state"><strong>No attempts yet.</strong><p>Practice results will appear here after you check work in supported labs.</p></div>}
       </div>
     </section>

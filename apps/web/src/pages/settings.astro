@@ -1,4 +1,4 @@
 ---
 import AppLayout from '../layouts/AppLayout.astro';import SettingsPanel from '../components/settings/SettingsPanel';
 ---
-<AppLayout title="Settings"><section class="page-width page-intro"><p class="eyebrow">Local preferences</p><h1 class="display-title">Make the study surface yours.</h1><p class="lede">These settings live in IndexedDB with your other local study data. They do not create an account or leave the browser.</p></section><section class="page-width section-shell"><SettingsPanel client:load /></section></AppLayout>
+<AppLayout title="Settings"><section class="page-width page-intro"><h1 class="display-title">Make the study surface yours.</h1><p class="page-context">Local preferences</p><p class="lede">These settings live in IndexedDB with your other local study data. They do not create an account or leave the browser.</p></section><section class="page-width section-shell"><SettingsPanel client:load /></section></AppLayout>

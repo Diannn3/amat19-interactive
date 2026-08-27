@@ -23,8 +23,8 @@ export function EvaluationPanel({
 
   return (
     <aside className="truth-lab__panel" aria-labelledby="why-heading">
-      <p className="truth-lab__section-label">Why / Steps</p>
       <h2 id="why-heading">{step ? step.expression : 'Select a result'}</h2>
+      <p className="truth-lab__section-label">Why / Steps</p>
       {!step || !row ? (
         <p><MousePointer2 size={17} aria-hidden="true" /> Select any computed cell to inspect its connective rule.</p>
       ) : (

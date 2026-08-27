@@ -140,8 +140,8 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
 
     <div className="mixed-practice__toolbar">
       <div>
-        <p className="eyebrow">Original generated set · seed {seed}</p>
         <h2>{mode === 'exam' ? 'Mixed course check' : practicePresets.find((preset) => preset.id === presetId)?.label ?? 'Mixed practice'}</h2>
+        <p className="section-context">{mode === 'exam' ? 'Original practice set' : 'Original generated set'}</p>
         <p>{mode === 'exam' ? 'Feedback stays hidden until submission. This is a study check, not an official course examination.' : practicePresets.find((preset) => preset.id === presetId)?.description ?? 'Check each item, read the reason, then repair the linked skill.'}</p>
         {modules?.length && <div className="hero-stage__meta">{modules.map((module) => <Badge key={module}>{module}</Badge>)}</div>}
       </div>

@@ -94,8 +94,8 @@ export default function ConditionalProbabilityLab() {
   return (
     <section className="probability-lab" data-testid="conditional-probability-lab">
       <div className="probability-lab__controls">
-        <p className="section-label">Canonical two-way table</p>
         <h2>Conditioning changes the active universe.</h2>
+        <p className="section-context">Canonical two-way table</p>
         <p>
           Edit the four disjoint regions. The table, tree, fractions, and independence test all read the same exact
           event model.
