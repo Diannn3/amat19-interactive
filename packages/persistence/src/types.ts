@@ -18,10 +18,11 @@ export type LocalSnapshot={
  exportedAt:string;schemaVersion:number;drafts:LabDraft[];attempts:PersistedAttempt[];mastery:MasteryRecord[];settings:LocalSetting[];
  sessions:PersistedSession[];savedItems:SavedItem[];contentMeta?:ContentMeta;
 };
+export type MasteryUpdater=(previous:Readonly<MasteryRecord>|undefined)=>MasteryRecord;
 export interface PersistencePort{
  getLabDraft<T=unknown>(labId:string):Promise<LabDraft<T>|undefined>;listLabDrafts():Promise<LabDraft[]>;saveLabDraft<T=unknown>(draft:LabDraft<T>):Promise<void>;deleteLabDraft(labId:string):Promise<void>;
  saveAttempt<T=unknown>(attempt:PersistedAttempt<T>):Promise<void>;listAttempts(exerciseId?:string):Promise<PersistedAttempt[]>;
- getMastery(skillId:string):Promise<MasteryRecord|undefined>;listMastery():Promise<MasteryRecord[]>;saveMastery(record:MasteryRecord):Promise<void>;
+ getMastery(skillId:string):Promise<MasteryRecord|undefined>;listMastery():Promise<MasteryRecord[]>;saveMastery(record:MasteryRecord):Promise<void>;updateMastery(skillId:string,updater:MasteryUpdater):Promise<MasteryRecord>;
  getSession<T=unknown>(sessionId:string):Promise<PersistedSession<T>|undefined>;listSessions():Promise<PersistedSession[]>;saveSession<T=unknown>(session:PersistedSession<T>):Promise<void>;deleteSession(sessionId:string):Promise<void>;
  getSavedItem<T=unknown>(id:string):Promise<SavedItem<T>|undefined>;listSavedItems(kind?:SavedItem['kind']):Promise<SavedItem[]>;saveItem<T=unknown>(item:SavedItem<T>):Promise<void>;deleteSavedItem(id:string):Promise<void>;
  getSetting<T=unknown>(key:string):Promise<T|undefined>;listSettings():Promise<LocalSetting[]>;setSetting<T=unknown>(key:string,value:T,updatedAt:string):Promise<void>;

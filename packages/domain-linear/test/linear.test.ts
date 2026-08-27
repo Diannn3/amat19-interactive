@@ -12,3 +12,15 @@ test('graphical LP detects infeasibility',()=>{const result=solveGraphicalLP([{a
 test('graphical LP detects an improving recession direction',()=>{const result=solveGraphicalLP([{a:1,b:-1,relation:'<=' as const,c:1}],{x:1,y:1,sense:'max'});assert.equal(result.status,'unbounded');});
 test('simplex trace reaches standard-form optimum',()=>{const result=simplexMax({objective:[3,2],constraints:[{coefficients:[1,1],bound:4},{coefficients:[1,0],bound:3},{coefficients:[0,1],bound:2}]});assert.equal(result.status,'optimal');assert.equal(result.objectiveValue?.toString(),'11');assert.deepEqual(result.solution?.map(v=>v.toString()),['3','1']);assert.ok(result.steps.length>=2);});
 test('Markov transition validation and k-step evolution remain exact',()=>{const P=transitionMatrix([['3/4','1/4'],['1/2','1/2']]),d=distribution([1,0]);assert.deepEqual(distributionAfter(d,P,2).map(v=>v.toString()),['11/16','5/16']);assert.deepEqual(stationaryTwoState(P).map(v=>v.toString()),['2/3','1/3']);assert.deepEqual(matrixToStrings(matrixPower(P,0)),[['1','0'],['0','1']]);});
+
+test('graphical LP reports multiple optimal corners on an optimal edge',()=>{
+ const result=solveGraphicalLP([{a:1,b:1,relation:'<=' as const,c:4}],{x:1,y:1,sense:'max'});
+ assert.equal(result.status,'optimal');assert.equal(result.optima.length,2);assert.match(result.message,/Multiple corner points/i);
+ assert.deepEqual(new Set(result.optima.map(item=>`${item.point.x},${item.point.y}`)),new Set(['4,0','0,4']));
+});
+
+test('graphical LP tolerates redundant parallel constraints without duplicating vertices',()=>{
+ const result=solveGraphicalLP([{a:1,b:1,relation:'<=' as const,c:4},{a:2,b:2,relation:'<=' as const,c:8}],{x:2,y:1,sense:'max'});
+ assert.equal(result.status,'optimal');assert.deepEqual(result.optima[0]?.point,{x:4,y:0});
+ assert.equal(new Set(result.vertices.map(item=>`${item.point.x},${item.point.y}`)).size,result.vertices.length);
+});

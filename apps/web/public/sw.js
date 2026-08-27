@@ -1,31 +1,40 @@
-const VERSION = 'amat19-v4';
+const VERSION = 'amat19-v5-hardening';
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
+const NAVIGATION_TIMEOUT_MS = 4000;
 const CORE_ROUTES = [
   '/',
+  '/study',
+  '/course',
+  '/practice',
+  '/exam',
+  '/reference',
+  '/progress',
+  '/saved',
+  '/settings',
   '/modules/logic',
   '/modules/probability',
   '/modules/finance',
   '/modules/linear',
   '/modules/applications',
-  '/course',
-  '/practice',
-  '/exam',
-  '/reference',
+  '/labs/logic-basics',
+  '/labs/truth-table',
+  '/labs/equivalence',
+  '/labs/formal-proof',
+  '/labs/counting',
+  '/labs/conditional-probability',
+  '/labs/distribution',
+  '/labs/probability-simulation',
+  '/labs/bayes',
   '/labs/interest',
+  '/labs/cashflow-timeline',
   '/labs/annuity',
   '/labs/bonds',
   '/labs/matrix-operations',
   '/labs/row-reduction',
   '/labs/linear-programming',
   '/labs/game-theory',
-  '/labs/truth-table',
-  '/labs/equivalence',
-  '/labs/formal-proof',
-  '/labs/counting',
-  '/labs/conditional-probability',
-  '/labs/probability-simulation',
-  '/progress',
+  '/labs/markov',
   '/offline.html',
   '/manifest.webmanifest'
 ];
@@ -51,16 +60,37 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+function navigationCacheKey(request) {
+  const url = new URL(request.url);
+  return new Request(`${url.origin}${url.pathname}`, { method: 'GET', headers: { Accept: 'text/html' } });
+}
+
+async function cachedNavigation(request) {
+  return (await caches.match(navigationCacheKey(request), { ignoreSearch: true })) ||
+    (await caches.match(request, { ignoreSearch: true })) ||
+    (await caches.match('/offline.html'));
+}
+
+async function fetchWithTimeout(request, timeoutMs = NAVIGATION_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(request, { signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function networkFirst(request) {
   try {
-    const response = await fetch(request);
+    const response = await fetchWithTimeout(request);
     if (response.ok) {
       const cache = await caches.open(PAGE_CACHE);
-      await cache.put(request, response.clone());
+      await cache.put(navigationCacheKey(request), response.clone());
     }
     return response;
   } catch {
-    return (await caches.match(request)) || (await caches.match('/offline.html'));
+    return cachedNavigation(request);
   }
 }
 

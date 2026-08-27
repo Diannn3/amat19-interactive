@@ -10,12 +10,14 @@ export type RichMastery = {
   streak: number;
   band: MasteryBand;
 };
-export function masteryBand(score: number, attempts: number, _independentSuccesses = 0): MasteryBand {
+
+export function masteryBand(score: number, attempts: number, independentSuccesses = 0): MasteryBand {
   if (attempts === 0) return 'new';
   if (score < 0.45) return 'learning';
-  if (attempts >= 3 && score >= 0.78) return 'secure';
+  if (attempts >= 3 && score >= 0.78 && independentSuccesses >= 2) return 'secure';
   return 'developing';
 }
+
 export function updateMastery(input: {
   previousScore: number;
   previousAttempts: number;

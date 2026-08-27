@@ -2,61 +2,55 @@
 
 A local-first, course-aligned interactive study environment for UPLB AMAT 19 (Finite Mathematics).
 
-The product is intentionally **not** a dashboard of black-box calculators. Every implemented domain separates deterministic mathematical rules from teaching feedback and UI state, and the course map distinguishes current-guide core topics from older supplemental depth.
+AMAT 19 Study Lab is intentionally **not** a dashboard of black-box calculators. Mathematical truth lives in deterministic, framework-independent engines; React owns interaction state; Astro owns routes/content; learner data stays in the browser.
 
-## Current implementation
+## What is implemented
 
 ### Logic
 - Logic Basics / controlled symbolization
-- Truth Table Lab with parse structure, row-pattern teaching, practice, classification, and argument validity
-- Equivalence Lab
-- AMAT-specific Formal Proof Workspace with named equivalence/inference rules
+- Truth Table Lab with structure, systematic row patterns, classification, practice, and argument-validity mode
+- Equivalence Lab with named one-step rewrite validation
+- Formal Proof Workspace with AMAT equivalence/inference rules and scoped direct/conditional/indirect proof support
 
 ### Probability
 - Counting Explorer: permutations, combinations, repetition models, inclusion–exclusion
-- Conditional Probability & Independence Lab with two-way table/tree views
+- Conditional Probability & Independence with exact two-way analysis
+- Bayes Update Lab (supplemental)
 - Discrete Distribution Lab (supplemental)
-- Seeded Probability Simulation Lab in a Web Worker (supplemental)
+- Seeded Probability Simulation Lab using a Web Worker (supplemental)
 
 ### Financial Mathematics
-- Interest & Time Value Lab: simple/compound/nominal accumulation, equivalent rates, focal-date valuation
-- Annuity Timeline Lab: immediate/due, PV/FV, solve value/payment
-- Bond Pricing Lab: coupons, redemption, premium/discount (supplemental older-material depth)
+- Interest & Time Value: simple/compound/nominal accumulation, rate equivalence, focal-date valuation
+- Cash-flow Timeline
+- Annuity Timeline: immediate/due, present/future value, solve payment
+- Bond Pricing (supplemental)
+- BigInt-backed fixed-point `FinanceDecimal` with deterministic traces; representative calculations are cross-checked against independent high-precision reference vectors
 
-### Matrices & Systems
-- Matrix Operations Lab with exact rational arithmetic and row-by-column inspection
-- Gauss–Jordan / RREF / inverse / systems lab with exact row-operation traces
+### Matrices & Applications
+- Matrix Operations with exact rational arithmetic and row-by-column traces
+- Gauss–Jordan / RREF / inverse / systems with immutable row-operation traces
+- Graphical Linear Programming with bounded/infeasible/unbounded detection and a bounded educational simplex trace
+- Zero-sum Game Theory with maximin/minimax, saddle points, strict dominance, and exact supported 2×2 mixtures
+- Markov Chains (supplemental)
 
-### Applications
-- Graphical Linear Programming Lab with feasible corners, bounded/infeasible/unbounded detection, and synchronized educational simplex trace for supported standard max problems
-- Zero-sum Game Theory Lab with maximin/minimax, saddle points, strict dominance, and exact 2×2 mixtures
-- Markov Chain Lab (supplemental older-material depth)
-
-### Whole-course surfaces
+### Whole-course workflow
+- `/study` prioritized retrieval/repair queue
 - `/course` semester-aware roadmap
-- `/practice` generated mixed practice with immediate feedback and repair links
-- `/exam` original mixed course check with feedback held until submission
-- `/reference` formula/notation reference
-- `/progress` transparent local mastery evidence plus export/import/clear controls
-- PWA/offline shell and user-controlled update activation
-
-## Pass 5 UI/UX consolidation
-
-- responsive, accessible AppLayout navigation with a mobile dialog sheet
-- grouped keyboard command palette for course, lab, lesson, reference, and action destinations
-- one shared context shell across all 18 lab routes, with current/supplemental scope made explicit
-- visual course/module journeys that foreground the study loop instead of long text blocks
-- one-question practice and exam stages with preserved progress, feedback, and repair links
-- searchable reference browser and progress-first repair queue
-- mobile overflow containment, reduced-motion/forced-colors handling, hydration guards, and lab control accessibility fixes
+- `/practice` generated practice with immediate deterministic feedback
+- `/exam` original mixed course check with delayed feedback
+- `/reference` searchable formula/notation reference
+- `/progress` local mastery evidence
+- `/saved` local saved-item library
+- `/settings` local preferences/data controls
+- PWA/offline shell with learner-controlled updates
 
 ## Architecture
 
 ```text
 Astro static/content shell
-├─ course + lesson routes
-├─ one React root per interactive lab
-└─ local-first app surfaces
+├─ course, module, lesson, practice, progress, and library routes
+├─ one React root per complex interactive lab
+└─ local-first browser application surfaces
 
 Framework-independent packages
 ├─ @amat19/math-core
@@ -70,11 +64,33 @@ Framework-independent packages
 └─ @amat19/course-content
 ```
 
-React owns interaction state, not mathematical truth. Logic, exact rational probability, matrices, game theory and deterministic traces live outside React/Astro. Expensive truth-table and probability-simulation work has Web Worker seams.
+Key contracts:
+- React/Astro do not decide mathematical truth.
+- Logic/probability/matrices/game calculations use exact deterministic representations where appropriate.
+- No `eval`, `new Function`, LLM grading, account system, cloud backend, or analytics is required.
+- IndexedDB is behind a persistence port rather than embedded throughout UI code.
+- Current-guide topics and supplemental older-material depth stay explicitly separated.
 
-## Scope policy
+## Pass 8 correctness and release hardening
 
-The AY 2025–2026 course guide is the primary current-scope authority. Older handouts inform terminology and supplemental depth. Historical exams are assessment-pattern evidence only and are **not** republished as public question banks. Learner-facing examples and mixed practice are original/generated.
+The current hardening pass targets `main` baseline commit `d71ca940a0882a929a6d23a80ea7f4dea8df2bdc`.
+
+Major changes:
+- pnpm 11-compatible GitHub Actions using `pnpm/setup`, immutable action SHA pins, read-only workflow permissions, and blocking high-severity dependency audit
+- atomic mastery updates to prevent concurrent lost writes
+- canonical skill IDs plus parent-course aggregation so leaf lab evidence and broad Progress views agree without duplicate storage
+- `Secure` mastery now requires repeated independent evidence
+- targeted practice no longer relabels unrelated questions as the requested skill
+- stronger snapshot validation
+- mathematically ordered CDF and validated total-probability partitions
+- independent high-precision Finance regression vectors
+- expanded proof/LP/probability/persistence/assessment tests
+- full core-route service-worker precache, query-insensitive offline navigation, and a four-second network fallback bound
+- production-build PWA Playwright job
+- explicit Vercel security headers
+- `.vercel/` repository cleanup and React Bits third-party notices
+
+See `docs/HARDENING_PASS8.md` and `docs/RELEASE_CHECKLIST.md`.
 
 ## Local development
 
@@ -98,25 +114,24 @@ pnpm audit:content
 pnpm check
 pnpm build
 pnpm test:e2e:core
+pnpm test:e2e:production
 ```
 
-## Verification state of this snapshot
+## Current verification evidence for Pass 8 workspace
 
-Pass 5 was implemented on branch `pass5/uiux-consolidation` and is locally verified with the installed dependency tree:
+In the implementation workspace, with no dependency download available:
+- direct Node semantic/regression suite: **100/100 passed**
+- architecture audit: **PASS** — 8 framework-independent domain/content packages and 18 single-root lab routes
+- public-content audit: **PASS**
 
-- direct Node semantic suite: **75/75 passed**
-- direct Vitest/fast-check property suite: **5/5 passed**
-- architecture audit: **8 framework-independent packages**, **18 lab routes**, one `client:load` root per lab
-- content audit: **PASS**
-- `astro check`: **0 errors, 0 warnings, 7 non-blocking hints**
-- `astro build`: **57 static pages built**
-- Playwright app-shell suite: **64/64 passed** across 375, 640, 768, and 1920px projects
-- full-course browser suite: **19/19 passed** at 1280px
-- all-lab mobile overflow and critical/serious axe audit: **36/36 passed** at 375 and 1280px
-- visual review completed for the primary mobile, tablet, desktop, forced-colors, reduced-motion, truth-table, linear-programming, and progress surfaces
+The sandbox could not install npm dependencies, so the exact merged-tree Astro/Vitest/Playwright/Axe/frozen-lockfile gates must be run by GitHub CI after applying this pass. The CI workflow has been repaired specifically to perform those gates and now includes a production-build offline PWA check.
 
-The local `pnpm` wrapper did not produce output in this host, so the final semantic, Vitest, Astro, and Playwright checks were invoked directly through the installed Node CLIs. Firefox/WebKit projects, a fresh frozen-lockfile install, Lighthouse, and real service-worker install/update/offline certification remain outside this local evidence. This branch has not been deployed or pushed. See `VERIFICATION.md` and `IMPLEMENTATION_REPORT.md`.
+## Scope and correctness policy
 
-## Important numerical note
+The AY 2025–2026 course guide remains the primary current-scope authority. Older handouts inform terminology and explicitly supplemental depth. Historical examinations are assessment-pattern evidence only and are **not** republished as a question bank. Learner-facing practice is original/generated.
 
-Logic/probability/matrix/game domains use exact deterministic representations where appropriate. The current Finance engine uses JavaScript numeric exponentiation and applies course-style rounding at display boundaries. Before a public correctness release, Finance should either adopt an audited arbitrary-precision decimal implementation or be independently cross-checked to the required course tolerance. This limitation is recorded rather than hidden.
+Finance has a high-precision fixed-point decimal implementation, but some non-integer root/power paths can still use native-number seeding/fallback behavior. Public correctness certification should define and independently verify the required course tolerance rather than claiming arbitrary precision without qualification.
+
+## Third-party material
+
+Small UI patterns are adapted from or inspired by React Bits. See `THIRD_PARTY_NOTICES.md` for attribution and license terms. The repository currently does not declare a project-wide license; that decision belongs to the repository owner.

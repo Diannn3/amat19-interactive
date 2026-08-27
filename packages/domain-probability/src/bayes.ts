@@ -1,5 +1,11 @@
-import { Rational, type RationalLike } from '@amat19/math-core';
+import { Rational, sumRationals, type RationalLike } from '@amat19/math-core';
 export type BayesBinaryInput={priorA:RationalLike;positiveGivenA:RationalLike;positiveGivenNotA:RationalLike};
 export type BayesBinaryResult={priorA:Rational;priorNotA:Rational;positiveGivenA:Rational;positiveGivenNotA:Rational;jointAPositive:Rational;jointNotAPositive:Rational;positive:Rational;posteriorAGivenPositive:Rational};
 export function analyzeBinaryBayes(input:BayesBinaryInput):BayesBinaryResult{const priorA=Rational.from(input.priorA),pPosA=Rational.from(input.positiveGivenA),pPosNotA=Rational.from(input.positiveGivenNotA);for(const [label,p] of [['P(A)',priorA],['P(+|A)',pPosA],['P(+|not A)',pPosNotA]] as const)if(!p.isProbability())throw new RangeError(`${label} must be between 0 and 1.`);const priorNotA=Rational.one().subtract(priorA),jointAPositive=priorA.multiply(pPosA),jointNotAPositive=priorNotA.multiply(pPosNotA),positive=jointAPositive.add(jointNotAPositive);if(positive.isZero())throw new RangeError('The evidence has probability 0, so the posterior is undefined.');return{priorA,priorNotA,positiveGivenA:pPosA,positiveGivenNotA:pPosNotA,jointAPositive,jointNotAPositive,positive,posteriorAGivenPositive:jointAPositive.divide(positive)}}
-export function totalProbability(parts:Array<{prior:RationalLike;likelihood:RationalLike}>):Rational{return parts.reduce((sum,part)=>{const prior=Rational.from(part.prior),likelihood=Rational.from(part.likelihood);if(!prior.isProbability()||!likelihood.isProbability())throw new RangeError('Priors and likelihoods must be probabilities.');return sum.add(prior.multiply(likelihood))},Rational.zero())}
+export function totalProbability(parts:Array<{prior:RationalLike;likelihood:RationalLike}>):Rational{
+ if(parts.length===0)throw new RangeError('Total probability needs at least one partition event.');
+ const normalized=parts.map(part=>({prior:Rational.from(part.prior),likelihood:Rational.from(part.likelihood)}));
+ for(const {prior,likelihood} of normalized)if(!prior.isProbability()||!likelihood.isProbability())throw new RangeError('Priors and likelihoods must be probabilities.');
+ if(!sumRationals(normalized.map(part=>part.prior)).equals(1))throw new RangeError('Partition priors must sum exactly to 1.');
+ return normalized.reduce((sum,part)=>sum.add(part.prior.multiply(part.likelihood)),Rational.zero());
+}

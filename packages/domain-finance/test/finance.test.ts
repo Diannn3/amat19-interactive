@@ -21,3 +21,10 @@ test('bond price equals coupon annuity plus discounted redemption and classifies
   const discount = bondPrice({ faceValue: 1000, couponRatePerPeriod: 0.03, redemptionValue: 1000, yieldPerPeriod: 0.04, periods: 10 });
   assert.equal(discount.classification, 'discount');
 });
+
+test('high-precision finance vectors match independent Decimal reference values',()=>{
+  assert.ok(nominalAccumulation(1250,.072,12,10).exactValue.startsWith('2562.522570997562567105'));
+  assert.ok(effectiveToNominal(.083,12).exactValue.startsWith('0.080000458430804850024'));
+  assert.ok(annuityValue(450,.0075,36,'immediate','present').exactValue.startsWith('14151.062363077090835160'));
+  assert.ok(bondPrice({faceValue:1000,couponRatePerPeriod:.03,redemptionValue:1000,yieldPerPeriod:.025,periods:20}).exactValue.startsWith('1077.945811428234047325'));
+});

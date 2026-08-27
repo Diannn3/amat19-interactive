@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { MemoryPersistence } from '../src/memory.ts';
-import { CURRENT_SCHEMA_VERSION } from '../src/types.ts';
+import { CURRENT_SCHEMA_VERSION, type MasteryRecord } from '../src/types.ts';
 import { validateSnapshot } from '../src/validation.ts';
 
 test('memory persistence supports v3 snapshot roundtrip', async () => {
@@ -24,6 +24,21 @@ test('memory persistence supports v3 snapshot roundtrip', async () => {
   assert.equal((await next.listAttempts()).length, 0);
 });
 
+test('atomic mastery updater preserves every increment',async()=>{
+ const db=new MemoryPersistence();
+ const update=()=>db.updateMastery('logic.truth-values',(previous):MasteryRecord=>({
+   skillId:'logic.truth-values',evidenceScore:1,attempts:(previous?.attempts??0)+1,independentSuccesses:(previous?.independentSuccesses??0)+1,lastPracticed:'2026'
+ }));
+ await Promise.all(Array.from({length:40},()=>update()));
+ const record=await db.getMastery('logic.truth-values');
+ assert.equal(record?.attempts,40);assert.equal(record?.independentSuccesses,40);
+});
+
+test('atomic mastery updater cannot mutate the record key',async()=>{
+ const db=new MemoryPersistence();
+ await assert.rejects(()=>db.updateMastery('logic.truth-values',()=>({skillId:'other',evidenceScore:1,attempts:1,lastPracticed:'2026'})),/cannot change/i);
+});
+
 test('snapshot validator migrates compatible v2 exports',()=>{
  const migrated=validateSnapshot({exportedAt:'2026',schemaVersion:2,drafts:[],attempts:[],mastery:[],settings:[]});
  assert.equal(migrated.schemaVersion,3);assert.deepEqual(migrated.sessions,[]);assert.deepEqual(migrated.savedItems,[]);
@@ -31,4 +46,11 @@ test('snapshot validator migrates compatible v2 exports',()=>{
 
 test('snapshot validator rejects incompatible schema', () => {
   assert.throws(() => validateSnapshot({ exportedAt: 'now', schemaVersion: 99, drafts: [], attempts: [], mastery: [], settings: [],sessions:[],savedItems:[] }), /not supported/);
+});
+
+test('snapshot validator rejects malformed optional counters, settings, and content metadata',()=>{
+ const base={exportedAt:'2026',schemaVersion:3,drafts:[],attempts:[],mastery:[],settings:[],sessions:[],savedItems:[]};
+ assert.throws(()=>validateSnapshot({...base,mastery:[{skillId:'x',evidenceScore:.8,attempts:2,lastPracticed:'2026',streak:-1}]}),/mastery/i);
+ assert.throws(()=>validateSnapshot({...base,settings:[{key:'motion',updatedAt:'2026'}]}),/settings/i);
+ assert.throws(()=>validateSnapshot({...base,contentMeta:{id:'wrong',courseVersion:'x',schemaVersion:3,updatedAt:'2026'}}),/metadata/i);
 });

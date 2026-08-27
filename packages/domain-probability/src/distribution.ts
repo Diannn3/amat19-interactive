@@ -28,5 +28,5 @@ export function binomialDistribution(n:number,p:RationalLike):DistributionAnalys
  return analyzeDiscreteDistribution(Array.from({length:n+1},(_,k)=>({value:k,probability:new Rational(choose(n,k)).multiply(probability.pow(k)).multiply(complement.pow(n-k))})));
 }
 export function distributionCdf(analysis:DistributionAnalysis):Array<{value:Rational;probability:Rational;cumulative:Rational}>{
- let cumulative=Rational.zero();return analysis.outcomes.map(outcome=>{cumulative=cumulative.add(outcome.probability);return{...outcome,cumulative};});
+ let cumulative=Rational.zero();const ordered=[...analysis.outcomes].sort((a,b)=>a.value.compare(b.value));return ordered.map(outcome=>{cumulative=cumulative.add(outcome.probability);return{...outcome,cumulative};});
 }
