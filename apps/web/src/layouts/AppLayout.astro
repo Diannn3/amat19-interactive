@@ -5,6 +5,7 @@ import '../styles/global.css';
 import '../styles/pass4.css';
 import CommandPalette from '../components/navigation/CommandPalette';
 import NavGlyph from '../components/navigation/NavGlyph.astro';
+import { Bookmark, Menu, PanelLeftClose, Search, X } from 'lucide-react';
 
 interface Props { title: string; description?: string; }
 type NavItem = { href: string; label: string; mobileLabel: string; icon: string };
@@ -41,7 +42,7 @@ const isCurrent = (href: string) => {
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
-    <div class="site-shell app-frame" data-shell>
+    <div class="site-shell app-frame" data-shell data-route={currentPath}>
       <aside class="sidebar" aria-label="Primary navigation">
         <div class="brand-row">
           <a class="wordmark" href="/" aria-label="AMAT 19 Study Lab home">
@@ -52,7 +53,7 @@ const isCurrent = (href: string) => {
             </span>
           </a>
           <button class="icon-button sidebar-toggle" type="button" data-sidebar-toggle aria-controls="primary-navigation" aria-expanded="true" aria-label="Collapse navigation">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M5 5h14v14H5zM13 9l-2 3 2 3" /></svg>
+            <PanelLeftClose aria-hidden="true" size={18} strokeWidth={1.7} />
           </button>
         </div>
 
@@ -83,7 +84,7 @@ const isCurrent = (href: string) => {
         <header class="topbar">
           <div class="topbar-leading">
             <button class="mobile-nav__trigger" type="button" data-mobile-nav-trigger aria-expanded="false" aria-controls="mobile-navigation" aria-label="Open navigation">
-              <span class="mobile-nav__icon" aria-hidden="true"><span></span><span></span><span></span></span>
+              <Menu className="mobile-nav__icon" aria-hidden="true" size={19} strokeWidth={1.7} />
             </button>
             <div class="topbar-heading">
               <span class="topbar-kicker">AMAT 19</span>
@@ -93,13 +94,13 @@ const isCurrent = (href: string) => {
 
           <div class="topbar-actions">
             <button class="topbar-search" type="button" data-command-button aria-haspopup="dialog" aria-label="Search AMAT 19">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+              <Search aria-hidden="true" size={17} strokeWidth={1.7} />
               <span>Search study tools</span>
               <kbd>Ctrl K</kbd>
             </button>
-            <span class="topbar-status"><span class="status-dot" aria-hidden="true"></span><span>Local first</span></span>
+            <span class="topbar-status">Local first</span>
             <a class="topbar-icon" href="/saved" aria-label="Open saved study objects" title="Saved study objects">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A2.5 2.5 0 0 1 8.5 2h7A2.5 2.5 0 0 1 18 4.5V21l-6-3-6 3V4.5Z" /></svg>
+              <Bookmark aria-hidden="true" size={17} strokeWidth={1.7} />
             </a>
             <a class="top-avatar" href="/settings" aria-label="Open settings" title="Settings">19</a>
           </div>
@@ -109,11 +110,11 @@ const isCurrent = (href: string) => {
           <div class="mobile-nav__sheet">
             <div class="mobile-nav__head">
               <div>
-                <p class="eyebrow">AMAT 19 · Study Lab</p>
                 <h2 id="mobile-navigation-title">Navigate</h2>
+                <p class="mobile-nav__context">AMAT 19 · Study Lab</p>
               </div>
               <button class="mobile-nav__close" type="button" data-mobile-nav-close aria-label="Close navigation">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+                <X aria-hidden="true" size={18} strokeWidth={1.7} />
               </button>
             </div>
             <nav class="mobile-nav__panel" aria-label="Mobile navigation menu">
@@ -183,7 +184,7 @@ const isCurrent = (href: string) => {
         const closeMobile = () => { if (mobileDialog instanceof HTMLDialogElement && mobileDialog.open) mobileDialog.close(); };
         const openMobile = () => {
           if (!(mobileDialog instanceof HTMLDialogElement) || mobileDialog.open) return;
-          returnFocus = document.activeElement;
+          returnFocus = mobileTrigger instanceof HTMLElement ? mobileTrigger : document.activeElement;
           mobileDialog.showModal();
           mobileTrigger?.setAttribute('aria-expanded', 'true');
           window.requestAnimationFrame(() => mobileClose instanceof HTMLElement && mobileClose.focus());

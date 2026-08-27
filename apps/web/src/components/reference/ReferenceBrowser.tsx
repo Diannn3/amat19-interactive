@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowUpRight, RotateCcw } from 'lucide-react';
 import { Button } from '../ui/Button';
 
@@ -49,8 +49,10 @@ const referenceEntries: ReferenceEntry[] = [
 const modules: Array<'all' | ReferenceModule> = ['all', 'Logic', 'Probability', 'Financial Mathematics', 'Matrices', 'Linear Programming', 'Game Theory'];
 
 export default function ReferenceBrowser() {
+  const [hydrated, setHydrated] = useState(false);
   const [query, setQuery] = useState('');
   const [module, setModule] = useState<'all' | ReferenceModule>('all');
+  useEffect(() => setHydrated(true), []);
   const normalizedQuery = query.trim().toLowerCase();
   const filteredEntries = useMemo(() => referenceEntries.filter((entry) => {
     const matchesModule = module === 'all' || entry.module === module;
@@ -63,7 +65,7 @@ export default function ReferenceBrowser() {
     setModule('all');
   }
 
-  return <div className="reference-browser" data-testid="reference-browser">
+  return <div className="reference-browser" data-testid="reference-browser" data-hydrated={hydrated ? 'true' : undefined}>
     <div className="reference-browser__controls">
       <label className="reference-browser__field reference-browser__search">
         <span>Search reference</span>

@@ -1,11 +1,17 @@
 ---
+import { BookMarked, BookOpen, BookOpenCheck, Bookmark, ChartNoAxesCombined, ClipboardCheck, Settings2 } from 'lucide-react';
+
 interface Props { name: string; }
 const { name } = Astro.props;
+const icons = {
+  study: BookOpenCheck,
+  course: BookOpen,
+  practice: ClipboardCheck,
+  progress: ChartNoAxesCombined,
+  reference: BookMarked,
+  saved: Bookmark,
+  settings: Settings2,
+};
+const Icon = icons[name as keyof typeof icons] ?? BookOpen;
 ---
-{name === 'study' && <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 6 8-3 8 3-8 3-8-3Z" /><path d="M6 8.5V15c0 1.4 2.7 3 6 3s6-1.6 6-3V8.5" /><path d="M20 7v7" /></svg>}
-{name === 'course' && <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z" /><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20" /><path d="M8 7h8M8 10h6" /></svg>}
-{name === 'practice' && <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 7h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h8" /></svg>}
-{name === 'progress' && <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16" /><path d="m7 15 3-4 3 2 5-7" /></svg>}
-{name === 'reference' && <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /><path d="M8 8h6M8 12h6M8 16h4" /><path d="M18 4v16" /></svg>}
-{name === 'saved' && <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A2.5 2.5 0 0 1 8.5 2h7A2.5 2.5 0 0 1 18 4.5V21l-6-3-6 3V4.5Z" /></svg>}
-{name === 'settings' && <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" /><path d="m19.4 15 .1.1-1.6 2.8-.2-.1a2 2 0 0 0-2.9 1.1v.2h-3.2v-.2a2 2 0 0 0-2.9-1.1l-.2.1-1.6-2.8.1-.1a2 2 0 0 0-1.4-3.5h-.2V8.2h.2a2 2 0 0 0 1.4-3.5l-.1-.1 1.6-2.8.2.1a2 2 0 0 0 2.9-1.1V.6h3.2v.2a2 2 0 0 0 2.9 1.1l.2-.1 1.6 2.8-.1.1A2 2 0 0 0 20.8 8h.2v3.3h-.2a2 2 0 0 0-1.4 3.7Z" transform="translate(0 3) scale(.86)" /></svg>}
+<Icon aria-hidden="true" size={19} strokeWidth={1.7} />
