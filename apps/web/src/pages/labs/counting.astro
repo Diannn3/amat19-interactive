@@ -3,8 +3,8 @@ import AppLayout from '../../layouts/AppLayout.astro';
 import LabShell from '../../components/course/LabShell.astro';
 import CountingLab from '../../components/labs/counting/CountingLab';
 ---
-<AppLayout title="Counting Explorer" description="Decide whether order and repetition matter before choosing a formula; all counts stay exact with BigInt.">
-  <LabShell moduleId="probability" moduleLabel="Probability" scope="current" eyebrow="Probability · permutation, combination, inclusion–exclusion" title="Counting Explorer" description="Decide whether order and repetition matter before choosing a formula; all counts stay exact with BigInt." lessonHref="/lessons/probability/counting-models">
+<AppLayout title="Counting Explorer" description="Decide whether order and repetition matter before choosing a counting formula.">
+  <LabShell moduleId="probability" moduleLabel="Probability" scope="current" title="Counting Explorer" description="Decide whether order and repetition matter before choosing a counting formula." lessonHref="/lessons/probability/counting-models">
     <CountingLab client:load />
   </LabShell>
 </AppLayout>

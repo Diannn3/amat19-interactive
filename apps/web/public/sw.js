@@ -2,11 +2,11 @@ const VERSION = 'amat19-v5-hardening';
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
 const NAVIGATION_TIMEOUT_MS = 4000;
+const serviceWorkerScope = /** @type {{ clients: { claim: () => Promise<unknown> } }} */ (self);
 const CORE_ROUTES = [
   '/',
   '/study',
   '/course',
-  '/practice',
   '/exam',
   '/reference',
   '/progress',
@@ -41,9 +41,7 @@ const CORE_ROUTES = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(PAGE_CACHE).then(async (cache) => {
-      await Promise.allSettled(CORE_ROUTES.map((url) => cache.add(url)));
-    })
+    caches.open(PAGE_CACHE).then((cache) => cache.addAll(CORE_ROUTES))
   );
   // Deliberately do not skipWaiting(): an active study session chooses when updates apply.
 });
@@ -56,7 +54,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(keys.filter((key) => ![STATIC_CACHE, PAGE_CACHE].includes(key)).map((key) => caches.delete(key))))
-      .then(() => self.clients.claim())
+      .then(() => serviceWorkerScope.clients.claim())
   );
 });
 
@@ -84,10 +82,9 @@ async function fetchWithTimeout(request, timeoutMs = NAVIGATION_TIMEOUT_MS) {
 async function networkFirst(request) {
   try {
     const response = await fetchWithTimeout(request);
-    if (response.ok) {
-      const cache = await caches.open(PAGE_CACHE);
-      await cache.put(navigationCacheKey(request), response.clone());
-    }
+    if (!response.ok) return cachedNavigation(request);
+    const cache = await caches.open(PAGE_CACHE);
+    await cache.put(navigationCacheKey(request), response.clone());
     return response;
   } catch {
     return cachedNavigation(request);

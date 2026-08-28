@@ -43,7 +43,7 @@
 - [ ] Fresh install works offline for all core routes.
 - [ ] Query-based routes work offline.
 - [ ] Upgrade from previous service-worker cache version preserves local IndexedDB data.
-- [ ] Update activation waits for an explicit persistence flush before reload.
+- [x] Update activation waits for an explicit persistence flush before reload.
 
 ## Deployment
 - [ ] Security headers verified with actual production response headers.

@@ -1,5 +1,5 @@
 import { MotionConfig, motion, useReducedMotion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 // Source adapted from React Bits BlurText (MIT + Commons Clause):
 // https://github.com/DavidHDev/react-bits/blob/d71509062d8adbd97a43035a94d0ebdaf154b5cf/src/ts-tailwind/Components/BlurText/BlurText.tsx
@@ -28,15 +28,17 @@ export default function MotionHeadline({ id, text, className = '' }: Props) {
         transition={{ duration: 0.35, ease: 'easeOut' }}
       >
         {words.map((word, index) => (
-          <motion.span
-            key={`${word}-${index}`}
-            aria-hidden="true"
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.32, delay: animate ? index * 0.035 : 0, ease: 'easeOut' }}
-          >
-            {word}{index < words.length - 1 ? ' ' : ''}
-          </motion.span>
+          <Fragment key={`${word}-${index}`}>
+            <motion.span
+              aria-hidden="true"
+              initial={false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.32, delay: animate ? index * 0.035 : 0, ease: 'easeOut' }}
+            >
+              {word}
+            </motion.span>
+            {index < words.length - 1 ? ' ' : null}
+          </Fragment>
         ))}
       </motion.h1>
     </MotionConfig>

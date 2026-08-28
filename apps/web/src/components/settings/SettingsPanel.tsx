@@ -1,3 +1,69 @@
-import { useEffect, useState } from 'react';import { DexiePersistence } from '@amat19/persistence';import { Feedback } from '../ui/Feedback';
-type Settings={truthStyle:'TF'|'10';financeDecimals:number;reducedMotion:boolean;practiceLength:number;showSupplemental:boolean};const defaults:Settings={truthStyle:'TF',financeDecimals:4,reducedMotion:false,practiceLength:8,showSupplemental:true};
-export default function SettingsPanel(){const[value,setValue]=useState(defaults);const[ready,setReady]=useState(false);const[saved,setSaved]=useState(false);useEffect(()=>{const db=new DexiePersistence();Promise.all(Object.keys(defaults).map(async key=>[key,await db.getSetting(key)] as const)).then(entries=>{const next={...defaults};for(const[k,v]of entries)if(v!==undefined)(next as Record<string,unknown>)[k]=v;setValue(next);setReady(true)}).catch(()=>setReady(true))},[]);async function update<K extends keyof Settings>(key:K,next:Settings[K]){const updated={...value,[key]:next};setValue(updated);setSaved(false);try{await new DexiePersistence().setSetting(key,next,new Date().toISOString());setSaved(true);if(key==='reducedMotion')document.documentElement.dataset.motion=next?'reduced':'full';}catch{}}if(!ready)return <p role="status">Loading local preferences…</p>;return <div className="settings-grid" data-testid="settings-panel"><label className="setting-row"><span><strong>Truth-value notation</strong><small>Choose the notation shown by future shared formatters. Existing tables continue to accept T/F input.</small></span><select className="text-input" value={value.truthStyle} onChange={e=>void update('truthStyle',e.target.value as Settings['truthStyle'])}><option value="TF">T / F</option><option value="10">1 / 0</option></select></label><label className="setting-row"><span><strong>Finance display decimals</strong><small>Controls display formatting only; calculations keep their internal precision.</small></span><select className="text-input" value={value.financeDecimals} onChange={e=>void update('financeDecimals',Number(e.target.value))}><option value="2">2 decimals</option><option value="4">4 decimals</option><option value="6">6 decimals</option></select></label><label className="setting-row"><span><strong>Default practice length</strong><small>Used by adaptive practice presets when a page does not specify a count.</small></span><select className="text-input" value={value.practiceLength} onChange={e=>void update('practiceLength',Number(e.target.value))}><option value="5">5 questions</option><option value="8">8 questions</option><option value="12">12 questions</option></select></label><label className="setting-row"><span><strong>Supplemental topics</strong><small>Keep older-material depth such as Markov, bonds, simulation, and simplex visible in study surfaces.</small></span><input type="checkbox" checked={value.showSupplemental} onChange={e=>void update('showSupplemental',e.target.checked)}/></label><label className="setting-row"><span><strong>Reduce interface motion</strong><small>Disables optional motion beyond your operating-system preference.</small></span><input type="checkbox" checked={value.reducedMotion} onChange={e=>void update('reducedMotion',e.target.checked)}/></label>{saved&&<Feedback tone="success">Saved locally.</Feedback>}</div>}
+import { useEffect, useState } from 'react';
+import { DexiePersistence } from '@amat19/persistence';
+import { Feedback } from '../ui/Feedback';
+
+type Settings = { reducedMotion: boolean };
+
+const defaults: Settings = { reducedMotion: false };
+const motionStorageKey = 'amat19-motion';
+
+function applyMotionPreference(reduced: boolean) {
+  document.documentElement.dataset.motion = reduced ? 'reduced' : 'full';
+  try {
+    window.localStorage.setItem(motionStorageKey, reduced ? 'reduced' : 'full');
+  } catch {
+    // The preference still applies for this page when local storage is blocked.
+  }
+}
+
+export default function SettingsPanel() {
+  const [value, setValue] = useState(defaults);
+  const [ready, setReady] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const db = new DexiePersistence();
+
+    db.getSetting<boolean>('reducedMotion').then((stored) => {
+      if (!active) return;
+      const next = { reducedMotion: stored === true };
+      setValue(next);
+      applyMotionPreference(next.reducedMotion);
+      setReady(true);
+    }).catch(() => {
+      if (!active) return;
+      applyMotionPreference(defaults.reducedMotion);
+      setReady(true);
+    });
+
+    return () => { active = false; };
+  }, []);
+
+  async function update(next: boolean) {
+    setValue({ reducedMotion: next });
+    setSaved(false);
+    applyMotionPreference(next);
+    try {
+      await new DexiePersistence().setSetting('reducedMotion', next, new Date().toISOString());
+      setSaved(true);
+    } catch {
+      // Keep the current-page preference even if persistence is unavailable.
+    }
+  }
+
+  if (!ready) return <p role="status">Loading local preferences…</p>;
+
+  return (
+    <div className="settings-grid" data-testid="settings-panel">
+      <label className="setting-row">
+        <span>
+          <strong>Reduce interface motion</strong>
+          <small>Use fewer transitions and animations while you study.</small>
+        </span>
+        <input type="checkbox" checked={value.reducedMotion} onChange={(event) => void update(event.target.checked)} />
+      </label>
+      {saved && <Feedback tone="success">Saved locally.</Feedback>}
+    </div>
+  );
+}

@@ -1,6 +1,7 @@
 ---
 import { currentCourseProfile } from '@amat19/course-content';
 import AppLayout from '../layouts/AppLayout.astro';
+import { learnerScopeLabel } from '../lib/learner-labels';
 ---
 
 <AppLayout title="Course map">
@@ -34,7 +35,7 @@ import AppLayout from '../layouts/AppLayout.astro';
               <div class="roadmap-skills">
                 {currentCourseProfile.skills.filter((skill) => skill.module === module.id).map((skill) => (
                   <a href={skill.relatedLab || module.href}>
-                    <span class="status-pill">{skill.status}</span>
+                    <span class="status-pill">{learnerScopeLabel(skill.status)}</span>
                     {skill.title}
                   </a>
                 ))}
@@ -54,8 +55,8 @@ import AppLayout from '../layouts/AppLayout.astro';
       </div>
     </div>
     <div class="route-grid">
-      <a class="route-link" href="/practice">
-        <span><strong>Mixed Practice</strong><small>Retrieve across the core modules.</small></span>
+      <a class="route-link" href="/study">
+        <span><strong>Study queue</strong><small>Resume a module or follow the next repair.</small></span>
         <span aria-hidden="true">→</span>
       </a>
       <a class="route-link" href="/exam">

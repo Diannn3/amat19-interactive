@@ -4,6 +4,7 @@ import { currentCourseProfile } from '@amat19/course-content';
 import { DexiePersistence, type MasteryRecord, type PersistedAttempt } from '@amat19/persistence';
 import { masteryLabel } from '../../lib/local-progress';
 import { aggregateMasteryForCourseSkill } from '../../lib/mastery-targets';
+import { learnerActivityLabel, learnerAttemptStateLabel, learnerModuleLabel } from '../../lib/learner-labels';
 import { Progress } from '../ui/Progress';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
@@ -37,14 +38,15 @@ export default function ProgressDashboard() {
   if (!records) return <div className="progress-dashboard"><Skeleton className="h-32" /><Skeleton className="h-80" /></div>;
 
   return <div className="progress-dashboard" data-testid="progress-dashboard">
-    <div className="progress-overview">
+    <section className="progress-overview" aria-labelledby="progress-coverage-heading">
+      <h2 id="progress-coverage-heading" className="sr-only">Course coverage</h2>
       {currentCourseProfile.modules.map((module) => {
         const skills = coreSkills.filter((skill) => skill.module === module.id);
         const values = skills.map((skill) => byId.get(skill.id)?.evidenceScore ?? 0);
         const value = values.length ? values.reduce((total, current) => total + current, 0) / values.length * 100 : 0;
         return <div className="progress-module" key={module.id}><h3>{module.title}</h3><Progress value={value} label={`${skills.filter((skill) => byId.has(skill.id)).length}/${skills.length} skills practiced`} /></div>;
       })}
-    </div>
+    </section>
 
     <section className="study-panel progress-focus" data-testid="progress-attention">
       <div className="study-panel__body">
@@ -79,7 +81,7 @@ export default function ProgressDashboard() {
     <section className="study-panel">
       <div className="study-panel__body">
         <div className="section-heading"><div><h2>Latest practice</h2><p className="section-context">Recent evidence</p></div></div>
-        {attempts.length ? <div className="saved-grid">{attempts.slice(0, 8).map((attempt) => <div className="saved-item" key={attempt.attemptId}><span><strong>{attempt.exerciseId}</strong><small>{attempt.module} · {new Date(attempt.updatedAt).toLocaleString()}</small></span><Badge>{attempt.finalState}</Badge></div>)}</div> : <div className="empty-state"><strong>No attempts yet.</strong><p>Practice results will appear here after you check work in supported labs.</p></div>}
+        {attempts.length ? <div className="saved-grid">{attempts.slice(0, 8).map((attempt) => <div className="saved-item" key={attempt.attemptId}><span><strong>{learnerActivityLabel(attempt)}</strong><small>{learnerModuleLabel(attempt.module)} · {new Date(attempt.updatedAt).toLocaleString()}</small></span><Badge>{learnerAttemptStateLabel(attempt.finalState)}</Badge></div>)}</div> : <div className="empty-state"><strong>No attempts yet.</strong><p>Practice results will appear here after you check work in supported labs.</p></div>}
       </div>
     </section>
   </div>;

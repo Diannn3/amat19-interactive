@@ -6,7 +6,7 @@
 Astro shell / content routes
 │
 ├─ course map + lessons + reference
-├─ practice / mixed-check / progress surfaces
+├─ study / module retrieval / mixed-check / progress surfaces
 └─ one React application root per complex lab
       │
       ├─ interaction reducer/local UI state
@@ -64,9 +64,9 @@ Supplemental transition analysis is matrix-based and exact where rational inputs
 
 ## Cross-domain practice architecture
 
-`apps/web/src/lib/mixed-assessment.ts` generates original deterministic questions from the same domain engines used by the labs. The mixed runner has two UX modes:
+`apps/web/src/lib/mixed-assessment.ts` generates original deterministic questions from the same domain engines used by the labs. Retrieval is entered from a module route (`/modules/:module?view=practice`) so the learner always has a visible course context. The legacy `/practice` URL is a compatibility handoff to Study; it is not a product surface. The mixed runner has two UX modes:
 
-- practice: per-item deterministic feedback immediately
+- module retrieval: per-item deterministic feedback immediately, scoped to the selected module
 - mixed course check: explanations remain hidden until submission
 
 Both write ordinary local attempts/mastery evidence; neither is described as an official course assessment.
@@ -90,7 +90,7 @@ The custom service worker uses:
 - explicit versioned caches
 - waiting-worker activation
 
-An installed update never calls `skipWaiting()` automatically during an active study session. The page prompts the learner, dispatches `amat:before-update`, then activates the waiting worker only after the learner chooses.
+An installed update never calls `skipWaiting()` automatically during an active study session. The page prompts the learner, dispatches `amat:before-update` with a task-collection detail, and waits for every mounted draft editor to become restoration-ready before asking it to persist current state. A rejected, `false`-returning, or never-ready task keeps the update pending so local work is not discarded.
 
 ## Current/supplemental curriculum boundary
 

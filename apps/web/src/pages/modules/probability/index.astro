@@ -5,5 +5,5 @@ import ModuleJourney from '../../../components/course/ModuleJourney.astro';
 const lessons=(await getCollection('lessons')).filter((entry)=>entry.data.module==='probability').sort((a,b)=>a.data.order-b.data.order);
 ---
 <AppLayout title="Probability module">
-  <ModuleJourney moduleId="probability" moduleNumber="02" eyebrow="Probability" headline="Count the space before the chance." lede="Choose the counting model first, then restrict sample spaces and compare exact probabilities without hiding the denominator." lessons={lessons} />
+  <ModuleJourney moduleId="probability" moduleNumber="02" headline="Count the space before the chance." lede="Choose the counting model first, then restrict sample spaces and compare exact probabilities without hiding the denominator." lessons={lessons} />
 </AppLayout>

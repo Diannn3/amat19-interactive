@@ -1,6 +1,6 @@
 ---
-import '@fontsource-variable/inter';
-import '@fontsource-variable/sora';
+import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource-variable/jetbrains-mono';
 import '../styles/global.css';
 import '../styles/pass4.css';
 import CommandPalette from '../components/navigation/CommandPalette';
@@ -14,7 +14,6 @@ const { title, description = 'Interactive, course-aligned AMAT 19 finite mathema
 const primaryNavigation: NavItem[] = [
   { href: '/study', label: 'Study', mobileLabel: 'Study', icon: 'study' },
   { href: '/course', label: 'Course', mobileLabel: 'Course', icon: 'course' },
-  { href: '/practice', label: 'Practice', mobileLabel: 'Practice', icon: 'practice' },
   { href: '/progress', label: 'Progress', mobileLabel: 'Progress', icon: 'progress' },
 ];
 const utilityNavigation: NavItem[] = [
@@ -25,8 +24,7 @@ const utilityNavigation: NavItem[] = [
 const currentPath = Astro.url.pathname;
 const isCurrent = (href: string) => {
   if (href === '/course') return currentPath === '/course' || currentPath.startsWith('/modules/') || currentPath.startsWith('/lessons/');
-  if (href === '/practice') return currentPath === '/practice' || currentPath === '/exam';
-  if (href === '/study') return currentPath === '/study';
+  if (href === '/study') return currentPath === '/study' || currentPath === '/exam';
   return currentPath === href || currentPath.startsWith(`${href}/`);
 };
 const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
@@ -41,6 +39,11 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
     <meta name="color-scheme" content="light" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <script is:inline>
+      try {
+        if (window.localStorage.getItem('amat19-motion') === 'reduced') document.documentElement.dataset.motion = 'reduced';
+      } catch {}
+    </script>
     <title>{title} · AMAT 19 Study Lab</title>
   </head>
   <body>
@@ -60,10 +63,10 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
           </button>
         </div>
 
-        <div class="sidebar-context" aria-label="Course context">
-          <span class="sidebar-context__mark" aria-hidden="true">19</span>
-          <span><strong>Finite Mathematics</strong><small>AY 2025–2026</small></span>
-        </div>
+        <a class="sidebar-home" href="/" aria-label="AMAT 19 Study Lab home" aria-current={currentPath === '/' ? 'page' : undefined}>
+          <span class="sidebar-home__mark" aria-hidden="true">19</span>
+          <span><strong>Home</strong><small>AMAT 19 Study Lab</small></span>
+        </a>
 
         <nav class="nav-stack" id="primary-navigation" aria-label="Primary navigation">
           {primaryNavigation.map((item) => (
@@ -73,7 +76,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
               <span class="nav-label">{item.label}</span>
             </a>
           ))}
-          <details class="more-menu" data-more-menu open={utilityIsCurrent}>
+          <details class="more-menu" data-more-menu>
             <summary class:list={['more-menu__summary', { 'is-active': utilityIsCurrent }]} aria-label="More destinations">
               <span class="nav-active-rail" aria-hidden="true"></span>
               <span class="nav-icon"><NavGlyph name="more" /></span>
@@ -103,7 +106,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
         <header class="topbar">
           <div class="topbar-leading">
             <div class="topbar-heading">
-              <span class="topbar-kicker">AMAT 19</span>
+              <a class="topbar-home topbar-home-label" href="/" aria-current={currentPath === '/' ? 'page' : undefined} aria-label="AMAT 19 Study Lab home">AMAT 19</a>
               <span class="topbar-title">{title}</span>
             </div>
           </div>
@@ -120,7 +123,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
 
         <div class="workspace-scroll">
           <div id="pwa-update" class="update-banner" hidden role="status" aria-live="polite">
-            <span><strong>Update ready.</strong> Your current page will reload only when you choose.</span>
+            <span id="pwa-update-message"><strong>Update ready.</strong> Your current page will reload only when you choose.</span>
             <button id="pwa-update-button" type="button">Save & update</button>
             <button id="pwa-update-dismiss" type="button">Later</button>
           </div>
@@ -128,7 +131,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
           <main id="main-content"><slot /></main>
           <footer class="site-footer">
             <div class="site-footer__inner">
-              <span>AMAT 19 Study Lab · local-first deterministic learning tools</span>
+              <span>AMAT 19 Study Lab · local-first learning tools</span>
               <span><a href="/settings">Settings</a> · <a href="/saved">Saved</a> · <a href="/progress">Local data</a></span>
             </div>
           </footer>
@@ -142,7 +145,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
             <span>{item.mobileLabel}</span>
           </a>
         ))}
-        <details class="mobile-more-menu" data-more-menu open={utilityIsCurrent}>
+        <details class="mobile-more-menu" data-more-menu>
           <summary class:list={['mobile-nav-link', { 'is-active': utilityIsCurrent }]} aria-label="More destinations">
             <span class="nav-icon"><NavGlyph name="more" /></span>
             <span>More</span>
@@ -177,20 +180,39 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
         sidebarToggle?.addEventListener('click', () => setCollapsed(!frame?.classList.contains('nav-collapsed')));
 
         document.querySelectorAll('[data-command-button]').forEach((button) => {
-          button.addEventListener('click', () => { window.dispatchEvent(new CustomEvent('amat:command')); });
+          button.addEventListener('click', () => { window.dispatchEvent(new CustomEvent('amat:command', { detail: { trigger: button } })); });
         });
 
         const status = document.getElementById('network-status');
         const refreshNetworkStatus = () => { if (status) status.hidden = navigator.onLine; };
         window.addEventListener('online', refreshNetworkStatus); window.addEventListener('offline', refreshNetworkStatus); refreshNetworkStatus();
         if (!('serviceWorker' in navigator)) return;
-        const banner = document.getElementById('pwa-update'); const updateButton = document.getElementById('pwa-update-button'); const dismissButton = document.getElementById('pwa-update-dismiss'); let waitingWorker; let reloadForUpdate = false;
-        const showUpdate = (worker) => { waitingWorker = worker; if (banner) banner.hidden = false; };
+        const banner = document.getElementById('pwa-update'); const updateMessage = document.getElementById('pwa-update-message'); const updateButton = document.getElementById('pwa-update-button'); const dismissButton = document.getElementById('pwa-update-dismiss'); let waitingWorker; let reloadForUpdate = false; let updateInFlight = false;
+        const showUpdate = (worker) => { waitingWorker = worker; updateInFlight = false; if (updateButton) { updateButton.disabled = false; updateButton.textContent = 'Save & update'; } if (banner) banner.hidden = false; };
         navigator.serviceWorker.register('/sw.js').then((registration) => {
           if (registration.waiting) showUpdate(registration.waiting);
           registration.addEventListener('updatefound', () => { const installing = registration.installing; if (!installing) return; installing.addEventListener('statechange', () => { if (installing.state === 'installed' && navigator.serviceWorker.controller) showUpdate(installing); }); });
         }).catch(() => {});
-        updateButton?.addEventListener('click', () => { if (!waitingWorker) return; reloadForUpdate = true; window.dispatchEvent(new CustomEvent('amat:before-update')); updateButton.disabled = true; updateButton.textContent = 'Saving…'; window.setTimeout(() => waitingWorker.postMessage({ type: 'SKIP_WAITING' }), 450); });
+        updateButton?.addEventListener('click', async () => {
+          if (!waitingWorker || updateInFlight) return;
+          updateInFlight = true;
+          reloadForUpdate = false;
+          updateButton.disabled = true;
+          updateButton.textContent = 'Saving…';
+          const tasks = [];
+          window.dispatchEvent(new CustomEvent('amat:before-update', { detail: { tasks } }));
+          const results = await Promise.allSettled(tasks.map((task) => Promise.resolve().then(task)));
+          const failed = results.some((result) => result.status === 'rejected' || (result.status === 'fulfilled' && result.value === false));
+          if (failed) {
+            updateInFlight = false;
+            updateButton.disabled = false;
+            updateButton.textContent = 'Save & update';
+            if (updateMessage) updateMessage.textContent = 'Couldn’t save local work. Keep this tab open and try again.';
+            return;
+          }
+          reloadForUpdate = true;
+          waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+        });
         dismissButton?.addEventListener('click', () => { if (banner) banner.hidden = true; });
         navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloadForUpdate) window.location.reload(); });
       })();

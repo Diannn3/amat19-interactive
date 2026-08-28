@@ -5,6 +5,7 @@ import { Button } from '../../ui/Button';
 import { Feedback } from '../../ui/Feedback';
 import { recordAttempt, recordSkillEvidence } from '../../../lib/local-progress';
 import { loadDraft, saveDraft } from '../../../lib/draft';
+import { usePersistenceFlush } from '../../../lib/use-persistence-flush';
 
 type CellKey = 'aAndB' | 'aAndNotB' | 'notAAndB' | 'notAAndNotB';
 
@@ -91,8 +92,10 @@ export default function ConditionalProbabilityLab() {
     return () => window.clearTimeout(timer);
   }, [restored,counts,conditionOn,view,formatMode]);
 
+  usePersistenceFlush(() => saveDraft(LAB_ID, CONTENT_VERSION, { counts, conditionOn, view, formatMode }), restored);
+
   return (
-    <section className="probability-lab" data-testid="conditional-probability-lab">
+    <section className="probability-lab" data-testid="conditional-probability-lab" data-hydrated={restored?'true':undefined}>
       <div className="probability-lab__controls">
         <h2>Conditioning changes the active universe.</h2>
         <p className="section-context">Canonical two-way table</p>
@@ -152,7 +155,7 @@ export default function ConditionalProbabilityLab() {
               <div className="two-way-wrap" role="region" aria-label="Conditional probability table" tabIndex={0}>
                 <table className="two-way-table">
                   <caption>Counts for events A and B. The conditioning column/row is highlighted.</caption>
-                  <thead><tr><th></th><th data-active={conditionOn === 'B'}>B</th><th>not B</th><th>Total</th></tr></thead>
+                  <thead><tr><th scope="col"><span className="sr-only">Event</span></th><th scope="col" data-active={conditionOn === 'B'}>B</th><th scope="col">not B</th><th scope="col">Total</th></tr></thead>
                   <tbody>
                     <tr data-active={conditionOn === 'A'}>
                       <th>A</th>
@@ -223,7 +226,7 @@ export default function ConditionalProbabilityLab() {
       <aside className="probability-lab__practice">
         <p className="section-label">Independence check</p>
         <p>
-          Predict whether A and B are independent. The exact engine checks whether P(A∩B) = P(A)P(B), so decimal
+          Predict whether A and B are independent. Compare P(A∩B) with P(A)P(B); decimal
           rounding cannot create a false match.
         </p>
         <fieldset className="prediction-fieldset">

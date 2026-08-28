@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { compoundAccumulation, effectiveToNominal, nominalAccumulation, nominalToEffective, roundFinance, simpleAccumulation, valueAtTime } from '@amat19/domain-finance';
+import { compoundAccumulation, nominalAccumulation, nominalToEffective, simpleAccumulation, valueAtTime } from '@amat19/domain-finance';
 import { Button } from '../../ui/Button';
 import { Feedback } from '../../ui/Feedback';
 import { loadDraft, saveDraft } from '../../../lib/draft';
 import { recordAttempt, recordSkillEvidence } from '../../../lib/local-progress';
+import { usePersistenceFlush } from '../../../lib/use-persistence-flush';
 import StepTrace from '../../math/StepTrace';
 type Mode='simple'|'compound'|'nominal'|'tvm';
 const LAB_ID='finance.interest'; const CONTENT_VERSION='1';
@@ -14,6 +15,7 @@ export default function InterestLab(){
  const[mode,setMode]=useState<Mode>('compound'),[principal,setPrincipal]=useState(10000),[rate,setRate]=useState(.05),[years,setYears]=useState(3),[frequency,setFrequency]=useState(4),[futureAmount,setFutureAmount]=useState(25000),[fromTime,setFromTime]=useState(0),[toTime,setToTime]=useState(6),[restored,setRestored]=useState(false),[prediction,setPrediction]=useState<'simple'|'compound'>(),[checked,setChecked]=useState(false);
  useEffect(()=>{loadDraft<Draft>(LAB_ID,CONTENT_VERSION).then(d=>{if(d){setMode(d.mode);setPrincipal(d.principal);setRate(d.rate);setYears(d.years);setFrequency(d.frequency);setFutureAmount(d.futureAmount);setFromTime(d.fromTime);setToTime(d.toTime);}setRestored(true);});},[]);
  useEffect(()=>{if(!restored)return;const t=window.setTimeout(()=>void saveDraft(LAB_ID,CONTENT_VERSION,{mode,principal,rate,years,frequency,futureAmount,fromTime,toTime}),250);return()=>clearTimeout(t);},[restored,mode,principal,rate,years,frequency,futureAmount,fromTime,toTime]);
+ usePersistenceFlush(()=>saveDraft(LAB_ID,CONTENT_VERSION,{mode,principal,rate,years,frequency,futureAmount,fromTime,toTime}),restored);
  const result=useMemo(()=>{try{if(mode==='simple')return{main:simpleAccumulation(principal,rate,years),label:'Accumulated value',secondary:`Interest earned = ${money(simpleAccumulation(principal,rate,years).value-principal)}`};if(mode==='compound')return{main:compoundAccumulation(principal,rate,years),label:'Accumulated value',secondary:`Interest earned = ${money(compoundAccumulation(principal,rate,years).value-principal)}`};if(mode==='nominal'){const main=nominalAccumulation(principal,rate,frequency,years),eff=nominalToEffective(rate,frequency);return{main,label:'Accumulated value',secondary:`Equivalent annual effective rate = ${pct(eff.value)}`};}const pv=valueAtTime(futureAmount,toTime,fromTime,rate);return{main:pv,label:`Equivalent value at t = ${fromTime}`,secondary:`Move PHP ${money(futureAmount)} from t=${toTime} to t=${fromTime}`};}catch(e){return{error:e instanceof Error?e.message:'The financial model could not be evaluated.'};}},[mode,principal,rate,years,frequency,futureAmount,fromTime,toTime]);
  const effective=useMemo(()=>{try{return mode==='nominal'?nominalToEffective(rate,frequency).value:undefined}catch{return undefined}},[mode,rate,frequency]);
  async function checkModel(){if(!prediction)return;const expected=mode==='simple'?'simple':'compound';const ok=prediction===expected;setChecked(true);await Promise.all([recordAttempt({prefix:'finance',exerciseId:'finance.interest.model',module:'finance',finalState:ok?'correct':'incomplete',payload:{mode,prediction,expected}}),recordSkillEvidence(mode==='simple'?'finance.simple-interest':'finance.compound-interest',ok?1:0,{independent:ok})]).catch(()=>undefined);}
@@ -27,7 +29,7 @@ export default function InterestLab(){
   </div>
   <div className="finance-lab__visual">
    <p className="section-label">Synchronized timeline</p><FinanceTimeline mode={mode} principal={principal} resultValue={result.main?.value} years={years} fromTime={fromTime} toTime={toTime} amount={futureAmount}/>
-   {result.error?<Feedback tone="error" role="alert">{result.error}</Feedback>:<><div className="formula-callout finance-result"><span>{result.label}</span><strong>PHP {money(result.main!.value)}</strong><small>{result.secondary}</small><small>High-precision internal value: {result.main!.exactValue.slice(0, 24)}</small></div>{mode==='nominal'&&effective!==undefined&&<div className="formula-callout"><span>Rate equivalence</span><strong>j({frequency}) = {pct(rate)} ↔ i = {pct(effective)}</strong><small>Equivalent rates produce the same one-year accumulation.</small></div>}</>}
+   {result.error?<Feedback tone="error" role="alert">{result.error}</Feedback>:<><div className="formula-callout finance-result"><span>{result.label}</span><strong>PHP {money(result.main!.value)}</strong><small>{result.secondary}</small><small>Exact value: {result.main!.exactValue.slice(0, 24)}</small></div>{mode==='nominal'&&effective!==undefined&&<div className="formula-callout"><span>Rate equivalence</span><strong>j({frequency}) = {pct(rate)} ↔ i = {pct(effective)}</strong><small>Equivalent rates produce the same one-year accumulation.</small></div>}</>}
   </div>
   <aside className="finance-lab__trace"><p className="section-label">Why each step is legal</p>{result.main&&<StepTrace steps={result.main.trace} initialCount={4}/>}</aside>
  </section>;

@@ -5,5 +5,5 @@ import ModuleJourney from '../../../components/course/ModuleJourney.astro';
 const lessons=(await getCollection('lessons')).filter((entry)=>entry.data.module==='logic').sort((a,b)=>a.data.order-b.data.order);
 ---
 <AppLayout title="Logic module">
-  <ModuleJourney moduleId="logic" moduleNumber="01" eyebrow="Logic" headline="Reason with structure." lede="Move from controlled language to symbols, truth values, equivalence, argument validity, and line-by-line proof." lessons={lessons} />
+  <ModuleJourney moduleId="logic" moduleNumber="01" headline="Reason with structure." lede="Move from controlled language to symbols, truth values, equivalence, argument validity, and line-by-line proof." lessons={lessons} />
 </AppLayout>

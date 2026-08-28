@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Database, Download, HardDriveDownload, Trash2, Upload } from 'lucide-react';
-import { CURRENT_SCHEMA_VERSION, DexiePersistence, validateSnapshot, type LocalSnapshot } from '@amat19/persistence';
+import { DexiePersistence, validateSnapshot, type LocalSnapshot } from '@amat19/persistence';
 import { Button } from './ui/Button';
 import { Feedback } from './ui/Feedback';
-import { Badge } from './ui/Badge';
 
 type SnapshotMode = 'full' | 'progress' | 'saved';
 type Counts = { drafts: number; attempts: number; mastery: number; sessions: number; saved: number };
@@ -70,7 +69,7 @@ export default function DataManager() {
       const db = new DexiePersistence();
       await db.importSnapshot(snapshot);
       await refreshCounts();
-      setMessage({ tone: 'success', text: `Local study data restored to schema v${CURRENT_SCHEMA_VERSION}. Open a lab or Study to continue.` });
+      setMessage({ tone: 'success', text: 'Local study data restored. Open a lab or Study to continue.' });
     } catch (error) {
       setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'The selected file could not be imported.' });
     }
@@ -106,11 +105,10 @@ export default function DataManager() {
     <section className="data-manager" data-testid="data-manager">
       <div className="data-manager__head">
         <div>
-          <p className="section-label">Local-first data</p>
           <h2>Your work stays in this browser.</h2>
-          <p>AMAT 19 stores study history in IndexedDB. Export a portable JSON copy whenever you want; no account is required.</p>
+          <p className="section-context">Local-first data</p>
+          <p>Your study history stays in this browser. Export a JSON backup whenever you want; no account is required.</p>
         </div>
-        <Badge>schema v{CURRENT_SCHEMA_VERSION}</Badge>
       </div>
 
       {counts && (

@@ -3,8 +3,8 @@ import AppLayout from '../../layouts/AppLayout.astro';
 import LabShell from '../../components/course/LabShell.astro';
 import FormalProofLab from '../../components/labs/formal-proof/FormalProofLab';
 ---
-<AppLayout title="Formal Proof Workspace" description="Build a direct formal proof using exact AMAT rule names, legal earlier-line citations, and deterministic step validation.">
-  <LabShell moduleId="logic" moduleLabel="Logic" scope="current" eyebrow="Logic · rules of equivalence and inference" title="Formal Proof Workspace" description="Build a direct formal proof using exact AMAT rule names, legal earlier-line citations, and deterministic step validation." lessonHref="/lessons/logic/formal-proof">
+<AppLayout title="Formal Proof Workspace" description="Build a formal proof one justified line at a time using the course rules and earlier lines.">
+  <LabShell moduleId="logic" moduleLabel="Logic" scope="current" title="Formal Proof Workspace" description="Build a formal proof one justified line at a time using the course rules and earlier lines." lessonHref="/lessons/logic/formal-proof">
     <FormalProofLab client:load />
   </LabShell>
 </AppLayout>

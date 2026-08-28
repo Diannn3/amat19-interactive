@@ -4,17 +4,18 @@ import { expect, test } from '@playwright/test';
 test('@core truth-table journey parses, explains, practices, classifies, and persists', async ({ page }) => {
   await page.goto('/labs/truth-table');
   const lab = page.getByTestId('truth-table-lab');
+  await expect(lab).toHaveAttribute('data-hydrated', 'true');
   await expect(lab).toBeVisible();
 
   const input = lab.getByLabel('Logic proposition');
   await input.fill('P -> Q');
   await expect(lab.getByText(/4 rows = 2\^2/i)).toBeVisible();
-  await expect(lab.getByText(/P repeats T for 2 rows/i)).toBeVisible();
+  await expect(lab.getByText(/T × 2, F × 2/i)).toBeVisible();
 
   await lab.getByRole('button', { name: /row 2, p → q: false/i }).click();
   await expect(lab.getByText(/antecedent is true and the consequent is false/i)).toBeVisible();
 
-  await lab.getByRole('tab', { name: 'Practice' }).click();
+  await lab.getByRole('button', { name: 'Practice', exact: true }).click();
   await lab.getByRole('button', { name: /practice row 2/i }).click();
   await lab.getByRole('button', { name: 'F · False' }).click();
   await expect(lab.getByText('Row 2 is correct.')).toBeVisible();
@@ -31,7 +32,8 @@ test('@core truth-table journey parses, explains, practices, classifies, and per
 test('@core argument mode predicts validity and surfaces a concrete counterexample', async ({ page }) => {
   await page.goto('/labs/truth-table');
   const lab = page.getByTestId('truth-table-lab');
-  await lab.getByRole('tab', { name: 'Argument' }).click();
+  await expect(lab).toHaveAttribute('data-hydrated', 'true');
+  await lab.getByRole('button', { name: 'Argument', exact: true }).click();
 
   await lab.getByRole('radio', { name: 'Valid', exact: true }).click();
   await lab.getByRole('button', { name: 'Check prediction' }).click();
@@ -50,6 +52,7 @@ test('@core argument mode predicts validity and surfaces a concrete counterexamp
 
 test('parser errors point to the failing source span and recover without losing the input', async ({ page }) => {
   await page.goto('/labs/truth-table');
+  await expect(page.getByTestId('truth-table-lab')).toHaveAttribute('data-hydrated', 'true');
   const input = page.getByLabel('Logic proposition');
   await input.fill('P -> )');
   await expect(page.getByRole('alert')).toBeVisible();
@@ -60,12 +63,14 @@ test('parser errors point to the failing source span and recover without losing 
 
 test('truth-table route has no serious automated accessibility violations', async ({ page }) => {
   await page.goto('/labs/truth-table');
+  await expect(page.getByTestId('truth-table-lab')).toHaveAttribute('data-hydrated', 'true');
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((violation) => ['critical', 'serious'].includes(violation.impact ?? ''))).toEqual([]);
 });
 
 test('lab keeps wide tables locally scrollable without page-level overflow', async ({ page }) => {
   await page.goto('/labs/truth-table');
+  await expect(page.getByTestId('truth-table-lab')).toHaveAttribute('data-hydrated', 'true');
   await page.getByLabel('Logic proposition').fill('A & B & C & D');
   await expect(page.getByText(/16 rows = 2\^4/i)).toBeVisible();
   const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);

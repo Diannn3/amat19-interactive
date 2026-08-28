@@ -3,8 +3,8 @@ import AppLayout from '../../layouts/AppLayout.astro';
 import LabShell from '../../components/course/LabShell.astro';
 import ProbabilitySimulationLab from '../../components/labs/simulation/ProbabilitySimulationLab';
 ---
-<AppLayout title="Probability Simulation Lab" description="Run reproducible seeded experiments and compare empirical frequency with exact theoretical probability.">
-  <LabShell moduleId="probability" moduleLabel="Probability" scope="supplemental" eyebrow="Probability · supplemental simulation" title="Probability Simulation Lab" description="Run reproducible seeded experiments in a Web Worker and see why simulation can build intuition without replacing exact probability reasoning." lessonHref="/lessons/probability/simulation">
+<AppLayout title="Probability Simulation Lab" description="Run a repeatable experiment and compare its frequency with the exact probability.">
+  <LabShell moduleId="probability" moduleLabel="Probability" scope="supplemental" title="Probability Simulation Lab" description="Run a repeatable experiment and compare its frequency with the exact probability." lessonHref="/lessons/probability/simulation">
     <ProbabilitySimulationLab client:load />
   </LabShell>
 </AppLayout>

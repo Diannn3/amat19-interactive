@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Eye, Goal, Layers3, MoveRight } from 'lucide-react';
+import { Eye, Goal, Layers3 } from 'lucide-react';
 import { simplexMax, solveGraphicalLP, type Constraint2D } from '@amat19/domain-linear';
 import { Button } from '../../ui/Button';import { Feedback } from '../../ui/Feedback';import { Badge } from '../../ui/Badge';import { recordAttempt,recordSkillEvidence } from '../../../lib/local-progress';
 type Row=Constraint2D&{id:number};type Stage=1|2|3|4;

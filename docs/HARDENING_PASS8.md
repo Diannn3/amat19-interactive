@@ -45,9 +45,10 @@ Pass 8 deliberately preserves the existing Astro + React-islands + deterministic
 ### PWA/offline hardening
 - Precache all 18 labs plus Study, Saved, Settings, and other core workspace routes.
 - Normalize navigation cache keys to pathnames.
-- Ignore query strings during navigation fallback so routes such as `/practice?preset=...` work offline.
+- Ignore query strings during navigation fallback so module retrieval routes such as `/modules/logic?view=practice&preset=logic-drill` work offline.
 - Bound network-first navigation waits to four seconds before using cached content.
 - Keep learner-controlled service-worker update activation.
+- Register draft persistence flushes at editor mount, wait for restoration readiness, and require an explicit application-wide acknowledgement before activating a waiting worker.
 - Add production Playwright coverage that registers the service worker and verifies query-route offline navigation.
 
 ### Deployment/repository hygiene
@@ -65,6 +66,8 @@ Pass 8 deliberately preserves the existing Astro + React-islands + deterministic
 - Targeted assessment attribution and legacy skill normalization.
 - Repository-wide literal skill instrumentation audit.
 - PWA route coverage, query-insensitive fallback, and timeout policy.
+- PWA update persistence-flush acknowledgement and delayed worker activation.
+- Command-palette combobox/listbox semantics and keyboard active-option linkage.
 - Independent high-precision finance reference vectors.
 - Graphical LP multiple-optimum and redundant-constraint cases.
 
@@ -82,6 +85,4 @@ Pass 8 deliberately preserves the existing Astro + React-islands + deterministic
 4. Run Astro/Vitest/Playwright/Axe against the exact merged tree.
 5. Add a Lighthouse or equivalent production performance/accessibility budget.
 6. Decide whether unsupported concept-specific practice links should be hidden, disabled, or backed by new generators rather than module-level fallback.
-7. Replace the service-worker update's fixed UI-side save delay with an explicit application-wide persistence flush acknowledgement.
-8. Finish command-palette screen-reader semantics review.
-9. Select a repository-level software license if public redistribution/contribution is intended.
+7. Select a repository-level software license if public redistribution/contribution is intended.

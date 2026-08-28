@@ -18,6 +18,9 @@
   --topbar-height: 72px;
   --workspace-radius: 26px;
   --shell-ease: cubic-bezier(.2, .8, .2, 1);
+  --font-amat-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-amat-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-amat-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
   --background: #fff9f1;
   --background-deep: #f8ede2;
   --surface: #fffdf9;

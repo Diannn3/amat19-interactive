@@ -7,11 +7,12 @@ import {
   type LogicNode
 } from '@amat19/domain-logic';
 import { AlertTriangle, CheckCircle2, Plus, RotateCcw, Trash2 } from 'lucide-react';
-import { useEffect, useMemo, useReducer } from 'react';
+import { useEffect, useMemo, useReducer, useState } from 'react';
 import { Button } from '../../ui/Button';
 import { Feedback } from '../../ui/Feedback';
 import { loadDraft, saveDraft } from '../../../lib/draft';
 import { recordSkillEvidence } from '../../../lib/local-progress';
+import { usePersistenceFlush } from '../../../lib/use-persistence-flush';
 import { argumentReducer, initialArgumentState, type ArgumentState } from './argument-state';
 
 const LAB_ID = 'logic.argument-validity';
@@ -29,17 +30,22 @@ type ParsedArgument = {
 
 export function ArgumentMode() {
   const [state, dispatch] = useReducer(argumentReducer, initialArgumentState);
+  const [restored, setRestored] = useState(false);
 
   useEffect(() => {
     loadDraft<ArgumentState>(LAB_ID, CONTENT_VERSION).then((draft) => {
       if (draft?.premises?.length && typeof draft.conclusion === 'string') dispatch({ type: 'restore', state: draft });
+      setRestored(true);
     });
   }, []);
 
   useEffect(() => {
+    if (!restored) return;
     const timer = window.setTimeout(() => void saveDraft(LAB_ID, CONTENT_VERSION, state), 300);
     return () => window.clearTimeout(timer);
-  }, [state]);
+  }, [state, restored]);
+
+  usePersistenceFlush(() => saveDraft(LAB_ID, CONTENT_VERSION, state), restored);
 
   const parsed = useMemo<{ value?: ParsedArgument; error?: string; premiseErrors: Record<number, string>; conclusionError?: string }>(() => {
     const premiseErrors: Record<number, string> = {};

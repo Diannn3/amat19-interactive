@@ -16,7 +16,9 @@ export default defineConfig({
     serviceWorkers: 'allow'
   },
   webServer: {
-    command: 'pnpm --filter @amat19/web preview --host 127.0.0.1',
+    command: 'node node_modules/astro/bin/astro.mjs preview --host 127.0.0.1',
+    cwd: 'apps/web',
+    env: { ASTRO_PREVIEW_BACKGROUND: '0' },
     url: 'http://127.0.0.1:4321',
     reuseExistingServer: false
   }

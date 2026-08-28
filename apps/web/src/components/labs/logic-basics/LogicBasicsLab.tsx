@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle2, Languages, RotateCcw, Shapes } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { Badge } from '../../ui/Badge';
@@ -9,7 +9,7 @@ type Mode='proposition'|'connective'|'main-connective'|'symbolize'|'translate'|'
 type Exercise={mode:Mode;prompt:string;answer:string;options:string[];explanation:string;skillId:string;preview?:string};
 
 const EXERCISES:Exercise[]=[
- {mode:'proposition',prompt:'The campus library closes at 8 PM today.',answer:'proposition',options:['proposition','not a proposition'],explanation:'It is declarative and can be assigned a truth value.',skillId:'logic.proposition.identify'},
+ {mode:'proposition',prompt:'The campus library closes at 8 PM today.',answer:'proposition',options:['proposition','not a proposition'],explanation:'It is a declarative claim that can be assigned a truth value.',skillId:'logic.proposition.identify'},
  {mode:'proposition',prompt:'Please submit the worksheet.',answer:'not a proposition',options:['proposition','not a proposition'],explanation:'A command is not true or false, so it is not a proposition.',skillId:'logic.proposition.identify'},
  {mode:'connective',prompt:'“The quiz is today and the room is open.”',answer:'∧',options:['∼','∧','∨','→','↔'],explanation:'The word “and” joins both propositions with conjunction.',skillId:'logic.connective.identify',preview:'P ∧ Q'},
  {mode:'connective',prompt:'“A seat or a standing spot is available.” Use inclusive OR.',answer:'∨',options:['∼','∧','∨','→','↔'],explanation:'Unless a problem says otherwise, propositional OR is inclusive.',skillId:'logic.connective.identify',preview:'P ∨ Q'},
@@ -28,18 +28,20 @@ const MODE_LABELS:Record<Mode,string>={proposition:'Statements',connective:'Conn
 
 export default function LogicBasicsLab(){
  const[mode,setMode]=useState<Mode>('proposition');const[index,setIndex]=useState(0);const[selected,setSelected]=useState<string>();const[checked,setChecked]=useState(false);
+ const[hydrated,setHydrated]=useState(false);
+ useEffect(()=>{setHydrated(true)},[]);
  const pool=useMemo(()=>EXERCISES.filter(item=>item.mode===mode),[mode]);const exercise=pool[index%pool.length]!;const correct=selected===exercise.answer;
  function chooseMode(next:Mode){setMode(next);setIndex(0);setSelected(undefined);setChecked(false)}
  function next(){setIndex(current=>(current+1)%pool.length);setSelected(undefined);setChecked(false)}
  async function check(){if(!selected)return;setChecked(true);await Promise.all([recordAttempt({prefix:'logic-basics',exerciseId:`${exercise.skillId}.${index}`,module:'logic',finalState:correct?'correct':'incomplete',payload:{mode,selected,answer:exercise.answer},skillIds:[exercise.skillId],difficulty:mode==='main-connective'||mode==='symbolize'?'standard':'intro'}),recordSkillEvidence(exercise.skillId,correct?1:0,{independent:correct})]).catch(()=>undefined)}
- return <section className="learning-lab learning-lab--wide" data-testid="logic-basics-lab">
+ return <section className="learning-lab learning-lab--wide" data-testid="logic-basics-lab" data-hydrated={hydrated?'true':undefined}>
   <div className="learning-lab__full">
    <div className="logic-mode-tabs" aria-label="Logic basics practice mode">{(Object.keys(MODE_LABELS) as Mode[]).map(value=><Button key={value} variant={mode===value?'primary':'secondary'} onClick={()=>chooseMode(value)}>{value==='symbolize'||value==='translate'?<Languages size={15}/>:<Shapes size={15}/>} {MODE_LABELS[value]}</Button>)}</div>
   </div>
   <div className="learning-lab__prompt symbolization-card">
    <div><h2>{MODE_LABELS[mode]}</h2><p className="section-context">Controlled practice · {index+1}/{pool.length}</p><p className="learning-lab__question">{exercise.prompt}</p></div>
    {exercise.preview&&<div className="symbolization-preview" aria-label="Expression structure preview">{exercise.preview}</div>}
-   <div className="choice-grid" role="radiogroup" aria-label="Answer choices">{exercise.options.map(value=><button key={value} type="button" className="choice-button" role="radio" aria-checked={selected===value} data-selected={selected===value} onClick={()=>{setSelected(value);setChecked(false)}}>{value}</button>)}</div>
+   <div className="choice-grid" role="radiogroup" aria-label="Answer choices">{exercise.options.map(value=><button key={value} type="button" className="choice-button" role="radio" aria-checked={selected===value} data-selected={selected===value} onClick={()=>{setSelected(value);setChecked(false)}}>{value==='proposition'?'Proposition':value==='not a proposition'?'Not a proposition':value}</button>)}</div>
    <div className="action-row"><Button variant="primary" type="button" disabled={!selected} onClick={check}>Check answer</Button><Button variant="ghost" type="button" onClick={()=>{setSelected(undefined);setChecked(false)}}><RotateCcw size={16}/> Reset</Button></div>
   </div>
   <aside className="learning-lab__explain">

@@ -5,5 +5,5 @@ import ModuleJourney from '../../../components/course/ModuleJourney.astro';
 const lessons=(await getCollection('lessons')).filter((entry)=>entry.data.module==='linear').sort((a,b)=>a.data.order-b.data.order);
 ---
 <AppLayout title="Matrices & Systems module">
-  <ModuleJourney moduleId="linear" moduleNumber="04" eyebrow="Matrices & Systems" headline="Do the row operation, then inspect what stayed invariant." lede="Work with exact matrices, row-by-column products, Gauss–Jordan operations, inverses, and the structure of linear systems." lessons={lessons} />
+  <ModuleJourney moduleId="linear" moduleNumber="04" headline="Do the row operation, then inspect what stayed invariant." lede="Work with exact matrices, row-by-column products, Gauss–Jordan operations, inverses, and the structure of linear systems." lessons={lessons} />
 </AppLayout>

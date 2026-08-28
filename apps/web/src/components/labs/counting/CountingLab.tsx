@@ -11,6 +11,7 @@ import { Button } from '../../ui/Button';
 import { Feedback } from '../../ui/Feedback';
 import { recordAttempt, recordSkillEvidence } from '../../../lib/local-progress';
 import { loadDraft, saveDraft } from '../../../lib/draft';
+import { usePersistenceFlush } from '../../../lib/use-persistence-flush';
 
 type Method = 'permutation' | 'combination' | 'arrangements-with-repetition' | 'combination-with-repetition';
 
@@ -76,8 +77,10 @@ export default function CountingLab() {
     return () => window.clearTimeout(timer);
   }, [restored,orderMatters,repetitionAllowed,n,r,a,b,intersection]);
 
+  usePersistenceFlush(() => saveDraft(LAB_ID, CONTENT_VERSION, { orderMatters,repetitionAllowed,n,r,a,b,intersection }), restored);
+
   return (
-    <section className="learning-lab learning-lab--wide" data-testid="counting-lab">
+    <section className="learning-lab learning-lab--wide" data-testid="counting-lab" data-hydrated={restored?'true':undefined}>
       <div className="learning-lab__prompt">
         <h2>Choose the model before touching the formula.</h2>
         <p className="section-context">Counting decision helper</p>

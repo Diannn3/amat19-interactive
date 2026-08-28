@@ -1,4 +1,4 @@
 ---
 import AppLayout from '../layouts/AppLayout.astro';import SettingsPanel from '../components/settings/SettingsPanel';
 ---
-<AppLayout title="Settings"><section class="page-width page-intro"><h1 class="display-title">Make the study surface yours.</h1><p class="page-context">Local preferences</p><p class="lede">Change notation, display, practice, and motion preferences.</p><details class="route-note"><summary>Privacy note</summary><p>Settings live in IndexedDB with your local study data. They do not create an account or leave the browser.</p></details></section><section class="page-width section-shell"><SettingsPanel client:load /></section></AppLayout>
+<AppLayout title="Study preferences"><section class="page-width page-intro"><h1 class="display-title">Make the study surface comfortable.</h1><p class="page-context">Your preferences</p><p class="lede">Choose whether optional motion appears while you study.</p><details class="route-note"><summary>Privacy note</summary><p>Preferences stay in this browser. No account is required.</p></details></section><section class="page-width section-shell"><SettingsPanel client:load /></section></AppLayout>

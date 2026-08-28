@@ -7,7 +7,7 @@
 - Tailwind CSS 4.x / `@tailwindcss/vite` — utility generation and project tokens.
 - Radix Tabs — owned accessible tab primitive.
 - Lucide React — iconography.
-- Inter Variable / Sora Variable — packaged local fonts.
+- Plus Jakarta Sans / JetBrains Mono — packaged local fonts; Jakarta is the interface face and JetBrains Mono is reserved for formulas, values, tables, and technical data.
 - Dexie 4.x — IndexedDB adapter behind the persistence port.
 - Motion — narrowly used for reduced-motion-aware headline behavior.
 

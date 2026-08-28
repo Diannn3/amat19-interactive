@@ -36,7 +36,7 @@ AMAT 19 Study Lab is intentionally **not** a dashboard of black-box calculators.
 ### Whole-course workflow
 - `/study` prioritized retrieval/repair queue
 - `/course` semester-aware roadmap
-- `/practice` generated practice with immediate deterministic feedback
+- module-scoped retrieval from `/modules/:module?view=practice` with immediate deterministic feedback
 - `/exam` original mixed course check with delayed feedback
 - `/reference` searchable formula/notation reference
 - `/progress` local mastery evidence
@@ -85,7 +85,7 @@ Major changes:
 - mathematically ordered CDF and validated total-probability partitions
 - independent high-precision Finance regression vectors
 - expanded proof/LP/probability/persistence/assessment tests
-- full core-route service-worker precache, query-insensitive offline navigation, and a four-second network fallback bound
+- full core-route service-worker precache, query-insensitive offline navigation, and a four-second network fallback bound; legacy `/practice` now redirects to Study
 - production-build PWA Playwright job
 - explicit Vercel security headers
 - `.vercel/` repository cleanup and React Bits third-party notices

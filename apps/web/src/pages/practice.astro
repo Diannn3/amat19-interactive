@@ -1,18 +1,24 @@
 ---
 import AppLayout from '../layouts/AppLayout.astro';
-import MixedPracticeRunner from '../components/practice/MixedPracticeRunner';
 ---
-<AppLayout title="Practice Center">
-  <section class="page-width page-intro">
-    <h1 class="display-title">Mix the skills, then repair the weak link.</h1>
-    <p class="page-context">Cross-domain practice · locally saved evidence</p>
-    <p class="lede">Original retrieval practice across the five AMAT 19 modules.</p>
-    <details class="route-note">
-      <summary>Content boundary</summary>
-      <p>Items are generated for study and do not reproduce instructor assessments.</p>
-    </details>
+<AppLayout title="Study">
+  <section class="page-width page-intro" data-legacy-route="practice">
+    <h1 class="display-title">Opening Study.</h1>
+    <p class="lede">This workspace now starts from a module so every retrieval set has clear context.</p>
+    <noscript><a class="hero-action hero-action--primary" href="/study">Continue to Study</a></noscript>
   </section>
-  <section class="page-width module-section">
-    <MixedPracticeRunner client:load mode="practice" questionCount={10} />
-  </section>
+  <script is:inline>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const moduleByPreset = {
+        'logic-drill': 'logic',
+        'probability-drill': 'probability',
+        'finance-drill': 'finance',
+        'matrices-drill': 'linear',
+        'applications-drill': 'applications',
+      };
+      const module = moduleByPreset[params.get('preset') ?? ''];
+      window.location.replace(module ? `/modules/${module}?view=practice&preset=${encodeURIComponent(params.get('preset'))}` : '/study');
+    })();
+  </script>
 </AppLayout>

@@ -11,8 +11,9 @@
   --color-primary: var(--primary);
   --color-accent: var(--accent);
   --color-success: var(--success);
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Sora Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-amat-sans);
+  --font-display: var(--font-amat-display);
+  --font-mono: var(--font-amat-mono);
 }
 
 * {
@@ -22,7 +23,7 @@
 html {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Inter Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-amat-sans);
   text-rendering: optimizeLegibility;
 }
 
@@ -104,7 +105,7 @@ input,
   align-items: baseline;
   gap: 0.55rem;
   text-decoration: none;
-  font-family: "Sora Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-amat-display);
   font-weight: 760;
   letter-spacing: -0.02em;
 }
@@ -149,18 +150,10 @@ main {
   padding-block: clamp(2rem, 5vw, 4.5rem) 2rem;
 }
 
-.eyebrow {
-  color: var(--primary);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
-
 .display-title {
   margin: 0.45rem 0 0;
   max-width: 18ch;
-  font-family: "Sora Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-amat-display);
   font-size: clamp(2.25rem, 7vw, 5.75rem);
   line-height: 0.96;
   letter-spacing: -0.055em;
@@ -199,7 +192,7 @@ main {
 
 .route-link strong {
   display: block;
-  font-family: "Sora Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-amat-display);
   font-size: 1.2rem;
 }
 
@@ -249,7 +242,7 @@ main {
 
 .lab-route__header h1 {
   margin: 0;
-  font-family: "Sora Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-amat-display);
   font-size: clamp(2rem, 6vw, 4.25rem);
   letter-spacing: -0.045em;
   line-height: 1;
@@ -271,6 +264,9 @@ main {
 }
 
 .no-js-reference summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
   cursor: pointer;
   font-weight: 750;
 }
@@ -393,7 +389,7 @@ main {
 .proof-lab h2,
 .data-manager h2 {
   margin: 0.25rem 0 0;
-  font-family: "Sora Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-amat-display);
   letter-spacing: -0.035em;
   line-height: 1.08;
 }
@@ -448,7 +444,7 @@ main {
 
 .skill-item h3 {
   margin: 0.8rem 0 0.35rem;
-  font-family: "Sora Variable", "Inter Variable", sans-serif;
+  font-family: var(--font-amat-display);
   letter-spacing: -0.025em;
 }
 
@@ -512,7 +508,7 @@ main {
 .prose h2,
 .prose h3 {
   margin: 2rem 0 0.7rem;
-  font-family: "Sora Variable", "Inter Variable", sans-serif;
+  font-family: var(--font-amat-display);
   line-height: 1.2;
   letter-spacing: -0.025em;
 }
@@ -691,7 +687,7 @@ main {
 .logic-input,
 .proof-editor__statement,
 .logic-expression {
-  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-amat-mono);
 }
 
 .feedback-region {
@@ -719,8 +715,22 @@ main {
 }
 
 .reference-details summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
   cursor: pointer;
   font-weight: 750;
+}
+
+.route-note summary,
+.roadmap-details summary,
+.course-policy details summary,
+.lab-route__support summary,
+.rule-grid details > summary,
+.matrix-editor > details > summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
 }
 
 .mini-definition-list {
@@ -737,7 +747,7 @@ main {
 }
 
 .mini-definition-list dt {
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-amat-mono);
   font-weight: 800;
 }
 
@@ -823,7 +833,7 @@ main {
 
 .slot-visual span,
 .text-chip {
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -902,7 +912,7 @@ main {
 
 .probability-tree text {
   fill: currentColor;
-  font-family: "Inter Variable", sans-serif;
+  font-family: var(--font-amat-sans);
   font-size: 15px;
 }
 
@@ -930,7 +940,7 @@ main {
 
 .formula-callout strong {
   overflow-wrap: anywhere;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-amat-mono);
 }
 
 .formula-callout small {
@@ -958,7 +968,7 @@ main {
 
 .goal-card strong,
 .proof-table code {
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-amat-mono);
 }
 
 .proof-editor {
@@ -967,10 +977,15 @@ main {
 
 .proof-editor__actions {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(9rem, 1fr) minmax(7rem, 0.55fr) auto;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
   gap: 0.5rem;
   margin-top: 0.85rem;
   align-items: end;
+}
+
+.proof-editor__actions .amat-button {
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .proof-status {
@@ -1214,35 +1229,35 @@ main {
 .game-lab__explain,
 .markov-lab__matrix,
 .distribution-lab__explain { border-top: 3px solid var(--primary); box-shadow: var(--shadow); }
-.finance-lab h2,.matrix-lab h2,.row-reduction-lab h2,.lp-lab h2,.game-lab h2,.markov-lab h2,.distribution-lab h2 { margin:.25rem 0 1rem; font-family:"Sora Variable","Inter Variable",sans-serif; line-height:1.08; letter-spacing:-.035em; }
+.finance-lab h2,.matrix-lab h2,.row-reduction-lab h2,.lp-lab h2,.game-lab h2,.markov-lab h2,.distribution-lab h2 { margin:.25rem 0 1rem; font-family:var(--font-amat-display); line-height:1.08; letter-spacing:-.035em; }
 .finance-timeline,.lp-plot,.markov-graph { margin:0; }
 .finance-timeline svg,.lp-plot svg,.markov-graph svg { width:100%;height:auto;display:block;border:1px solid var(--border);background:var(--surface); }
 .finance-timeline line,.markov-graph path { stroke:currentColor;stroke-width:2;fill:none; }
 .finance-timeline circle { fill:var(--primary); }
-.finance-timeline text,.lp-plot text,.markov-graph text { fill:currentColor;font-family:"Inter Variable",sans-serif;font-size:13px; }
+.finance-timeline text,.lp-plot text,.markov-graph text { fill:currentColor;font-family:var(--font-amat-sans);font-size:13px; }
 .finance-timeline figcaption,.lp-plot figcaption { margin-top:.55rem;color:var(--foreground-muted);line-height:1.5; }
 .finance-result { margin-top:1rem; }
 .finance-result strong { font-size:clamp(1.5rem,4vw,2.4rem); }
 .trace-step { border-top:1px solid var(--border);padding-block:.75rem; }
 .trace-step:first-of-type { border-top:0; }
 .trace-step strong,.trace-step code { display:block; }
-.trace-step code { margin:.4rem 0;overflow-wrap:anywhere;color:var(--primary);font-family:ui-monospace,monospace; }
+.trace-step code { margin:.4rem 0;overflow-wrap:anywhere;color:var(--primary);font-family:var(--font-amat-mono); }
 .trace-step p { margin:.25rem 0;color:var(--foreground-muted);line-height:1.5; }
 .matrix-lab { grid-template-columns:minmax(17rem,.75fr) minmax(0,1.25fr); }
 .matrix-input-pair { display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1rem; }
-.matrix-textarea { width:100%;min-height:8rem;resize:vertical;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface);padding:.7rem;color:var(--foreground);font-family:ui-monospace,monospace;line-height:1.55; }
+.matrix-textarea { width:100%;min-height:8rem;resize:vertical;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface);padding:.7rem;color:var(--foreground);font-family:var(--font-amat-mono);line-height:1.55; }
 .matrix-equation { display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem;min-height:18rem; }
 .matrix-equation>strong { font-size:2rem; }
 .matrix-equation>div>span { display:block;margin-bottom:.45rem;text-align:center;color:var(--foreground-muted);font-weight:800; }
 .matrix-wrap { max-width:100%;overflow:auto; }
 .matrix-table { border-collapse:separate;border-spacing:.3rem;background:transparent;font-variant-numeric:tabular-nums; }
-.matrix-table td,.matrix-table th { min-width:3.2rem;border:1px solid var(--border);background:var(--surface);padding:.65rem;text-align:center;font-family:ui-monospace,monospace; }
-.matrix-cell-button { width:100%;min-height:2.4rem;border:0;background:transparent;color:inherit;cursor:pointer;font:inherit; }
+.matrix-table td,.matrix-table th { min-width:3.2rem;border:1px solid var(--border);background:var(--surface);padding:.65rem;text-align:center;font-family:var(--font-amat-mono); }
+.matrix-cell-button { width:100%;min-width:2.75rem;min-height:2.75rem;border:0;background:transparent;color:inherit;cursor:pointer;font:inherit; }
 .matrix-cell-button[data-selected="true"] { outline:3px solid var(--focus);background:var(--accent-soft); }
-.scalar-result { min-width:6rem;border:1px solid var(--border);padding:1.2rem;text-align:center;font-family:ui-monospace,monospace;font-size:1.5rem; }
+.scalar-result { min-width:6rem;border:1px solid var(--border);padding:1.2rem;text-align:center;font-family:var(--font-amat-mono);font-size:1.5rem; }
 .dot-product-trace { margin-top:1rem;border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem; }
 .dot-product-trace>div { display:flex;flex-wrap:wrap;gap:.45rem;margin:.65rem 0; }
-.dot-product-trace span { border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface);padding:.45rem .6rem;font-family:ui-monospace,monospace; }
+.dot-product-trace span { border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface);padding:.45rem .6rem;font-family:var(--font-amat-mono); }
 .row-reduction-lab { grid-template-columns:minmax(17rem,.62fr) minmax(0,1fr) minmax(16rem,.5fr); }
 .step-toolbar { display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:1rem; }
 .row-operation-explain { margin:1rem 0;border-left:4px solid var(--accent);padding:.7rem 1rem;background:var(--accent-soft); }
@@ -1255,7 +1270,7 @@ main {
 .objective-row { display:grid;grid-template-columns:minmax(8rem,.7fr) 1fr 1fr;gap:.55rem;align-items:end; }
 .constraint-editor { display:grid;gap:.5rem;margin-block:1rem; }
 .constraint-row { display:grid;grid-template-columns:auto 4.2rem auto 4.2rem auto 4.8rem 5rem auto;gap:.35rem;align-items:center; }
-.constraint-row input,.constraint-row select,.payoff-table input,.markov-matrix-editor input,.distribution-table input { min-height:2.5rem;min-width:0;width:100%;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface);padding:.4rem;color:var(--foreground);font:inherit; }
+.constraint-row input,.constraint-row select,.payoff-table input,.markov-matrix-editor input,.distribution-table input { min-height:2.75rem;min-width:2.75rem;width:100%;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface);padding:.4rem;color:var(--foreground);font:inherit; }
 .lp-plot .axis { stroke:currentColor;stroke-width:2; }
 .lp-plot .constraint-line { stroke:var(--primary);stroke-width:2; }
 .lp-plot .vertex-point { fill:var(--surface);stroke:var(--foreground);stroke-width:2; }
@@ -1283,8 +1298,8 @@ main {
 .course-roadmap { border-block:1px solid var(--border); }
 .roadmap-module { display:grid;grid-template-columns:4rem 1fr;gap:1rem;padding:1.4rem .25rem; }
 .roadmap-module+.roadmap-module { border-top:1px solid var(--border); }
-.roadmap-module__number { color:var(--primary);font-family:"Sora Variable",sans-serif;font-size:1.4rem;font-weight:800; }
-.roadmap-module h2 { margin:0;font-family:"Sora Variable",sans-serif;letter-spacing:-.03em; }
+.roadmap-module__number { color:var(--primary);font-family:var(--font-amat-display);font-size:1.4rem;font-weight:800; }
+.roadmap-module h2 { margin:0;font-family:var(--font-amat-display);letter-spacing:-.03em; }
 .roadmap-module p { color:var(--foreground-muted);line-height:1.55; }
 .roadmap-skills { display:flex;flex-wrap:wrap;gap:.5rem; }
 .roadmap-skills a { min-height:2.75rem;display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--border);border-radius:var(--radius-sm);padding:.35rem .55rem;text-decoration:none; }
@@ -1327,7 +1342,7 @@ main {
 .reference-section h2 { margin: 4px 0 14px; }
 .reference-section dl { display: grid; gap: 0; margin: 0 0 16px; }
 .reference-section dl > div { display: grid; grid-template-columns: minmax(150px, .9fr) minmax(0, 1.4fr); gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); }
-.reference-section dt { font-family: var(--font-mono, ui-monospace, monospace); font-weight: 700; overflow-wrap: anywhere; }
+.reference-section dt { font-family: var(--font-mono, var(--font-amat-mono)); font-weight: 700; overflow-wrap: anywhere; }
 .reference-section dd { margin: 0; }
 @media (max-width: 760px) { .reference-grid { grid-template-columns: 1fr; } .reference-section dl > div { grid-template-columns: 1fr; gap: 4px; } }
 .simulation-lab { display: grid; grid-template-columns: minmax(280px,.8fr) minmax(0,1.2fr); gap: 32px; align-items: start; }

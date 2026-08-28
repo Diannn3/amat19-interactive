@@ -4,6 +4,7 @@ import { expect, test } from '@playwright/test';
 test('@core logic basics gives conceptual feedback', async ({ page }) => {
   await page.goto('/labs/logic-basics');
   const lab = page.getByTestId('logic-basics-lab');
+  await expect(lab).toHaveAttribute('data-hydrated', 'true');
   await lab.getByRole('radio', { name: 'Proposition', exact: true }).click();
   await lab.getByRole('button', { name: 'Check answer' }).click();
   await expect(lab.getByText(/declarative claim/i)).toBeVisible();
@@ -12,6 +13,7 @@ test('@core logic basics gives conceptual feedback', async ({ page }) => {
 test('@core equivalence predicts then reveals truth-vector evidence', async ({ page }) => {
   await page.goto('/labs/equivalence');
   const lab = page.getByTestId('equivalence-lab');
+  await expect(lab).toHaveAttribute('data-hydrated', 'true');
   await lab.getByRole('radio', { name: 'Equivalent', exact: true }).check();
   await lab.getByRole('button', { name: 'Check prediction' }).click();
   await expect(lab.getByText('Equivalent.', { exact: true })).toBeVisible();
@@ -25,6 +27,7 @@ test('@core equivalence predicts then reveals truth-vector evidence', async ({ p
 test('@core direct formal proof checks exact named rules and reaches QED', async ({ page }) => {
   await page.goto('/labs/formal-proof');
   const lab = page.getByTestId('formal-proof-lab');
+  await expect(lab).toHaveAttribute('data-hydrated', 'true');
   await lab.getByLabel('Next proof statement').fill('~A');
   await lab.getByLabel('Proof rule').selectOption('MT');
   await lab.getByLabel('Cited line numbers').fill('1, 2');

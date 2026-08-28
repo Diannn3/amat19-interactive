@@ -4,6 +4,7 @@ import { expect, test } from '@playwright/test';
 test('@core counting explorer selects a model before revealing the exact count', async ({ page }) => {
   await page.goto('/labs/counting');
   const lab = page.getByTestId('counting-lab');
+  await expect(lab).toHaveAttribute('data-hydrated', 'true');
   await lab.getByRole('radio', { name: /Permutation nPr/i }).check();
   await lab.getByRole('button', { name: 'Check method' }).click();
   await expect(lab.getByText(/P\(8, 3\) = 336/)).toBeVisible();
@@ -19,12 +20,13 @@ test('@core counting explorer selects a model before revealing the exact count',
 test('@core conditional probability makes the active denominator visible and checks independence exactly', async ({ page }) => {
   await page.goto('/labs/conditional-probability');
   const lab = page.getByTestId('conditional-probability-lab');
+  await expect(lab).toHaveAttribute('data-hydrated', 'true');
   await expect(lab.getByText(/B contains 36 of 100 observations/i)).toBeVisible();
   await lab.getByRole('radio', { name: /Compute P\(B \| A\)/i }).check();
   await expect(lab.getByText(/A contains 40 of 100 observations/i)).toBeVisible();
   await lab.getByRole('button', { name: 'Tree' }).click();
   await expect(lab.getByRole('img', { name: /Probability tree/i })).toBeVisible();
-  await lab.getByRole('radio', { name: 'Dependent' }).check();
+  await lab.getByRole('radio', { name: 'Dependent', exact: true }).check();
   await lab.getByRole('button', { name: 'Check independence' }).click();
   await expect(lab.getByText('Dependent.', { exact: true })).toBeVisible();
 });

@@ -2,22 +2,22 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { BookOpen, Search, X } from 'lucide-react';
 import { currentCourseProfile, searchSkills } from '@amat19/course-content';
+import { learnerModuleLabel, learnerScopeLabel, learnerSkillLabel } from '../../lib/learner-labels';
 
-type Group = 'Workspace' | 'Labs' | 'Lessons' | 'Library' | 'Practice';
+type Group = 'Workspace' | 'Labs' | 'Lessons' | 'Library' | 'Checks';
 type Result = { id: string; title: string; subtitle: string; href: string; group: Group };
 
 const fixed: Result[] = [
   { id: 'study', title: 'Study Queue', subtitle: 'Recommended next work and recent sessions', href: '/study', group: 'Workspace' },
   { id: 'course', title: 'Course Map', subtitle: 'Five connected AMAT 19 modules', href: '/course', group: 'Workspace' },
-  { id: 'practice', title: 'Mixed Practice', subtitle: 'Adaptive whole-course retrieval', href: '/practice', group: 'Practice' },
-  { id: 'exam', title: 'Mixed Course Check', subtitle: 'Generated assessment with delayed feedback', href: '/exam', group: 'Practice' },
+  { id: 'exam', title: 'Mixed Course Check', subtitle: 'Whole-course check with feedback after submission', href: '/exam', group: 'Checks' },
   { id: 'progress', title: 'Progress', subtitle: 'Skill-level learning evidence', href: '/progress', group: 'Workspace' },
   { id: 'saved', title: 'Saved', subtitle: 'Bookmarks and saved problems', href: '/saved', group: 'Library' },
   { id: 'reference', title: 'Formula & Notation Reference', subtitle: 'Symbols, formulas, and repair links', href: '/reference', group: 'Library' },
-  { id: 'settings', title: 'Settings', subtitle: 'Notation, motion, practice, and display preferences', href: '/settings', group: 'Library' },
+  { id: 'settings', title: 'Settings', subtitle: 'Notation, motion, and display preferences', href: '/settings', group: 'Library' },
 ];
 
-const groupOrder: Group[] = ['Workspace', 'Labs', 'Lessons', 'Library', 'Practice'];
+const groupOrder: Group[] = ['Workspace', 'Labs', 'Lessons', 'Library', 'Checks'];
 
 function includesQuery(result: Result, query: string) {
   return `${result.title} ${result.subtitle} ${result.group}`.toLowerCase().includes(query);
@@ -33,11 +33,11 @@ function getSearchResults(query: string) {
 
   const fixedResults = fixed.filter((result) => includesQuery(result, normalized));
   const labResults = currentCourseProfile.labs
-    .filter((lab) => `${lab.title} ${lab.skillIds.join(' ')} ${lab.module}`.toLowerCase().includes(normalized))
+    .filter((lab) => [lab.title, learnerModuleLabel(lab.module), ...lab.skillIds.map(learnerSkillLabel)].filter(Boolean).join(' ').toLowerCase().includes(normalized))
     .map((lab) => ({
       id: `lab-${lab.id}`,
       title: lab.title,
-      subtitle: `${lab.module} · ${lab.status}`,
+      subtitle: `${learnerModuleLabel(lab.module)} · ${learnerScopeLabel(lab.status)} lab`,
       href: lab.href,
       group: 'Labs' as const,
     }));
@@ -70,9 +70,11 @@ function getSearchResults(query: string) {
 export default function CommandPalette() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
   const [input, setInput] = useState('');
   const [activeIndex, setActiveIndex] = useState(-1);
   const [hydrated, setHydrated] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const results = useMemo(() => getSearchResults(input), [input]);
 
   useEffect(() => {
@@ -81,11 +83,19 @@ export default function CommandPalette() {
 
   useEffect(() => {
     setHydrated(true);
-    const open = () => {
+    const open = (event?: Event) => {
       if (dialogRef.current?.open) return;
+      const detail = event instanceof CustomEvent ? event.detail as { trigger?: unknown } | null : null;
+      const activeElement = document.activeElement;
+      openerRef.current = detail?.trigger instanceof HTMLElement
+        ? detail.trigger
+        : activeElement instanceof HTMLElement && activeElement !== document.body
+        ? activeElement
+        : document.querySelector<HTMLElement>('[data-command-button]');
       setInput('');
       setActiveIndex(-1);
       dialogRef.current?.showModal();
+      setDialogOpen(true);
       window.setTimeout(() => inputRef.current?.focus(), 0);
     };
     const key = (event: KeyboardEvent) => {
@@ -102,7 +112,14 @@ export default function CommandPalette() {
     };
   }, []);
 
+  function restoreFocus() {
+    const opener = openerRef.current;
+    if (!opener?.isConnected) return;
+    window.setTimeout(() => opener.focus({ preventScroll: true }), 0);
+  }
+
   function close() {
+    setDialogOpen(false);
     dialogRef.current?.close();
   }
 
@@ -139,7 +156,7 @@ export default function CommandPalette() {
   })).filter((entry) => entry.results.length > 0);
 
   return (
-    <dialog ref={dialogRef} className="command-dialog" aria-labelledby="command-dialog-title" data-hydrated={hydrated ? 'true' : undefined}>
+    <dialog ref={dialogRef} className="command-dialog" aria-labelledby="command-dialog-title" onClose={() => { setDialogOpen(false); restoreFocus(); }} data-hydrated={hydrated ? 'true' : undefined}>
       <div className="command-dialog__header">
         <h2 id="command-dialog-title" className="sr-only">Search AMAT 19</h2>
         <Search size={18} aria-hidden="true" />
@@ -151,18 +168,22 @@ export default function CommandPalette() {
           onKeyDown={handleKeyDown}
           placeholder="Search skills, labs, or pages…"
           aria-label="Search skills, labs, or pages"
+          role="combobox"
+          aria-expanded={dialogOpen}
+          aria-haspopup="listbox"
+          aria-autocomplete="list"
           aria-controls="command-dialog-results"
           aria-activedescendant={activeIndex >= 0 ? `command-result-${results[activeIndex]?.id}` : undefined}
           autoComplete="off"
         />
-        <button className="site-nav__command" type="button" onClick={close} aria-label="Close search">
+        <button className="command-dialog__close" type="button" onClick={close} aria-label="Close search">
           <X size={16} aria-hidden="true" />
         </button>
       </div>
-      <div className="command-dialog__list" id="command-dialog-results" aria-live="polite">
+      <div className="command-dialog__list" id="command-dialog-results" role="listbox" aria-label="Study tool results">
         {grouped.length ? grouped.map(({ group, results: groupResults }) => (
-          <section className="command-group" key={group} aria-labelledby={`command-group-${group}`}>
-            <h3 className="command-group__title" id={`command-group-${group}`}>{group}</h3>
+          <section className="command-group" key={group} role="group" aria-label={group}>
+            <span className="command-group__title" aria-hidden="true">{group}</span>
             <div className="command-group__items">
               {groupResults.map(({ result, index }) => (
                 <a
@@ -170,6 +191,7 @@ export default function CommandPalette() {
                   id={`command-result-${result.id}`}
                   key={result.id}
                   href={result.href}
+                  role="option"
                   aria-selected={activeIndex === index ? 'true' : 'false'}
                   data-active={activeIndex === index ? 'true' : 'false'}
                   onMouseEnter={() => setActiveIndex(index)}

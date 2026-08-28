@@ -1,32 +1,34 @@
 ---
 import { currentCourseProfile, getModuleSkillGraph, type ModuleId } from '@amat19/course-content';
 import { ArrowRight, FlaskConical, Route } from 'lucide-react';
+import MixedPracticeRunner from '../practice/MixedPracticeRunner';
+import { learnerScopeLabel, learnerSkillLabel } from '../../lib/learner-labels';
 
 interface Props {
   moduleId: ModuleId;
   moduleNumber: string;
-  eyebrow?: string;
   headline: string;
   lede: string;
   lessons: Array<{ id: string; data: { title: string; description?: string; scope?: string } }>;
 }
 
-const { moduleId, moduleNumber, eyebrow, headline, lede, lessons } = Astro.props;
+const { moduleId, moduleNumber, headline, lede, lessons } = Astro.props;
 const module = currentCourseProfile.modules.find((item) => item.id === moduleId)!;
 const labs = currentCourseProfile.labs.filter((lab) => lab.module === moduleId);
 const skills = getModuleSkillGraph(moduleId);
 const current = skills.filter((skill) => skill.scope === 'current');
 const supplemental = skills.filter((skill) => skill.scope === 'supplemental');
 const firstLabHref = current[0]?.labHref ?? labs[0]?.href ?? module.href;
+const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-drill`;
 ---
 <section class="page-width page-intro module-overview" data-testid="module-overview">
   <div class="module-overview__copy">
     <h1 class="display-title">{headline}</h1>
     <p class="lede">{lede}</p>
-    <p class="module-overview__context">Module {moduleNumber} · {eyebrow ?? module.title}</p>
+    <p class="module-overview__context">Module {moduleNumber} · {module.title}</p>
     <div class="hero-actions">
       <a class="hero-action hero-action--primary" href={firstLabHref}><FlaskConical size={17} /> Start a lab</a>
-      <a class="hero-action hero-action--secondary" href={`/practice?preset=${moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-drill`}`}><Route size={17} /> Practice module</a>
+      <a class="hero-action hero-action--secondary" href={`/modules/${moduleId}?view=practice&preset=${practicePreset}`}><Route size={17} aria-hidden="true" /> Practice module</a>
     </div>
   </div>
   <div class="module-journey__metrics" aria-label={`${module.title} contents`}>
@@ -40,6 +42,7 @@ const firstLabHref = current[0]?.labHref ?? labs[0]?.href ?? module.href;
   <a href={`/modules/${moduleId}?view=overview`} aria-current="page">Overview</a>
   <a href={`/modules/${moduleId}?view=labs`}>Labs <span>({labs.length})</span></a>
   <a href={`/modules/${moduleId}?view=notes`}>Notes <span>({lessons.length})</span></a>
+  <a href={`/modules/${moduleId}?view=practice&preset=${practicePreset}`}>Practice</a>
 </nav>
 
 <section class="page-width module-view" data-module-view="overview" aria-labelledby={`${moduleId}-overview-heading`}>
@@ -52,13 +55,23 @@ const firstLabHref = current[0]?.labHref ?? labs[0]?.href ?? module.href;
   </div>
   <a class="module-next-step" href={firstLabHref}>
     <span class="module-next-step__index">01</span>
-    <span><strong>{current[0]?.title ?? labs[0]?.title ?? 'Open the module'}</strong><small>{current[0]?.description ?? 'Choose a live workspace and keep the explanation beside the result.'}</small></span>
+    <span><strong>{current[0]?.title ?? labs[0]?.title ?? 'Open the module'}</strong><small>{current[0]?.description ?? 'Choose an interactive workspace and keep the explanation beside the result.'}</small></span>
     <ArrowRight size={18} aria-hidden="true" />
   </a>
   <div class="module-view-links">
     <a href={`/modules/${moduleId}?view=notes`}><strong>Read the notes</strong><span>{lessons.length} concept notes</span><ArrowRight size={16} aria-hidden="true" /></a>
     <a href="/reference"><strong>Check notation</strong><span>Formulas and assumptions</span><ArrowRight size={16} aria-hidden="true" /></a>
   </div>
+</section>
+
+<section class="page-width module-view" data-module-view="practice" aria-labelledby={`${moduleId}-practice-heading`} hidden>
+  <div class="section-heading">
+    <div>
+      <h2 id={`${moduleId}-practice-heading`}>Practice this module.</h2>
+      <p class="section-context">Short retrieval check</p>
+    </div>
+  </div>
+  <MixedPracticeRunner client:load mode="practice" questionCount={8} module={moduleId} defaultPresetId={practicePreset} />
 </section>
 
 <section class="page-width module-view" data-module-view="labs" aria-labelledby={`${moduleId}-labs-heading`} hidden>
@@ -71,8 +84,8 @@ const firstLabHref = current[0]?.labHref ?? labs[0]?.href ?? module.href;
   <div class="module-lab-list">
     {labs.map((lab) => (
       <a class="module-lab-link" href={lab.href}>
-        <span><strong>{lab.title}</strong><small>{lab.skillIds.join(' · ')}</small></span>
-        <span class="module-lab-status">{lab.status}</span>
+        <span><strong>{lab.title}</strong><small>{lab.skillIds.map(learnerSkillLabel).filter((title): title is string => Boolean(title)).join(' · ')}</small></span>
+        <span class="module-lab-status">{learnerScopeLabel(lab.status)}</span>
         <ArrowRight size={17} aria-hidden="true" />
       </a>
     ))}
@@ -104,7 +117,7 @@ const firstLabHref = current[0]?.labHref ?? labs[0]?.href ?? module.href;
 <script>
   const moduleViews = Array.from(document.querySelectorAll<HTMLElement>('[data-module-view]'));
   const moduleTabs = Array.from(document.querySelectorAll<HTMLAnchorElement>('.module-tabs a'));
-  const allowedViews = new Set(['overview', 'labs', 'notes']);
+  const allowedViews = new Set(['overview', 'labs', 'notes', 'practice']);
 
   function applyModuleView(requested: string | null) {
     const candidate = requested ?? 'overview';

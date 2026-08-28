@@ -30,12 +30,13 @@ test('primary navigation marks the current route and mobile navigation stays doc
   await page.setViewportSize({ width: 1280, height: 800 });
   const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
   await expect(primaryNavigation.getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
+  await expect(primaryNavigation.locator('.nav-link').filter({ hasText: 'Practice' })).toHaveCount(0);
 
   await page.setViewportSize({ width: 375, height: 667 });
   const mobileNavigation = page.getByRole('navigation', { name: 'Mobile navigation' });
   await expect(mobileNavigation).toBeVisible();
   await expect(mobileNavigation.getByText('Progress', { exact: true })).toBeVisible();
-  await expect(mobileNavigation.locator('.mobile-nav-link')).toHaveCount(5);
+  await expect(mobileNavigation.locator('.mobile-nav-link')).toHaveCount(4);
 });
 
 test('Elbi workspace shell exposes desktop navigation, collapse state, and mobile dock', async ({ page }) => {
@@ -49,6 +50,9 @@ test('Elbi workspace shell exposes desktop navigation, collapse state, and mobil
   await expect(frame).toBeVisible();
   await expect(page.locator('.workspace')).toBeVisible();
   await expect(page.locator('.topbar-search')).toBeVisible();
+  await expect(page.locator('.sidebar-home')).toHaveAttribute('href', '/');
+  await expect(page.locator('.sidebar-home')).toContainText('Home');
+  await expect(page.locator('.sidebar-home')).toContainText('AMAT 19 Study Lab');
 
   if (await sidebar.isVisible()) {
     await expect(primaryNavigation.getByRole('link', { name: 'Study' })).toBeVisible();
@@ -63,6 +67,94 @@ test('Elbi workspace shell exposes desktop navigation, collapse state, and mobil
   await expect(page.locator('.mobile-nav')).toBeVisible();
   await expect(page.locator('.mobile-nav').getByRole('link', { name: 'Study' })).toBeVisible();
   await expect(page.locator('.mobile-nav').getByText('More', { exact: true })).toBeVisible();
+});
+
+test('Home stays reachable in the compact shell and utility navigation opens on request', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto('/reference');
+
+  const home = page.locator('.topbar-home');
+  await expect(home).toHaveAttribute('href', '/');
+  await expect(home).toBeVisible();
+
+  const mobileMore = page.locator('.mobile-more-menu');
+  await expect(mobileMore).not.toHaveAttribute('open', '');
+  await mobileMore.locator('summary').click();
+  await expect(mobileMore.locator('.mobile-more-menu__panel')).toBeVisible();
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.reload();
+  await expect(page.locator('.topbar-home')).toBeVisible();
+  await expect(page.locator('.more-menu')).not.toHaveAttribute('open', '');
+});
+
+test('@core shell navigation controls meet the 44px touch target contract', async ({ page }) => {
+  const assertTouchTargets = async (selectors: string[]) => {
+    for (const selector of selectors) {
+      const bounds = await page.locator(selector).boundingBox();
+      expect(bounds, `${selector} should be rendered`).not.toBeNull();
+      expect(bounds!.width, `${selector} width`).toBeGreaterThanOrEqual(44);
+      expect(bounds!.height, `${selector} height`).toBeGreaterThanOrEqual(44);
+    }
+  };
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  await assertTouchTargets(['.sidebar-toggle', '.topbar-home', '.topbar-search']);
+
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.reload();
+  await assertTouchTargets(['.topbar-home', '.topbar-search', '.mobile-more-menu > summary']);
+});
+
+test('@core math lab controls meet the 44px touch target contract', async ({ page }) => {
+  const waitForClientLoad = async () => {
+    const islands = page.locator('astro-island[client="load"]');
+    const islandCount = await islands.count();
+    if (islandCount > 0) {
+      await expect(page.locator('astro-island[client="load"][client-render-time]')).toHaveCount(islandCount);
+    }
+  };
+
+  const assertVisibleTouchTargets = async (selector: string, route: string) => {
+    const controls = page.locator(selector);
+    await expect(controls.first(), `${route} should render ${selector}`).toBeVisible();
+    const count = await controls.count();
+
+    for (let index = 0; index < count; index += 1) {
+      const control = controls.nth(index);
+      if (!(await control.isVisible())) continue;
+      const bounds = await control.boundingBox();
+      expect(bounds, `${route} ${selector} #${index + 1} should be rendered`).not.toBeNull();
+      expect(bounds!.width, `${route} ${selector} #${index + 1} width`).toBeGreaterThanOrEqual(44);
+      expect(bounds!.height, `${route} ${selector} #${index + 1} height`).toBeGreaterThanOrEqual(44);
+    }
+  };
+
+  await page.goto('/labs/truth-table');
+  await waitForClientLoad();
+  await assertVisibleTouchTargets('.amat-tabs__trigger', '/labs/truth-table');
+  await assertVisibleTouchTargets('.truth-table__cell-button', '/labs/truth-table');
+  await page.getByRole('button', { name: 'Practice', exact: true }).click();
+  await assertVisibleTouchTargets('.truth-table__practice-cell', '/labs/truth-table');
+  await page.getByRole('button', { name: 'Build', exact: true }).click();
+  await page.getByLabel('Predicted number of rows').fill('4');
+  await page.getByRole('button', { name: 'Check rows', exact: true }).click();
+  await page.getByRole('button', { name: /I see the pattern/i }).click();
+  await assertVisibleTouchTargets('.truth-build__row-picker button', '/labs/truth-table');
+
+  await page.goto('/labs/equivalence');
+  await waitForClientLoad();
+  await assertVisibleTouchTargets('.text-chip', '/labs/equivalence');
+
+  await page.goto('/labs/matrix-operations');
+  await waitForClientLoad();
+  await assertVisibleTouchTargets('.matrix-cell-button', '/labs/matrix-operations');
+  await assertVisibleTouchTargets('.matrix-editor__cell', '/labs/matrix-operations');
+
+  await page.goto('/labs/row-reduction');
+  await waitForClientLoad();
+  await assertVisibleTouchTargets('.matrix-editor__cell', '/labs/row-reduction');
 });
 
 test('home presents a compact Elbi-style hub around real AMAT course objects', async ({ page }) => {
@@ -83,7 +175,6 @@ test('public surfaces obey the anti-vibecode hierarchy and status semantics', as
     '/',
     '/study',
     '/course',
-    '/practice',
     '/exam',
     '/progress',
     '/reference',
@@ -139,6 +230,29 @@ test('public surfaces obey the anti-vibecode hierarchy and status semantics', as
   }
 });
 
+test('legacy practice URLs redirect to the study workspace', async ({ page }) => {
+  await page.goto('/practice?preset=quick-5');
+  await expect(page).toHaveURL(/\/study/);
+  await expect(page.getByTestId('study-dashboard')).toBeVisible();
+  await expect(page.getByText('Practice Center', { exact: true })).toHaveCount(0);
+});
+
+test('approved typography uses Plus Jakarta Sans and JetBrains Mono', async ({ page }) => {
+  await page.goto('/');
+  const typography = await page.evaluate(() => ({
+    body: getComputedStyle(document.body).fontFamily,
+    display: getComputedStyle(document.querySelector('.home-hub h1')!).fontFamily,
+    formula: getComputedStyle(document.querySelector('.home-hub__formula-label')!).fontFamily,
+    plusJakartaLoaded: document.fonts.check('16px "Plus Jakarta Sans"'),
+    jetBrainsLoaded: document.fonts.check('16px "JetBrains Mono"'),
+  }));
+  expect(typography.body).toContain('Plus Jakarta Sans');
+  expect(typography.display).toContain('Plus Jakarta Sans');
+  expect(typography.formula).toContain('JetBrains Mono');
+  expect(typography.plusJakartaLoaded).toBe(true);
+  expect(typography.jetBrainsLoaded).toBe(true);
+});
+
 test('shell honors media preferences and keeps mobile navigation keyboard-contained', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -171,16 +285,171 @@ test('command palette groups results and supports arrow-key selection', async ({
   }
 
   const palette = page.getByRole('dialog', { name: /Search AMAT 19/i });
-  const input = palette.getByRole('textbox', { name: /Search skills/i });
-  await expect(palette.getByRole('heading', { name: 'Workspace', exact: true })).toBeVisible();
+  const input = palette.getByRole('combobox', { name: /Search skills/i });
+  await expect(palette.getByRole('group', { name: 'Workspace', exact: true })).toBeVisible();
 
   await input.fill('conditional');
-  const result = palette.getByRole('link', { name: /Conditional Probability Lab/i }).first();
+  const result = palette.getByRole('option', { name: /Conditional Probability Lab/i }).first();
   await expect(result).toBeVisible();
   await page.keyboard.press('ArrowDown');
   await expect(result).toHaveAttribute('aria-selected', 'true');
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/labs\/conditional-probability/);
+});
+
+test('command palette exposes a screen-reader combobox and listbox contract', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.command-dialog[data-hydrated="true"]')).toBeAttached();
+  await page.getByRole('button', { name: 'Search AMAT 19' }).click();
+
+  const palette = page.getByRole('dialog', { name: /Search AMAT 19/i });
+  const input = palette.getByRole('combobox', { name: /Search skills/i });
+  await expect(input).toHaveAttribute('aria-expanded', 'true');
+  await expect(input).toHaveAttribute('aria-haspopup', 'listbox');
+  await expect(input).toHaveAttribute('aria-autocomplete', 'list');
+  await expect(palette.locator('[role="listbox"]')).toBeVisible();
+
+  await input.fill('conditional');
+  await page.keyboard.press('ArrowDown');
+  const activeId = await input.getAttribute('aria-activedescendant');
+  expect(activeId).toBeTruthy();
+  await expect(palette.locator(`#${activeId}`)).toHaveAttribute('role', 'option');
+  await expect(palette.locator(`#${activeId}`)).toHaveAttribute('aria-selected', 'true');
+});
+
+test('command palette keeps a visible focus ring on its search input', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.command-dialog[data-hydrated="true"]')).toBeAttached();
+  await page.getByRole('button', { name: 'Search AMAT 19' }).click();
+
+  const input = page.getByRole('dialog', { name: /Search AMAT 19/i }).getByRole('combobox', { name: /Search skills/i });
+  await input.focus();
+  await expect.poll(() => input.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth };
+  })).toEqual({ outlineStyle: 'solid', outlineWidth: '2px' });
+});
+
+test('command palette returns focus to its trigger after dismissal', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.command-dialog[data-hydrated="true"]')).toBeAttached();
+  const trigger = page.getByRole('button', { name: 'Search AMAT 19' });
+  await trigger.click();
+
+  const input = page.getByRole('dialog', { name: /Search AMAT 19/i }).getByRole('combobox', { name: /Search skills/i });
+  await expect(input).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+});
+
+test('command palette close control has no legacy decorative affordance', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.command-dialog[data-hydrated="true"]')).toBeAttached();
+  await page.getByRole('button', { name: 'Search AMAT 19' }).click();
+
+  const close = page.getByRole('button', { name: 'Close search' });
+  await expect(close).toBeVisible();
+  await expect.poll(() => close.evaluate((element) => getComputedStyle(element, '::after').content)).toBe('none');
+});
+
+test('open command palette has no serious accessibility violations', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.command-dialog[data-hydrated="true"]')).toBeAttached();
+  await page.getByRole('button', { name: 'Search AMAT 19' }).click();
+
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations.filter((violation) => ['critical', 'serious'].includes(violation.impact ?? ''))).toEqual([]);
+});
+
+test('hydrated lab registers a persistence flush before a PWA update', async ({ page }) => {
+  await page.goto('/labs/equivalence');
+  const islandCount = await page.locator('astro-island[client="load"]').count();
+  await expect(page.locator('astro-island[client="load"][client-render-time]')).toHaveCount(islandCount);
+  await expect(page.getByTestId('equivalence-lab')).toHaveAttribute('data-hydrated', 'true');
+
+  const taskCount = await page.evaluate(() => {
+    const detail = { tasks: [] as Array<() => Promise<unknown> | unknown> };
+    window.dispatchEvent(new CustomEvent('amat:before-update', { detail }));
+    return detail.tasks.length;
+  });
+
+  expect(taskCount).toBe(1);
+});
+
+test('PWA update waits for slow persistence work before activating the worker', async ({ page }) => {
+  await page.addInitScript(() => {
+    const worker = {
+      messages: [] as unknown[],
+      postMessage(message: unknown) { this.messages.push(message); },
+    };
+    const registration = {
+      waiting: worker,
+      installing: null,
+      addEventListener() {},
+    };
+    const serviceWorker = {
+      controller: {},
+      register: async () => registration,
+      addEventListener() {},
+    };
+
+    Object.defineProperty(navigator, 'serviceWorker', { configurable: true, value: serviceWorker });
+    Object.assign(window, { __amatTestWorker: worker });
+    window.addEventListener('amat:before-update', (event) => {
+      const detail = (event as CustomEvent<{ tasks: Array<() => unknown> }>).detail;
+      detail.tasks.push(() => new Promise<void>((resolve) => window.setTimeout(resolve, 150)));
+    });
+  });
+
+  await page.goto('/labs/equivalence');
+  const islandCount = await page.locator('astro-island[client="load"]').count();
+  await expect(page.locator('astro-island[client="load"][client-render-time]')).toHaveCount(islandCount);
+  await expect(page.getByTestId('equivalence-lab')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.getByRole('button', { name: 'Save & update' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Save & update' }).click();
+  await expect(page.getByRole('button', { name: 'Saving…' })).toBeDisabled();
+  await page.waitForTimeout(50);
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __amatTestWorker: { messages: unknown[] } }).__amatTestWorker.messages.length)).toBe(0);
+
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __amatTestWorker: { messages: unknown[] } }).__amatTestWorker.messages.length), { timeout: 2_000 }).toBe(1);
+});
+
+test('PWA update stays pending when a persistence task fails', async ({ page }) => {
+  await page.addInitScript(() => {
+    const worker = {
+      messages: [] as unknown[],
+      postMessage(message: unknown) { this.messages.push(message); },
+    };
+    const registration = {
+      waiting: worker,
+      installing: null,
+      addEventListener() {},
+    };
+    const serviceWorker = {
+      controller: {},
+      register: async () => registration,
+      addEventListener() {},
+    };
+
+    Object.defineProperty(navigator, 'serviceWorker', { configurable: true, value: serviceWorker });
+    Object.assign(window, { __amatTestWorker: worker });
+    window.addEventListener('amat:before-update', (event) => {
+      const detail = (event as CustomEvent<{ tasks: Array<() => unknown> }>).detail;
+      detail.tasks.push(() => false);
+    });
+  });
+
+  await page.goto('/labs/equivalence');
+  const islandCount = await page.locator('astro-island[client="load"]').count();
+  await expect(page.locator('astro-island[client="load"][client-render-time]')).toHaveCount(islandCount);
+  await expect(page.getByTestId('equivalence-lab')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.getByRole('button', { name: 'Save & update' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Save & update' }).click();
+  await expect(page.getByText(/Couldn’t save local work/i)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Save & update' })).toBeEnabled();
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __amatTestWorker: { messages: unknown[] } }).__amatTestWorker.messages.length)).toBe(0);
 });
 
 test('lesson routes render original content collection entries', async ({ page }) => {
@@ -226,15 +495,15 @@ test('progress leads with needs attention and can reveal full core evidence', as
 test('mobile routes do not create page-level horizontal overflow', async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 375, height: 812 });
-  for (const route of ['/', '/modules/logic', '/labs/annuity', '/labs/bayes', '/labs/bonds', '/labs/cashflow-timeline', '/labs/conditional-probability', '/labs/counting', '/labs/distribution', '/labs/equivalence', '/labs/formal-proof', '/labs/game-theory', '/labs/interest', '/labs/linear-programming', '/labs/logic-basics', '/labs/markov', '/labs/matrix-operations', '/labs/probability-simulation', '/labs/row-reduction', '/labs/truth-table', '/practice', '/exam', '/reference', '/progress']) {
+  for (const route of ['/', '/modules/logic', '/modules/logic?view=practice', '/labs/annuity', '/labs/bayes', '/labs/bonds', '/labs/cashflow-timeline', '/labs/conditional-probability', '/labs/counting', '/labs/distribution', '/labs/equivalence', '/labs/formal-proof', '/labs/game-theory', '/labs/interest', '/labs/linear-programming', '/labs/logic-basics', '/labs/markov', '/labs/matrix-operations', '/labs/probability-simulation', '/labs/row-reduction', '/labs/truth-table', '/exam', '/reference', '/progress']) {
     await page.goto(route);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow, route).toBe(false);
   }
 });
 
-test('@core practice, mixed check, and reference surfaces render', async ({ page }) => {
-  await page.goto('/practice');
+test('@core contextual retrieval, mixed check, and reference surfaces render', async ({ page }) => {
+  await page.goto('/modules/logic?view=practice&preset=logic-drill');
   await expect(page.getByTestId('mixed-practice')).toBeVisible();
   await page.goto('/exam');
   await expect(page.getByTestId('mixed-exam')).toBeVisible();
@@ -289,8 +558,8 @@ test('@core mixed course check withholds explanations until submission', async (
   await expect(exam.locator('.mixed-question__result').first()).toBeVisible();
 });
 
-test('practice focuses one question and advances after checking', async ({ page }) => {
-  await page.goto('/practice');
+test('contextual retrieval focuses one question and advances after checking', async ({ page }) => {
+  await page.goto('/modules/logic?view=practice&preset=logic-drill');
   const practice = page.getByTestId('mixed-practice');
   await expect(practice).toHaveAttribute('data-hydrated', 'true');
   const stage = practice.locator('.mixed-question-stage');
@@ -315,6 +584,8 @@ test('exam keeps one question in view and exposes a jump navigator', async ({ pa
   const exam = page.getByTestId('mixed-exam');
   const stage = exam.locator('.mixed-question-stage');
 
+  const islandCount = await page.locator('astro-island[client="load"]').count();
+  await expect(page.locator('astro-island[client="load"][client-render-time]')).toHaveCount(islandCount);
   await expect(exam).toHaveAttribute('data-hydrated', 'true');
   await expect(stage.locator('.mixed-question')).toHaveCount(1);
   await expect(exam.locator('.exam-question-nav')).toBeVisible();

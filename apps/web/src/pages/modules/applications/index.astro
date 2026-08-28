@@ -5,5 +5,5 @@ import ModuleJourney from '../../../components/course/ModuleJourney.astro';
 const lessons=(await getCollection('lessons')).filter((entry)=>entry.data.module==='applications').sort((a,b)=>a.data.order-b.data.order);
 ---
 <AppLayout title="Applications module">
-  <ModuleJourney moduleId="applications" moduleNumber="05" eyebrow="Applications" headline="Model the feasible choices before optimizing them." lede="Use linear systems, inequalities, payoff matrices, and state transitions to connect AMAT tools to decision models." lessons={lessons} />
+  <ModuleJourney moduleId="applications" moduleNumber="05" headline="Model the feasible choices before optimizing them." lede="Use linear systems, inequalities, payoff matrices, and state transitions to connect AMAT tools to decision models." lessons={lessons} />
 </AppLayout>

@@ -6,7 +6,6 @@ interface Props {
   moduleLabel: string;
   title: string;
   description: string;
-  eyebrow: string;
   scope: 'current' | 'supplemental';
   lessonHref?: string;
   referenceHref?: string;
@@ -17,14 +16,13 @@ const {
   moduleLabel,
   title,
   description,
-  eyebrow,
   scope,
   lessonHref,
   referenceHref = '/reference',
 } = Astro.props;
 const moduleHref = `/modules/${moduleId}`;
 const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-drill`;
-const practiceHref = `/practice?preset=${practicePreset}`;
+const practiceHref = `${moduleHref}?view=practice&preset=${practicePreset}`;
 ---
 <article class="lab-route" data-lab-shell={title} data-lab-scope={scope}>
   <nav class="lab-breadcrumbs" aria-label="Breadcrumb">
@@ -39,7 +37,6 @@ const practiceHref = `/practice?preset=${practicePreset}`;
     <div class="lab-route__heading">
       <h1>{title}</h1>
       <p>{description}</p>
-      <div class="lab-route__context"><span>{eyebrow}</span><span class="lab-route__scope">{scope === 'current' ? 'Current core' : 'Supplemental depth'}</span></div>
     </div>
     <nav class="lab-route__links" aria-label="Lab actions">
       <a href={moduleHref}>Back to {moduleLabel}</a>
@@ -56,7 +53,6 @@ const practiceHref = `/practice?preset=${practicePreset}`;
         {lessonHref && <a href={lessonHref}>Read the concept</a>}
         <a href={referenceHref}>Check notation</a>
         <a href={practiceHref}>Practice this module</a>
-        <a href={moduleHref}>All {moduleLabel} work</a>
       </nav>
     </aside>
 

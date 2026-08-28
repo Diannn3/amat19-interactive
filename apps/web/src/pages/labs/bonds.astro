@@ -3,8 +3,8 @@ import AppLayout from '../../layouts/AppLayout.astro';
 import LabShell from '../../components/course/LabShell.astro';
 import BondLab from '../../components/labs/finance/BondLab';
 ---
-<AppLayout title="Bond Pricing Lab" description="Analyze coupon and redemption cash flows as a supplemental bond-pricing model.">
-  <LabShell moduleId="finance" moduleLabel="Financial Mathematics" scope="supplemental" eyebrow="Financial Mathematics · supplemental" title="Bond Pricing Lab" description="Treat the coupons as an annuity and redemption as one maturity cash flow. This older-handout topic is supplemental unless the current semester explicitly enables it." lessonHref="/lessons/finance/bonds">
+<AppLayout title="Bond Pricing Lab" description="Price coupon payments and redemption at one purchase date.">
+  <LabShell moduleId="finance" moduleLabel="Financial Mathematics" scope="supplemental" title="Bond Pricing Lab" description="Price coupon payments and redemption at one purchase date." lessonHref="/lessons/finance/bonds">
     <BondLab client:load />
   </LabShell>
 </AppLayout>
