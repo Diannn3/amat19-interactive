@@ -1,43 +1,46 @@
 ---
 import { currentCourseProfile, liveLabs } from '@amat19/course-content';
 import AppLayout from '../layouts/AppLayout.astro';
+import BrandMark from '../components/brand/BrandMark.astro';
 import ModuleSpotlightGrid from '../components/home/ModuleSpotlightGrid';
-import MotionHeadline from '../components/bits/MotionHeadline';
 
 const moduleCount = currentCourseProfile.modules.length;
 const implementedSkillCount = currentCourseProfile.skills.filter((skill) => skill.status === 'implemented').length;
+const moduleNotations = {
+  logic: 'P → Q',
+  probability: 'P(A | B)',
+  finance: 'F = P(1 + i)ⁿ',
+  linear: 'Ax = b',
+  applications: 'max min',
+} as const;
 ---
 <AppLayout title="Home">
-  <section class="page-width home-hub" aria-labelledby="home-title">
-    <div class="home-hub__copy">
-      <MotionHeadline client:load id="home-title" text="Make the next step visible." />
-      <p class="home-hub__lede">Find one skill, work it in a lab, then repair what needs another pass.</p>
-      <div class="home-hub__actions">
-        <a class="primary-button" href="/study">Continue studying <span aria-hidden="true">→</span></a>
-        <a class="secondary-button" href="/course">Browse course</a>
+  <section class="page-width home-hero" data-home-hero aria-labelledby="home-title">
+    <div class="home-hero__copy">
+      <h1 id="home-title" class="home-hero__title">Finite mathematics, made visible.</h1>
+      <p class="home-hero__lede">Study AMAT 19 through exact, interactive labs for logic, probability, financial mathematics, matrices, and applied models.</p>
+      <div class="home-hero__actions">
+        <a class="primary-button" data-home-primary-action href="/study">Start studying <span aria-hidden="true">→</span></a>
+        <a class="secondary-button" href="/course">Explore the course</a>
       </div>
     </div>
 
-    <aside class="home-hub__preview" aria-labelledby="snapshot-title">
-      <div class="home-study-snapshot" data-testid="home-study-snapshot">
-        <div class="home-study-snapshot__head">
-          <div>
-            <h2 id="snapshot-title">Study snapshot</h2>
-            <p class="home-study-snapshot__context">Logic · implication</p>
-          </div>
-          <code class="home-hub__formula-label">P → Q</code>
-        </div>
-        <div class="home-study-snapshot__formula" aria-label="The proposition P implies Q">P → Q</div>
-        <div class="home-study-snapshot__table" role="img" aria-label="Truth table preview for P implies Q">
-          <span>P</span><span>Q</span><span>P → Q</span>
-          <strong>T</strong><strong>T</strong><strong class="is-true">T</strong>
-          <strong>T</strong><strong>F</strong><strong class="is-false">F</strong>
-          <strong>F</strong><strong>T</strong><strong class="is-true">T</strong>
-          <strong>F</strong><strong>F</strong><strong class="is-true">T</strong>
-        </div>
-        <p class="home-study-snapshot__note"><span>Next move</span><strong>Find the one false row.</strong></p>
-      </div>
-    </aside>
+    <div class="home-hero__index" aria-label="AMAT 19 module index">
+      <BrandMark className="home-hero__mark" variant="dark" label="AMAT 19 monogram" />
+      <nav class="home-module-index" aria-label="Course modules">
+        <ol>
+          {currentCourseProfile.modules.map((module) => (
+            <li data-home-module>
+              <a class="home-module-index__link" href={module.href} aria-label={`Open ${module.title}`}>
+                <span class="home-module-index__number">{String(module.order).padStart(2, '0')}</span>
+                <span class="home-module-index__name"><strong>{module.title}</strong><code data-home-notation>{moduleNotations[module.id]}</code></span>
+                <span class="home-module-index__arrow" aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </div>
   </section>
 
   <section class="page-width home-facts" aria-label="Course at a glance">

@@ -20,7 +20,7 @@ test('Vercel project metadata is ignored and not tracked', async () => {
 test('retired dashboard and hero selectors are absent from the live stylesheet', async () => {
   const stylesheet = await readFile(new URL('../../apps/web/src/styles/pass4.css', import.meta.url), 'utf8');
   const retiredSelectors = [
-    'hero-stage', 'hero-title', 'hero-subtitle', 'gradient-text', 'home-hero',
+    'hero-stage', 'hero-title', 'hero-subtitle', 'gradient-text',
     'home-bento', 'bento', 'bento-attention', 'bento-briefing', 'bento-context',
     'bento-footer', 'metric-card', 'home-route-card', 'home-loop', 'principle-strip',
     'module-loop', 'section-heading__note', 'site-header', 'site-header__inner', 'site-nav',

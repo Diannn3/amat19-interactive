@@ -1,9 +1,10 @@
 ---
-import { BookMarked, BookOpen, BookOpenCheck, Bookmark, ChartNoAxesCombined, Ellipsis, Settings2 } from 'lucide-react';
+import { BookMarked, BookOpen, BookOpenCheck, Bookmark, ChartNoAxesCombined, Ellipsis, House, Settings2, UserRound } from 'lucide-react';
 
 interface Props { name: string; }
 const { name } = Astro.props;
 const icons = {
+  home: House,
   study: BookOpenCheck,
   course: BookOpen,
   progress: ChartNoAxesCombined,
@@ -11,6 +12,7 @@ const icons = {
   saved: Bookmark,
   settings: Settings2,
   more: Ellipsis,
+  developer: UserRound,
 };
 const Icon = icons[name as keyof typeof icons] ?? BookOpen;
 ---

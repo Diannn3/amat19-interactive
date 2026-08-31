@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 
 test('@core course shell exposes Logic, Probability, and local progress routes', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /Make the next step visible/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Finite mathematics, made visible/i })).toBeVisible();
   await expect(page.getByRole('link', { name: /Logic/ }).first()).toBeVisible();
   await expect(page.getByRole('link', { name: /Probability/ }).first()).toBeVisible();
   await page.goto('/progress');
@@ -11,11 +11,11 @@ test('@core course shell exposes Logic, Probability, and local progress routes',
   await expect(page.getByTestId('data-manager')).toBeVisible();
 });
 
-test('home and module journeys lead with visual study cues instead of long text blocks', async ({ page }) => {
+test('home and module journeys lead with a brand index instead of a snapshot panel', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByTestId('home-study-snapshot')).toBeVisible();
-  await expect(page.getByRole('heading', { name: /Study snapshot/i })).toBeVisible();
-  await expect(page.locator('.home-hub')).toBeVisible();
+  await expect(page.locator('[data-home-hero]')).toBeVisible();
+  await expect(page.locator('.home-module-index')).toBeVisible();
+  await expect(page.getByTestId('home-study-snapshot')).toHaveCount(0);
   await expect(page.locator('.module-spotlight-link')).toHaveCount(5);
 
   await page.goto('/modules/logic');
@@ -29,6 +29,7 @@ test('primary navigation marks the current route and mobile navigation stays doc
   await page.goto('/progress');
   await page.setViewportSize({ width: 1280, height: 800 });
   const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
+  await expect(primaryNavigation.getByRole('link', { name: 'Home' })).toBeVisible();
   await expect(primaryNavigation.getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
   await expect(primaryNavigation.locator('.nav-link').filter({ hasText: 'Practice' })).toHaveCount(0);
 
@@ -50,11 +51,10 @@ test('Elbi workspace shell exposes desktop navigation, collapse state, and mobil
   await expect(frame).toBeVisible();
   await expect(page.locator('.workspace')).toBeVisible();
   await expect(page.locator('.topbar-search')).toBeVisible();
-  await expect(page.locator('.sidebar-home')).toHaveAttribute('href', '/');
-  await expect(page.locator('.sidebar-home')).toContainText('Home');
-  await expect(page.locator('.sidebar-home')).toContainText('AMAT 19 Study Lab');
+  await expect(page.locator('.sidebar-footer')).toHaveCount(0);
 
   if (await sidebar.isVisible()) {
+    await expect(primaryNavigation.getByRole('link', { name: 'Home', exact: true })).toHaveAttribute('href', '/');
     await expect(primaryNavigation.getByRole('link', { name: 'Study' })).toBeVisible();
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await toggle.click();
@@ -157,14 +157,16 @@ test('@core math lab controls meet the 44px touch target contract', async ({ pag
   await assertVisibleTouchTargets('.matrix-editor__cell', '/labs/row-reduction');
 });
 
-test('home presents a compact Elbi-style hub around real AMAT course objects', async ({ page }) => {
+test('home presents a brand-first route index around real AMAT course objects', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.locator('.home-hub')).toBeVisible();
+  await expect(page.locator('[data-home-hero]')).toBeVisible();
   await expect(page.locator('.home-facts')).toBeVisible();
-  await expect(page.getByTestId('home-study-snapshot')).toBeVisible();
+  await expect(page.locator('.home-module-index')).toBeVisible();
+  await expect(page.locator('.home-module-index__link')).toHaveCount(5);
+  await expect(page.getByTestId('home-study-snapshot')).toHaveCount(0);
   await expect(page.locator('.module-spotlight-grid')).toBeVisible();
-  await expect(page.locator('.home-hub a[href="/study"]')).toBeVisible();
+  await expect(page.locator('[data-home-primary-action][href="/study"]')).toBeVisible();
   await expect(page.locator('.home-bento')).toHaveCount(0);
   await expect(page.locator('.home-loop')).toHaveCount(0);
 });
@@ -241,8 +243,8 @@ test('approved typography uses Plus Jakarta Sans and JetBrains Mono', async ({ p
   await page.goto('/');
   const typography = await page.evaluate(() => ({
     body: getComputedStyle(document.body).fontFamily,
-    display: getComputedStyle(document.querySelector('.home-hub h1')!).fontFamily,
-    formula: getComputedStyle(document.querySelector('.home-hub__formula-label')!).fontFamily,
+    display: getComputedStyle(document.querySelector('.home-hero__title')!).fontFamily,
+    formula: getComputedStyle(document.querySelector('[data-home-notation]')!).fontFamily,
     plusJakartaLoaded: document.fonts.check('16px "Plus Jakarta Sans"'),
     jetBrainsLoaded: document.fonts.check('16px "JetBrains Mono"'),
   }));

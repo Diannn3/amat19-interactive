@@ -1,13 +1,13 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Pass 7 navigation and workspace clarity', () => {
-  test('desktop shell exposes three primary destinations and a More utility menu', async ({ page }) => {
+  test('desktop shell exposes four primary destinations and a More utility menu', async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 901, 'Desktop navigation is replaced by the mobile dock below 901px.');
     await page.goto('/');
 
     const primary = page.getByRole('navigation', { name: 'Primary navigation' });
-    await expect(primary.locator('.nav-link')).toHaveCount(3);
-    for (const label of ['Study', 'Course', 'Progress']) {
+    await expect(primary.locator('.nav-link')).toHaveCount(4);
+    for (const label of ['Home', 'Study', 'Course', 'Progress']) {
       await expect(primary.getByRole('link', { name: label, exact: true })).toBeVisible();
     }
 
@@ -17,33 +17,26 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     for (const label of ['Reference', 'Saved', 'Settings']) {
       await expect(more.getByRole('link', { name: label, exact: true })).toBeVisible();
     }
+    await expect(more.getByRole('button', { name: 'Developer contact', exact: true })).toBeVisible();
   });
 
-  test('home is a compact hub with abstract module cards', async ({ page }) => {
+  test('home is a brand-first route index with real module links', async ({ page }) => {
     await page.goto('/');
 
-    await expect(page.locator('.home-hub')).toBeVisible();
-    await expect(page.locator('.home-hub h1')).toHaveText('Make the next step visible.');
+    await expect(page.locator('[data-home-hero]')).toBeVisible();
+    await expect(page.locator('.home-hero__title')).toHaveText('Finite mathematics, made visible.');
+    await expect(page.locator('.home-module-index__link')).toHaveCount(5);
     await expect(page.locator('.module-spotlight-link')).toHaveCount(5);
     await expect(page.locator('.home-bento')).toHaveCount(0);
     await expect(page.locator('.home-loop')).toHaveCount(0);
     await expect(page.locator('.module-door')).toHaveCount(0);
   });
 
-  test('home headline preserves readable word spacing', async ({ page }) => {
+  test('home headline is static and uses balanced readable typography', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.motion-headline > span').first()).toBeVisible();
-
-    const gaps = await page.locator('.motion-headline > span').evaluateAll((spans) => spans.slice(0, -1).flatMap((span, index) => {
-      const next = spans[index + 1];
-      if (!next) return [];
-      const currentBox = span.getBoundingClientRect();
-      const nextBox = next.getBoundingClientRect();
-      return Math.abs(currentBox.top - nextBox.top) < 1 ? [nextBox.left - currentBox.right] : [];
-    }));
-
-    expect(gaps.length).toBeGreaterThan(0);
-    expect(gaps.every((gap) => gap >= 1)).toBe(true);
+    await expect(page.locator('.home-hero__title')).toBeVisible();
+    await expect(page.locator('.motion-headline')).toHaveCount(0);
+    await expect.poll(() => page.locator('.home-hero__title').evaluate((heading) => getComputedStyle(heading).textWrap)).toContain('balance');
   });
 
   test('module views are deep-linkable and expose labs and notes separately', async ({ page }) => {

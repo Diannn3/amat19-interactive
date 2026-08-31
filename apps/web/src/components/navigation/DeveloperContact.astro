@@ -1,0 +1,78 @@
+---
+import { ExternalLink, UserRound, X } from 'lucide-react';
+
+const socialLinks = [
+  { label: 'Facebook', href: 'https://www.facebook.com/aedrian.ponce' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/aedrian-ponce-a602b0398/' },
+];
+---
+<dialog
+  id="developer-contact-dialog"
+  class="developer-dialog"
+  aria-labelledby="developer-contact-title"
+  aria-describedby="developer-contact-description"
+  data-developer-contact-dialog
+>
+  <div class="developer-dialog__surface" data-dialog-surface>
+    <header class="developer-dialog__header">
+      <div class="developer-dialog__heading">
+        <span class="developer-dialog__icon" aria-hidden="true"><UserRound size={21} strokeWidth={1.7} /></span>
+        <div>
+          <h2 id="developer-contact-title">Developer contact</h2>
+          <p id="developer-contact-description">Connect with the person building and maintaining AMAT 19 Study Lab.</p>
+        </div>
+      </div>
+      <button class="developer-dialog__close" type="button" data-dialog-close aria-label="Close developer contact">
+        <X aria-hidden="true" size={19} strokeWidth={1.8} />
+      </button>
+    </header>
+
+    <div class="developer-dialog__profile">
+      <strong>Aedrian Ponce</strong>
+      <span>Founder &amp; Lead Developer</span>
+    </div>
+
+    <nav class="developer-dialog__links" aria-label="Developer contact links">
+      {socialLinks.map((link) => (
+        <a href={link.href} target="_blank" rel="noopener noreferrer">
+          <span>{link.label}</span>
+          <ExternalLink aria-hidden="true" size={16} strokeWidth={1.7} />
+        </a>
+      ))}
+      <a href="mailto:aedrianponce1203@gmail.com">
+        <span>Email</span>
+        <ExternalLink aria-hidden="true" size={16} strokeWidth={1.7} />
+      </a>
+    </nav>
+  </div>
+</dialog>
+
+<script is:inline>
+  (() => {
+    const initialize = () => {
+      const dialog = document.querySelector('[data-developer-contact-dialog]');
+      if (!dialog || typeof dialog.showModal !== 'function' || dialog.dataset.initialized === 'true') return;
+      dialog.dataset.initialized = 'true';
+
+      let lastTrigger = null;
+      document.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
+        const trigger = event.target.closest('[data-developer-contact-trigger]');
+        if (!trigger) return;
+        lastTrigger = trigger;
+        if (!dialog.open) dialog.showModal();
+      });
+
+      dialog.querySelector('[data-dialog-close]')?.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+      dialog.addEventListener('close', () => {
+        if (lastTrigger?.isConnected) lastTrigger.focus();
+      });
+    };
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, { once: true });
+    else initialize();
+  })();
+</script>

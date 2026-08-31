@@ -1,0 +1,33 @@
+---
+interface Props {
+  variant?: 'dark' | 'light' | 'mono';
+  decorative?: boolean;
+  className?: string;
+  label?: string;
+}
+
+const {
+  variant = 'dark',
+  decorative = false,
+  className = '',
+  label = 'AMAT 19 mark',
+} = Astro.props;
+const classes = ['brand-mark', className].filter(Boolean).join(' ');
+---
+<svg
+  class={classes}
+  data-brand-mark
+  data-brand-variant={variant}
+  viewBox="0 0 240 160"
+  role={decorative ? undefined : 'img'}
+  aria-hidden={decorative ? 'true' : undefined}
+  aria-label={decorative ? undefined : label}
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <g fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M20 140 46 20 72 140M28 100h36" />
+    <path d="m84 44 20-24v120M82 140h44" />
+    <path d="M144 84V20h72v64h-72ZM216 84v56h-40" />
+  </g>
+  <path class="brand-mark__crossbar" d="M12 82h216" fill="none" stroke="var(--brand-mark-accent)" stroke-width="8" stroke-linecap="square" />
+</svg>

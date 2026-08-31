@@ -4,22 +4,29 @@ import '@fontsource-variable/jetbrains-mono';
 import '../styles/global.css';
 import '../styles/pass4.css';
 import CommandPalette from '../components/navigation/CommandPalette';
+import DeveloperContact from '../components/navigation/DeveloperContact.astro';
+import BrandMark from '../components/brand/BrandMark.astro';
 import NavGlyph from '../components/navigation/NavGlyph.astro';
 import { PanelLeftClose, Search } from 'lucide-react';
 
 interface Props { title: string; description?: string; }
-type NavItem = { href: string; label: string; mobileLabel: string; icon: string };
+type NavItem = { href: string; label: string; mobileLabel: string; icon: string; desktopOnly?: boolean };
+type UtilityLink = NavItem & { kind: 'link' };
+type UtilityAction = { kind: 'action'; id: 'developer-contact'; label: string; mobileLabel: string; icon: string };
+type UtilityItem = UtilityLink | UtilityAction;
 
 const { title, description = 'Interactive, course-aligned AMAT 19 finite mathematics study tools.' } = Astro.props;
 const primaryNavigation: NavItem[] = [
+  { href: '/', label: 'Home', mobileLabel: 'Home', icon: 'home', desktopOnly: true },
   { href: '/study', label: 'Study', mobileLabel: 'Study', icon: 'study' },
   { href: '/course', label: 'Course', mobileLabel: 'Course', icon: 'course' },
   { href: '/progress', label: 'Progress', mobileLabel: 'Progress', icon: 'progress' },
 ];
-const utilityNavigation: NavItem[] = [
-  { href: '/reference', label: 'Reference', mobileLabel: 'Ref', icon: 'reference' },
-  { href: '/saved', label: 'Saved', mobileLabel: 'Saved', icon: 'saved' },
-  { href: '/settings', label: 'Settings', mobileLabel: 'Settings', icon: 'settings' },
+const utilityNavigation: UtilityItem[] = [
+  { kind: 'link', href: '/reference', label: 'Reference', mobileLabel: 'Ref', icon: 'reference' },
+  { kind: 'link', href: '/saved', label: 'Saved', mobileLabel: 'Saved', icon: 'saved' },
+  { kind: 'link', href: '/settings', label: 'Settings', mobileLabel: 'Settings', icon: 'settings' },
+  { kind: 'action', id: 'developer-contact', label: 'Developer', mobileLabel: 'Developer', icon: 'developer' },
 ];
 const currentPath = Astro.url.pathname;
 const isCurrent = (href: string) => {
@@ -27,7 +34,7 @@ const isCurrent = (href: string) => {
   if (href === '/study') return currentPath === '/study' || currentPath === '/exam';
   return currentPath === href || currentPath.startsWith(`${href}/`);
 };
-const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
+const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' && isCurrent(item.href));
 ---
 <!doctype html>
 <html lang="en">
@@ -52,7 +59,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
       <aside class="sidebar" aria-label="Primary navigation">
         <div class="brand-row">
           <a class="wordmark" href="/" aria-label="AMAT 19 Study Lab home">
-            <span class="brand-route" aria-hidden="true"><span></span></span>
+            <BrandMark className="wordmark__mark" variant="light" decorative />
             <span class="brand-copy">
               <span class="wordmark__course">AMAT<span>19</span></span>
               <span class="wordmark__descriptor">STUDY LAB</span>
@@ -62,11 +69,6 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
             <PanelLeftClose aria-hidden="true" size={18} strokeWidth={1.7} />
           </button>
         </div>
-
-        <a class="sidebar-home" href="/" aria-label="AMAT 19 Study Lab home" aria-current={currentPath === '/' ? 'page' : undefined}>
-          <span class="sidebar-home__mark" aria-hidden="true">19</span>
-          <span><strong>Home</strong><small>AMAT 19 Study Lab</small></span>
-        </a>
 
         <nav class="nav-stack" id="primary-navigation" aria-label="Primary navigation">
           {primaryNavigation.map((item) => (
@@ -84,22 +86,20 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
               <span class="more-menu__chevron" aria-hidden="true">⌄</span>
             </summary>
             <div class="more-menu__panel">
-              {utilityNavigation.map((item) => (
+              {utilityNavigation.map((item) => item.kind === 'link' ? (
                 <a class:list={['utility-nav-link', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
                   <span class="nav-icon"><NavGlyph name={item.icon} /></span>
                   <span class="nav-label">{item.label}</span>
                 </a>
+              ) : (
+                <button class="utility-nav-action" type="button" data-developer-contact-trigger aria-haspopup="dialog" aria-controls="developer-contact-dialog" aria-label="Developer contact">
+                  <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+                  <span class="nav-label">{item.label}</span>
+                </button>
               ))}
             </div>
           </details>
         </nav>
-
-        <div class="sidebar-footer">
-          <div class="sidebar-profile" aria-label="Course storage">
-            <span class="avatar" aria-hidden="true">A19</span>
-            <span class="profile-copy"><strong>Local-first workspace</strong><small>Browser data only</small></span>
-          </div>
-        </div>
       </aside>
 
       <div class="workspace">
@@ -139,7 +139,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
       </div>
 
       <nav class="mobile-nav" aria-label="Mobile navigation">
-        {primaryNavigation.map((item) => (
+        {primaryNavigation.filter((item) => !item.desktopOnly).map((item) => (
           <a class:list={['mobile-nav-link', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
             <span class="nav-icon"><NavGlyph name={item.icon} /></span>
             <span>{item.mobileLabel}</span>
@@ -151,11 +151,16 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
             <span>More</span>
           </summary>
           <div class="mobile-more-menu__panel">
-            {utilityNavigation.map((item) => (
+            {utilityNavigation.map((item) => item.kind === 'link' ? (
               <a class="mobile-more-menu__link" href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
                 <span class="nav-icon"><NavGlyph name={item.icon} /></span>
                 <span>{item.label}</span>
               </a>
+            ) : (
+              <button class="mobile-more-menu__link mobile-more-menu__action" type="button" data-developer-contact-trigger aria-haspopup="dialog" aria-controls="developer-contact-dialog" aria-label="Developer contact">
+                <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+                <span>{item.label}</span>
+              </button>
             ))}
           </div>
         </details>
@@ -163,6 +168,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => isCurrent(item.href));
     </div>
 
     <CommandPalette client:load />
+    <DeveloperContact />
     <script is:inline>
       (() => {
         const frame = document.querySelector('[data-shell]');
