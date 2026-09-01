@@ -25,8 +25,8 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
 
     await expect(page.locator('[data-home-hero]')).toBeVisible();
     await expect(page.locator('.home-hero__title')).toHaveText('Finite mathematics, made visible.');
-    await expect(page.locator('.home-module-index__link')).toHaveCount(5);
-    await expect(page.locator('.module-spotlight-link')).toHaveCount(5);
+    await expect(page.locator('[data-home-course-rail] [data-home-module]')).toHaveCount(5);
+    await expect(page.locator('.module-spotlight-link')).toHaveCount(0);
     await expect(page.locator('.home-bento')).toHaveCount(0);
     await expect(page.locator('.home-loop')).toHaveCount(0);
     await expect(page.locator('.module-door')).toHaveCount(0);

@@ -78,7 +78,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
               <span class="nav-label">{item.label}</span>
             </a>
           ))}
-          <details class="more-menu" data-more-menu>
+          <details class="more-menu more-menu--inline" data-more-menu>
             <summary class:list={['more-menu__summary', { 'is-active': utilityIsCurrent }]} aria-label="More destinations">
               <span class="nav-active-rail" aria-hidden="true"></span>
               <span class="nav-icon"><NavGlyph name="more" /></span>
@@ -96,11 +96,41 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
                   <span class="nav-icon"><NavGlyph name={item.icon} /></span>
                   <span class="nav-label">{item.label}</span>
                 </button>
-              ))}
+                ))}
             </div>
           </details>
+          <button
+            id="desktop-more-flyout-trigger"
+            class:list={['more-flyout-trigger', { 'is-active': utilityIsCurrent }]}
+            type="button"
+            data-more-flyout-trigger
+            aria-controls="desktop-more-flyout"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="More destinations"
+          >
+            <span class="nav-active-rail" aria-hidden="true"></span>
+            <span class="nav-icon"><NavGlyph name="more" /></span>
+            <span class="nav-label">More</span>
+          </button>
         </nav>
       </aside>
+
+      <div id="desktop-more-flyout" class="more-flyout" popover="auto" data-more-flyout>
+        <nav aria-label="More destinations">
+          {utilityNavigation.map((item) => item.kind === 'link' ? (
+            <a class:list={['utility-flyout__link', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+              <span class="nav-label">{item.label}</span>
+            </a>
+          ) : (
+            <button class="utility-flyout__action" type="button" data-developer-contact-trigger data-developer-contact-return="desktop-more-flyout-trigger" aria-haspopup="dialog" aria-controls="developer-contact-dialog" aria-label="Developer contact">
+              <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+              <span class="nav-label">{item.label}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
 
       <div class="workspace">
         <header class="topbar">
@@ -173,17 +203,82 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
       (() => {
         const frame = document.querySelector('[data-shell]');
         const sidebarToggle = document.querySelector('[data-sidebar-toggle]');
+        const moreFlyoutTrigger = document.querySelector('[data-more-flyout-trigger]');
+        const moreFlyout = document.querySelector('[data-more-flyout]');
+        const inlineMore = document.querySelector('.sidebar [data-more-menu]');
+        const inlineMoreSummary = inlineMore?.querySelector('summary');
+        const sidebarNav = document.querySelector('.sidebar .nav-stack');
+        const sidebar = document.querySelector('.sidebar');
         const sidebarStorageKey = 'amat19.sidebar.collapsed';
+        const supportsMorePopover = moreFlyout instanceof HTMLElement
+          && typeof moreFlyout.showPopover === 'function'
+          && typeof moreFlyout.hidePopover === 'function';
+        const isMoreFlyoutOpen = () => supportsMorePopover && moreFlyout.matches(':popover-open');
+        const positionMoreFlyout = () => {
+          if (!supportsMorePopover || !(moreFlyoutTrigger instanceof HTMLElement) || !(moreFlyout instanceof HTMLElement)) return;
+          const triggerBox = moreFlyoutTrigger.getBoundingClientRect();
+          const panelBox = moreFlyout.getBoundingClientRect();
+          if (panelBox.width === 0 || panelBox.height === 0) return;
+          const edge = 8;
+          const gap = 8;
+          const railBox = sidebar?.getBoundingClientRect();
+          let left = Math.max(triggerBox.right + gap, (railBox?.right ?? 0) + gap);
+          if (left + panelBox.width > window.innerWidth - edge) left = triggerBox.left - panelBox.width - gap;
+          left = Math.max(edge, Math.min(left, window.innerWidth - panelBox.width - edge));
+          let top = triggerBox.top;
+          if (top + panelBox.height > window.innerHeight - edge) top = window.innerHeight - panelBox.height - edge;
+          top = Math.max(edge, Math.min(top, window.innerHeight - panelBox.height - edge));
+          moreFlyout.style.left = `${Math.round(left)}px`;
+          moreFlyout.style.top = `${Math.round(top)}px`;
+        };
+        const syncMoreFlyoutState = () => {
+          if (!(moreFlyoutTrigger instanceof HTMLElement)) return;
+          const open = isMoreFlyoutOpen();
+          moreFlyoutTrigger.setAttribute('aria-expanded', String(open));
+          if (open) requestAnimationFrame(positionMoreFlyout);
+        };
         const setCollapsed = (collapsed, persist = true) => {
           frame?.classList.toggle('nav-collapsed', collapsed);
           sidebarToggle?.setAttribute('aria-expanded', String(!collapsed));
           sidebarToggle?.setAttribute('aria-label', collapsed ? 'Expand navigation' : 'Collapse navigation');
+          if (collapsed) inlineMore?.removeAttribute('open');
+          if (!collapsed && isMoreFlyoutOpen()) moreFlyout.hidePopover();
           if (persist) {
             try { window.localStorage.setItem(sidebarStorageKey, String(collapsed)); } catch { /* storage is optional */ }
           }
         };
         try { setCollapsed(window.localStorage.getItem(sidebarStorageKey) === 'true', false); } catch { /* storage is optional */ }
         sidebarToggle?.addEventListener('click', () => setCollapsed(!frame?.classList.contains('nav-collapsed')));
+
+        moreFlyoutTrigger?.addEventListener('click', () => {
+          if (!supportsMorePopover) {
+            setCollapsed(false);
+            inlineMore?.setAttribute('open', '');
+            inlineMoreSummary?.focus();
+            return;
+          }
+          if (isMoreFlyoutOpen()) {
+            moreFlyout.hidePopover();
+            moreFlyoutTrigger.setAttribute('aria-expanded', 'false');
+          } else {
+            moreFlyout.showPopover();
+            moreFlyoutTrigger.setAttribute('aria-expanded', 'true');
+            positionMoreFlyout();
+            requestAnimationFrame(positionMoreFlyout);
+          }
+        });
+        moreFlyout?.addEventListener('toggle', () => {
+          syncMoreFlyoutState();
+          if (!isMoreFlyoutOpen() && moreFlyout instanceof HTMLElement) {
+            const handoff = moreFlyout.dataset.dialogHandoff === 'true';
+            moreFlyout.removeAttribute('data-dialog-handoff');
+            if (!handoff && moreFlyoutTrigger instanceof HTMLElement) moreFlyoutTrigger.focus();
+          }
+        });
+        const repositionMoreFlyout = () => positionMoreFlyout();
+        window.addEventListener('resize', repositionMoreFlyout);
+        sidebarNav?.addEventListener('scroll', repositionMoreFlyout, { passive: true });
+        document.querySelector('.sidebar')?.addEventListener('scroll', repositionMoreFlyout, { passive: true });
 
         document.querySelectorAll('[data-command-button]').forEach((button) => {
           button.addEventListener('click', () => { window.dispatchEvent(new CustomEvent('amat:command', { detail: { trigger: button } })); });

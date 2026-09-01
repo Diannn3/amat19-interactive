@@ -59,7 +59,14 @@ const socialLinks = [
         if (!(event.target instanceof Element)) return;
         const trigger = event.target.closest('[data-developer-contact-trigger]');
         if (!trigger) return;
-        lastTrigger = trigger;
+        const returnTarget = trigger.getAttribute('data-developer-contact-return');
+        const returnElement = returnTarget ? document.getElementById(returnTarget) : null;
+        lastTrigger = returnElement instanceof HTMLElement ? returnElement : trigger;
+        const popover = trigger.closest('[data-more-flyout]');
+        if (popover instanceof HTMLElement && typeof popover.hidePopover === 'function') {
+          popover.dataset.dialogHandoff = 'true';
+          popover.hidePopover();
+        }
         if (!dialog.open) dialog.showModal();
       });
 

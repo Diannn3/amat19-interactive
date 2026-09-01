@@ -14,9 +14,9 @@ test('@core course shell exposes Logic, Probability, and local progress routes',
 test('home and module journeys lead with a brand index instead of a snapshot panel', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('[data-home-hero]')).toBeVisible();
-  await expect(page.locator('.home-module-index')).toBeVisible();
+  await expect(page.locator('[data-home-course-rail]')).toBeVisible();
   await expect(page.getByTestId('home-study-snapshot')).toHaveCount(0);
-  await expect(page.locator('.module-spotlight-link')).toHaveCount(5);
+  await expect(page.locator('.module-spotlight-link')).toHaveCount(0);
 
   await page.goto('/modules/logic');
   await expect(page.getByTestId('module-overview')).toBeVisible();
@@ -161,11 +161,10 @@ test('home presents a brand-first route index around real AMAT course objects', 
   await page.goto('/');
 
   await expect(page.locator('[data-home-hero]')).toBeVisible();
-  await expect(page.locator('.home-facts')).toBeVisible();
-  await expect(page.locator('.home-module-index')).toBeVisible();
-  await expect(page.locator('.home-module-index__link')).toHaveCount(5);
+  await expect(page.locator('[data-home-course-rail]')).toBeVisible();
+  await expect(page.locator('[data-home-course-rail] [data-home-module]')).toHaveCount(5);
   await expect(page.getByTestId('home-study-snapshot')).toHaveCount(0);
-  await expect(page.locator('.module-spotlight-grid')).toBeVisible();
+  await expect(page.locator('.home-facts, .home-modules, .module-spotlight-grid')).toHaveCount(0);
   await expect(page.locator('[data-home-primary-action][href="/study"]')).toBeVisible();
   await expect(page.locator('.home-bento')).toHaveCount(0);
   await expect(page.locator('.home-loop')).toHaveCount(0);
@@ -259,7 +258,8 @@ test('shell honors media preferences and keeps mobile navigation keyboard-contai
   await page.setViewportSize({ width: 375, height: 667 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await expect.poll(() => page.evaluate(() => ({ reduced: matchMedia('(prefers-reduced-motion: reduce)').matches, transition: getComputedStyle(document.querySelector('.spotlight-card')!).transitionDuration }))).toEqual({ reduced: true, transition: '0s' });
+  await expect.poll(() => page.evaluate(() => ({ reduced: matchMedia('(prefers-reduced-motion: reduce)').matches, transition: Number.parseFloat(getComputedStyle(document.querySelector('.home-hero__title')!).transitionDuration) }))).toMatchObject({ reduced: true });
+  expect(await page.locator('.home-hero__title').evaluate((heading) => Number.parseFloat(getComputedStyle(heading).transitionDuration))).toBeLessThanOrEqual(0.001);
 
   await page.emulateMedia({ reducedMotion: 'no-preference', forcedColors: 'active' });
   await page.reload();

@@ -1,11 +1,7 @@
 ---
-import { currentCourseProfile, liveLabs } from '@amat19/course-content';
+import { currentCourseProfile } from '@amat19/course-content';
 import AppLayout from '../layouts/AppLayout.astro';
-import BrandMark from '../components/brand/BrandMark.astro';
-import ModuleSpotlightGrid from '../components/home/ModuleSpotlightGrid';
 
-const moduleCount = currentCourseProfile.modules.length;
-const implementedSkillCount = currentCourseProfile.skills.filter((skill) => skill.status === 'implemented').length;
 const moduleNotations = {
   logic: 'P → Q',
   probability: 'P(A | B)',
@@ -25,49 +21,28 @@ const moduleNotations = {
       </div>
     </div>
 
-    <div class="home-hero__index" aria-label="AMAT 19 module index">
-      <BrandMark className="home-hero__mark" variant="dark" label="AMAT 19 monogram" />
-      <nav class="home-module-index" aria-label="Course modules">
-        <ol>
-          {currentCourseProfile.modules.map((module) => (
-            <li data-home-module>
-              <a class="home-module-index__link" href={module.href} aria-label={`Open ${module.title}`}>
-                <span class="home-module-index__number">{String(module.order).padStart(2, '0')}</span>
-                <span class="home-module-index__name"><strong>{module.title}</strong><code data-home-notation>{moduleNotations[module.id]}</code></span>
-                <span class="home-module-index__arrow" aria-hidden="true">↗</span>
-              </a>
-            </li>
-          ))}
-        </ol>
-      </nav>
-    </div>
-  </section>
-
-  <section class="page-width home-facts" aria-label="Course at a glance">
-    <div><strong>{moduleCount}</strong><span>modules</span></div>
-    <div><strong>{liveLabs.length}</strong><span>live labs</span></div>
-    <div><strong>{implementedSkillCount}</strong><span>core skills</span></div>
-    <p>Everything stays connected to a route, a lab, or a repair link.</p>
-  </section>
-
-  <section class="page-width section-shell home-modules" aria-labelledby="modules-heading">
-    <div class="section-heading">
-      <div>
-        <h2 id="modules-heading">Choose a module.</h2>
-        <p class="section-context">Five places to start</p>
-      </div>
-      <a class="text-link" href="/course">Open roadmap <span aria-hidden="true">→</span></a>
-    </div>
-    <ModuleSpotlightGrid client:visible />
+    <nav class="home-course-rail" data-home-course-rail aria-label="Course modules">
+      <ol>
+        {currentCourseProfile.modules.map((module) => (
+          <li>
+            <a class="home-course-rail__link" data-home-module href={module.href} aria-label={`Open ${module.title}`}>
+              <span class="home-course-rail__number">{String(module.order).padStart(2, '0')}</span>
+              <span class="home-course-rail__name"><strong>{module.title}</strong><code data-home-notation>{moduleNotations[module.id]}</code></span>
+              <span class="home-course-rail__arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
   </section>
 
   <section class="page-width home-shortcuts" aria-labelledby="shortcuts-heading">
     <div>
       <h2 id="shortcuts-heading">When you know what you need.</h2>
-      <p>Go straight to a module, progress, or the reference sheet.</p>
+      <p>Go straight to a study queue, progress, or the reference sheet.</p>
     </div>
     <nav class="home-shortcuts__links" aria-label="Study shortcuts">
-      <a href="/course"><strong>Course map</strong><span>Choose a module to retrieve</span><span aria-hidden="true">↗</span></a>
+      <a href="/study"><strong>Study queue</strong><span>Continue or repair the next skill</span><span aria-hidden="true">↗</span></a>
       <a href="/progress"><strong>Progress</strong><span>Find the next repair</span><span aria-hidden="true">↗</span></a>
       <a href="/reference"><strong>Reference</strong><span>Check a formula or assumption</span><span aria-hidden="true">↗</span></a>
     </nav>

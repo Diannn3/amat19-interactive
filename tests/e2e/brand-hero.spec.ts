@@ -25,7 +25,7 @@ test.describe('AMAT 19 brand hero and identity', () => {
     await expect(moduleLinks).toHaveCount(homeModules.length);
     for (const [index, module] of homeModules.entries()) {
       const entry = moduleLinks.nth(index);
-      await expect(entry.getByRole('link', { name: new RegExp(`Open ${module.title}`, 'i') })).toHaveAttribute('href', module.href);
+      await expect(entry).toHaveAttribute('href', module.href);
       await expect(entry.locator('[data-home-notation]')).toHaveText(module.notation);
     }
 
@@ -37,8 +37,8 @@ test.describe('AMAT 19 brand hero and identity', () => {
   test('@core identity uses the reusable path-only A19 mark and regenerated PWA icon references', async ({ page, request }) => {
     await page.goto('/');
 
-    await expect(page.locator('[data-brand-mark]')).toHaveCount(2);
-    await expect(page.locator('[data-brand-mark][data-brand-variant="dark"]')).toBeVisible();
+    await expect(page.locator('[data-brand-mark]')).toHaveCount(1);
+    await expect(page.locator('[data-brand-mark][data-brand-variant="dark"]')).toHaveCount(0);
     await expect(page.locator('[data-brand-mark][data-brand-variant="light"]')).toBeAttached();
     await expect(page.locator('[data-brand-mark] text')).toHaveCount(0);
     await expect(page.locator('.brand-route')).toHaveCount(0);
@@ -123,7 +123,7 @@ test.describe('AMAT 19 brand hero and identity', () => {
       expect(metrics.primary?.bottom, `${viewport.width}x${viewport.height} primary CTA should render`).toBeLessThanOrEqual(viewport.height);
       if (viewport.width >= 1280) {
         expect(metrics.heroHeight, `${viewport.width}px hero should stay restrained`).toBeLessThan(560);
-        expect(metrics.columns.split(' ').length).toBe(2);
+        expect(metrics.columns.split(' ').filter(Boolean).length).toBe(1);
       }
     }
   });

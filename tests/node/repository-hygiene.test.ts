@@ -27,6 +27,8 @@ test('retired dashboard and hero selectors are absent from the live stylesheet',
     'site-nav__command', 'mobile-nav__trigger', 'mobile-nav__icon', 'mobile-nav__dialog',
     'mobile-nav__sheet', 'mobile-nav__head', 'mobile-nav__context', 'mobile-nav__close',
     'mobile-nav__panel', 'mobile-nav__footer', 'mobile-nav__command', 'topbar-icon',
+    'home-facts', 'home-modules', 'home-module-index', 'module-spotlight-grid', 'module-spotlight-link',
+    'spotlight-card', 'spotlight-card__light',
   ];
 
   for (const selector of retiredSelectors) {
