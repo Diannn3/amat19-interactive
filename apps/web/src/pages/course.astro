@@ -3,88 +3,89 @@ import { currentCourseProfile } from '@amat19/course-content';
 import AppLayout from '../layouts/AppLayout.astro';
 import { learnerScopeLabel } from '../lib/learner-labels';
 ---
-<AppLayout title="Course">
-  <section class="page-width page-intro course-map-intro">
-    <h1 class="display-title">Course</h1>
-    <p class="page-context">Finite mathematics map</p>
-    <p class="lede">A structured journey through the core ideas of AMAT 19. Each module is identified by its mathematics rather than a color.</p>
+
+<AppLayout title="Course map">
+  <section class="page-width page-intro">
+    <h1 class="display-title">Five modules. One course map.</h1>
+    <p class="page-context">AY 2025–2026 scope</p>
+    <p class="lede">Open a module, pick a lab, and keep the next step close.</p>
+    <details class="route-note">
+      <summary>How scope is labeled</summary>
+      <p>The current AY 2025–2026 course guide is the scope authority. Older handout-only topics stay visible as supplemental instead of becoming hidden requirements.</p>
+    </details>
   </section>
 
-  <section class="page-width" aria-labelledby="course-modules-heading">
-    <h2 id="course-modules-heading" class="sr-only">AMAT 19 modules</h2>
-    <div class="course-map">
-      {currentCourseProfile.modules.map((module, index) => {
-        const skills = currentCourseProfile.skills.filter((skill) => skill.module === module.id);
-        return (
-          <article class="course-module-row" data-module={module.id}>
-            <span class="course-module-index" aria-hidden="true">{index + 1}</span>
-            <div class="course-module-visual" aria-hidden="true">
-              {module.id === 'logic' && (
-                <svg viewBox="0 0 240 100" aria-hidden="true" focusable="false">
-                  <text x="16" y="22">P</text><text x="56" y="22">Q</text><text x="96" y="22">¬P</text><text x="146" y="22">P ∧ Q</text>
-                  <line x1="82" y1="8" x2="82" y2="92" stroke="currentColor" opacity=".35" />
-                  <text x="16" y="45">T</text><text x="56" y="45">T</text><text x="101" y="45">F</text><text x="160" y="45">T</text>
-                  <text x="16" y="64">T</text><text x="56" y="64">F</text><text x="101" y="64">F</text><text x="160" y="64">F</text>
-                  <text x="16" y="83">F</text><text x="56" y="83">T</text><text x="101" y="83">T</text><text x="160" y="83">F</text>
-                </svg>
-              )}
-              {module.id === 'probability' && (
-                <svg viewBox="0 0 240 100" aria-hidden="true" focusable="false">
-                  <circle cx="150" cy="48" r="30" fill="none" stroke="currentColor"/><circle cx="180" cy="48" r="30" fill="none" stroke="currentColor"/>
-                  <text x="137" y="52">A</text><text x="188" y="52">B</text><text x="151" y="92">A ∩ B</text>
-                  <circle cx="24" cy="48" r="3" fill="currentColor"/><line x1="27" y1="48" x2="72" y2="24" stroke="currentColor"/><line x1="27" y1="48" x2="72" y2="74" stroke="currentColor"/>
-                  <line x1="72" y1="24" x2="105" y2="14" stroke="currentColor"/><line x1="72" y1="24" x2="105" y2="36" stroke="currentColor"/>
-                  <line x1="72" y1="74" x2="105" y2="62" stroke="currentColor"/><line x1="72" y1="74" x2="105" y2="86" stroke="currentColor"/>
-                </svg>
-              )}
-              {module.id === 'finance' && (
-                <svg viewBox="0 0 240 100" aria-hidden="true" focusable="false">
-                  <line x1="18" y1="62" x2="222" y2="62" stroke="currentColor"/>
-                  {[28,72,116,160,204].map((x, i) => <g><line x1={x} y1="55" x2={x} y2="69" stroke="currentColor"/><text x={x - 3} y="85">{i}</text></g>)}
-                  <line x1="28" y1="55" x2="28" y2="24" stroke="currentColor"/><path d="M24 30 28 24 32 30" fill="none" stroke="currentColor"/><text x="18" y="18">P</text>
-                  <line x1="204" y1="55" x2="204" y2="24" stroke="currentColor"/><path d="M200 30 204 24 208 30" fill="none" stroke="currentColor"/><text x="198" y="18">F</text>
-                </svg>
-              )}
-              {module.id === 'linear' && (
-                <svg viewBox="0 0 240 100" aria-hidden="true" focusable="false">
-                  <path d="M28 15H18v70h10M112 15h10v70h-10" fill="none" stroke="currentColor" stroke-width="2"/>
-                  <text x="42" y="38">1</text><text x="72" y="38">2</text><text x="98" y="38">3</text>
-                  <text x="42" y="66">0</text><text x="72" y="66">1</text><text x="98" y="66">4</text>
-                  <text x="142" y="35">R₂ ← R₂ − 2R₁</text><text x="142" y="64">R₃ ← R₃ + R₁</text>
-                </svg>
-              )}
-              {module.id === 'applications' && (
-                <svg viewBox="0 0 240 100" aria-hidden="true" focusable="false">
-                  <defs><pattern id="courseHatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="currentColor" opacity=".2" /></pattern></defs>
-                  <line x1="30" y1="84" x2="150" y2="84" stroke="currentColor"/><line x1="30" y1="84" x2="30" y2="10" stroke="currentColor"/>
-                  <line x1="30" y1="30" x2="132" y2="84" stroke="currentColor"/><line x1="54" y1="12" x2="104" y2="84" stroke="currentColor" stroke-dasharray="5 4"/>
-                  <polygon points="30,84 30,30 74,53 104,84" fill="url(#courseHatch)" stroke="currentColor" />
-                  <text x="166" y="34">Z = 3x + 2y</text><text x="166" y="60">x + y ≤ 4</text>
-                </svg>
-              )}
-            </div>
-            <div class="course-module-copy">
-              <h2><a href={module.href}>{module.title}</a></h2>
-              <p>{module.description}</p>
-              <div class="course-module-topics">
-                {skills.slice(0, 6).map((skill) => <span>{skill.title}</span>)}
-              </div>
-            </div>
-            <div class="course-module-meta">
-              <strong>{learnerScopeLabel(module.status)}</strong><br />
-              {skills.length} skills
-            </div>
-            <a class="text-link course-module-action" href={module.href}>Open module →</a>
-          </article>
-        );
-      })}
+  <section class="page-width module-section" aria-labelledby="course-modules-heading">
+    <div class="section-heading">
+      <div>
+        <h2 id="course-modules-heading">Open a module.</h2>
+        <p class="section-context">Five connected routes</p>
+      </div>
     </div>
+    <div class="course-roadmap">
+      {currentCourseProfile.modules.map((module, index) => (
+        <article class="roadmap-module">
+          <span class="roadmap-module__number" aria-hidden="true">0{index + 1}</span>
+          <div>
+            <h2><a href={module.href}>{module.title}</a></h2>
+            <p>{module.description}</p>
+            <a class="text-link" href={module.href}>Open module <span aria-hidden="true">→</span></a>
+            <details class="roadmap-details">
+              <summary>{currentCourseProfile.skills.filter((skill) => skill.module === module.id).length} skills</summary>
+              <div class="roadmap-skills">
+                {currentCourseProfile.skills.filter((skill) => skill.module === module.id).map((skill) => (
+                  <a href={skill.relatedLab || module.href}>
+                    <span class="status-pill">{learnerScopeLabel(skill.status)}</span>
+                    {skill.title}
+                  </a>
+                ))}
+              </div>
+            </details>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
 
-    <nav class="course-tools" aria-label="Whole-course tools">
-      <a href="/study">Study queue →</a>
-      <a href="/progress">Progress →</a>
-      <a href="/exam">Mixed course check →</a>
-      <a href="/reference">Formula &amp; notation →</a>
-    </nav>
+  <section class="page-width module-section" aria-labelledby="course-tools-heading">
+    <div class="section-heading">
+      <div>
+        <h2 id="course-tools-heading">Continue from here.</h2>
+        <p class="section-context">Whole-course tools</p>
+      </div>
+    </div>
+    <div class="route-grid">
+      <a class="route-link" href="/study">
+        <span><strong>Study queue</strong><small>Resume a module or follow the next repair.</small></span>
+        <span aria-hidden="true">→</span>
+      </a>
+      <a class="route-link" href="/exam">
+        <span><strong>Mixed Course Check</strong><small>Submit once, then review feedback.</small></span>
+        <span aria-hidden="true">→</span>
+      </a>
+      <a class="route-link" href="/reference">
+        <span><strong>Formula &amp; Notation</strong><small>Check symbols, assumptions, and live links.</small></span>
+        <span aria-hidden="true">→</span>
+      </a>
+      <a class="route-link" href="/progress">
+        <span><strong>Progress &amp; Local Data</strong><small>Review evidence and browser-local records.</small></span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="page-width feature-band course-policy">
+    <div>
+      <h2>Scope stays visible.</h2>
+      <p class="section-context">Course policy</p>
+    </div>
+    <details>
+      <summary>View the source boundaries</summary>
+      <div class="feature-band__grid">
+        <p><strong>Current core:</strong> Logic, Probability, Financial Mathematics, Matrices, Linear Programming, and Game Theory.</p>
+        <p><strong>Supplemental:</strong> older-material topics such as expected value/variance, simplex, and Markov chains remain labeled.</p>
+        <p><strong>Public content:</strong> examples are original. Uploaded handouts and exams guide terminology and scope; they are not republished as a question bank.</p>
+      </div>
+    </details>
   </section>
 </AppLayout>

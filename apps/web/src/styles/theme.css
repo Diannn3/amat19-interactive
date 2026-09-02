@@ -1,128 +1,76 @@
 :root {
   color-scheme: light;
-
-  /* Instrument UI v2 — intentionally monochrome. */
-  --canvas: #f5f5f5;
-  --surface: #fafafa;
-  --surface-raised: #ffffff;
-  --surface-recessed: #f1f1f1;
-  --surface-strong: #e8e8e8;
-  --ink: #090909;
-  --ink-primary: #111111;
-  --ink-secondary: #595959;
-  --ink-tertiary: #6b6b6b;
-  --line: rgb(0 0 0 / 0.09);
-  --line-strong: rgb(0 0 0 / 0.18);
-  --line-emphasis: rgb(0 0 0 / 0.34);
-  --control-edge: #8a8a8a;
-  --selected: #111111;
-  --selected-ink: #ffffff;
-
-  --shadow-raised:
-    -4px -4px 10px rgb(255 255 255 / 0.92),
-     4px  4px 12px rgb(0 0 0 / 0.075);
-  --shadow-raised-small:
-    -2px -2px 5px rgb(255 255 255 / 0.95),
-     2px  2px 6px rgb(0 0 0 / 0.065);
-  --shadow-recessed:
-    inset -3px -3px 7px rgb(255 255 255 / 0.88),
-    inset  3px  3px 8px rgb(0 0 0 / 0.065);
-  --shadow-sheet: 0 18px 48px rgb(0 0 0 / 0.12);
-
-  --radius-control: 0.72rem;
-  --radius-surface: 0.95rem;
-  --radius-sheet: 1.15rem;
-  --radius-round: 999px;
-
-  --rail-width: 80px;
-  --topbar-height: 60px;
-  --mobile-nav-height: 68px;
-  --content-max: 88rem;
-  --reading-max: 72ch;
+  /* Pass 6 shell tokens follow the Elbi AI workspace relationship while keeping
+     the AMAT surface names semantic and independent from that product's copy. */
+  --shell-maroon-950: #2e080d;
+  --shell-maroon-900: #451016;
+  --shell-maroon-800: #5c1016;
+  --shell-maroon-700: #74131b;
+  --shell-maroon-600: #9b111e;
+  --shell-orange: #e66a19;
+  --shell-orange-soft: #f4a15f;
+  --shell-cream: #fff9f1;
+  --shell-sand: #f2e8dc;
+  --shell-paper: #fbf4ea;
+  --shell-line: #e2d5c6;
+  --sidebar-width: 288px;
+  --sidebar-width-collapsed: 86px;
+  --topbar-height: 72px;
+  --workspace-radius: 26px;
   --shell-ease: cubic-bezier(.2, .8, .2, 1);
-
-  --font-amat-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-amat-display: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-amat-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-amat-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-amat-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
-
-  /* Existing semantic names remain as compatibility aliases during migration. */
-  --background: var(--canvas);
-  --background-deep: #eeeeee;
-  --surface-muted: var(--surface-recessed);
-  --surface-maroon: var(--surface-recessed);
-  --foreground: var(--ink-primary);
-  --foreground-muted: var(--ink-secondary);
-  --foreground-soft: var(--ink-tertiary);
-  --border: var(--line);
-  --border-strong: var(--line-strong);
-  --primary: var(--selected);
-  --primary-foreground: var(--selected-ink);
-  --primary-hover: #000000;
-  --primary-soft: #e8e8e8;
-  --accent: var(--ink-primary);
-  --accent-strong: var(--ink);
-  --accent-soft: #e8e8e8;
-  --olive: var(--ink-secondary);
-  --olive-soft: #ededed;
-  --success: var(--ink-primary);
-  --success-soft: #efefef;
-  --warning: var(--ink-primary);
-  --warning-soft: #efefef;
-  --destructive: var(--ink-primary);
-  --destructive-soft: #efefef;
-  --focus: #000000;
-  --spotlight: transparent;
-  --shadow-soft: var(--shadow-raised-small);
-  --shadow: var(--shadow-raised-small);
+  --background: #fff9f1;
+  --background-deep: #f8ede2;
+  --surface: #fffdf9;
+  --surface-muted: #f6ebe0;
+  --surface-strong: #ecddd0;
+  --surface-maroon: #f6e6e4;
+  --foreground: #2e2523;
+  --foreground-muted: #6e5b54;
+  --foreground-soft: #735c53;
+  --border: #dfcec0;
+  --border-strong: #b99b87;
+  --primary: #7b1113;
+  --primary-foreground: #fff9f1;
+  --primary-hover: #651013;
+  --primary-soft: #f1d8d7;
+  --accent: #e66a19;
+  --accent-strong: #994719;
+  --accent-soft: #f7dfcb;
+  --olive: #617040;
+  --olive-soft: #e8eddc;
+  --success: #276245;
+  --success-soft: #e0f0e7;
+  --warning: #8a5418;
+  --warning-soft: #f7e8cf;
+  --destructive: #a32929;
+  --destructive-soft: #f7dddd;
+  --focus: #1f5d85;
+  --spotlight: rgb(199 106 42 / 0.16);
+  --shadow-soft: 0 1px 2px rgb(75 41 30 / 0.04), 0 12px 34px rgb(75 41 30 / 0.07);
+  --shadow-raised: 0 20px 60px rgb(72 31 24 / 0.12);
+  --shadow: var(--shadow-soft);
   --radius-sm: 0.5rem;
-  --radius-md: var(--radius-control);
-  --radius-lg: var(--radius-surface);
-  --radius-xl: var(--radius-sheet);
-
-  /* Legacy shell aliases — all point to neutral values. */
-  --shell-maroon-950: #0b0b0b;
-  --shell-maroon-900: #111111;
-  --shell-maroon-800: #1c1c1c;
-  --shell-maroon-700: #2a2a2a;
-  --shell-maroon-600: #383838;
-  --shell-orange: #111111;
-  --shell-orange-soft: #595959;
-  --shell-cream: var(--canvas);
-  --shell-sand: #e9e9e9;
-  --shell-paper: var(--surface);
-  --shell-line: var(--line);
-  --sidebar-width: var(--rail-width);
-  --sidebar-width-collapsed: var(--rail-width);
-  --workspace-radius: 0;
-
-  /* Gradients are deliberately disabled by the design schema. */
-  --gradient-study: none;
-  --gradient-ember: none;
-  --gradient-paper: none;
-  --gradient-soft: none;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --content-max: 82rem;
+  /* Gradient references adapted to AMAT brand tokens rather than copied as wallpaper.
+     Inspiration: WebGradients https://github.com/itmeo/webgradients (MIT)
+     and uiGradients https://github.com/ghosh/uiGradients (MIT). */
+  --gradient-study: linear-gradient(135deg, #7b1113 0%, #a73a21 48%, #c76a2a 100%);
+  --gradient-ember: linear-gradient(120deg, #651013 0%, #9b2d1b 42%, #d57a35 100%);
+  --gradient-paper: radial-gradient(circle at 18% 10%, rgb(199 106 42 / 0.12), transparent 34%), radial-gradient(circle at 88% 6%, rgb(123 17 19 / 0.08), transparent 30%);
+  --gradient-soft: linear-gradient(135deg, #fffdf9 0%, #fff4e8 52%, #f9e4d2 100%);
 }
 
 @media (forced-colors: active) {
   :root {
-    --canvas: Canvas;
-    --surface: Canvas;
-    --surface-raised: Canvas;
-    --surface-recessed: Canvas;
-    --surface-strong: Canvas;
-    --ink: CanvasText;
-    --ink-primary: CanvasText;
-    --ink-secondary: CanvasText;
-    --ink-tertiary: GrayText;
-    --line: CanvasText;
-    --line-strong: CanvasText;
-    --line-emphasis: CanvasText;
-    --control-edge: CanvasText;
-    --selected: Highlight;
-    --selected-ink: HighlightText;
+    --border: CanvasText;
+    --border-strong: CanvasText;
     --focus: Highlight;
-    --shadow-raised: none;
-    --shadow-raised-small: none;
-    --shadow-recessed: none;
-    --shadow-sheet: none;
+    --spotlight: transparent;
   }
 }

@@ -26,36 +26,47 @@ const practiceHref = `${moduleHref}?view=practice&preset=${practicePreset}`;
 ---
 <article class="lab-route" data-lab-shell={title} data-lab-scope={scope}>
   <nav class="lab-breadcrumbs" aria-label="Breadcrumb">
-    <a href={moduleHref}>← {moduleLabel}</a>
+    <a href="/">Home</a>
+    <span aria-hidden="true">/</span>
+    <a href={moduleHref}>{moduleLabel}</a>
     <span aria-hidden="true">/</span>
     <span aria-current="page">{title}</span>
   </nav>
 
-  <header class="lab-instrument-header">
-    <div class="lab-instrument-header__copy">
+  <header class="lab-route__header">
+    <div class="lab-route__heading">
       <h1>{title}</h1>
-      <p class="lab-instrument-header__module">{moduleLabel}</p>
       <p>{description}</p>
-      {scope === 'supplemental' && <span class="lab-scope-label">Supplemental course depth</span>}
     </div>
-    <nav class="lab-instrument-actions" aria-label="Lab actions">
-      {lessonHref && <a href={lessonHref}>Concept</a>}
+    <nav class="lab-route__links" aria-label="Lab actions">
+      <a href={moduleHref}>Back to {moduleLabel}</a>
       <a href={referenceHref}>Reference</a>
-      <a href={practiceHref}>Practice</a>
     </nav>
   </header>
 
-  <section class="lab-route__workspace" aria-label={`${title} workspace`}>
-    <div class="lab-route__canvas" data-lab-frame>
-      <slot />
-    </div>
-  </section>
+  <div class="lab-route__workspace lab-route__workspace-frame" data-lab-frame>
+    <aside class="lab-route__context-rail" aria-label="Lab context">
+      <p class="lab-rail-label">Lab context</p>
+      <strong>{moduleLabel}</strong>
+      <span>{scope === 'current' ? 'Core course path' : 'Optional course depth'}</span>
+      <nav aria-label="Lab context links">
+        {lessonHref && <a href={lessonHref}>Read the concept</a>}
+        <a href={referenceHref}>Check notation</a>
+        <a href={practiceHref}>Practice this module</a>
+      </nav>
+    </aside>
 
-  <details class="lab-about">
-    <summary>About this workspace</summary>
-    <div class="lab-about__body">
-      <p>Change one meaningful input, inspect the mathematical object, then read the explanation beside the state that produced it.</p>
-      <p>Your drafts and supported evidence stay in this browser. The workspace keeps assumptions and exact steps visible instead of hiding them behind a black-box result.</p>
-    </div>
-  </details>
+    <section class="lab-route__canvas" aria-label={`${title} workspace`}>
+      <slot />
+    </section>
+
+    <aside class="lab-route__support" aria-label="Lab support">
+      <h2>Need a reminder?</h2>
+      <p>Change one input, inspect the result, then read the explanation beside it.</p>
+      <details>
+        <summary>About this workspace</summary>
+        <p>Your work stays in this browser. The lab exposes its assumptions and exact steps as you explore.</p>
+      </details>
+    </aside>
+  </div>
 </article>

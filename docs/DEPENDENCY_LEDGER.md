@@ -1,4 +1,4 @@
-# Dependency Ledger — Instrument UI v2
+# Dependency Ledger — Current Hardening Baseline
 
 ## Application/runtime
 - Astro 7.x — static/content shell and routing.
@@ -6,16 +6,10 @@
 - `@astrojs/react` — Astro/React integration.
 - Tailwind CSS 4.x / `@tailwindcss/vite` — utility generation and project tokens.
 - Radix Tabs — owned accessible tab primitive.
-- Lucide React — restrained functional iconography.
-- Native system UI stack — active interface typography; no packaged sans face is imported by the application shell.
-- JetBrains Mono — packaged local technical face for compact formula/value/table contexts where a monospaced treatment improves legibility.
+- Lucide React — iconography.
+- Plus Jakarta Sans / JetBrains Mono — packaged local fonts; Jakarta is the interface face and JetBrains Mono is reserved for formulas, values, tables, and technical data.
 - Dexie 4.x — IndexedDB adapter behind the persistence port.
-
-## Declared legacy packages that are inactive in Instrument UI v2
-- `@fontsource-variable/plus-jakarta-sans` remains present in the current lockfile/package manifest but is no longer imported by active application source. Remove it during a lockfile-maintenance change made with the repository's pinned pnpm version rather than hand-editing the lockfile inside a UI overlay.
-- Motion remains declared from an earlier headline experiment but is not used by the Instrument UI v2 shell. It can be removed in the same dependency-maintenance pass after a clean install/build verification.
-
-Keeping those declarations temporarily is deliberate: this overlay does not hand-edit `pnpm-lock.yaml` or dependency resolution state without the pinned package manager available.
+- Motion — narrowly used for reduced-motion-aware headline behavior.
 
 ## Test/dev
 - TypeScript 6.x.
@@ -45,7 +39,6 @@ Keeping those declarations temporarily is deliberate: this overlay does not hand
 
 ## Release policy
 - pnpm 11 is the package manager authority declared by root `package.json`.
-- CI uses a clean frozen-lockfile install.
+- CI uses the pnpm 11-native setup action and a clean frozen-lockfile install.
 - High-severity dependency audit is a blocking release check.
 - Do not add a dependency solely to replace a small deterministic domain function unless correctness, accessibility, security, or maintenance clearly improves.
-- Dependency removal must update the manifest and lockfile together through the pinned pnpm toolchain.
