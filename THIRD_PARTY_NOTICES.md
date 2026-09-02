@@ -1,43 +1,9 @@
 # Third-Party Notices
 
-AMAT 19 Study Lab contains small adapted or inspired UI patterns from **React Bits** by David Haz.
+## Historical React Bits note
 
-Referenced source revision:
-`https://github.com/DavidHDev/react-bits/tree/d71509062d8adbd97a43035a94d0ebdaf154b5cf`
+Earlier AMAT 19 interface revisions adapted or referenced UI patterns from **React Bits** by David Haz. Those experimental decorative components (`MotionHeadline`, `SpotlightCard`, and `GradientText`) are not part of the Instrument UI v2 source surface.
 
-Current AMAT 19 references include:
-- `apps/web/src/components/bits/MotionHeadline.tsx` — adapted from React Bits BlurText.
-- `apps/web/src/components/bits/SpotlightCard.tsx` — adapted from React Bits Spotlight Card.
-- `apps/web/src/components/bits/GradientText.tsx` — dependency-free implementation inspired by the React Bits Gradient Text visual pattern.
+The redesign intentionally retires those effects in favor of subject-native mathematical interaction and a dependency-light Astro/React interface. Historical Git revisions remain subject to the notices that accompanied those revisions.
 
-## React Bits license notice
-
-MIT + Commons Clause License Condition v1.0
-
-Copyright (c) 2026 David Haz
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, and distribute the Software **as part of an application, website, or product**, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-### Commons Clause Restriction
-
-You may use this Software, including for any commercial purpose, **so long as you do not sell, sublicense, or redistribute the components themselves—whether alone, in a bundle, or as a ported version.**
-
-### No Warranty
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
----
-
-This notice documents third-party material only. It does **not** choose or imply a license for the AMAT 19 repository as a whole; add a project-level `LICENSE` only after the repository owner selects one.
+This file does not choose or imply a license for the AMAT 19 repository as a whole; add a project-level `LICENSE` only after the repository owner selects one.

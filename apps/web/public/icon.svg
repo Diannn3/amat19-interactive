@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">AMAT 19 Study Lab</title>
-  <desc id="desc">Angular A19 monogram with an orange reasoning crossbar.</desc>
-  <rect width="512" height="512" rx="88" fill="#2e080d"/>
-  <g transform="translate(54 112) scale(1.68)" fill="none" stroke="#fff9f1" stroke-width="10" stroke-linecap="square" stroke-linejoin="miter">
+  <desc id="desc">Monochrome angular A19 monogram.</desc>
+  <rect width="512" height="512" rx="88" fill="#090909"/>
+  <g transform="translate(54 112) scale(1.68)" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="square" stroke-linejoin="miter">
     <path d="M20 140 46 20 72 140M28 100h36"/>
     <path d="m84 44 20-24v120M82 140h44"/>
     <path d="M144 84V20h72v64h-72ZM216 84v56h-40"/>
   </g>
-  <path d="M74 250h364" fill="none" stroke="#e66a19" stroke-width="13" stroke-linecap="square"/>
+  <path d="M74 250h364" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="square"/>
 </svg>

@@ -1,6 +1,5 @@
 ---
 import { currentCourseProfile, getModuleSkillGraph, type ModuleId } from '@amat19/course-content';
-import { ArrowRight, FlaskConical, Route } from 'lucide-react';
 import MixedPracticeRunner from '../practice/MixedPracticeRunner';
 import { learnerScopeLabel, learnerSkillLabel } from '../../lib/learner-labels';
 
@@ -24,17 +23,12 @@ const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-d
 <section class="page-width page-intro module-overview" data-testid="module-overview">
   <div class="module-overview__copy">
     <h1 class="display-title">{headline}</h1>
-    <p class="lede">{lede}</p>
     <p class="module-overview__context">Module {moduleNumber} · {module.title}</p>
+    <p class="lede">{lede}</p>
     <div class="hero-actions">
-      <a class="hero-action hero-action--primary" href={firstLabHref}><FlaskConical size={17} /> Start a lab</a>
-      <a class="hero-action hero-action--secondary" href={`/modules/${moduleId}?view=practice&preset=${practicePreset}`}><Route size={17} aria-hidden="true" /> Practice module</a>
+      <a class="hero-action hero-action--primary" href={firstLabHref}>Start with the first lab</a>
+      <a class="text-link" href={`/modules/${moduleId}?view=practice&preset=${practicePreset}`}>Practice module →</a>
     </div>
-  </div>
-  <div class="module-journey__metrics" aria-label={`${module.title} contents`}>
-    <div><strong>{current.length}</strong><span>core skills</span></div>
-    <div><strong>{labs.length}</strong><span>labs</span></div>
-    <div><strong>{lessons.length}</strong><span>notes</span></div>
   </div>
 </section>
 
@@ -48,69 +42,60 @@ const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-d
 <section class="page-width module-view" data-module-view="overview" aria-labelledby={`${moduleId}-overview-heading`}>
   <div class="section-heading">
     <div>
-      <h2 id={`${moduleId}-overview-heading`}>Start with one object.</h2>
-      <p class="section-context">A short route into {module.title}</p>
-    </div>
-    <a class="text-link" href={`/modules/${moduleId}?view=labs`}>See all labs <ArrowRight size={16} aria-hidden="true" /></a>
-  </div>
-  <a class="module-next-step" href={firstLabHref}>
-    <span class="module-next-step__index">01</span>
-    <span><strong>{current[0]?.title ?? labs[0]?.title ?? 'Open the module'}</strong><small>{current[0]?.description ?? 'Choose an interactive workspace and keep the explanation beside the result.'}</small></span>
-    <ArrowRight size={18} aria-hidden="true" />
-  </a>
-  <div class="module-view-links">
-    <a href={`/modules/${moduleId}?view=notes`}><strong>Read the notes</strong><span>{lessons.length} concept notes</span><ArrowRight size={16} aria-hidden="true" /></a>
-    <a href="/reference"><strong>Check notation</strong><span>Formulas and assumptions</span><ArrowRight size={16} aria-hidden="true" /></a>
-  </div>
-</section>
-
-<section class="page-width module-view" data-module-view="practice" aria-labelledby={`${moduleId}-practice-heading`} hidden>
-  <div class="section-heading">
-    <div>
-      <h2 id={`${moduleId}-practice-heading`}>Practice this module.</h2>
-      <p class="section-context">Short retrieval check</p>
+      <h2 id={`${moduleId}-overview-heading`}>Core route</h2>
+      <p class="section-context">Move through the mathematical objects in prerequisite order.</p>
     </div>
   </div>
-  <MixedPracticeRunner client:load mode="practice" questionCount={8} module={moduleId} defaultPresetId={practicePreset} />
-</section>
-
-<section class="page-width module-view" data-module-view="labs" aria-labelledby={`${moduleId}-labs-heading`} hidden>
-  <div class="section-heading">
-    <div>
-      <h2 id={`${moduleId}-labs-heading`}>Interactive labs.</h2>
-      <p class="section-context">Change an input, inspect the reasoning.</p>
-    </div>
-  </div>
-  <div class="module-lab-list">
-    {labs.map((lab) => (
-      <a class="module-lab-link" href={lab.href}>
-        <span><strong>{lab.title}</strong><small>{lab.skillIds.map(learnerSkillLabel).filter((title): title is string => Boolean(title)).join(' · ')}</small></span>
-        <span class="module-lab-status">{learnerScopeLabel(lab.status)}</span>
-        <ArrowRight size={17} aria-hidden="true" />
-      </a>
+  <ol class="lesson-list module-skill-route">
+    {current.map((skill, index) => (
+      <li>
+        <a href={skill.labHref}>
+          <span class="module-next-step__index">{String(index + 1).padStart(2, '0')}</span>
+          <span><strong>{skill.title}</strong><small>{skill.description}</small></span>
+          <span>Open lab →</span>
+        </a>
+      </li>
     ))}
-  </div>
+  </ol>
   {supplemental.length > 0 && (
     <details class="module-supplemental">
-      <summary>Optional extensions <span>({supplemental.length})</span></summary>
+      <summary>Supplemental depth <span>({supplemental.length})</span></summary>
       <div class="module-supplemental__list">
         {supplemental.map((skill) => (
-          <a href={skill.labHref}><span><strong>{skill.title}</strong><small>{skill.description}</small></span><ArrowRight size={16} aria-hidden="true" /></a>
+          <a href={skill.labHref}>
+            <span><strong>{skill.title}</strong><small>{skill.description}</small></span>
+            <span>Supplemental →</span>
+          </a>
         ))}
       </div>
     </details>
   )}
 </section>
 
-<section class="page-width module-view" data-module-view="notes" aria-labelledby={`${moduleId}-notes-heading`} hidden>
-  <div class="section-heading">
-    <div>
-      <h2 id={`${moduleId}-notes-heading`}>Concept notes.</h2>
-      <p class="section-context">Read before or after a lab.</p>
-    </div>
+<section class="page-width module-view" data-module-view="practice" aria-labelledby={`${moduleId}-practice-heading`} hidden>
+  <div class="section-heading"><div><h2 id={`${moduleId}-practice-heading`}>Practice this module</h2><p class="section-context">Short retrieval check</p></div></div>
+  <MixedPracticeRunner client:load mode="practice" questionCount={8} module={moduleId} defaultPresetId={practicePreset} />
+</section>
+
+<section class="page-width module-view" data-module-view="labs" aria-labelledby={`${moduleId}-labs-heading`} hidden>
+  <div class="section-heading"><div><h2 id={`${moduleId}-labs-heading`}>Interactive labs</h2><p class="section-context">The mathematical object stays central; controls explain or manipulate it.</p></div></div>
+  <div class="module-lab-list">
+    {labs.map((lab) => (
+      <a class="module-lab-link" href={lab.href}>
+        <span><strong>{lab.title}</strong><small>{lab.skillIds.map(learnerSkillLabel).filter((title): title is string => Boolean(title)).join(' · ')}</small></span>
+        <span class="module-lab-status">{learnerScopeLabel(lab.status)}</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    ))}
   </div>
+</section>
+
+<section class="page-width module-view" data-module-view="notes" aria-labelledby={`${moduleId}-notes-heading`} hidden>
+  <div class="section-heading"><div><h2 id={`${moduleId}-notes-heading`}>Concept notes</h2><p class="section-context">A quiet mathematical handbook before or after the lab.</p></div></div>
   <ol class="lesson-list">
-    {lessons.map((lesson) => <li><a href={`/lessons/${lesson.id}`}><span><strong>{lesson.data.title}</strong>{lesson.data.description && <small>{lesson.data.description}</small>}</span><span>Read <ArrowRight size={15} aria-hidden="true" /></span></a></li>)}
+    {lessons.map((lesson, index) => (
+      <li><a href={`/lessons/${lesson.id}`}><span class="module-next-step__index">{String(index + 1).padStart(2, '0')}</span><span><strong>{lesson.data.title}</strong>{lesson.data.description && <small>{lesson.data.description}</small>}</span><span>Read →</span></a></li>
+    ))}
   </ol>
 </section>
 

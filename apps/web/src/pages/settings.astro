@@ -1,4 +1,32 @@
 ---
-import AppLayout from '../layouts/AppLayout.astro';import SettingsPanel from '../components/settings/SettingsPanel';
+import AppLayout from '../layouts/AppLayout.astro';
+import SettingsPanel from '../components/settings/SettingsPanel';
+import DataManager from '../components/DataManager';
 ---
-<AppLayout title="Study preferences"><section class="page-width page-intro"><h1 class="display-title">Make the study surface comfortable.</h1><p class="page-context">Your preferences</p><p class="lede">Choose whether optional motion appears while you study.</p><details class="route-note"><summary>Privacy note</summary><p>Preferences stay in this browser. No account is required.</p></details></section><section class="page-width section-shell"><SettingsPanel client:load /></section></AppLayout>
+<AppLayout title="Settings">
+  <section class="page-width page-intro page-intro--quiet">
+    <h1 class="display-title">Settings</h1>
+    <p class="lede">Control the study surface and manage data that remains in this browser. Choose whether optional motion appears while you study.</p>
+  </section>
+
+  <section class="page-width settings-section" aria-labelledby="study-settings-heading">
+    <h2 id="study-settings-heading">Study</h2>
+    <SettingsPanel client:load />
+  </section>
+
+  <section class="page-width settings-section" aria-labelledby="storage-settings-heading">
+    <h2 id="storage-settings-heading">Storage</h2>
+    <DataManager client:load />
+  </section>
+
+  <section class="page-width settings-section settings-about" aria-labelledby="about-heading">
+    <h2 id="about-heading">About</h2>
+    <dl>
+      <div><dt>Product</dt><dd>AMAT 19 Study Lab</dd></div>
+      <div><dt>Architecture</dt><dd>Local-first Astro + React instruments with framework-independent math engines.</dd></div>
+      <div><dt>Privacy</dt><dd>No account is required for local study evidence and saved work.</dd></div>
+      <div><dt>Developer</dt><dd>Aedrian Ponce · Founder &amp; Lead Developer</dd></div>
+      <div><dt>Contact</dt><dd><a href="mailto:aedrianponce1203@gmail.com">Email</a> · <a href="https://www.linkedin.com/in/aedrian-ponce-a602b0398/" target="_blank" rel="noopener noreferrer">LinkedIn</a> · <a href="https://www.facebook.com/aedrian.ponce" target="_blank" rel="noopener noreferrer">Facebook</a></dd></div>
+    </dl>
+  </section>
+</AppLayout>

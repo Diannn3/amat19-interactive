@@ -1,38 +1,149 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, BookOpen, Bookmark, ClipboardCheck, RotateCcw } from 'lucide-react';
 import { buildStudyQueue } from '@amat19/learning-engine';
 import { skillGraph } from '@amat19/course-content';
 import { DexiePersistence, type MasteryRecord, type PersistedAttempt, type PersistedSession, type SavedItem } from '@amat19/persistence';
-import { Badge } from '../ui/Badge';
 import { Skeleton } from '../ui/Skeleton';
-import { masteryLabel } from '../../lib/local-progress';
 import { canonicalMasteryMap, canonicalSkillId } from '../../lib/mastery-targets';
 import { learnerActivityLabel, learnerModuleLabel } from '../../lib/learner-labels';
 
-type Data={mastery:MasteryRecord[];attempts:PersistedAttempt[];sessions:PersistedSession[];saved:SavedItem[]};
+const reasonLabel: Record<string, string> = { continue: 'Continue', repair: 'Repair', weak: 'Foundation', review: 'Review', new: 'New', bookmark: 'Saved' };
 
-export default function StudyDashboard(){
- const[data,setData]=useState<Data>();const[unavailable,setUnavailable]=useState(false);
- useEffect(()=>{const db=new DexiePersistence();Promise.all([db.listMastery(),db.listAttempts(),db.listSessions(),db.listSavedItems()]).then(([mastery,attempts,sessions,saved])=>setData({mastery,attempts,sessions,saved})).catch(()=>setUnavailable(true));},[]);
- const computed=useMemo(()=>{
-  if(!data)return undefined;
-  const mastery=canonicalMasteryMap(data.mastery);
-  const recentMisses=new Set(data.attempts.filter(a=>a.finalState==='incomplete').slice(0,12).flatMap(a=>(a.skillIds??[]).map(canonicalSkillId)));
-  const activeSessions=data.sessions.filter(s=>s.outcome==='active');
-  const bookmarks=new Set(data.saved.flatMap(item=>(item.skillIds??[]).map(canonicalSkillId)));
-  const currentSkills=skillGraph.filter(skill=>skill.scope==='current');
-  const candidates=currentSkills.map(skill=>{
-   const record=mastery.get(skill.id)??(skill.parentId?mastery.get(skill.parentId):undefined);
-   return{skillId:skill.id,title:skill.title,href:skill.labHref,masteryScore:record?.evidenceScore,attempts:record?.attempts,lastPracticedAt:record?.lastPracticed,recentIncorrect:recentMisses.has(skill.id)||(skill.parentId?recentMisses.has(skill.parentId):false),bookmarked:bookmarks.has(skill.id),resumable:activeSessions.some(s=>s.skillIds.map(canonicalSkillId).includes(skill.id)||(skill.parentId?s.skillIds.map(canonicalSkillId).includes(skill.parentId):false))};
-  });
-  const queue=buildStudyQueue(candidates,new Date(),7);
-  const resolvedRecords=currentSkills.map(skill=>mastery.get(skill.id)??(skill.parentId?mastery.get(skill.parentId):undefined));
-  const secure=resolvedRecords.filter(record=>masteryLabel(record)==='Secure').length;
-  const developing=resolvedRecords.filter(record=>masteryLabel(record)==='Developing'||masteryLabel(record)==='Learning').length;
-  return{queue,secure,developing,recent:data.attempts.slice(0,5),activeSessions,savedCount:data.saved.length};
- },[data]);
- if(unavailable)return <div className="empty-state" role="status"><strong>Local study data is unavailable.</strong><p>You can still open every lesson and lab directly from the course map.</p></div>;
- if(!computed)return <div className="study-dashboard" aria-busy="true"><Skeleton className="h-52"/><Skeleton className="h-80"/></div>;
- const primary=computed.queue[0];
- return <div className="study-dashboard" data-testid="study-dashboard"><div className="study-dashboard__hero"><section className="study-panel study-panel--primary"><div className="study-panel__body">{primary?<><h2>{primary.title}</h2><p className="section-context">Recommended next</p><p className="lede">{primary.rationale}</p><div className="hero-actions"><a className="hero-action hero-action--primary" href={primary.href}>Open study tool <ArrowRight aria-hidden="true" size={16}/></a></div></>:<><h2>Start with any core module.</h2><p className="section-context">Recommended next</p><p className="lede">Once you practice, this page will prioritize unfinished work, repair targets, and retrieval reviews.</p></>}<div className="study-stat-grid"><div className="study-stat"><strong>{computed.secure}</strong><span>secure current skills</span></div><div className="study-stat"><strong>{computed.developing}</strong><span>still developing</span></div><div className="study-stat"><strong>{computed.savedCount}</strong><span>saved items</span></div></div></div></section><aside className="study-panel"><div className="study-panel__body"><h3>Recent work</h3><p className="section-context">Resume</p>{computed.activeSessions.length?<div className="study-queue">{computed.activeSessions.slice(0,3).map(session=><a className="study-queue__item" key={session.sessionId} href={skillGraph.find(s=>session.skillIds.map(canonicalSkillId).includes(s.id)||Boolean(s.parentId&&session.skillIds.map(canonicalSkillId).includes(s.parentId)))?.labHref??'/study'}><span className="study-queue__rank"><RotateCcw aria-hidden="true" size={14}/></span><span><strong>{learnerActivityLabel(session)}</strong><small>{learnerModuleLabel(session.module)} · Saved {new Date(session.updatedAt).toLocaleDateString()}</small></span><ArrowRight aria-hidden="true" size={15}/></a>)}</div>:<p className="lede">No unfinished learning session yet. Draft-enabled labs still resume their local state.</p>}</div></aside></div><section className="study-panel"><div className="study-panel__body"><div className="section-heading"><div><h2>High-value retrieval first.</h2><p className="section-context">Today’s queue</p></div></div><div className="study-queue">{computed.queue.map((item,index)=><a className="study-queue__item" key={item.skillId} href={item.href}><span className="study-queue__rank">{index+1}</span><span><strong>{item.title}</strong><small>{item.rationale}</small></span><Badge>{item.reason}</Badge></a>)}</div></div></section><section className="study-panel"><div className="study-panel__body"><div className="section-heading"><div><h2>Choose how you want to study.</h2><p className="section-context">Shortcuts</p></div></div><div className="route-grid"><a className="route-link" href="/course"><span><strong><BookOpen aria-hidden="true" size={16}/> Course map</strong><small>Choose a module and retrieve in context.</small></span><span aria-hidden="true">→</span></a><a className="route-link" href="/exam"><span><strong><ClipboardCheck aria-hidden="true" size={16}/> Mixed Course Check</strong><small>Check the whole course, then review feedback.</small></span><span aria-hidden="true">→</span></a><a className="route-link" href="/saved"><span><strong><Bookmark aria-hidden="true" size={16}/> Saved Library</strong><small>Return to lessons, exercises, and custom problems you kept.</small></span><span aria-hidden="true">→</span></a></div></div></section></div>;
+type Data = {
+  mastery: MasteryRecord[];
+  attempts: PersistedAttempt[];
+  sessions: PersistedSession[];
+  saved: SavedItem[];
+};
+
+export default function StudyDashboard() {
+  const [data, setData] = useState<Data>();
+  const [unavailable, setUnavailable] = useState(false);
+
+  useEffect(() => {
+    const db = new DexiePersistence();
+    Promise.all([db.listMastery(), db.listAttempts(), db.listSessions(), db.listSavedItems()])
+      .then(([mastery, attempts, sessions, saved]) => setData({ mastery, attempts, sessions, saved }))
+      .catch(() => setUnavailable(true));
+  }, []);
+
+  const computed = useMemo(() => {
+    if (!data) return undefined;
+    const mastery = canonicalMasteryMap(data.mastery);
+    const attemptsByRecency = [...data.attempts].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    const recentMisses = new Set(
+      attemptsByRecency
+        .filter((attempt) => attempt.finalState === 'incomplete')
+        .slice(0, 12)
+        .flatMap((attempt) => (attempt.skillIds ?? []).map(canonicalSkillId)),
+    );
+    const activeSessions = data.sessions.filter((session) => session.outcome === 'active').sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    const bookmarks = new Set(data.saved.flatMap((item) => (item.skillIds ?? []).map(canonicalSkillId)));
+    const currentSkills = skillGraph.filter((skill) => skill.scope === 'current');
+    const candidates = currentSkills.map((skill) => {
+      const record = mastery.get(skill.id) ?? (skill.parentId ? mastery.get(skill.parentId) : undefined);
+      return {
+        skillId: skill.id,
+        title: skill.title,
+        href: skill.labHref,
+        masteryScore: record?.evidenceScore,
+        attempts: record?.attempts,
+        lastPracticedAt: record?.lastPracticed,
+        recentIncorrect: recentMisses.has(skill.id) || Boolean(skill.parentId && recentMisses.has(skill.parentId)),
+        bookmarked: bookmarks.has(skill.id),
+        resumable: activeSessions.some((session) => {
+          const ids = session.skillIds.map(canonicalSkillId);
+          return ids.includes(skill.id) || Boolean(skill.parentId && ids.includes(skill.parentId));
+        }),
+      };
+    });
+    const queue = buildStudyQueue(candidates, new Date(), 7);
+    return { queue, activeSessions, attempts: attemptsByRecency };
+  }, [data]);
+
+  if (unavailable) {
+    return (
+      <div className="empty-state" role="status">
+        <strong>Local study data is unavailable.</strong>
+        <p>You can still open every lesson and lab directly from the course map.</p>
+        <a className="text-link" href="/course">Open course map →</a>
+      </div>
+    );
+  }
+
+  if (!computed) {
+    return <div className="study-instrument" aria-busy="true"><Skeleton className="h-44" /><Skeleton className="h-64" /></div>;
+  }
+
+  const primary = computed.queue[0];
+  const recentSession = computed.activeSessions[0];
+  const resumeHref = recentSession
+    ? skillGraph.find((skill) => {
+        const ids = recentSession.skillIds.map(canonicalSkillId);
+        return ids.includes(skill.id) || Boolean(skill.parentId && ids.includes(skill.parentId));
+      })?.labHref
+    : undefined;
+
+  return (
+    <div className="study-instrument" data-testid="study-dashboard">
+      <section className="study-recommended" aria-labelledby="recommended-heading">
+        {primary ? (
+          <>
+            <h2 id="recommended-heading">{primary.title}</h2>
+            <p>{primary.rationale}</p>
+            <a className="amat-button amat-button--primary" href={primary.href}>Continue →</a>
+          </>
+        ) : (
+          <>
+            <h2 id="recommended-heading">Start anywhere in the core course.</h2>
+            <p>Once you practice, the queue will prioritize unfinished work, recent misses, and retrieval reviews.</p>
+            <a className="amat-button amat-button--primary" href="/course">Choose a module</a>
+          </>
+        )}
+      </section>
+
+      {recentSession && resumeHref && (
+        <section className="study-resume" aria-labelledby="resume-heading">
+          <p className="section-label">Resume unfinished work</p>
+          <a href={resumeHref}>
+            <span>
+              <strong id="resume-heading">{learnerActivityLabel(recentSession)}</strong>
+              <small>{learnerModuleLabel(recentSession.module)} · saved {new Date(recentSession.updatedAt).toLocaleDateString()}</small>
+            </span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </section>
+      )}
+
+      <section className="study-queue-linear" aria-labelledby="queue-heading">
+        <div className="section-heading">
+          <div>
+            <h2 id="queue-heading">Next</h2>
+            <p className="section-context">High-value retrieval first</p>
+          </div>
+        </div>
+        {computed.queue.length ? (
+          <ol>
+            {computed.queue.slice(0, 6).map((item, index) => (
+              <li key={item.skillId}>
+                <a href={item.href}>
+                  <span className="study-queue-linear__number">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="study-queue-linear__copy"><strong>{item.title}</strong><small>{item.rationale}</small></span>
+                  <span className="study-queue-linear__reason">{reasonLabel[item.reason] ?? item.reason}</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="lede">No repair queue yet. Practice a core skill and this list will adapt to your evidence.</p>
+        )}
+      </section>
+
+      <nav className="study-shortcuts" aria-label="Study tools">
+        <a href="/exam"><strong>Mixed course check</strong><span>Independent whole-course retrieval</span><span aria-hidden="true">→</span></a>
+        <a href="/saved"><strong>Saved work</strong><span>Return to lessons and study objects</span><span aria-hidden="true">→</span></a>
+        <a href="/reference"><strong>Reference</strong><span>Formulas, notation, and assumptions</span><span aria-hidden="true">→</span></a>
+      </nav>
+    </div>
+  );
 }
