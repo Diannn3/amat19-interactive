@@ -16,7 +16,7 @@
     "build": "pnpm -r build",
     "check": "pnpm -r check",
     "test": "pnpm run verify:unit",
-    "test:node": "node --experimental-strip-types --test packages/math-core/test/*.test.ts packages/domain-logic/test/*.test.ts packages/learning-engine/test/*.test.ts packages/persistence/test/*.test.ts packages/domain-probability/test/*.test.ts packages/domain-finance/test/*.test.ts packages/domain-linear/test/*.test.ts packages/domain-games/test/*.test.ts tests/node/*.test.ts",
+    "test:node": "node scripts/setup-workspace-links.mjs && node --experimental-strip-types --test packages/math-core/test/*.test.ts packages/domain-logic/test/*.test.ts packages/learning-engine/test/*.test.ts packages/persistence/test/*.test.ts packages/domain-probability/test/*.test.ts packages/domain-finance/test/*.test.ts packages/domain-linear/test/*.test.ts packages/domain-games/test/*.test.ts tests/node/*.test.ts",
     "test:vitest": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:core": "playwright test --grep @core",
@@ -28,7 +28,9 @@
     "verify:browser": "pnpm run test:e2e",
     "verify:full": "pnpm run verify && pnpm run verify:browser",
     "audit:content": "node scripts/audit-content.mjs",
-    "test:e2e:production": "playwright test --config=playwright.production.config.ts"
+    "test:e2e:production": "playwright test --config=playwright.production.config.ts",
+    "test:math-core": "node scripts/setup-workspace-links.mjs && node scripts/run-math-certification.mjs",
+    "prepare:workspace-links": "node scripts/setup-workspace-links.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",

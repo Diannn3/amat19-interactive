@@ -14,6 +14,17 @@ export function canonicalizeSkillIds(skillIds: readonly string[] | undefined): s
   return [...new Set(skillIds.map(canonicalSkillId))];
 }
 
+/** Require a canonical assessable leaf skill for new mastery evidence. */
+export function canonicalLeafSkillId(skillId: string): string {
+  const canonical = canonicalSkillId(skillId);
+  const node = getSkillNode(canonical);
+  if (!node) throw new RangeError(`Assessment evidence must target a registered leaf skill; received “${skillId}”.`);
+  if (skillGraph.some((candidate) => candidate.parentId === canonical)) {
+    throw new RangeError(`Assessment evidence cannot target parent skill “${canonical}”.`);
+  }
+  return canonical;
+}
+
 export function masteryHierarchyIds(skillId: string): string[] {
   const canonical = canonicalSkillId(skillId);
   const leaf = getSkillNode(canonical);

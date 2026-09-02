@@ -14,14 +14,23 @@ export type SavedItem<T=unknown>={
  id:string;kind:'lesson'|'exercise'|'custom-problem'|'bookmark';title:string;href?:string;module?:string;skillIds?:string[];createdAt:string;updatedAt:string;payload:T;
 };
 export type ContentMeta={id:'current';courseVersion:string;schemaVersion:number;updatedAt:string;};
+export type SnapshotScope='full'|'progress'|'saved';
 export type LocalSnapshot={
- exportedAt:string;schemaVersion:number;drafts:LabDraft[];attempts:PersistedAttempt[];mastery:MasteryRecord[];settings:LocalSetting[];
+ exportedAt:string;schemaVersion:number;snapshotScope?:SnapshotScope;drafts:LabDraft[];attempts:PersistedAttempt[];mastery:MasteryRecord[];settings:LocalSetting[];
  sessions:PersistedSession[];savedItems:SavedItem[];contentMeta?:ContentMeta;
 };
+
+export type AtomicAssessmentCommitInput<T=unknown>={
+ exerciseId:string;skillId:string;
+ priorAttemptMatches:(attempt:Readonly<PersistedAttempt>)=>boolean;
+ buildAttempt:(hasPriorMatch:boolean)=>PersistedAttempt<T>;
+ updateMastery?:((previous:Readonly<MasteryRecord>|undefined,hasPriorMatch:boolean)=>MasteryRecord);
+};
+export type AtomicAssessmentCommitResult<T=unknown>={attempt:PersistedAttempt<T>;mastery?:MasteryRecord;hasPriorMatch:boolean;};
 export type MasteryUpdater=(previous:Readonly<MasteryRecord>|undefined)=>MasteryRecord;
 export interface PersistencePort{
  getLabDraft<T=unknown>(labId:string):Promise<LabDraft<T>|undefined>;listLabDrafts():Promise<LabDraft[]>;saveLabDraft<T=unknown>(draft:LabDraft<T>):Promise<void>;deleteLabDraft(labId:string):Promise<void>;
- saveAttempt<T=unknown>(attempt:PersistedAttempt<T>):Promise<void>;listAttempts(exerciseId?:string):Promise<PersistedAttempt[]>;
+ saveAttempt<T=unknown>(attempt:PersistedAttempt<T>):Promise<void>;listAttempts(exerciseId?:string):Promise<PersistedAttempt[]>;commitAttemptAndMastery<T=unknown>(input:AtomicAssessmentCommitInput<T>):Promise<AtomicAssessmentCommitResult<T>>;
  getMastery(skillId:string):Promise<MasteryRecord|undefined>;listMastery():Promise<MasteryRecord[]>;saveMastery(record:MasteryRecord):Promise<void>;updateMastery(skillId:string,updater:MasteryUpdater):Promise<MasteryRecord>;
  getSession<T=unknown>(sessionId:string):Promise<PersistedSession<T>|undefined>;listSessions():Promise<PersistedSession[]>;saveSession<T=unknown>(session:PersistedSession<T>):Promise<void>;deleteSession(sessionId:string):Promise<void>;
  getSavedItem<T=unknown>(id:string):Promise<SavedItem<T>|undefined>;listSavedItems(kind?:SavedItem['kind']):Promise<SavedItem[]>;saveItem<T=unknown>(item:SavedItem<T>):Promise<void>;deleteSavedItem(id:string):Promise<void>;

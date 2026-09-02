@@ -1,5 +1,6 @@
 import { Rational } from '@amat19/math-core';
 function count(value: bigint | number, label: string): bigint {
+  if(typeof value==='number'&&!Number.isSafeInteger(value))throw new RangeError(`${label} must be supplied as a safe integer number or exact bigint.`);
   const v = BigInt(value);
   if (v < 0n) throw new RangeError(`${label} cannot be negative.`);
   return v;
@@ -40,10 +41,18 @@ export function analyzeTwoWayTable(table: TwoWayTable): TwoWayAnalysis {
   };
 }
 export function conditionalProbability(intersection: Rational, given: Rational): Rational {
+  if (!intersection.isProbability() || !given.isProbability()) throw new RangeError('Conditional-probability inputs must lie between 0 and 1.');
   if (given.numerator === 0n) throw new RangeError('Conditional probability is undefined when the conditioning event has probability 0.');
+  if (intersection.compare(given) > 0) throw new RangeError('An intersection probability cannot exceed the conditioning-event probability.');
   return intersection.divide(given);
 }
-export function areIndependent(pA: Rational, pB: Rational, pIntersection: Rational): boolean {
+export function validateJointProbabilities(pA: Rational, pB: Rational, pIntersection: Rational): void {
   if (![pA, pB, pIntersection].every((p) => p.isProbability())) throw new RangeError('Probabilities must lie between 0 and 1.');
+  const lower=pA.add(pB).subtract(1).compare(0)>0?pA.add(pB).subtract(1):Rational.zero();
+  const upper=pA.compare(pB)<0?pA:pB;
+  if(pIntersection.compare(lower)<0||pIntersection.compare(upper)>0)throw new RangeError(`The intersection must satisfy ${lower.toString()} ≤ P(A∩B) ≤ ${upper.toString()} for the supplied marginals.`);
+}
+export function areIndependent(pA: Rational, pB: Rational, pIntersection: Rational): boolean {
+  validateJointProbabilities(pA,pB,pIntersection);
   return pIntersection.equals(pA.multiply(pB));
 }

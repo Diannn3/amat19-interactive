@@ -1,4 +1,6 @@
 import { tokenizeLogic } from './tokenize.ts';
+
+export const MAX_LOGIC_PARSE_DEPTH = 256;
 import {
   LogicParseError,
   type BinaryNode,
@@ -25,7 +27,7 @@ class Parser {
       throw new LogicParseError('empty-expression', 'Enter a proposition first.', this.peek().span);
     }
 
-    const expression = this.parseIff();
+    const expression = this.parseIff(0);
     const trailing = this.peek();
     if (trailing.kind !== 'eof') {
       throw new LogicParseError(
@@ -37,49 +39,54 @@ class Parser {
     return expression;
   }
 
-  private parseIff(): LogicNode {
-    let left = this.parseImplies();
+  private parseIff(depth: number): LogicNode {
+    this.guardDepth(depth);
+    let left = this.parseImplies(depth);
     while (this.match('iff')) {
-      const right = this.parseImplies();
+      const right = this.parseImplies(depth);
       left = this.binary('iff', left, right);
     }
     return left;
   }
 
-  private parseImplies(): LogicNode {
-    const left = this.parseOr();
+  private parseImplies(depth: number): LogicNode {
+    this.guardDepth(depth);
+    const left = this.parseOr(depth);
     if (this.match('implies')) {
-      const right = this.parseImplies();
+      const right = this.parseImplies(depth);
       return this.binary('implies', left, right);
     }
     return left;
   }
 
-  private parseOr(): LogicNode {
-    let left = this.parseAnd();
+  private parseOr(depth: number): LogicNode {
+    this.guardDepth(depth);
+    let left = this.parseAnd(depth);
     while (this.match('or')) {
-      const right = this.parseAnd();
+      const right = this.parseAnd(depth);
       left = this.binary('or', left, right);
     }
     return left;
   }
 
-  private parseAnd(): LogicNode {
-    let left = this.parseUnary();
+  private parseAnd(depth: number): LogicNode {
+    this.guardDepth(depth);
+    let left = this.parseUnary(depth);
     while (this.match('and')) {
-      const right = this.parseUnary();
+      const right = this.parseUnary(depth);
       left = this.binary('and', left, right);
     }
     return left;
   }
 
-  private parseUnary(): LogicNode {
+  private parseUnary(depth: number): LogicNode {
+    this.guardDepth(depth);
     if (this.match('not')) {
       const operator = this.previous();
       if (this.peek().kind === 'eof' || this.peek().kind === 'rparen') {
         throw new LogicParseError('missing-operand', 'Negation needs a proposition after it.', operator.span);
       }
-      const operand = this.parseUnary();
+      const operand = this.parseUnary(depth + 1);
       const node: NotNode = {
         kind: 'not',
         id: makeNodeId('not', operator.span.start, operand.span.end),
@@ -101,7 +108,7 @@ class Parser {
 
     if (this.match('lparen')) {
       const opening = this.previous();
-      const expression = this.parseIff();
+      const expression = this.parseIff(0);
       if (!this.match('rparen')) {
         throw new LogicParseError(
           'missing-rparen',
@@ -118,6 +125,12 @@ class Parser {
       token.kind === 'eof' ? 'The proposition ends before an operand appears.' : `Expected a proposition, found “${token.lexeme}”.`,
       token.span
     );
+  }
+
+  private guardDepth(depth: number): void {
+    if (depth <= MAX_LOGIC_PARSE_DEPTH) return;
+    const token = this.peek();
+    throw new LogicParseError('expression-too-deep', `Logic nesting cannot exceed ${MAX_LOGIC_PARSE_DEPTH} levels.`, token.span);
   }
 
   private binary(kind: BinaryNode['kind'], left: LogicNode, right: LogicNode): BinaryNode {

@@ -1,7 +1,11 @@
 import { Rational, type RationalLike } from '@amat19/math-core';
+export const MAX_GAME_STRATEGIES_PER_PLAYER=12;
+export const MAX_GAME_PAYOFF_CELLS=144;
+export const MAX_GAME_LITERAL_LENGTH=128;
+function boundedPayoff(value:RationalLike):Rational{const text=value instanceof Rational?value.toString():String(value);if(text.length>MAX_GAME_LITERAL_LENGTH)throw new RangeError(`A payoff literal cannot exceed ${MAX_GAME_LITERAL_LENGTH} characters.`);return Rational.from(value);}
 export type PayoffMatrix=Rational[][];
 export type SaddlePoint={row:number;col:number;value:Rational};
-export function payoffMatrix(values:RationalLike[][]):PayoffMatrix {if(values.length<2||values[0]!.length<2)throw new RangeError('A payoff matrix needs at least two strategies per player for this lab.');const cols=values[0]!.length;if(values.some(r=>r.length!==cols))throw new RangeError('Every payoff row must have the same number of columns.');return values.map(r=>r.map(Rational.from));}
+export function payoffMatrix(values:RationalLike[][]):PayoffMatrix {if(values.length<2||values[0]!.length<2)throw new RangeError('A payoff matrix needs at least two strategies per player for this lab.');const cols=values[0]!.length;if(values.some(r=>r.length!==cols))throw new RangeError('Every payoff row must have the same number of columns.');if(values.length>MAX_GAME_STRATEGIES_PER_PLAYER||cols>MAX_GAME_STRATEGIES_PER_PLAYER||values.length*cols>MAX_GAME_PAYOFF_CELLS)throw new RangeError(`Payoff matrices cannot exceed ${MAX_GAME_STRATEGIES_PER_PLAYER} strategies per player or ${MAX_GAME_PAYOFF_CELLS} cells.`);return values.map(r=>r.map(boundedPayoff));}
 export function rowMinima(A:PayoffMatrix):Rational[]{return A.map(row=>row.reduce((m,v)=>v.compare(m)<0?v:m,row[0]!));}
 export function columnMaxima(A:PayoffMatrix):Rational[]{return A[0]!.map((_,c)=>A.map(r=>r[c]!).reduce((m,v)=>v.compare(m)>0?v:m,A[0]![c]!));}
 export function maximin(A:PayoffMatrix):Rational{return rowMinima(A).reduce((m,v)=>v.compare(m)>0?v:m);}

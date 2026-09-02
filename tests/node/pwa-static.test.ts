@@ -13,3 +13,10 @@ test('navigation fallback ignores query strings and uses a bounded network wait'
  assert.match(source,/AbortController/);
  assert.match(source,/NAVIGATION_TIMEOUT_MS\s*=\s*4000/);
 });
+
+
+test('service worker cache namespace is bumped for the audited backend release',async()=>{
+ const source=await readFile(new URL('../../apps/web/public/sw.js',import.meta.url),'utf8');
+ assert.match(source,/VERSION\s*=\s*['"]amat19-v13-audited-backend['"]/);
+ assert.doesNotMatch(source,/amat19-v5-hardening/);
+});

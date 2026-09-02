@@ -1,0 +1,38 @@
+/* v1.3 audit fixes. Kept isolated so the baseline Firefox compatibility patch is easy to review. */
+
+/* Firefox can resolve 2.75rem to a fractional value infinitesimally below 44px.
+   Use an integral pixel floor with a 1px safety margin for tested interactive targets. */
+.route-note summary,
+.roadmap-details summary,
+.course-policy details summary,
+.lab-route__support summary,
+.reference-details summary,
+.rule-grid details > summary,
+.matrix-editor > details > summary,
+.no-js-reference > summary,
+.lab-route__context-rail nav a {
+  min-height: 45px;
+}
+
+/* Prevent intrinsic widths in the graphical-LP editor from widening its narrow
+   control column by a couple of pixels in Firefox. Content wraps instead. */
+.lp-lab__controls,
+.lp-lab__controls > *,
+.lp-lab__controls .objective-row,
+.lp-lab__controls .constraint-editor,
+.lp-lab__controls .constraint-row,
+.lp-lab__controls .prediction-fieldset {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.lp-lab__controls input,
+.lp-lab__controls select,
+.lp-lab__controls .form-field {
+  max-width: 100%;
+}
+
+.lab-route__canvas .constraint-row > input,
+.lab-route__canvas .constraint-row > select {
+  flex-basis: 0;
+}

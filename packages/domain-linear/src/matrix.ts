@@ -1,5 +1,23 @@
 import { Rational, type RationalLike } from '@amat19/math-core';
 export type Matrix = Rational[][];
+export const MAX_MATRIX_ROWS=12;
+export const MAX_MATRIX_COLS=16;
+export const MAX_MATRIX_CELLS=192;
+export const MAX_MATRIX_WORKSPACE_ROWS=16;
+export const MAX_MATRIX_WORKSPACE_COLS=24;
+export const MAX_MATRIX_WORKSPACE_CELLS=288;
+export const INTERACTIVE_MATRIX_LIMITS={maxRows:6,maxCols:6,maxCells:36} as const;
+function assertMatrixInputBudget(rows:number,cols:number):void{
+ if(rows>MAX_MATRIX_ROWS)throw new RangeError(`A matrix cannot exceed ${MAX_MATRIX_ROWS} rows.`);
+ if(cols>MAX_MATRIX_COLS)throw new RangeError(`A matrix cannot exceed ${MAX_MATRIX_COLS} columns.`);
+ if(rows*cols>MAX_MATRIX_CELLS)throw new RangeError(`A matrix cannot exceed ${MAX_MATRIX_CELLS} cells.`);
+}
+
+function assertMatrixWorkspaceBudget(rows:number,cols:number):void{
+ if(rows>MAX_MATRIX_WORKSPACE_ROWS)throw new RangeError(`A matrix workspace cannot exceed ${MAX_MATRIX_WORKSPACE_ROWS} rows.`);
+ if(cols>MAX_MATRIX_WORKSPACE_COLS)throw new RangeError(`A matrix workspace cannot exceed ${MAX_MATRIX_WORKSPACE_COLS} columns.`);
+ if(rows*cols>MAX_MATRIX_WORKSPACE_CELLS)throw new RangeError(`A matrix workspace cannot exceed ${MAX_MATRIX_WORKSPACE_CELLS} cells.`);
+}
 export type MatrixShape = { rows:number; cols:number };
 export type RowOperation =
   | { kind:'swap'; rowA:number; rowB:number; label:string }
@@ -10,12 +28,12 @@ export type RrefResult = { matrix:Matrix; steps:RowReductionStep[]; pivotColumns
 export type LinearSystemResult = { kind:'unique'|'infinite'|'inconsistent'; rref:Matrix; rank:number; variableCount:number; solution?:Rational[]; steps:RowReductionStep[] };
 export function matrix(values:RationalLike[][]):Matrix {
   if(values.length===0||values[0]?.length===0)throw new RangeError('A matrix needs at least one row and one column.');
-  const cols=values[0]!.length;if(values.some(row=>row.length!==cols))throw new RangeError('Every matrix row must have the same number of columns.');
+  const cols=values[0]!.length;if(values.some(row=>row.length!==cols))throw new RangeError('Every matrix row must have the same number of columns.');assertMatrixInputBudget(values.length,cols);
   return values.map(row=>row.map(Rational.from));
 }
 export function cloneMatrix(input:Matrix):Matrix{return input.map(row=>row.slice());}
-export function shape(input:Matrix):MatrixShape { if(input.length===0||input[0]?.length===0)throw new RangeError('A matrix cannot be empty.'); const cols=input[0]!.length;if(input.some(r=>r.length!==cols))throw new RangeError('Matrix rows must have equal length.');return{rows:input.length,cols}; }
-export function identity(n:number):Matrix {if(!Number.isInteger(n)||n<=0)throw new RangeError('Identity order must be a positive integer.');return Array.from({length:n},(_,r)=>Array.from({length:n},(_,c)=>new Rational(r===c?1:0)));}
+export function shape(input:Matrix):MatrixShape { if(input.length===0||input[0]?.length===0)throw new RangeError('A matrix cannot be empty.'); const cols=input[0]!.length;if(input.some(r=>r.length!==cols))throw new RangeError('Matrix rows must have equal length.');assertMatrixWorkspaceBudget(input.length,cols);return{rows:input.length,cols}; }
+export function identity(n:number):Matrix {if(!Number.isInteger(n)||n<=0)throw new RangeError('Identity order must be a positive integer.');if(n>MAX_MATRIX_ROWS)throw new RangeError(`Identity order cannot exceed ${MAX_MATRIX_ROWS}.`);return Array.from({length:n},(_,r)=>Array.from({length:n},(_,c)=>new Rational(r===c?1:0)));}
 export function addMatrices(a:Matrix,b:Matrix):Matrix {const sa=shape(a),sb=shape(b);if(sa.rows!==sb.rows||sa.cols!==sb.cols)throw new RangeError('Matrix addition requires equal dimensions.');return a.map((row,r)=>row.map((v,c)=>v.add(b[r]![c]!)));}
 export function subtractMatrices(a:Matrix,b:Matrix):Matrix {return addMatrices(a,b.map(row=>row.map(v=>v.negate())));}
 export function scalarMultiply(a:Matrix,k:RationalLike):Matrix {const factor=Rational.from(k);return a.map(row=>row.map(v=>v.multiply(factor)));}

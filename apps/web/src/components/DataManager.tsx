@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Database, Download, HardDriveDownload, Trash2, Upload } from 'lucide-react';
-import { DexiePersistence, validateSnapshot, type LocalSnapshot } from '@amat19/persistence';
+import { CURRENT_SCHEMA_VERSION, DexiePersistence, projectSnapshotForScope, validateSnapshot, type LocalSnapshot, type SnapshotScope } from '@amat19/persistence';
 import { Button } from './ui/Button';
 import { Feedback } from './ui/Feedback';
+import { Badge } from './ui/Badge';
 
-type SnapshotMode = 'full' | 'progress' | 'saved';
+type SnapshotMode = SnapshotScope;
 type Counts = { drafts: number; attempts: number; mastery: number; sessions: number; saved: number };
 
 function downloadSnapshot(snapshot: LocalSnapshot, suffix: string) {
@@ -17,14 +18,6 @@ function downloadSnapshot(snapshot: LocalSnapshot, suffix: string) {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
-}
-
-function projectSnapshot(snapshot: LocalSnapshot, mode: SnapshotMode): LocalSnapshot {
-  if (mode === 'full') return snapshot;
-  if (mode === 'progress') {
-    return { ...snapshot, drafts: [], settings: [], sessions: [], savedItems: [] };
-  }
-  return { ...snapshot, drafts: [], attempts: [], mastery: [], settings: [], sessions: [], savedItems: snapshot.savedItems };
 }
 
 export default function DataManager() {
@@ -50,7 +43,7 @@ export default function DataManager() {
     try {
       const db = new DexiePersistence();
       const snapshot = await db.exportSnapshot(new Date().toISOString());
-      downloadSnapshot(projectSnapshot(snapshot, mode), mode === 'full' ? 'local-backup' : mode === 'progress' ? 'progress' : 'saved-items');
+      downloadSnapshot(projectSnapshotForScope(snapshot, mode), mode === 'full' ? 'local-backup' : mode === 'progress' ? 'progress' : 'saved-items');
       setMessage({ tone: 'success', text: `${mode === 'full' ? 'Full local backup' : mode === 'progress' ? 'Progress evidence' : 'Saved items'} exported.` });
     } catch (error) {
       setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'Export failed.' });
@@ -69,7 +62,7 @@ export default function DataManager() {
       const db = new DexiePersistence();
       await db.importSnapshot(snapshot);
       await refreshCounts();
-      setMessage({ tone: 'success', text: 'Local study data restored. Open a lab or Study to continue.' });
+      setMessage({ tone: 'success', text: `${snapshot.snapshotScope === 'progress' ? 'Progress evidence' : snapshot.snapshotScope === 'saved' ? 'Saved items' : 'Local study data'} restored${snapshot.snapshotScope && snapshot.snapshotScope !== 'full' ? ' without replacing unrelated local data' : ''}.` });
     } catch (error) {
       setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'The selected file could not be imported.' });
     }
@@ -105,10 +98,11 @@ export default function DataManager() {
     <section className="data-manager" data-testid="data-manager">
       <div className="data-manager__head">
         <div>
+          <p className="section-label">Local-first data</p>
           <h2>Your work stays in this browser.</h2>
-          <p className="section-context">Local-first data</p>
-          <p>Your study history stays in this browser. Export a JSON backup whenever you want; no account is required.</p>
+          <p>AMAT 19 stores study history in local browser storage. Export a portable JSON copy whenever you want; no account is required.</p>
         </div>
+        <Badge>v{CURRENT_SCHEMA_VERSION}</Badge>
       </div>
 
       {counts && (

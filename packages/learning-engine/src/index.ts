@@ -6,5 +6,6 @@ export * from './mastery.ts';
 export * from './truth-table-feedback.ts';
 export * from './session.ts';
 export * from './skill-evidence.ts';
+export * from './assessment.ts';
 export * from './repair.ts';
 export * from './study-queue.ts';

@@ -3,7 +3,7 @@ import test from 'node:test';
 import {
   Rational, analyzeBinaryBayes, analyzeDiscreteDistribution, analyzeTwoWayTable, arrangementsWithRepetition, binomialDistribution,
   combinations, combinationsWithRepetition, distributionCdf, factorial, inclusionExclusion2, makeTwoWayTable, permutations,
-  probabilityFromCounts, recommendCountingMethod, simulateBernoulli, totalProbability
+  advanceBernoulliTrials, areIndependent, bernoulliUint32Threshold, conditionalProbability, probabilityFromCounts, recommendCountingMethod, simulateBernoulli, totalProbability, validateProbabilityTree
 } from '../src/index.ts';
 
 test('Rational reduces and performs exact arithmetic', () => {
@@ -46,3 +46,58 @@ test('exact Binomial distribution has total mass 1 and textbook moments',()=>{
 });
 
 test('seeded Bernoulli simulation is reproducible and frequency remains a rational count',()=>{const a=simulateBernoulli({seed:'amat19-demo',probability:'1/3',trials:1200});const b=simulateBernoulli({seed:'amat19-demo',probability:'1/3',trials:1200});assert.equal(a.successes,b.successes);assert.equal(a.frequency.toString(),b.frequency.toString());assert.equal(a.checkpoints.at(-1)?.trials,1200);});
+
+test('counting domain enforces an operation budget before expensive BigInt work', () => {
+  assert.throws(() => factorial(10001), /interactive counting limit/i);
+  assert.throws(() => permutations(10001, 1), /interactive counting limit/i);
+  assert.throws(() => arrangementsWithRepetition(2, 10001), /interactive counting limit/i);
+  assert.throws(() => combinationsWithRepetition(6000, 6000), /transformed n/i);
+});
+
+
+test('duplicate discrete support values are canonicalized before moments and CDF', () => {
+  const result = analyzeDiscreteDistribution([
+    { value: 1, probability: '1/4' },
+    { value: '1.0', probability: '1/4' },
+    { value: 2, probability: '1/2' }
+  ]);
+  assert.equal(result.outcomes.length, 2);
+  assert.deepEqual(result.outcomes.map((item) => [item.value.toString(), item.probability.toString()]), [['1', '1/2'], ['2', '1/2']]);
+  assert.equal(result.expectedValue.toString(), '3/2');
+  assert.equal(result.variance.toString(), '1/4');
+  const cdf = distributionCdf(result);
+  assert.deepEqual(cdf.map((item) => [item.value.toString(), item.cumulative.toString()]), [['1', '1/2'], ['2', '1']]);
+  for (let index = 1; index < cdf.length; index += 1) assert.ok(cdf[index]!.cumulative.compare(cdf[index - 1]!.cumulative) >= 0);
+  assert.equal(cdf.at(-1)?.cumulative.toString(), '1');
+});
+
+test('conditional and independence APIs reject impossible probability models', () => {
+  assert.throws(() => conditionalProbability(new Rational(3n, 4n), new Rational(1n, 2n)), /cannot exceed/i);
+  assert.throws(() => areIndependent(new Rational(9n, 10n), new Rational(9n, 10n), new Rational(1n, 10n)), /intersection must satisfy/i);
+  assert.throws(() => areIndependent(new Rational(1n, 4n), new Rational(1n, 2n), new Rational(3n, 8n)), /intersection must satisfy/i);
+  assert.equal(areIndependent(new Rational(1n, 2n), new Rational(1n, 2n), new Rational(1n, 4n)), true);
+});
+
+test('Bernoulli thresholds are exact on the uint32 RNG grid', () => {
+  assert.equal(bernoulliUint32Threshold(0), 0);
+  assert.equal(bernoulliUint32Threshold(1), 4294967296);
+  assert.equal(bernoulliUint32Threshold('1/2'), 2147483648);
+  assert.equal(bernoulliUint32Threshold('1/3'), 1431655765);
+  const threshold = bernoulliUint32Threshold('1/2');
+  const samples = [threshold - 1, threshold, 0, 4294967295];
+  let index = 0;
+  const successes = advanceBernoulliTrials({ randomUint32: () => samples[index++]!, threshold, trials: samples.length });
+  assert.equal(successes, 2, 'only raw uint32 samples strictly below the exact threshold succeed');
+});
+
+
+test('count-based probability APIs reject unsafe JS integers instead of treating rounded numbers as exact',()=>{
+ assert.throws(()=>probabilityFromCounts(Number.MAX_SAFE_INTEGER+1,Number.MAX_SAFE_INTEGER+2),/safe integer/i);
+});
+
+test('probability trees enforce explicit node and nesting budgets',()=>{
+ let branch:any={id:'leaf',label:'leaf',probability:'1'};for(let i=0;i<33;i++)branch={id:`n${i}`,label:`n${i}`,probability:'1',children:[branch]};
+ assert.throws(()=>validateProbabilityTree([branch]),/depth 32/i);
+ const wide=Array.from({length:4097},(_,i)=>({id:String(i),label:String(i),probability:i===0?'1':'0'}));
+ assert.throws(()=>validateProbabilityTree(wide),/4,096 nodes/i);
+});

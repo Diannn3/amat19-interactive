@@ -1,6 +1,6 @@
-import { mergeMasteryEvidence, masteryBand, type LearningSession } from '@amat19/learning-engine';
+import { mergeMasteryEvidence, masteryBand, normalizeAssessmentResult, payloadRepresentsIndependentSuccess, suppressRepeatedIndependentEvidence, type AssessmentResultInput, type LearningSession } from '@amat19/learning-engine';
 import { DexiePersistence, type MasteryRecord, type PersistedAttempt, type SavedItem } from '@amat19/persistence';
-import { canonicalSkillId, canonicalizeSkillIds } from './mastery-targets.ts';
+import { canonicalLeafSkillId, canonicalSkillId, canonicalizeSkillIds } from './mastery-targets.ts';
 
 type EvidenceInput={independent?:boolean;assisted?:boolean;hintsUsed?:number;revealed?:boolean};
 
@@ -33,7 +33,7 @@ export function masteryLabel(record?:Pick<MasteryRecord,'evidenceScore'|'attempt
   return band==='new'?'New':band==='learning'?'Learning':band==='developing'?'Developing':'Secure';
 }
 
-function attemptId(prefix:string):string{
+export function createAttemptId(prefix:string):string{
   if(typeof crypto!=='undefined'&&'randomUUID'in crypto)return`${prefix}-${crypto.randomUUID()}`;
   return`${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;
 }
@@ -45,12 +45,70 @@ export async function recordAttempt<T>(input:{
   finalState:PersistedAttempt['finalState'];
   payload:T;
   startedAt?:string;
+  attemptId?:string;
   skillIds?:string[];
   difficulty?:'intro'|'standard'|'challenge';
 }):Promise<void>{
   const now=new Date().toISOString();
   const db=new DexiePersistence();
-  await db.saveAttempt({attemptId:attemptId(input.prefix),exerciseId:input.exerciseId,module:input.module,startedAt:input.startedAt??now,updatedAt:now,finalState:input.finalState,payload:input.payload,skillIds:canonicalizeSkillIds(input.skillIds),difficulty:input.difficulty});
+  await db.saveAttempt({attemptId:input.attemptId??createAttemptId(input.prefix),exerciseId:input.exerciseId,module:input.module,startedAt:input.startedAt??now,updatedAt:now,finalState:input.finalState,payload:input.payload,skillIds:canonicalizeSkillIds(input.skillIds),difficulty:input.difficulty});
+}
+
+export async function recordAssessmentResult<T>(input: AssessmentResultInput & {
+  prefix: string;
+  payload: T;
+  startedAt?: string;
+  attemptId?: string;
+}): Promise<void> {
+  const skillId = canonicalLeafSkillId(input.skillId);
+  const baseNormalized = normalizeAssessmentResult({ ...input, skillId });
+  const db = new DexiePersistence();
+  const now = new Date().toISOString();
+  const attemptId = input.attemptId ?? createAttemptId(input.prefix);
+  const startedAt = input.startedAt ?? now;
+  const normalizedFor = (hasPriorMatch:boolean) => suppressRepeatedIndependentEvidence(baseNormalized, hasPriorMatch);
+
+  await db.commitAttemptAndMastery({
+    exerciseId: input.exerciseId,
+    skillId,
+    priorAttemptMatches: (attempt) => Boolean(baseNormalized.evidence?.independent)
+      && Boolean(attempt.skillIds?.includes(skillId))
+      && payloadRepresentsIndependentSuccess(attempt.payload, input.problemFingerprint),
+    buildAttempt: (hasPriorMatch) => {
+      const normalized = normalizedFor(hasPriorMatch);
+      return {
+        attemptId,
+        exerciseId: input.exerciseId,
+        module: input.module,
+        startedAt,
+        updatedAt: now,
+        finalState: normalized.finalState,
+        payload: {
+          problemFingerprint: input.problemFingerprint,
+          assessment: {
+            result: input.result,
+            firstAttemptCorrect: input.firstAttemptCorrect,
+            incorrectAttempts: input.incorrectAttempts,
+            hintsUsed: input.hintsUsed,
+            revealsUsed: input.revealsUsed,
+          },
+          repeatIndependentSuppressed: hasPriorMatch,
+          data: input.payload,
+        },
+        skillIds: [skillId],
+        difficulty: input.difficulty,
+      };
+    },
+    updateMastery: baseNormalized.evidence ? (previous, hasPriorMatch) => {
+      const evidence = normalizedFor(hasPriorMatch).evidence!;
+      return mergeEvidenceRecord(previous, skillId, evidence.score, {
+        independent: evidence.independent,
+        assisted: evidence.assisted,
+        hintsUsed: evidence.hintsUsed,
+        revealed: evidence.revealed,
+      }, now);
+    } : undefined,
+  });
 }
 
 export async function persistLearningSession(session:LearningSession,payload:Record<string,unknown>={}):Promise<void>{

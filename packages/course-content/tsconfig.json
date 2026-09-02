@@ -6,9 +6,10 @@
     "strict": true,
     "declaration": true,
     "skipLibCheck": true,
-    "verbatimModuleSyntax": true,
-    "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

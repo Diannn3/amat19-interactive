@@ -1,8 +1,9 @@
----
+﻿---
 import '@fontsource-variable/plus-jakarta-sans';
 import '@fontsource-variable/jetbrains-mono';
 import '../styles/global.css';
 import '../styles/pass4.css';
+import '../styles/audit-v13.css';
 import CommandPalette from '../components/navigation/CommandPalette';
 import DeveloperContact from '../components/navigation/DeveloperContact.astro';
 import BrandMark from '../components/brand/BrandMark.astro';
@@ -51,7 +52,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         if (window.localStorage.getItem('amat19-motion') === 'reduced') document.documentElement.dataset.motion = 'reduced';
       } catch {}
     </script>
-    <title>{title} · AMAT 19 Study Lab</title>
+    <title>{title} Â· AMAT 19 Study Lab</title>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -83,7 +84,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
               <span class="nav-active-rail" aria-hidden="true"></span>
               <span class="nav-icon"><NavGlyph name="more" /></span>
               <span class="nav-label">More</span>
-              <span class="more-menu__chevron" aria-hidden="true">⌄</span>
+              <span class="more-menu__chevron" aria-hidden="true">âŒ„</span>
             </summary>
             <div class="more-menu__panel">
               {utilityNavigation.map((item) => item.kind === 'link' ? (
@@ -157,12 +158,12 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
             <button id="pwa-update-button" type="button">Save & update</button>
             <button id="pwa-update-dismiss" type="button">Later</button>
           </div>
-          <div id="network-status" class="network-status" hidden role="status" aria-live="polite">Offline · using saved app resources</div>
+          <div id="network-status" class="network-status" hidden role="status" aria-live="polite">Offline Â· using saved app resources</div>
           <main id="main-content"><slot /></main>
           <footer class="site-footer">
             <div class="site-footer__inner">
-              <span>AMAT 19 Study Lab · local-first learning tools</span>
-              <span><a href="/settings">Settings</a> · <a href="/saved">Saved</a> · <a href="/progress">Local data</a></span>
+              <span>AMAT 19 Study Lab Â· local-first learning tools</span>
+              <span><a href="/settings">Settings</a> Â· <a href="/saved">Saved</a> Â· <a href="/progress">Local data</a></span>
             </div>
           </footer>
         </div>
@@ -299,7 +300,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
           updateInFlight = true;
           reloadForUpdate = false;
           updateButton.disabled = true;
-          updateButton.textContent = 'Saving…';
+          updateButton.textContent = 'Savingâ€¦';
           const tasks = [];
           window.dispatchEvent(new CustomEvent('amat:before-update', { detail: { tasks } }));
           const results = await Promise.allSettled(tasks.map((task) => Promise.resolve().then(task)));
@@ -308,7 +309,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
             updateInFlight = false;
             updateButton.disabled = false;
             updateButton.textContent = 'Save & update';
-            if (updateMessage) updateMessage.textContent = 'Couldn’t save local work. Keep this tab open and try again.';
+            if (updateMessage) updateMessage.textContent = 'Couldnâ€™t save local work. Keep this tab open and try again.';
             return;
           }
           reloadForUpdate = true;

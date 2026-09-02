@@ -1,5 +1,20 @@
+export const MAX_COUNTING_INPUT = 10_000;
+
+function requireNonnegativeInteger(name: string, value: number, options: { positive?: boolean } = {}): void {
+  if (!Number.isSafeInteger(value) || value < (options.positive ? 1 : 0)) {
+    throw new RangeError(options.positive ? `${name} must be a positive safe integer.` : `${name} must be a nonnegative safe integer.`);
+  }
+  if (value > MAX_COUNTING_INPUT) throw new RangeError(`${name} cannot exceed the interactive counting limit of ${MAX_COUNTING_INPUT}.`);
+}
+
+function validateNR(n: number, r: number): void {
+  requireNonnegativeInteger('n', n);
+  requireNonnegativeInteger('r', r);
+  if (r > n) throw new RangeError('Require integers with 0 ≤ r ≤ n.');
+}
+
 export function factorial(n: number): bigint {
-  if (!Number.isInteger(n) || n < 0) throw new RangeError('n must be a nonnegative integer.');
+  requireNonnegativeInteger('n', n);
   let result = 1n;
   for (let value = 2n; value <= BigInt(n); value += 1n) result *= value;
   return result;
@@ -21,21 +36,25 @@ export function combinations(n: number, r: number): bigint {
   return numerator / denominator;
 }
 export function combinationsWithRepetition(n: number, r: number): bigint {
-  if (!Number.isInteger(n) || !Number.isInteger(r) || n < 1 || r < 0) throw new RangeError('Require integers with n ≥ 1 and r ≥ 0.');
-  return combinations(n + r - 1, r);
+  requireNonnegativeInteger('r', r);
+  requireNonnegativeInteger('n', n, { positive: true });
+  const transformedN = n + r - 1;
+  if (transformedN > MAX_COUNTING_INPUT) {
+    throw new RangeError(`The stars-and-bars transformed n (${transformedN}) exceeds the interactive counting limit of ${MAX_COUNTING_INPUT}.`);
+  }
+  return combinations(transformedN, r);
 }
 export function arrangementsWithRepetition(choices: number, slots: number): bigint {
-  if (!Number.isInteger(choices) || choices < 0 || !Number.isInteger(slots) || slots < 0) throw new RangeError('Choices and slots must be nonnegative integers.');
+  requireNonnegativeInteger('Choices', choices);
+  requireNonnegativeInteger('Slots', slots);
   return BigInt(choices) ** BigInt(slots);
 }
 export function multisetPermutations(total: number, groupSizes: number[]): bigint {
-  if (!Number.isInteger(total) || total < 0) throw new RangeError('Total must be a nonnegative integer.');
-  if (groupSizes.some((size) => !Number.isInteger(size) || size < 0)) throw new RangeError('Group sizes must be nonnegative integers.');
+  requireNonnegativeInteger('Total', total);
+  if (groupSizes.length > MAX_COUNTING_INPUT) throw new RangeError(`Group count cannot exceed ${MAX_COUNTING_INPUT}.`);
+  for (const size of groupSizes) requireNonnegativeInteger('Group size', size);
   if (groupSizes.reduce((sum, value) => sum + value, 0) !== total) throw new RangeError('Group sizes must sum to the total.');
   return groupSizes.reduce((value, size) => value / factorial(size), factorial(total));
-}
-function validateNR(n: number, r: number): void {
-  if (!Number.isInteger(n) || !Number.isInteger(r) || n < 0 || r < 0 || r > n) throw new RangeError('Require integers with 0 ≤ r ≤ n.');
 }
 export type CountingDecisionInput = { orderMatters: boolean; repetitionAllowed: boolean; chooseAll?: boolean; };
 export type CountingDecision = {

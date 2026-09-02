@@ -7,11 +7,12 @@ import {
   type LogicNode
 } from '@amat19/domain-logic';
 import { AlertTriangle, CheckCircle2, Plus, RotateCcw, Trash2 } from 'lucide-react';
-import { useEffect, useMemo, useReducer, useState } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Button } from '../../ui/Button';
 import { Feedback } from '../../ui/Feedback';
 import { loadDraft, saveDraft } from '../../../lib/draft';
-import { recordSkillEvidence } from '../../../lib/local-progress';
+import { createAttemptId, recordAssessmentResult } from '../../../lib/local-progress';
+import { argumentProblemFingerprint } from '../../../lib/problem-fingerprint';
 import { usePersistenceFlush } from '../../../lib/use-persistence-flush';
 import { argumentReducer, initialArgumentState, type ArgumentState } from './argument-state';
 
@@ -79,11 +80,34 @@ export function ArgumentMode() {
   const rows = parsed.value ? generateAssignments(parsed.value.symbols) : [];
   const counterexampleKeys = new Set(parsed.value?.counterexamples.map((assignment) => JSON.stringify(assignment)) ?? []);
   const predictionCorrect = parsed.value && state.prediction ? (state.prediction === 'valid') === parsed.value.valid : false;
+  const incorrectAttemptsRef = useRef(0);
+  const attemptIdRef = useRef(createAttemptId('argument-validity'));
+  const startedAtRef = useRef(new Date().toISOString());
+  const problemFingerprint = parsed.value ? argumentProblemFingerprint(parsed.value.premises, parsed.value.conclusion) : undefined;
+
+  useEffect(() => { incorrectAttemptsRef.current = 0; attemptIdRef.current=createAttemptId('argument-validity'); startedAtRef.current=new Date().toISOString(); }, [problemFingerprint]);
 
   async function reveal() {
     if (!parsed.value || !state.prediction) return;
+    const wrongBefore = incorrectAttemptsRef.current;
+    if (!predictionCorrect) incorrectAttemptsRef.current += 1;
     dispatch({ type: 'reveal' });
-    if (predictionCorrect) await recordSkillEvidence('logic.argument-validity', 1).catch(() => undefined);
+    await recordAssessmentResult({
+      prefix: 'argument-validity',
+      attemptId: attemptIdRef.current,
+      startedAt: startedAtRef.current,
+      exerciseId: 'logic.argument.validity',
+      problemFingerprint: problemFingerprint!,
+      module: 'logic',
+      skillId: 'logic.argument.validity',
+      result: predictionCorrect ? 'correct' : 'incorrect',
+      firstAttemptCorrect: Boolean(predictionCorrect) && wrongBefore === 0,
+      incorrectAttempts: incorrectAttemptsRef.current,
+      hintsUsed: 0,
+      revealsUsed: 0,
+      difficulty: 'standard',
+      payload: { premises: state.premises, conclusion: state.conclusion, prediction: state.prediction, valid: parsed.value.valid },
+    }).catch(() => undefined);
   }
 
   return (

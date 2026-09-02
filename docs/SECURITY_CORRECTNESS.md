@@ -2,26 +2,26 @@
 
 ## Mathematical execution
 - No `eval`, `new Function`, or unrestricted expression evaluator.
-- Logic accepts only the controlled propositional grammar and reports unsupported tokens with source position.
+- Logic accepts only the controlled propositional grammar and reports unsupported tokens with source position. Input length, token count, and recursive parse depth are bounded before stack exhaustion.
 - Truth-table enumeration is bounded.
 - Probability/matrix/game rational computations use exact arithmetic where mathematically appropriate.
 - Formal proof checks the cited rule and scope, not merely semantic equivalence.
 - LP/simplex/game helpers expose their supported boundaries instead of presenting themselves as universal solvers.
-- Finance uses a high-precision fixed-point decimal layer; remaining non-integer power/root fallbacks require explicit release tolerance review.
+- Finance uses a bounded 30-decimal fixed-point layer. Fractional power/root computation is deterministic and contains no authoritative native `Math.pow`; release tolerance for irrational approximations still requires an explicit public policy.
 
 ## Learning correctness
 - Deterministic engines decide correctness; no LLM grades mathematical work.
 - Generated questions retain the skill they actually assess.
 - Leaf mastery evidence rolls up to its parent course skill through one central mapping.
-- Mastery read/modify/write is atomic at the persistence adapter boundary.
+- Assessment commit, duplicate-fingerprint detection, attempt persistence, and mastery read/modify/write are atomic at the persistence adapter boundary.
 - `Secure` requires repeated, high-scoring independent evidence.
 - The exam-like surface remains a study diagnostic, not an official course examination.
 
 ## Browser/data
 - No auth, remote analytics, or cloud backend is required.
 - Drafts, attempts, mastery, sessions, settings, and saved items remain browser-local.
-- Snapshot imports are schema-validated and collection-bounded before destructive replacement.
-- Snapshot replacement is transactional in Dexie.
+- Snapshot imports are schema-validated and collection-bounded. Snapshot scope (`full`, `progress`, `saved`) is enforced inside the persistence layer, so partial restores preserve unrelated collections and current content metadata.
+- Snapshot replacement/merge is transactional in Dexie.
 - Service-worker update activation remains learner controlled.
 - Navigation fallback ignores query strings and uses a bounded network-first wait.
 - Core fonts and runtime math do not require third-party CDNs.

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { TruthTable } from '@amat19/domain-logic';
 import { Button } from '../../ui/Button';
 import { Feedback } from '../../ui/Feedback';
-import { recordSkillEvidence } from '../../../lib/local-progress';
+import { createAttemptId, recordAssessmentResult } from '../../../lib/local-progress';
+import { truthTableProblemFingerprint } from '../../../lib/problem-fingerprint';
 
 type Classification = TruthTable['classification'];
 
@@ -12,11 +13,39 @@ export function ClassificationPanel({ table }: { table: TruthTable }) {
   const correct = prediction === table.classification;
   const trueRows = table.rows.filter((row) => row.finalValue).length;
   const falseRows = table.rows.length - trueRows;
+  const incorrectAttemptsRef = useRef(0);
+  const attemptIdRef = useRef(createAttemptId('truth-classify'));
+  const startedAtRef = useRef(new Date().toISOString());
+
+  useEffect(() => {
+    incorrectAttemptsRef.current = 0;
+    attemptIdRef.current = createAttemptId('truth-classify');
+    startedAtRef.current = new Date().toISOString();
+    setPrediction(undefined);
+    setRevealed(false);
+  }, [table.expression]);
 
   async function check() {
     if (!prediction) return;
+    const wrongBefore = incorrectAttemptsRef.current;
+    if (!correct) incorrectAttemptsRef.current += 1;
     setRevealed(true);
-    if (correct) await recordSkillEvidence('logic.truth-values', 1).catch(() => undefined);
+    await recordAssessmentResult({
+      prefix: 'truth-classify',
+      attemptId: attemptIdRef.current,
+      startedAt: startedAtRef.current,
+      exerciseId: 'logic.truth-table.classify',
+      problemFingerprint: truthTableProblemFingerprint(table,'classify'),
+      module: 'logic',
+      skillId: 'logic.truth-table.classify',
+      result: correct ? 'correct' : 'incorrect',
+      firstAttemptCorrect: correct && wrongBefore === 0,
+      incorrectAttempts: incorrectAttemptsRef.current,
+      hintsUsed: 0,
+      revealsUsed: 0,
+      difficulty: 'standard',
+      payload: { expression: table.expression, prediction, expected: table.classification },
+    }).catch(() => undefined);
   }
 
   return (

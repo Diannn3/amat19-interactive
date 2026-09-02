@@ -31,6 +31,7 @@ export function validateSnapshot(v:unknown):LocalSnapshot{
  const candidate=v.schemaVersion===2?migrateV2(v):v as unknown as LocalSnapshot;
  if(candidate.schemaVersion!==CURRENT_SCHEMA_VERSION)throw new RangeError(`Snapshot schema ${String(v.schemaVersion)} is not supported by schema ${CURRENT_SCHEMA_VERSION}.`);
  if(!str(candidate.exportedAt))throw new TypeError('Snapshot export timestamp is invalid.');
+ if(candidate.snapshotScope!==undefined&&!['full','progress','saved'].includes(candidate.snapshotScope))throw new TypeError('Snapshot scope is invalid.');
  validateCollection('drafts',candidate.drafts,isLabDraft);
  validateCollection('attempts',candidate.attempts,isPersistedAttempt);
  validateCollection('mastery records',candidate.mastery,isMasteryRecord);
