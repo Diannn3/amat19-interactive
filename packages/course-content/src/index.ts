@@ -4,9 +4,9 @@ export type SkillDefinition = { id:string; module:ModuleId; title:string; descri
 export type ModuleDefinition = { id:ModuleId; order:number; title:string; description:string; status:ContentStatus; href:string };
 export type LabDefinition = { id:string; module:ModuleId; title:string; href:string; skillIds:string[]; status:'live'|'experimental'|'supplemental'|'planned' };
 export type CourseProfile = { id:string; label:string; authority:string; modules:ModuleDefinition[]; skills:SkillDefinition[]; labs:LabDefinition[]; featureFlags:Record<string,boolean> };
-export const COURSE_VERSION='amat19-ay2025-2026-1s-v1';
+export const COURSE_VERSION='amat19-core-v1';
 export const currentCourseProfile:CourseProfile={
- id:'ay-2025-2026-1s', label:'AMAT 19 · 1st Semester AY 2025–2026', authority:'Current course guide; original app explanations and generated practice',
+ id:'course-guide', label:'AMAT 19 · Finite Mathematics', authority:'Official course syllabus guide; original app explanations and generated practice',
  modules:[
   {id:'logic',order:1,title:'Logic',description:'Propositions, truth values, equivalence, inference, validity, and proof.',status:'implemented',href:'/modules/logic'},
   {id:'probability',order:2,title:'Probability',description:'Counting, inclusion–exclusion, exact probability, conditioning, independence, and supplemental distributions.',status:'implemented',href:'/modules/probability'},

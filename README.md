@@ -128,7 +128,7 @@ The sandbox could not install npm dependencies, so the exact merged-tree Astro/V
 
 ## Scope and correctness policy
 
-The AY 2025–2026 course guide remains the primary current-scope authority. Older handouts inform terminology and explicitly supplemental depth. Historical examinations are assessment-pattern evidence only and are **not** republished as a question bank. Learner-facing practice is original/generated.
+The official AMAT 19 course guide remains the primary scope authority. Older handouts inform terminology and explicitly supplemental depth. Historical examinations are assessment-pattern evidence only and are **not** republished as a question bank. Learner-facing practice is original/generated.
 
 Finance has a high-precision fixed-point decimal implementation, but some non-integer root/power paths can still use native-number seeding/fallback behavior. Public correctness certification should define and independently verify the required course tolerance rather than claiming arbitrary precision without qualification.
 

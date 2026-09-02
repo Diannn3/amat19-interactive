@@ -1,6 +1,6 @@
 # Course Traceability — Pass 3
 
-Primary scope authority: AMAT 19 Course Guide, 1st Semester AY 2025–2026.
+Primary scope authority: AMAT 19 Course Guide (IMS).
 Older handouts: terminology, worked-structure and supplemental depth.
 Historical assessments: assessment-pattern evidence only; not public question-bank content.
 

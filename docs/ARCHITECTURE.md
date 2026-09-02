@@ -94,7 +94,7 @@ An installed update never calls `skipWaiting()` automatically during an active s
 
 ## Current/supplemental curriculum boundary
 
-AY 2025–2026 current guide = primary current-scope authority.
+Official AMAT 19 course syllabus guide = primary scope authority.
 
 Older handouts may add depth, but the course-content package marks that depth `supplemental`. Formal proof depth, distributions/simulation, bonds, simplex and Markov can therefore exist without falsely claiming that every current section requires them.
 
