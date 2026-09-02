@@ -1,50 +1,15 @@
 ---
-import { currentCourseProfile } from '@amat19/course-content';
 import AppLayout from '../layouts/AppLayout.astro';
-
-const moduleNotations = {
-  logic: 'P → Q',
-  probability: 'P(A | B)',
-  finance: 'F = P(1 + i)ⁿ',
-  linear: 'Ax = b',
-  applications: 'max min',
-} as const;
+import HomeDashboard from '../components/home/HomeDashboard';
 ---
 <AppLayout title="Home">
-  <section class="page-width home-hero" data-home-hero aria-labelledby="home-title">
-    <div class="home-hero__copy">
-      <h1 id="home-title" class="home-hero__title">Finite mathematics, made visible.</h1>
-      <p class="home-hero__lede">Study AMAT 19 through exact, interactive labs for logic, probability, financial mathematics, matrices, and applied models.</p>
-      <div class="home-hero__actions">
-        <a class="primary-button" data-home-primary-action href="/study">Start studying <span aria-hidden="true">→</span></a>
-        <a class="secondary-button" href="/course">Explore the course</a>
+  <section class="page-width instrument-home" aria-labelledby="home-title">
+    <header class="instrument-home__header">
+      <div>
+        <h1 class="instrument-home__title" id="home-title">AMAT 19</h1>
+        <p class="instrument-home__subtitle">Finite Mathematics</p>
       </div>
-    </div>
-
-    <nav class="home-course-rail" data-home-course-rail aria-label="Course modules">
-      <ol>
-        {currentCourseProfile.modules.map((module) => (
-          <li>
-            <a class="home-course-rail__link" data-home-module href={module.href} aria-label={`Open ${module.title}`}>
-              <span class="home-course-rail__number">{String(module.order).padStart(2, '0')}</span>
-              <span class="home-course-rail__name"><strong>{module.title}</strong><code data-home-notation>{moduleNotations[module.id]}</code></span>
-              <span class="home-course-rail__arrow" aria-hidden="true">↗</span>
-            </a>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  </section>
-
-  <section class="page-width home-shortcuts" aria-labelledby="shortcuts-heading">
-    <div>
-      <h2 id="shortcuts-heading">When you know what you need.</h2>
-      <p>Go straight to a study queue, progress, or the reference sheet.</p>
-    </div>
-    <nav class="home-shortcuts__links" aria-label="Study shortcuts">
-      <a href="/study"><strong>Study queue</strong><span>Continue or repair the next skill</span><span aria-hidden="true">↗</span></a>
-      <a href="/progress"><strong>Progress</strong><span>Find the next repair</span><span aria-hidden="true">↗</span></a>
-      <a href="/reference"><strong>Reference</strong><span>Check a formula or assumption</span><span aria-hidden="true">↗</span></a>
-    </nav>
+    </header>
+    <HomeDashboard client:load />
   </section>
 </AppLayout>

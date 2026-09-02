@@ -3,16 +3,14 @@ import AppLayout from '../layouts/AppLayout.astro';
 import MixedPracticeRunner from '../components/practice/MixedPracticeRunner';
 ---
 <AppLayout title="Mixed Course Check">
-  <section class="page-width page-intro">
-    <h1 class="display-title">Check what survives without hints.</h1>
-    <p class="page-context">Untimed self-check · original practice set</p>
-    <p class="lede">Submit a private study check; feedback appears after submission.</p>
-    <details class="route-note">
-      <summary>What this is</summary>
-      <p>This is an independent diagnostic, not an official AMAT 19 examination or a copy of historical assessment items.</p>
-    </details>
+  <section class="exam-intro page-width">
+    <div>
+      <h1>Mixed Course Check</h1>
+      <p class="section-label">Independent study check</p>
+      <p>Feedback stays hidden until you submit. This is an original self-check, not an official AMAT 19 examination.</p>
+    </div>
   </section>
-  <section class="page-width module-section">
+  <section class="page-width exam-stage">
     <MixedPracticeRunner client:load mode="exam" questionCount={12} />
   </section>
 </AppLayout>
