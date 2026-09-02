@@ -1,4 +1,4 @@
-﻿---
+---
 import '@fontsource-variable/plus-jakarta-sans';
 import '@fontsource-variable/jetbrains-mono';
 import '../styles/global.css';
@@ -6,7 +6,6 @@ import '../styles/pass4.css';
 import '../styles/audit-v13.css';
 import CommandPalette from '../components/navigation/CommandPalette';
 import DeveloperContact from '../components/navigation/DeveloperContact.astro';
-import BrandMark from '../components/brand/BrandMark.astro';
 import NavGlyph from '../components/navigation/NavGlyph.astro';
 import { PanelLeftClose, Search } from 'lucide-react';
 
@@ -60,7 +59,6 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
       <aside class="sidebar" aria-label="Primary navigation">
         <div class="brand-row">
           <a class="wordmark" href="/" aria-label="AMAT 19 Study Lab home">
-            <BrandMark className="wordmark__mark" variant="light" decorative />
             <span class="brand-copy">
               <span class="wordmark__course">AMAT<span>19</span></span>
               <span class="wordmark__descriptor">STUDY LAB</span>
