@@ -34,13 +34,15 @@ test.describe('AMAT 19 brand hero and identity', () => {
     await expect(hero.locator('.eyebrow, [class*="eyebrow"], [data-hero-eyebrow]')).toHaveCount(0);
   });
 
-  test('@core identity uses the reusable path-only A19 mark and regenerated PWA icon references', async ({ page, request }) => {
+  test('@core identity uses the current reusable matrix badge and valid PWA icon references', async ({ page, request }) => {
     await page.goto('/');
 
-    await expect(page.locator('[data-brand-mark]')).toHaveCount(1);
-    await expect(page.locator('[data-brand-mark][data-brand-variant="dark"]')).toHaveCount(0);
-    await expect(page.locator('[data-brand-mark][data-brand-variant="light"]')).toBeAttached();
-    await expect(page.locator('[data-brand-mark] text')).toHaveCount(0);
+    const mark = page.locator('[data-brand-mark]');
+    await expect(mark).toHaveCount(1);
+    await expect(mark).toHaveClass(/math-brand-mark/);
+    await expect(mark).toHaveAttribute('data-brand-variant', 'light');
+    await expect(mark.locator('.math-brand-mark__bracket')).toHaveCount(2);
+    await expect(mark.locator('.math-brand-mark__letter')).toHaveText('A');
     await expect(page.locator('.brand-route')).toHaveCount(0);
     await expect(page.locator('.sidebar-home')).toHaveCount(0);
 
@@ -58,31 +60,27 @@ test.describe('AMAT 19 brand hero and identity', () => {
     }
   });
 
-  test('identity scales through compact rail sizes and the Developer dialog is axe-clean', async ({ page }) => {
+  test('identity remains legible in the compact rail and the Developer dialog is axe-clean', async ({ page }) => {
     await page.goto('/');
-    const scaledMarks = await page.locator('[data-brand-mark]').first().evaluate((source) => {
-      return [16, 32, 44].map((size) => {
-        const clone = source.cloneNode(true);
-        if (!(clone instanceof SVGElement)) return false;
-        clone.setAttribute('width', String(size));
-        clone.setAttribute('height', String(size));
-        clone.style.position = 'absolute';
-        clone.style.left = '-10000px';
-        document.body.append(clone);
-        const visiblePath = clone.querySelectorAll('path').length >= 4;
-        clone.remove();
-        return visiblePath;
-      });
-    });
-    expect(scaledMarks).toEqual([true, true, true]);
-    await expect(page.locator('.wordmark__mark')).toHaveCSS('width', '44px');
+    const mark = page.locator('[data-brand-mark]');
+    await expect(mark).toHaveCSS('width', '44px');
+    await expect(mark).toHaveCSS('height', '44px');
+    await page.getByRole('button', { name: 'Collapse navigation' }).click();
+    await expect(mark).toBeVisible();
+    await expect(mark.locator('.math-brand-mark__letter')).toHaveText('A');
 
-    const desktopMore = page.locator('.more-menu');
-    const more = await desktopMore.isVisible() ? desktopMore : page.locator('.mobile-more-menu');
-    await more.locator('summary').click();
-    await more.getByRole('button', { name: 'Developer contact' }).click();
+    await page.locator('[data-more-flyout-trigger]').click();
+    const flyout = page.locator('[data-more-flyout]');
+    await expect(flyout).toBeVisible();
+    await flyout.getByRole('button', { name: 'Developer contact' }).click();
     const results = await new AxeBuilder({ page }).include('#developer-contact-dialog').analyze();
     expect(results.violations).toEqual([]);
+  });
+
+  test('shell metadata and visible chrome contain valid text rather than mojibake', async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle('Home · AMAT 19 Study Lab');
+    await expect(page.locator('body')).not.toContainText(/Â|Ã|â(?:€™|€¦|Œ)/);
   });
 
   test('hero keeps the primary action in view and avoids horizontal overflow at approved widths', async ({ page }) => {
