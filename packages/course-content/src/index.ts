@@ -3,7 +3,8 @@ export type ModuleId = 'logic' | 'probability' | 'finance' | 'linear' | 'applica
 export type SkillDefinition = { id:string; module:ModuleId; title:string; description:string; status:ContentStatus; prerequisiteIds:string[]; relatedLab?:string };
 export type ModuleDefinition = { id:ModuleId; order:number; title:string; description:string; status:ContentStatus; href:string };
 export type LabDefinition = { id:string; module:ModuleId; title:string; href:string; skillIds:string[]; status:'live'|'experimental'|'supplemental'|'planned' };
-export type CourseProfile = { id:string; label:string; authority:string; modules:ModuleDefinition[]; skills:SkillDefinition[]; labs:LabDefinition[]; featureFlags:Record<string,boolean> };
+export type WorkbenchDefinition = { id:ModuleId; title:string; description:string; notation:string; href:string; absorbedLabIds:string[] };
+export type CourseProfile = { id:string; label:string; authority:string; modules:ModuleDefinition[]; workbenches:WorkbenchDefinition[]; skills:SkillDefinition[]; labs:LabDefinition[]; featureFlags:Record<string,boolean> };
 export const COURSE_VERSION='amat19-core-v1';
 export const currentCourseProfile:CourseProfile={
  id:'course-guide', label:'AMAT 19 · Finite Mathematics', authority:'Official course syllabus guide; original app explanations and generated practice',
@@ -13,6 +14,13 @@ export const currentCourseProfile:CourseProfile={
   {id:'finance',order:3,title:'Financial Mathematics',description:'Interest measurement, simple/compound interest, rate equivalence, time value of money, and annuities.',status:'implemented',href:'/modules/finance'},
   {id:'linear',order:4,title:'Matrices & Systems',description:'Matrix operations, multiplication, inverse, row reduction, and systems of linear equations.',status:'implemented',href:'/modules/linear'},
   {id:'applications',order:5,title:'Applications',description:'Graphical linear programming, game theory, simplex synchronization, and supplemental Markov chains.',status:'implemented',href:'/modules/applications'}
+ ],
+ workbenches:[
+  {id:'logic',title:'Logic & Proof',description:'Translate statements, test arguments, and build a valid proof one step at a time.',notation:'P → Q',href:'/workbenches/logic',absorbedLabIds:['logic-basics','truth-table','equivalence','formal-proof']},
+  {id:'probability',title:'Probability Model Builder',description:'Choose a counting or probability model, then compare its table, tree, and exact fraction.',notation:'P(A | B)',href:'/workbenches/probability',absorbedLabIds:['counting','conditional-probability','distribution','probability-simulation','bayes']},
+  {id:'finance',title:'Money Timeline',description:'Place cash flows on a timeline and move every amount to one focal date.',notation:'F = P(1 + i)ⁿ',href:'/workbenches/finance',absorbedLabIds:['interest','cashflow-timeline','annuity','bonds']},
+  {id:'linear',title:'Row Operations Coach',description:'Perform row operations, inspect the arithmetic, and classify the resulting system.',notation:'R₂ ← R₂ − 2R₁',href:'/workbenches/linear',absorbedLabIds:['matrix-operations','row-reduction']},
+  {id:'applications',title:'Optimization & Strategy',description:'Formulate an optimization or strategy model before solving it.',notation:'max z = cᵀx',href:'/workbenches/applications',absorbedLabIds:['linear-programming','game-theory','markov']}
  ],
  skills:[
   {id:'logic.propositions',module:'logic',title:'Propositions & connectives',description:'Recognize proposition structure and connect controlled language to logical symbols.',status:'implemented',prerequisiteIds:[],relatedLab:'/labs/logic-basics'},
@@ -53,6 +61,7 @@ export const currentCourseProfile:CourseProfile={
   {id:'probability-simulation',module:'probability',title:'Probability Simulation Lab',href:'/labs/probability-simulation',skillIds:['probability.simulation'],status:'supplemental'},
   {id:'bayes',module:'probability',title:'Bayes Update Lab',href:'/labs/bayes',skillIds:['probability.bayes'],status:'supplemental'},
   {id:'interest',module:'finance',title:'Interest & Time Value Lab',href:'/labs/interest',skillIds:['finance.interest','finance.rate-equivalence','finance.tvm'],status:'live'},
+  {id:'cashflow-timeline',module:'finance',title:'Cash-flow Timeline Lab',href:'/labs/cashflow-timeline',skillIds:['finance.tvm'],status:'live'},
   {id:'annuity',module:'finance',title:'Annuity Timeline Lab',href:'/labs/annuity',skillIds:['finance.annuity'],status:'live'},
   {id:'bonds',module:'finance',title:'Bond Pricing Lab',href:'/labs/bonds',skillIds:['finance.bonds'],status:'supplemental'},
   {id:'matrix-operations',module:'linear',title:'Matrix Operations Lab',href:'/labs/matrix-operations',skillIds:['linear.operations'],status:'live'},
@@ -68,6 +77,9 @@ export const probabilitySkills=currentCourseProfile.skills.filter(s=>s.module===
 export const financeSkills=currentCourseProfile.skills.filter(s=>s.module==='finance');
 export const linearSkills=currentCourseProfile.skills.filter(s=>s.module==='linear');
 export const applicationSkills=currentCourseProfile.skills.filter(s=>s.module==='applications');
+export const primaryWorkbenches=currentCourseProfile.workbenches;
+export const workbenchForModule=(moduleId:ModuleId)=>currentCourseProfile.workbenches.find(workbench=>workbench.id===moduleId);
+export const workbenchForLab=(labId:string)=>currentCourseProfile.workbenches.find(workbench=>workbench.absorbedLabIds.includes(labId));
 export const liveLabs=currentCourseProfile.labs.filter(l=>l.status==='live');
 export const allAvailableLabs=currentCourseProfile.labs.filter(l=>l.status==='live'||l.status==='supplemental');
 
