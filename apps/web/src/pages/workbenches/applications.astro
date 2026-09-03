@@ -1,7 +1,7 @@
 ---
 import { workbenchForModule } from '@amat19/course-content';
 import WorkbenchShell from '../../components/course/WorkbenchShell.astro';
-import LinearProgrammingLab from '../../components/labs/applications/LinearProgrammingLab';
+import OptimizationStrategyWorkbench from '../../components/workbenches/OptimizationStrategyWorkbench';
 import AppLayout from '../../layouts/AppLayout.astro';
 
 const workbench = workbenchForModule('applications')!;
@@ -9,6 +9,6 @@ const workbench = workbenchForModule('applications')!;
 
 <AppLayout title={workbench.title} description={workbench.description}>
   <WorkbenchShell moduleId="applications">
-    <LinearProgrammingLab client:load />
+    <OptimizationStrategyWorkbench client:load />
   </WorkbenchShell>
 </AppLayout>
