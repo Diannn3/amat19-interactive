@@ -2118,6 +2118,244 @@ body { background: var(--shell-maroon-950); }
   }
 }
 
+/* Row Operations Coach: the matrix and next legal move stay primary. */
+.row-coach {
+  display: grid;
+  gap: 1rem;
+}
+
+.row-coach__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem);
+  align-items: end;
+  gap: 1rem 2rem;
+}
+
+.row-coach__header h2 {
+  max-width: 25ch;
+  margin: 0;
+  font: 760 clamp(1.45rem, 2.6vw, 2.15rem) / 1.05 var(--font-amat-display);
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+
+.row-coach__header p {
+  max-width: 58ch;
+  margin: .45rem 0 0;
+  color: var(--foreground-muted);
+  line-height: 1.5;
+}
+
+.row-coach__goal,
+.row-coach__operation {
+  min-width: 0;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.row-coach__matrix-stage {
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  min-height: 10rem;
+  overflow-x: auto;
+  padding: 1rem;
+  border-block: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.row-coach__matrix {
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-inline: 1rem;
+}
+
+.row-coach__matrix::before,
+.row-coach__matrix::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: .55rem;
+  border-block: 2px solid currentColor;
+  content: "";
+  pointer-events: none;
+}
+
+.row-coach__matrix::before {
+  left: 0;
+  border-left: 2px solid currentColor;
+}
+
+.row-coach__matrix::after {
+  right: 0;
+  border-right: 2px solid currentColor;
+}
+
+.row-coach__matrix table {
+  border-collapse: separate;
+  border-spacing: .7rem .5rem;
+  font: 720 clamp(.95rem, 2vw, 1.2rem) / 1 var(--font-amat-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.row-coach__matrix td {
+  min-width: 2.5rem;
+  padding: .4rem;
+  text-align: center;
+}
+
+.row-coach__matrix td[data-split="true"] {
+  border-left: 1px solid var(--border-strong);
+}
+
+.row-coach__operation {
+  display: grid;
+  grid-template-columns: minmax(11rem, 1.2fr) repeat(3, minmax(5rem, .55fr)) auto auto;
+  align-items: end;
+  gap: .65rem;
+}
+
+.row-coach [data-primary-control],
+.row-coach :is(summary, textarea) {
+  min-height: 2.75rem;
+}
+
+.row-coach__outcome {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .2rem 1rem;
+  min-height: 4.5rem;
+  padding-block: .75rem;
+  border-block: 1px solid var(--border);
+}
+
+.row-coach__outcome span,
+.row-coach__outcome small {
+  color: var(--foreground-muted);
+}
+
+.row-coach__outcome strong {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  color: var(--primary);
+  font: 760 clamp(1.15rem, 2.4vw, 1.6rem) / 1.1 var(--font-amat-mono);
+}
+
+.row-coach__editor,
+.row-coach__history {
+  border-bottom: 1px solid var(--border);
+}
+
+.row-coach__editor > summary,
+.row-coach__history > summary {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 750;
+}
+
+.row-coach__editor[open],
+.row-coach__history[open] {
+  padding-bottom: 1rem;
+}
+
+.row-coach__editor .matrix-textarea {
+  margin-top: .5rem;
+}
+
+.row-coach__history ol {
+  display: grid;
+  gap: .5rem;
+  margin: .5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row-coach__history li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  align-items: center;
+  gap: .5rem;
+}
+
+.row-coach__history li span {
+  color: var(--primary);
+  font: 750 .75rem / 1 var(--font-amat-mono);
+}
+
+@media (max-width: 1100px) {
+  .row-coach__operation {
+    grid-template-columns: minmax(10rem, 1.2fr) repeat(3, minmax(4.5rem, .6fr));
+  }
+
+  .row-coach__operation .amat-button {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 760px) {
+  .row-coach {
+    gap: .7rem;
+  }
+
+  .row-coach__header {
+    grid-template-columns: 1fr;
+    gap: .55rem;
+  }
+
+  .row-coach__header p {
+    display: none;
+  }
+
+  .row-coach__matrix-stage {
+    min-height: 5.25rem;
+    padding: .5rem;
+  }
+
+  .row-coach__matrix table {
+    border-spacing: .35rem .25rem;
+  }
+
+  .row-coach__matrix td {
+    min-width: 2.2rem;
+    padding: .3rem;
+  }
+
+  .row-coach__operation {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .45rem;
+  }
+
+  .row-coach__operation-kind {
+    grid-column: span 2;
+  }
+
+  .row-coach__operation .amat-button {
+    grid-column: auto;
+    padding-inline: .55rem;
+    font-size: .75rem;
+  }
+
+  .row-coach__operation .amat-button:last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (forced-colors: active) {
+  .row-coach__matrix-stage,
+  .row-coach__matrix td[data-split="true"],
+  .row-coach__outcome,
+  .row-coach__editor,
+  .row-coach__history {
+    border-color: CanvasText;
+  }
+}
+
 /* Keep dense editors contained inside the two-column lab canvas. The editor
    itself can become taller, but controls must never disappear past the panel. */
 .lab-route__canvas .cashflow-row {
