@@ -1890,6 +1890,234 @@ body { background: var(--shell-maroon-950); }
   .utility-flyout__action { forced-color-adjust: none; border-color: CanvasText; background: Canvas; color: CanvasText; }
 }
 
+/* Money Timeline: one synchronized object with progressively disclosed math. */
+.money-timeline {
+  display: grid;
+  gap: 1rem;
+}
+
+.money-timeline__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem);
+  align-items: end;
+  gap: 1rem 2rem;
+}
+
+.money-timeline__header h2 {
+  max-width: 22ch;
+  margin: 0;
+  font: 760 clamp(1.45rem, 2.6vw, 2.15rem) / 1.05 var(--font-amat-display);
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+
+.money-timeline__header p {
+  max-width: 58ch;
+  margin: .45rem 0 0;
+  color: var(--foreground-muted);
+  line-height: 1.5;
+}
+
+.money-timeline__scenario {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.money-timeline__workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(19rem, .7fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.money-timeline__object,
+.money-timeline__setup {
+  min-width: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.money-timeline__object {
+  background: var(--surface);
+}
+
+.money-timeline__object .finance-timeline svg {
+  min-height: 13rem;
+  border: 0;
+  background: transparent;
+}
+
+.money-timeline__empty {
+  min-height: 13rem;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: var(--foreground-muted);
+  text-align: center;
+}
+
+.money-timeline__result {
+  min-height: 5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .25rem 1rem;
+  padding: .8rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.money-timeline__result span,
+.money-timeline__result small {
+  color: var(--foreground-muted);
+}
+
+.money-timeline__result strong {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  color: var(--primary);
+  font: 760 clamp(1.35rem, 2.6vw, 2rem) / 1 var(--font-amat-mono);
+  letter-spacing: -.04em;
+}
+
+.money-timeline__result small {
+  font-size: .76rem;
+}
+
+.money-timeline__setup {
+  display: grid;
+  gap: .85rem;
+  min-inline-size: 0;
+  margin: 0;
+  padding-block: .85rem;
+  border-inline: 0;
+}
+
+.money-timeline__field-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.money-timeline__field-pair > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.money-timeline__flows {
+  display: grid;
+}
+
+.money-timeline__flow {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) minmax(5rem, .55fr);
+  align-items: end;
+  gap: .6rem;
+  padding-block: .7rem;
+  border-top: 1px solid var(--border);
+}
+
+.money-timeline__flow-number {
+  align-self: center;
+  color: var(--primary);
+  font: 750 .72rem / 1 var(--font-amat-mono);
+}
+
+.money-timeline__flow .amat-button {
+  grid-column: 2 / -1;
+}
+
+.money-timeline :is(input, select, button),
+.money-timeline__calculation > summary {
+  min-height: 2.75rem;
+}
+
+.money-timeline__storage-note {
+  margin: 0;
+  color: var(--foreground-muted);
+  font-size: .78rem;
+}
+
+.money-timeline__calculation {
+  border-bottom: 1px solid var(--border);
+}
+
+.money-timeline__calculation > summary {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 750;
+}
+
+.money-timeline__calculation .step-trace {
+  padding-bottom: 1rem;
+}
+
+@media (max-width: 900px) {
+  .money-timeline__workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .money-timeline {
+    gap: .75rem;
+  }
+
+  .money-timeline__header {
+    grid-template-columns: 1fr;
+    gap: .65rem;
+  }
+
+  .money-timeline__header p {
+    display: none;
+  }
+
+  .money-timeline__scenario {
+    max-width: none;
+  }
+
+  .money-timeline__object .finance-timeline svg,
+  .money-timeline__empty {
+    min-height: 9.25rem;
+  }
+
+  .money-timeline__result {
+    min-height: 4.5rem;
+    padding: .65rem .75rem;
+  }
+
+  .money-timeline__field-pair {
+    grid-template-columns: 1fr;
+  }
+
+  .money-timeline__field-pair > :last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 390px) {
+  .money-timeline__flow {
+    grid-template-columns: 1.6rem minmax(0, 1fr) minmax(4.5rem, .6fr);
+    gap: .4rem;
+  }
+
+  .money-timeline__result strong {
+    font-size: 1.15rem;
+  }
+}
+
+@media (forced-colors: active) {
+  .money-timeline__object,
+  .money-timeline__setup,
+  .money-timeline__result,
+  .money-timeline__flow,
+  .money-timeline__calculation {
+    border-color: CanvasText;
+  }
+}
+
 /* Keep dense editors contained inside the two-column lab canvas. The editor
    itself can become taller, but controls must never disappear past the panel. */
 .lab-route__canvas .cashflow-row {
@@ -2162,8 +2390,7 @@ body { background: var(--shell-maroon-950); }
   }
 
   .workbench-route__heading p {
-    margin-top: .5rem;
-    font-size: .92rem;
+    display: none;
   }
 
   .workbench-route__links {
