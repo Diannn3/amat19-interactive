@@ -30,6 +30,7 @@ const utilityNavigation: UtilityItem[] = [
   { kind: 'action', id: 'developer-contact', label: 'Developer', mobileLabel: 'Developer', icon: 'developer' },
 ];
 const currentPath = Astro.url.pathname;
+const pwaEnabled = import.meta.env.PROD;
 const isCurrent = (href: string) => {
   if (href === '/course') return currentPath === '/course' || currentPath.startsWith('/modules/') || currentPath.startsWith('/lessons/') || currentPath.startsWith('/workbenches/');
   if (href === '/study') return currentPath === '/study' || currentPath === '/exam';
@@ -56,7 +57,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
-    <div class="site-shell app-frame" data-shell data-route={currentPath}>
+    <div class="site-shell app-frame" data-shell data-route={currentPath} data-pwa-enabled={String(pwaEnabled)}>
       <aside class="sidebar" aria-label="Primary navigation">
         <div class="brand-row">
           <a class="wordmark" href="/" aria-label="AMAT 19 Study Lab home">
@@ -289,6 +290,13 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         const refreshNetworkStatus = () => { if (status) status.hidden = navigator.onLine; };
         window.addEventListener('online', refreshNetworkStatus); window.addEventListener('offline', refreshNetworkStatus); refreshNetworkStatus();
         if (!('serviceWorker' in navigator)) return;
+        const pwaEnabled = frame?.getAttribute('data-pwa-enabled') === 'true';
+        if (!pwaEnabled) {
+          navigator.serviceWorker.getRegistrations()
+            .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
+            .catch(() => {});
+          return;
+        }
         const banner = document.getElementById('pwa-update'); const updateMessage = document.getElementById('pwa-update-message'); const updateButton = document.getElementById('pwa-update-button'); const dismissButton = document.getElementById('pwa-update-dismiss'); let waitingWorker; let reloadForUpdate = false; let updateInFlight = false;
         const showUpdate = (worker) => { waitingWorker = worker; updateInFlight = false; if (updateButton) { updateButton.disabled = false; updateButton.textContent = 'Save & update'; } if (banner) banner.hidden = false; };
         navigator.serviceWorker.register('/sw.js').then((registration) => {
