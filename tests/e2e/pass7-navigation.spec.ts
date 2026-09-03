@@ -39,15 +39,12 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     await expect.poll(() => page.locator('.home-hero__title').evaluate((heading) => getComputedStyle(heading).textWrap)).toContain('balance');
   });
 
-  test('module views are deep-linkable and expose labs and notes separately', async ({ page }) => {
+  test('module views are deep-linkable and keep one workbench beside notes', async ({ page }) => {
     await page.goto('/modules/logic');
     const tabs = page.getByRole('navigation', { name: 'Module sections' });
     await expect(tabs.getByRole('link', { name: /^Overview/ })).toHaveAttribute('aria-current', 'page');
-
-    await tabs.getByRole('link', { name: /^Labs/ }).click();
-    await expect(page).toHaveURL(/\/modules\/logic\?view=labs$/);
-    await expect(page.locator('[data-module-view="labs"]')).toBeVisible();
-    await expect(page.locator('.module-lab-link')).not.toHaveCount(0);
+    await expect(tabs.getByRole('link', { name: /^Labs/ })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /Logic & Proof/ }).first()).toHaveAttribute('href', '/workbenches/logic');
 
     await page.getByRole('navigation', { name: 'Module sections' }).getByRole('link', { name: /^Notes/ }).click();
     await expect(page).toHaveURL(/\/modules\/logic\?view=notes$/);
@@ -56,16 +53,14 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
 
   test('public indexes use learner labels instead of implementation taxonomy', async ({ page }) => {
     await page.goto('/modules/logic?view=labs');
-    await expect(page.locator('.module-lab-link').first().locator('small')).toHaveText('Propositions & connectives');
-    await expect(page.locator('.module-lab-status').first()).toHaveText('Core');
-    expect(await page.locator('.module-lab-status').allTextContents()).not.toContain('LIVE');
-    expect((await page.locator('.module-lab-link').allTextContents()).join(' ')).not.toMatch(/\b(logic|probability|finance|linear|applications)\.[a-z-]+/i);
+    const moduleWorkbench = page.locator('.module-next-step--workbench');
+    await expect(moduleWorkbench).toContainText('Logic & Proof');
+    await expect(moduleWorkbench).not.toContainText(/\b(logic|probability|finance|linear|applications)\.[a-z-]+/i);
 
     await page.goto('/course');
-    await page.locator('.roadmap-details').first().locator('summary').click();
-    const roadmapSkills = page.locator('.roadmap-skills').first();
-    await expect(roadmapSkills).toContainText('Core');
-    await expect(roadmapSkills).not.toContainText(/implemented|engine-ready|planned/i);
+    const directory = page.getByTestId('workbench-directory');
+    await expect(directory).toContainText('Logic & Proof');
+    await expect(directory).not.toContainText(/implemented|engine-ready|planned|live/i);
 
     await page.goto('/lessons/logic/truth-tables');
     await expect(page.locator('.lesson-header__context')).toHaveText('Core study note');

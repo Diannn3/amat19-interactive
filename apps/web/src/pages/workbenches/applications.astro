@@ -1,0 +1,14 @@
+---
+import { workbenchForModule } from '@amat19/course-content';
+import WorkbenchShell from '../../components/course/WorkbenchShell.astro';
+import LinearProgrammingLab from '../../components/labs/applications/LinearProgrammingLab';
+import AppLayout from '../../layouts/AppLayout.astro';
+
+const workbench = workbenchForModule('applications')!;
+---
+
+<AppLayout title={workbench.title} description={workbench.description}>
+  <WorkbenchShell moduleId="applications">
+    <LinearProgrammingLab client:load />
+  </WorkbenchShell>
+</AppLayout>

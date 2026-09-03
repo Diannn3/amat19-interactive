@@ -2,9 +2,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { BookOpen, Search, X } from 'lucide-react';
 import { currentCourseProfile, searchSkills } from '@amat19/course-content';
-import { learnerModuleLabel, learnerScopeLabel, learnerSkillLabel } from '../../lib/learner-labels';
+import { learnerModuleLabel } from '../../lib/learner-labels';
 
-type Group = 'Workspace' | 'Labs' | 'Lessons' | 'Library' | 'Checks';
+type Group = 'Workspace' | 'Workbenches' | 'Lessons' | 'Library' | 'Checks';
 type Result = { id: string; title: string; subtitle: string; href: string; group: Group };
 
 const fixed: Result[] = [
@@ -17,38 +17,41 @@ const fixed: Result[] = [
   { id: 'settings', title: 'Settings', subtitle: 'Notation, motion, and display preferences', href: '/settings', group: 'Library' },
 ];
 
-const groupOrder: Group[] = ['Workspace', 'Labs', 'Lessons', 'Library', 'Checks'];
+const groupOrder: Group[] = ['Workspace', 'Workbenches', 'Lessons', 'Library', 'Checks'];
 
 function includesQuery(result: Result, query: string) {
   return `${result.title} ${result.subtitle} ${result.group}`.toLowerCase().includes(query);
 }
 
-function isPresent<T>(value: T): value is NonNullable<T> {
-  return value !== null && value !== undefined;
-}
-
 function getSearchResults(query: string) {
   const normalized = query.trim().toLowerCase();
-  if (!normalized) return fixed;
+  const workbenchResults = currentCourseProfile.workbenches
+    .filter((workbench) => {
+      const absorbedLabIds = new Set(workbench.absorbedLabIds);
+      const labs = currentCourseProfile.labs.filter((lab) => absorbedLabIds.has(lab.id));
+      const skillIds = new Set(labs.flatMap((lab) => lab.skillIds));
+      const skills = currentCourseProfile.skills.filter((skill) => skillIds.has(skill.id));
+      return [
+        workbench.title,
+        workbench.description,
+        workbench.notation,
+        learnerModuleLabel(workbench.id),
+        ...labs.map((lab) => lab.title),
+        ...skills.flatMap((skill) => [skill.title, skill.description]),
+      ].join(' ').toLowerCase().includes(normalized);
+    })
+    .map((workbench) => ({
+      id: `workbench-${workbench.id}`,
+      title: workbench.title,
+      subtitle: `${learnerModuleLabel(workbench.id)} · ${workbench.description}`,
+      href: workbench.href,
+      group: 'Workbenches' as const,
+    }));
+
+  if (!normalized) return [...fixed, ...workbenchResults];
 
   const fixedResults = fixed.filter((result) => includesQuery(result, normalized));
-  const labResults = currentCourseProfile.labs
-    .filter((lab) => [lab.title, learnerModuleLabel(lab.module), ...lab.skillIds.map(learnerSkillLabel)].filter(Boolean).join(' ').toLowerCase().includes(normalized))
-    .map((lab) => ({
-      id: `lab-${lab.id}`,
-      title: lab.title,
-      subtitle: `${learnerModuleLabel(lab.module)} · ${learnerScopeLabel(lab.status)} lab`,
-      href: lab.href,
-      group: 'Labs' as const,
-    }));
-  const skillResults = searchSkills(normalized).flatMap((skill) => [
-    skill.labHref ? {
-      id: `skill-lab-${skill.id}`,
-      title: skill.title,
-      subtitle: `${skill.description} · Open the lab`,
-      href: skill.labHref,
-      group: 'Labs' as const,
-    } : null,
+  const lessonResults = searchSkills(normalized).flatMap((skill) => [
     skill.lessonHref ? {
       id: `skill-lesson-${skill.id}`,
       title: skill.title,
@@ -56,10 +59,10 @@ function getSearchResults(query: string) {
       href: skill.lessonHref,
       group: 'Lessons' as const,
     } : null,
-  ].filter(isPresent));
+  ]).filter((result): result is NonNullable<typeof result> => result !== null);
 
   const seen = new Set<string>();
-  return [...fixedResults, ...labResults, ...skillResults].filter((result) => {
+  return [...fixedResults, ...workbenchResults, ...lessonResults].filter((result) => {
     const key = `${result.group}:${result.href}:${result.title}`;
     if (seen.has(key)) return false;
     seen.add(key);
@@ -166,8 +169,8 @@ export default function CommandPalette() {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Search skills, labs, or pages…"
-          aria-label="Search skills, labs, or pages"
+          placeholder="Search skills, workbenches, or pages…"
+          aria-label="Search skills, workbenches, or pages"
           role="combobox"
           aria-expanded={dialogOpen}
           aria-haspopup="listbox"
@@ -180,7 +183,7 @@ export default function CommandPalette() {
           <X size={16} aria-hidden="true" />
         </button>
       </div>
-      <div className="command-dialog__list" id="command-dialog-results" role="listbox" aria-label="Study tool results">
+      <div className="command-dialog__list" id="command-dialog-results" role="listbox" aria-label="Study results">
         {grouped.length ? grouped.map(({ group, results: groupResults }) => (
           <section className="command-group" key={group} role="group" aria-label={group}>
             <span className="command-group__title" aria-hidden="true">{group}</span>
@@ -206,8 +209,8 @@ export default function CommandPalette() {
         )) : (
           <div className="empty-state">
             <BookOpen aria-hidden="true" />
-            <strong>No matching study tool.</strong>
-            <p>Try “conditional”, “rref”, “annuity”, or “proof”.</p>
+            <strong>No matching course result.</strong>
+            <p>Try “conditional”, “row reduction”, “annuity”, or “proof”.</p>
           </div>
         )}
       </div>

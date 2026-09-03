@@ -1,0 +1,14 @@
+---
+import { workbenchForModule } from '@amat19/course-content';
+import WorkbenchShell from '../../components/course/WorkbenchShell.astro';
+import CashflowTimelineLab from '../../components/labs/finance/CashflowTimelineLab';
+import AppLayout from '../../layouts/AppLayout.astro';
+
+const workbench = workbenchForModule('finance')!;
+---
+
+<AppLayout title={workbench.title} description={workbench.description}>
+  <WorkbenchShell moduleId="finance">
+    <CashflowTimelineLab client:load />
+  </WorkbenchShell>
+</AppLayout>

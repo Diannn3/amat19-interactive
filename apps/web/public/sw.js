@@ -1,4 +1,4 @@
-const VERSION = 'amat19-v13-audited-backend';
+const VERSION = 'amat19-workbenches-v1';
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
 const NAVIGATION_TIMEOUT_MS = 4000;
@@ -17,6 +17,11 @@ const CORE_ROUTES = [
   '/modules/finance',
   '/modules/linear',
   '/modules/applications',
+  '/workbenches/logic',
+  '/workbenches/probability',
+  '/workbenches/finance',
+  '/workbenches/linear',
+  '/workbenches/applications',
   '/labs/logic-basics',
   '/labs/truth-table',
   '/labs/equivalence',

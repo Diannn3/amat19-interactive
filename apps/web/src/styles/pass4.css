@@ -1949,3 +1949,296 @@ body { background: var(--shell-maroon-950); }
   white-space: normal;
   word-break: normal;
 }
+
+/* Focused workbenches: the mathematical object starts immediately after one
+   compact route header. Module navigation stays present without side rails. */
+.workbench-route {
+  width: min(calc(100% - 2rem), 100rem);
+  margin-inline: auto;
+  padding-block: 1rem 3rem;
+}
+
+.workbench-route__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1rem 2rem;
+  padding-block: .5rem 1rem;
+  border-bottom: 2px solid var(--accent);
+}
+
+.workbench-route__heading {
+  min-width: 0;
+}
+
+.workbench-route__heading h1 {
+  max-width: 18ch;
+  margin: 0;
+  font: 780 clamp(2rem, 4vw, 3.75rem) / .98 var(--font-amat-display);
+  letter-spacing: -.05em;
+  text-wrap: balance;
+}
+
+.workbench-route__heading p {
+  max-width: 62ch;
+  margin: .75rem 0 0;
+  color: var(--foreground-muted);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.workbench-route__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: .5rem;
+}
+
+.workbench-route__links a {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding-inline: .75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--foreground-muted);
+  font-size: .82rem;
+  font-weight: 750;
+  text-decoration: none;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.workbench-route__links a:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
+  color: var(--foreground);
+}
+
+.workbench-route__canvas {
+  min-width: 0;
+  padding-top: 1rem;
+}
+
+.workbench-route__canvas > :first-child {
+  margin-top: 0;
+}
+
+.workbench-directory {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-frame[data-route="/course"] .course-intro {
+  padding-block: 1.25rem .75rem;
+}
+
+.app-frame[data-route="/course"] .course-intro .display-title {
+  max-width: 20ch;
+  font-size: clamp(2.5rem, 4.2vw, 3.75rem);
+  line-height: .98;
+}
+
+.app-frame[data-route="/course"] .course-intro .lede {
+  max-width: 62ch;
+  margin-top: .75rem;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.app-frame[data-route="/course"] .course-intro + .module-section {
+  padding-block: .75rem 2rem;
+}
+
+.app-frame[data-route="/course"] .course-intro + .module-section .section-heading h2 {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+}
+
+.app-frame[data-route="/course"] .course-intro + .module-section .section-heading {
+  margin-bottom: .5rem;
+}
+
+.workbench-directory > li {
+  min-width: 0;
+  border-top: 1px solid var(--border);
+}
+
+.workbench-directory > li:last-child {
+  grid-column: 1 / -1;
+}
+
+.workbench-directory a {
+  min-height: 5.25rem;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding-block: .75rem;
+  color: inherit;
+  text-decoration: none;
+  transition: color 180ms ease, background-color 180ms ease;
+}
+
+.workbench-directory a:hover {
+  color: var(--primary);
+  background: var(--surface-muted);
+}
+
+.workbench-directory__number {
+  align-self: start;
+  padding-top: .25rem;
+  color: var(--primary);
+  font: 750 .75rem / 1 var(--font-amat-mono);
+}
+
+.workbench-directory__copy {
+  min-width: 0;
+}
+
+.workbench-directory__copy strong,
+.workbench-directory__copy small,
+.workbench-directory__copy > span {
+  display: block;
+}
+
+.workbench-directory__copy strong {
+  font: 760 clamp(1.15rem, 2vw, 1.4rem) / 1.2 var(--font-amat-display);
+  letter-spacing: -.03em;
+}
+
+.workbench-directory__copy small {
+  margin-top: .2rem;
+  color: var(--primary);
+  font-size: .72rem;
+  font-weight: 750;
+}
+
+.workbench-directory__copy > span {
+  max-width: 56ch;
+  margin-top: .5rem;
+  color: var(--foreground-muted);
+  font-size: .84rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.workbench-directory__notation {
+  color: var(--foreground);
+  font: 700 1rem / 1.2 var(--font-amat-mono);
+  white-space: nowrap;
+}
+
+.module-next-step--workbench .module-next-step__index {
+  width: auto;
+  min-width: 7rem;
+  padding-inline: .75rem;
+  font-family: var(--font-amat-mono);
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .workbench-route {
+    width: min(calc(100% - 1rem), 100rem);
+    padding-block: .5rem calc(5.5rem + env(safe-area-inset-bottom));
+  }
+
+  .workbench-route__header {
+    grid-template-columns: 1fr;
+    gap: .75rem;
+  }
+
+  .workbench-route__heading h1 {
+    font-size: clamp(1.8rem, 9vw, 2.6rem);
+  }
+
+  .workbench-route__heading p {
+    margin-top: .5rem;
+    font-size: .92rem;
+  }
+
+  .workbench-route__links {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .workbench-route__links a {
+    min-width: 0;
+    padding-inline: .4rem;
+  }
+
+  .workbench-directory {
+    grid-template-columns: 1fr;
+  }
+
+  .workbench-directory > li:last-child {
+    grid-column: auto;
+  }
+
+  .workbench-directory a {
+    min-height: 6.5rem;
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    gap: .75rem;
+  }
+
+  .workbench-directory__notation {
+    grid-column: 2;
+  }
+
+  .workbench-directory__copy > span {
+    -webkit-line-clamp: 2;
+  }
+
+  .workbench-directory a > svg {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+
+  .module-next-step--workbench {
+    grid-template-columns: 1fr auto;
+  }
+
+  .module-next-step--workbench .module-next-step__index {
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workbench-route__links a,
+  .workbench-directory a {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .workbench-route__header,
+  .workbench-route__links a,
+  .workbench-directory,
+  .workbench-directory > li {
+    border-color: CanvasText;
+  }
+
+  .workbench-route__links a,
+  .workbench-directory a {
+    forced-color-adjust: none;
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .workbench-route__links a:hover,
+  .workbench-directory a:hover {
+    background: Highlight;
+    color: HighlightText;
+  }
+}

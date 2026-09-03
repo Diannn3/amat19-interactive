@@ -31,7 +31,7 @@ const utilityNavigation: UtilityItem[] = [
 ];
 const currentPath = Astro.url.pathname;
 const isCurrent = (href: string) => {
-  if (href === '/course') return currentPath === '/course' || currentPath.startsWith('/modules/') || currentPath.startsWith('/lessons/');
+  if (href === '/course') return currentPath === '/course' || currentPath.startsWith('/modules/') || currentPath.startsWith('/lessons/') || currentPath.startsWith('/workbenches/');
   if (href === '/study') return currentPath === '/study' || currentPath === '/exam';
   return currentPath === href || currentPath.startsWith(`${href}/`);
 };
