@@ -1,7 +1,7 @@
 ---
 import { workbenchForModule } from '@amat19/course-content';
 import WorkbenchShell from '../../components/course/WorkbenchShell.astro';
-import ConditionalProbabilityLab from '../../components/labs/conditional-probability/ConditionalProbabilityLab';
+import ProbabilityModelBuilder from '../../components/workbenches/ProbabilityModelBuilder';
 import AppLayout from '../../layouts/AppLayout.astro';
 
 const workbench = workbenchForModule('probability')!;
@@ -9,6 +9,6 @@ const workbench = workbenchForModule('probability')!;
 
 <AppLayout title={workbench.title} description={workbench.description}>
   <WorkbenchShell moduleId="probability">
-    <ConditionalProbabilityLab client:load />
+    <ProbabilityModelBuilder client:load />
   </WorkbenchShell>
 </AppLayout>
