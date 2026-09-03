@@ -2356,6 +2356,189 @@ body { background: var(--shell-maroon-950); }
   }
 }
 
+/* Logic & Proof workbench */
+.logic-workbench {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.logic-workbench__mode-fieldset,
+.logic-workbench__controls,
+.logic-workbench__compare-grid,
+.logic-workbench__argument-grid {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.logic-workbench__modes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-block: 1px solid var(--border);
+}
+
+.logic-workbench__mode {
+  min-height: 44px;
+  padding: .65rem .85rem;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground-muted);
+  font: 700 .82rem/1.2 var(--font-sans);
+  cursor: pointer;
+}
+
+.logic-workbench__mode:last-child { border-right: 0; }
+.logic-workbench__mode:hover { color: var(--foreground); background: var(--surface-muted); }
+.logic-workbench__mode[data-active="true"] {
+  color: var(--primary);
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+
+.logic-workbench__stage {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  border-top: 3px solid var(--accent);
+}
+
+.logic-workbench__header {
+  display: grid;
+  gap: .35rem;
+  max-width: 62ch;
+}
+
+.logic-workbench__header h2 {
+  margin: 0;
+  max-width: 18ch;
+  color: var(--foreground);
+  font-size: clamp(1.8rem, 3.1vw, 3.25rem);
+  line-height: .98;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+
+.logic-workbench__header p { margin: 0; color: var(--foreground-muted); line-height: 1.55; }
+.logic-workbench__controls { max-width: 46rem; }
+
+.logic-workbench__summary,
+.logic-workbench__verdict {
+  display: flex;
+  align-items: baseline;
+  gap: .65rem 1rem;
+  min-height: 44px;
+  padding: .65rem .8rem;
+  border-left: 4px solid var(--primary);
+  background: var(--surface-muted);
+}
+
+.logic-workbench__summary strong,
+.logic-workbench__verdict strong { color: var(--primary); text-transform: capitalize; }
+.logic-workbench__summary span,
+.logic-workbench__verdict span { color: var(--foreground-muted); font-size: .86rem; }
+.logic-workbench__verdict[data-valid="false"] { border-left-color: var(--accent); }
+
+.logic-workbench__table-scroll {
+  min-width: 0;
+  overflow: auto;
+  border-block: 1px solid var(--border);
+  scrollbar-gutter: stable;
+}
+
+.logic-workbench table {
+  width: 100%;
+  min-width: max-content;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  text-align: center;
+}
+
+.logic-workbench th,
+.logic-workbench td {
+  min-width: 4.25rem;
+  height: 42px;
+  padding: .45rem .7rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.logic-workbench th:last-child,
+.logic-workbench td:last-child { border-right: 0; }
+.logic-workbench tbody tr:last-child td { border-bottom: 0; }
+.logic-workbench th { color: var(--primary); background: var(--surface-muted); font-size: .82rem; }
+.logic-workbench tbody tr[data-result="false"] td:last-child { color: var(--primary); background: color-mix(in srgb, var(--accent) 12%, transparent); font-weight: 800; }
+.logic-workbench tbody tr[data-result="true"] td:last-child { color: var(--green-800, #315b3c); background: color-mix(in srgb, #7a9b65 14%, transparent); font-weight: 800; }
+
+.logic-workbench__compare-grid,
+.logic-workbench__argument-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .85rem;
+  max-width: 58rem;
+}
+
+.logic-workbench__argument-grid > button { align-self: end; }
+.logic-workbench__argument-grid textarea { min-height: 7rem; resize: vertical; }
+
+.logic-workbench__proof { min-width: 0; padding: 0 clamp(.25rem, 1vw, .75rem); }
+.logic-workbench__proof .proof-lab__goal { border-top: 3px solid var(--accent); }
+
+.logic-workbench__notation,
+.logic-workbench__remaining-rows {
+  border-top: 1px solid var(--border);
+}
+
+.logic-workbench__notation > summary,
+.logic-workbench__remaining-rows > summary {
+  min-height: 44px;
+  padding: .75rem 0;
+  color: var(--primary);
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.logic-workbench__notation dl {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0 0 1rem;
+  border-block: 1px solid var(--border);
+}
+
+.logic-workbench__notation dl > div { padding: .8rem; border-right: 1px solid var(--border); }
+.logic-workbench__notation dl > div:last-child { border-right: 0; }
+.logic-workbench__notation dt { color: var(--primary); font-family: var(--font-mono); font-weight: 800; }
+.logic-workbench__notation dd { margin: .3rem 0 0; color: var(--foreground-muted); font-size: .78rem; line-height: 1.4; }
+
+@media (max-width: 720px) {
+  .logic-workbench { gap: .65rem; }
+  .logic-workbench__modes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .logic-workbench__mode:nth-child(2) { border-right: 0; }
+  .logic-workbench__mode:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+  .logic-workbench__stage { gap: .65rem; padding: .75rem 0 0; }
+  .logic-workbench__header h2 { max-width: 16ch; font-size: 1.75rem; line-height: 1.02; }
+  .logic-workbench__header p { display: none; }
+  .logic-workbench__summary,
+  .logic-workbench__verdict { align-items: flex-start; flex-direction: column; gap: .1rem; padding-block: .5rem; }
+  .logic-workbench th,
+  .logic-workbench td { min-width: 3.65rem; height: 38px; padding: .35rem .55rem; }
+  .logic-workbench__compare-grid,
+  .logic-workbench__argument-grid { grid-template-columns: 1fr; gap: .6rem; }
+  .logic-workbench__notation dl { grid-template-columns: 1fr; }
+  .logic-workbench__notation dl > div { border-right: 0; border-bottom: 1px solid var(--border); }
+  .logic-workbench__notation dl > div:last-child { border-bottom: 0; }
+}
+
+@media (forced-colors: active) {
+  .logic-workbench__mode[data-active="true"],
+  .logic-workbench__stage,
+  .logic-workbench__summary,
+  .logic-workbench__verdict,
+  .logic-workbench__table-scroll { border-color: CanvasText; }
+}
+
 /* Keep dense editors contained inside the two-column lab canvas. The editor
    itself can become taller, but controls must never disappear past the panel. */
 .lab-route__canvas .cashflow-row {
