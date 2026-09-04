@@ -2673,6 +2673,13 @@ body { background: var(--shell-maroon-950); }
 
 .logic-workbench__header p { margin: 0; color: var(--foreground-muted); line-height: 1.55; }
 .logic-workbench__controls { max-width: 46rem; }
+.logic-workbench__translation-form { max-width: 64rem; }
+.logic-workbench__translation-form fieldset { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: .85rem; align-items: end; min-width: 0; margin: 0; padding: 0; border: 0; }
+.logic-workbench__translation-form button { min-height: 44px; white-space: nowrap; }
+.logic-workbench__translation-result { display: grid; gap: .2rem; max-width: 40rem; padding: .75rem .85rem; border-left: 4px solid var(--primary); background: var(--surface-muted); }
+.logic-workbench__translation-result strong { color: var(--primary); }
+.logic-workbench__translation-result span { color: var(--foreground); font: 800 clamp(1.25rem, 2.4vw, 1.8rem)/1.2 var(--font-mono); }
+.logic-workbench__translation-result small { color: var(--foreground-muted); line-height: 1.45; }
 
 .logic-workbench__summary,
 .logic-workbench__verdict {
@@ -2765,11 +2772,14 @@ body { background: var(--shell-maroon-950); }
 @media (max-width: 720px) {
   .logic-workbench { gap: .65rem; }
   .logic-workbench__modes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .logic-workbench__mode:nth-child(2) { border-right: 0; }
-  .logic-workbench__mode:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+  .logic-workbench__mode:nth-child(2n) { border-right: 0; }
+  .logic-workbench__mode:nth-child(-n+4) { border-bottom: 1px solid var(--border); }
+  .logic-workbench__mode:last-child { border-right: 0; }
   .logic-workbench__stage { gap: .65rem; padding: .75rem 0 0; }
   .logic-workbench__header h2 { max-width: 16ch; font-size: 1.75rem; line-height: 1.02; }
   .logic-workbench__header p { display: none; }
+  .logic-workbench__translation-form fieldset { grid-template-columns: 1fr; gap: .6rem; }
+  .logic-workbench__translation-form button { width: 100%; }
   .logic-workbench__summary,
   .logic-workbench__verdict { align-items: flex-start; flex-direction: column; gap: .1rem; padding-block: .5rem; }
   .logic-workbench th,
@@ -2786,6 +2796,7 @@ body { background: var(--shell-maroon-950); }
   .logic-workbench__stage,
   .logic-workbench__summary,
   .logic-workbench__verdict,
+  .logic-workbench__translation-result,
   .logic-workbench__table-scroll { border-color: CanvasText; }
 }
 
@@ -2805,6 +2816,18 @@ body { background: var(--shell-maroon-950); }
   padding: 0;
   border: 0;
 }
+
+.probability-builder__counting-check {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: .75rem;
+  max-width: 46rem;
+  margin: 0;
+}
+
+.probability-builder__counting-check fieldset { display: contents; }
+.probability-builder__counting-check button { min-height: 44px; white-space: nowrap; }
 
 .probability-builder__modes {
   display: grid;
@@ -2940,6 +2963,8 @@ body { background: var(--shell-maroon-950); }
   .probability-builder__header p { display: none; }
   .probability-builder__counting-controls { gap: .35rem .55rem; }
   .probability-builder__counting-controls .form-field__label { font-size: .72rem; }
+  .probability-builder__counting-check { grid-template-columns: 1fr; gap: .5rem; }
+  .probability-builder__counting-check button { width: 100%; }
   .probability-builder__result { min-height: 58px; padding-block: .45rem; }
   .probability-builder__result strong { font-size: 1.05rem; }
   .probability-builder__verify-controls,
@@ -3036,6 +3061,7 @@ body { background: var(--shell-maroon-950); }
 .strategy-workbench__advanced ol { margin-bottom: 0; color: var(--foreground-muted); }
 .strategy-workbench__markov-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; }
 .strategy-workbench__markov-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; max-width: 30rem; margin-top: .65rem; }
+.strategy-workbench__markov-controls > button { grid-column: 1 / -1; min-height: 44px; justify-self: start; }
 .strategy-workbench__markov-result { display: grid; gap: .35rem; padding: .75rem; border-left: 4px solid var(--primary); background: var(--surface-muted); font-family: var(--font-mono); }
 
 @media (max-width: 720px) {
@@ -3049,6 +3075,7 @@ body { background: var(--shell-maroon-950); }
   .strategy-workbench__coach-form,
   .strategy-workbench__coach--game .strategy-workbench__coach-form { grid-template-columns: 1fr; max-width: none; }
   .strategy-workbench__coach-form button { width: 100%; }
+  .strategy-workbench__markov-controls > button { width: 100%; }
   .strategy-workbench__result { min-height: 60px; padding-block: .45rem; }
   .strategy-workbench__result strong { font-size: 1.05rem; }
   .strategy-workbench__result small { font-size: .72rem; }

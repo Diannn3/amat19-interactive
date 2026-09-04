@@ -16,6 +16,7 @@ import { Button } from '../ui/Button';
 import { Feedback } from '../ui/Feedback';
 import { loadDraft, saveDraft } from '../../lib/draft';
 import { checkProbabilityAnswer, type ProbabilityAnswerFeedback } from '../../lib/probability-answer-feedback';
+import { checkCountingModel, COUNTING_METHOD_OPTIONS, isCountingMethod, type CountingAnswerFeedback, type CountingMethod } from '../../lib/counting-answer-feedback';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
 import { readWorkbenchOption } from '../../lib/workbench-route';
 
@@ -27,6 +28,7 @@ type Draft = {
   repetitionAllowed: boolean;
   n: number;
   r: number;
+  countingMethod?: CountingMethod;
   cells: [number, number, number, number];
   condition: Condition;
   trials: number;
@@ -79,6 +81,9 @@ export default function ProbabilityModelBuilder() {
   const [repetitionAllowed, setRepetitionAllowed] = useState(INITIAL.repetitionAllowed);
   const [n, setN] = useState(INITIAL.n);
   const [r, setR] = useState(INITIAL.r);
+  const [countingMethod, setCountingMethod] = useState<CountingMethod | ''>('');
+  const [countingFeedback, setCountingFeedback] = useState<CountingAnswerFeedback>();
+  const [countingRevealed, setCountingRevealed] = useState(false);
   const [cells, setCells] = useState<[number, number, number, number]>(INITIAL.cells);
   const [condition, setCondition] = useState<Condition>(INITIAL.condition);
   const [conditionalAnswerRaw, setConditionalAnswerRaw] = useState('');
@@ -99,7 +104,7 @@ export default function ProbabilityModelBuilder() {
       if (!active) return;
       if (draft) {
         setMode(requestedMode ?? draft.mode); setOrderMatters(draft.orderMatters); setRepetitionAllowed(draft.repetitionAllowed);
-        setN(draft.n); setR(draft.r); setCells(draft.cells); setCondition(draft.condition);
+        setN(draft.n); setR(draft.r); setCountingMethod(isCountingMethod(draft.countingMethod) ? draft.countingMethod : ''); setCells(draft.cells); setCondition(draft.condition);
         setTrials(draft.trials); setSeed(draft.seed);
       }
       if (!draft && requestedMode) setMode(requestedMode);
@@ -108,7 +113,7 @@ export default function ProbabilityModelBuilder() {
     return () => { active = false; };
   }, []);
 
-  const draft = useMemo<Draft>(() => ({ mode, orderMatters, repetitionAllowed, n, r, cells, condition, trials, seed }), [mode, orderMatters, repetitionAllowed, n, r, cells, condition, trials, seed]);
+  const draft = useMemo<Draft>(() => ({ mode, orderMatters, repetitionAllowed, n, r, countingMethod: countingMethod || undefined, cells, condition, trials, seed }), [mode, orderMatters, repetitionAllowed, n, r, countingMethod, cells, condition, trials, seed]);
   useEffect(() => {
     if (!hydrated) return;
     const timer = window.setTimeout(() => { void saveDraft(LAB_ID, CONTENT_VERSION, draft); }, 250);
@@ -177,6 +182,23 @@ export default function ProbabilityModelBuilder() {
     setSimulationError(undefined);
   }
 
+  function resetCountingModel() {
+    setCountingMethod('');
+    setCountingFeedback(undefined);
+    setCountingRevealed(false);
+  }
+
+  function resetCountingResult() {
+    setCountingFeedback(undefined);
+    setCountingRevealed(false);
+  }
+
+  function checkCounting() {
+    const result = checkCountingModel(countingMethod, counting.decision.method);
+    setCountingFeedback(result);
+    setCountingRevealed(result.status === 'correct' && !counting.error);
+  }
+
   function checkConditionalAnswer() {
     if (!conditioning.analysis) return;
     const expected = condition === 'a-given-b' ? conditioning.analysis.pAGivenB : conditioning.analysis.pBGivenA;
@@ -219,12 +241,20 @@ export default function ProbabilityModelBuilder() {
         <header className="probability-builder__header"><h2 id="counting-heading">Name what makes an outcome different.</h2><p>Order and repetition choose the formula. Set those rules before entering the size of the selection.</p></header>
         <fieldset className="probability-builder__counting-controls" disabled={!hydrated}>
           <legend className="sr-only">Counting model</legend>
-          <label className="form-field"><span className="form-field__label">Order</span><select data-primary-control className="select-input" value={String(orderMatters)} onChange={(event) => setOrderMatters(event.target.value === 'true')}><option value="true">Order changes the outcome</option><option value="false">Only the chosen group matters</option></select></label>
-          <label className="form-field"><span className="form-field__label">Repetition</span><select data-primary-control className="select-input" value={String(repetitionAllowed)} onChange={(event) => setRepetitionAllowed(event.target.value === 'true')}><option value="false">A choice cannot repeat</option><option value="true">A choice may repeat</option></select></label>
-          <label className="form-field"><span className="form-field__label">Available choices, n</span><input data-primary-control className="text-input" type="number" min="0" step="1" value={n} onChange={(event) => setN(Number(event.target.value))} /></label>
-          <label className="form-field"><span className="form-field__label">Selected positions, r</span><input data-primary-control className="text-input" type="number" min="0" step="1" value={r} onChange={(event) => setR(Number(event.target.value))} /></label>
+          <label className="form-field"><span className="form-field__label">Order</span><select data-primary-control className="select-input" value={String(orderMatters)} onChange={(event) => { setOrderMatters(event.target.value === 'true'); resetCountingModel(); }}><option value="true">Order changes the outcome</option><option value="false">Only the chosen group matters</option></select></label>
+          <label className="form-field"><span className="form-field__label">Repetition</span><select data-primary-control className="select-input" value={String(repetitionAllowed)} onChange={(event) => { setRepetitionAllowed(event.target.value === 'true'); resetCountingModel(); }}><option value="false">A choice cannot repeat</option><option value="true">A choice may repeat</option></select></label>
+          <label className="form-field"><span className="form-field__label">Available choices, n</span><input data-primary-control className="text-input" type="number" min="0" step="1" value={n} onChange={(event) => { setN(Number(event.target.value)); resetCountingResult(); }} /></label>
+          <label className="form-field"><span className="form-field__label">Selected positions, r</span><input data-primary-control className="text-input" type="number" min="0" step="1" value={r} onChange={(event) => { setR(Number(event.target.value)); resetCountingResult(); }} /></label>
         </fieldset>
-        {counting.error ? <Feedback tone="error" role="alert">{counting.error}</Feedback> : <div className="probability-builder__result" data-probability-result><span>{counting.decision.label}</span><strong>{counting.formula}</strong><small>{counting.decision.reason}</small></div>}
+        <form className="probability-builder__counting-check" onSubmit={(event) => { event.preventDefault(); checkCounting(); }}>
+          <fieldset disabled={!hydrated}>
+            <legend className="sr-only">Check your counting model</legend>
+            <label className="form-field"><span className="form-field__label">Your model</span><select data-primary-control className="select-input" aria-label="Counting model" value={countingMethod} onChange={(event) => { setCountingMethod(event.target.value as CountingMethod | ''); setCountingFeedback(undefined); setCountingRevealed(false); }}><option value="">Choose a model</option>{COUNTING_METHOD_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+            <Button data-primary-control variant="primary" type="submit" disabled={!countingMethod}>Check model</Button>
+          </fieldset>
+        </form>
+        <div data-counting-feedback>{countingFeedback && <Feedback tone={countingFeedback.status === 'correct' ? 'success' : countingFeedback.status === 'incomplete' ? 'warning' : 'error'}>{countingFeedback.message}</Feedback>}</div>
+        {counting.error ? <Feedback tone="error" role="alert">{counting.error}</Feedback> : countingRevealed && <div className="probability-builder__result" data-probability-result><span>{counting.decision.label}</span><strong>{counting.formula}</strong><small>{counting.decision.reason}</small></div>}
       </section>}
 
       {mode === 'conditioning' && <section className="probability-builder__stage" aria-labelledby="conditioning-heading">

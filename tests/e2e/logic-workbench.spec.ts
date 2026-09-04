@@ -5,6 +5,32 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/workbenches/logic');
 });
 
+test('@core Translate checks controlled language before showing canonical notation', async ({ page }) => {
+  const workbench = page.getByTestId('logic-proof-workbench');
+  await workbench.getByRole('button', { name: 'Translate' }).click();
+  await expect(workbench.getByRole('heading', { name: 'Turn controlled language into symbols.' })).toBeVisible();
+  await expect(workbench.locator('[data-logic-translation-result]')).not.toBeVisible();
+
+  await workbench.getByLabel('Symbolic translation').fill('Q -> P');
+  await workbench.getByRole('button', { name: 'Check translation' }).click();
+  await expect(workbench.getByText(/Recheck the connective/)).toBeVisible();
+  await expect(workbench.locator('[data-logic-translation-result]')).not.toBeVisible();
+
+  await workbench.getByLabel('Symbolic translation').fill('P -> Q');
+  await workbench.getByRole('button', { name: 'Check translation' }).click();
+  await expect(workbench.getByText('Correct. Your symbolic form matches the statement.')).toBeVisible();
+  await expect(workbench.locator('[data-logic-translation-result]')).toContainText('P → Q');
+});
+
+test('@core Translate accepts a second controlled-language template and keyboard aliases', async ({ page }) => {
+  const workbench = page.getByTestId('logic-proof-workbench');
+  await workbench.getByRole('button', { name: 'Translate' }).click();
+  await workbench.getByLabel('Statement to translate').selectOption('iff');
+  await workbench.getByLabel('Symbolic translation').fill('P <-> Q');
+  await workbench.getByRole('button', { name: 'Check translation' }).click();
+  await expect(workbench.locator('[data-logic-translation-result]')).toContainText('P ↔ Q');
+});
+
 test('@core Logic & Proof opens on a complete exact truth table', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
   await expect(workbench).toHaveAttribute('data-hydrated', 'true');
@@ -17,7 +43,8 @@ test('@core Logic & Proof opens on a complete exact truth table', async ({ page 
   expect(await visiblePrimaryControls.count()).toBeLessThanOrEqual(8);
   for (const control of await visiblePrimaryControls.all()) {
     const box = await control.boundingBox();
-    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    // Firefox can return 43.999984 for a CSS 44px box after layout rounding.
+    expect(Math.round(box?.height ?? 0)).toBeGreaterThanOrEqual(44);
   }
 });
 
@@ -47,6 +74,20 @@ test('Guided proof stays inside the same workbench', async ({ page }) => {
   await workbench.getByRole('button', { name: 'Guided proof' }).click();
   await expect(workbench.getByTestId('formal-proof-lab')).toHaveAttribute('data-hydrated', 'true');
   await expect(workbench.getByRole('heading', { name: 'Derive the goal one justified line at a time.' })).toBeVisible();
+});
+
+test('@core Guided proof keeps implementation metadata out of copy and localizes invalid-line feedback', async ({ page }) => {
+  const workbench = page.getByTestId('logic-proof-workbench');
+  await workbench.getByRole('button', { name: 'Guided proof' }).click();
+  const proof = workbench.getByTestId('formal-proof-lab');
+  await expect(proof).toHaveAttribute('data-hydrated', 'true');
+  await expect(proof.getByText('Scoped formal proof workspace')).not.toBeVisible();
+  await expect(proof.getByText(/fingerprint/i)).not.toBeVisible();
+
+  await proof.getByLabel('Next proof statement').fill('Q');
+  await proof.getByRole('button', { name: 'Add checked line' }).click();
+  await expect(proof.getByText('Needs revision')).toBeVisible();
+  await expect(proof.locator('[data-proof-feedback] [role="alert"]')).toBeVisible();
 });
 
 test('Logic & Proof keeps the expression and truth table above the mobile dock', async ({ page }) => {

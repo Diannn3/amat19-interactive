@@ -39,6 +39,24 @@ This is an incremental implementation record, not a release certificate. Branch 
 - Wrong and malformed answers stay local and do not disclose target coordinates, strategy pairs, or solution values. Editing a model resets the relevant coaching state.
 - Targeted applications verification: 66 browser tests passed across the configured Chromium, Firefox, and WebKit projects; the pure optimization feedback suite passes 7/7; Astro check passes with only the existing service-worker typing hint.
 
+### Logic translation and proof feedback delivered (2026-09-04)
+
+- Logic & Proof now has a bounded Translate mode for controlled-language templates. It uses the exact course parser, accepts keyboard aliases, and reveals canonical notation only after a correct learner check.
+- Wrong and malformed translations stay local without exposing the target form. Guided proof copy no longer exposes implementation metadata such as internal workspace/fingerprint labels; caught errors use explicit alert feedback while line-specific proof messages remain beside the affected line.
+- Targeted Logic verification: 99 browser cases passed across the configured Chromium, Firefox, and WebKit projects, including mobile geometry, keyboard-sized controls, proof feedback, and serious/critical Axe checks. The translation helper suite passes 4/4.
+
+### Counting model gate delivered (2026-09-04)
+
+- Counting is now an explicit setup helper: the learner selects the model implied by order and repetition, receives local model feedback, and sees the exact count only after the model is correct. Invalid input remains an engine error rather than a fabricated answer.
+- The existing exact counting engine, n/r inputs, persistence shape, and canonical Probability route remain unchanged. The first counting task stays within six task controls and the result remains above the mobile dock after the learner checks the model.
+- Targeted Probability verification: 77 browser cases passed across the configured viewport/browser projects, with the Firefox 7-case suite rerun serially after concurrent startup stalls. The counting helper suite passes 3/3.
+
+### Advanced optimization trace gate delivered (2026-09-04)
+
+- The Advanced view now starts with the Simplex trace collapsed, keeping algorithm detail subordinate to the primary model.
+- Markov forecast output is released by an explicit “Run forecast” action and is cleared whenever transition values, the initial distribution, or the step count changes, so stale results are not mistaken for the current model.
+- Targeted Applications verification: 66 browser cases passed across the configured viewport/browser projects, with one Firefox startup stall passing on a serial rerun. The updated Advanced assertions pass on desktop and mobile layouts.
+
 ### Verification of route retirement (2026-09-04)
 
 - Architecture/content audits and Astro checks passed (0 errors, 0 warnings; one pre-existing service-worker typing hint).
@@ -53,9 +71,9 @@ This is an incremental implementation record, not a release certificate. Branch 
 
 Consolidating destinations does not by itself fulfill the brief. These are acceptance gaps to close before declaring the goal complete:
 
-1. Counting remains a separate model from the shared event table. Add a student-first counting check and decide whether counting should become a first-class course-directory view or remain an explicit setup helper.
-2. Optimization's LP and game answers are now gated behind student checks. Continue by auditing the Advanced traces and checking whether the first action remains clear in every mode and custom model.
-3. Logic needs translation coverage and a full audit of proof-mode feedback, notation, and visible implementation metadata.
+1. Counting is now an explicit setup helper separate from the shared event table. Decide later whether a first-class course-directory view is warranted; no duplicate event representation is needed for this pass.
+2. Optimization's LP, game, and Advanced outputs are now gated behind learner actions. Continue with a full audit of custom model error placement and first actions across all workbench modes.
+3. Logic translation and proof feedback are delivered. Continue with notation edge cases and a full audit of proof scopes and alternate methods.
 4. Audit all modes, not only default pages, for mobile first-action visibility, local error placement, keyboard use, forced colors, reduced motion, and Axe.
 5. Complete `verify:full` plus production PWA checks and inspect final screenshots before a release claim.
 

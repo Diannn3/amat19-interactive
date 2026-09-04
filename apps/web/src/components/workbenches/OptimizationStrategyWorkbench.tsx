@@ -95,6 +95,7 @@ export default function OptimizationStrategyWorkbench() {
   const [markov, setMarkov] = useState<[string, string, string, string]>(INITIAL.markov);
   const [initialA, setInitialA] = useState(INITIAL.initialA);
   const [markovSteps, setMarkovSteps] = useState(INITIAL.markovSteps);
+  const [markovRun, setMarkovRun] = useState(false);
   const [lpAnswerX, setLpAnswerX] = useState('');
   const [lpAnswerY, setLpAnswerY] = useState('');
   const [lpStatusChoice, setLpStatusChoice] = useState<ModelStatus>('optimal');
@@ -186,6 +187,7 @@ export default function OptimizationStrategyWorkbench() {
     setMode(next);
     resetLpPractice();
     resetGamePractice();
+    setMarkovRun(false);
   }
 
   function checkLpAnswer() {
@@ -223,6 +225,7 @@ export default function OptimizationStrategyWorkbench() {
   }
 
   function updateMarkov(index: number, value: string) {
+    setMarkovRun(false);
     setMarkov((current) => current.map((cell, cellIndex) => cellIndex === index ? value : cell) as [string, string, string, string]);
   }
 
@@ -271,8 +274,8 @@ export default function OptimizationStrategyWorkbench() {
 
     {mode === 'advanced' && <section className="strategy-workbench__stage" aria-labelledby="advanced-heading">
       <header className="strategy-workbench__header"><h2 id="advanced-heading">Inspect the algorithm after the model makes sense.</h2><p>These traces extend the main models. They stay subordinate so the initial workspace remains readable.</p></header>
-      <details className="strategy-workbench__advanced" open><summary>Simplex trace for current linear program</summary>{lp.simplex ? <div><strong>Simplex {lp.simplex.status === 'optimal' ? 'optimum' : lp.simplex.status}{lp.simplex.objectiveValue ? ` Z = ${lp.simplex.objectiveValue.toString()}` : ''}</strong><ol>{lp.simplex.steps.map((step) => <li key={step.iteration}>{step.label}</li>)}</ol></div> : <p>Simplex is available for maximization models with ≤ constraints.</p>}</details>
-      <details className="strategy-workbench__advanced"><summary>Two-state Markov forecast</summary><fieldset disabled={!hydrated}><legend className="sr-only">Two-state transition model</legend><div className="strategy-workbench__markov-grid">{markov.map((value, index) => <label key={index} className="form-field"><span className="form-field__label">P({index < 2 ? 'A' : 'B'} → {index % 2 === 0 ? 'A' : 'B'})</span><input data-primary-control className="text-input" value={value} onChange={(event) => updateMarkov(index, event.target.value)} /></label>)}</div><div className="strategy-workbench__markov-controls"><label className="form-field"><span className="form-field__label">Initial P(A)</span><input data-primary-control className="text-input" value={initialA} onChange={(event) => setInitialA(event.target.value)} /></label><label className="form-field"><span className="form-field__label">Steps</span><input data-primary-control className="text-input" type="number" min="0" max="10000" value={markovSteps} onChange={(event) => setMarkovSteps(Number(event.target.value))} /></label></div></fieldset>{markovAnalysis.error ? <Feedback tone="error" role="alert">{markovAnalysis.error}</Feedback> : markovAnalysis.after && <div className="strategy-workbench__markov-result"><strong>After {markovSteps} steps: ({markovAnalysis.after.map((value) => value.toString()).join(', ')})</strong>{markovAnalysis.stationary?.kind === 'unique' && <span>Stationary: ({markovAnalysis.stationary.vector.map((value) => value.toString()).join(', ')})</span>}</div>}</details>
+      <details className="strategy-workbench__advanced"><summary>Simplex trace for current linear program</summary>{lp.simplex ? <div><strong>Simplex {lp.simplex.status === 'optimal' ? 'optimum' : lp.simplex.status}{lp.simplex.objectiveValue ? ` Z = ${lp.simplex.objectiveValue.toString()}` : ''}</strong><ol>{lp.simplex.steps.map((step) => <li key={step.iteration}>{step.label}</li>)}</ol></div> : <p>Simplex is available for maximization models with ≤ constraints.</p>}</details>
+      <details className="strategy-workbench__advanced"><summary>Two-state Markov forecast</summary><fieldset disabled={!hydrated}><legend className="sr-only">Two-state transition model</legend><div className="strategy-workbench__markov-grid">{markov.map((value, index) => <label key={index} className="form-field"><span className="form-field__label">P({index < 2 ? 'A' : 'B'} → {index % 2 === 0 ? 'A' : 'B'})</span><input data-primary-control className="text-input" value={value} onChange={(event) => updateMarkov(index, event.target.value)} /></label>)}</div><div className="strategy-workbench__markov-controls"><label className="form-field"><span className="form-field__label">Initial P(A)</span><input data-primary-control className="text-input" value={initialA} onChange={(event) => { setInitialA(event.target.value); setMarkovRun(false); }} /></label><label className="form-field"><span className="form-field__label">Steps</span><input data-primary-control className="text-input" type="number" min="0" max="10000" value={markovSteps} onChange={(event) => { setMarkovSteps(Number(event.target.value)); setMarkovRun(false); }} /></label><button data-primary-control className="button button--primary" type="button" onClick={() => setMarkovRun(true)}>Run forecast</button></div></fieldset>{markovAnalysis.error ? <Feedback tone="error" role="alert">{markovAnalysis.error}</Feedback> : markovRun && markovAnalysis.after && <div className="strategy-workbench__markov-result"><strong>After {markovSteps} steps: ({markovAnalysis.after.map((value) => value.toString()).join(', ')})</strong>{markovAnalysis.stationary?.kind === 'unique' && <span>Stationary: ({markovAnalysis.stationary.vector.map((value) => value.toString()).join(', ')})</span>}</div>}</details>
     </section>}
   </section>;
 }

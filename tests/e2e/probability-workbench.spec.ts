@@ -9,11 +9,21 @@ test('@core Counting selects the model before showing the exact count', async ({
   const workbench = page.getByTestId('probability-model-builder');
   await expect(workbench).toHaveAttribute('data-hydrated', 'true');
   await expect(workbench.getByRole('heading', { name: 'Name what makes an outcome different.' })).toBeVisible();
-  await expect(workbench.getByText('Permutation', { exact: true })).toBeVisible();
+  await expect(workbench.getByRole('option', { name: /Permutation · order, no repeats/ })).toBeAttached();
+  await expect(workbench.locator('[data-probability-result]')).not.toBeVisible();
+
+  await workbench.getByLabel('Counting model').selectOption('combination');
+  await workbench.getByRole('button', { name: 'Check model' }).click();
+  await expect(workbench.locator('[data-counting-feedback] [data-tone="error"]')).toContainText('Recheck');
+  await expect(workbench.locator('[data-probability-result]')).not.toBeVisible();
+
+  await workbench.getByLabel('Counting model').selectOption('permutation');
+  await workbench.getByRole('button', { name: 'Check model' }).click();
+  await expect(workbench.locator('[data-counting-feedback] [data-tone="success"]')).toContainText('Correct model');
   await expect(workbench.getByText('P(8, 3) = 336')).toBeVisible();
 
-  const visiblePrimaryControls = workbench.locator('[data-primary-control]:visible');
-  expect(await visiblePrimaryControls.count()).toBeLessThanOrEqual(8);
+  const visibleCountingControls = workbench.locator('.probability-builder__counting-controls [data-primary-control]:visible, .probability-builder__counting-check [data-primary-control]:visible');
+  expect(await visibleCountingControls.count()).toBeLessThanOrEqual(6);
 });
 
 test('@core Conditioning keeps the active denominator visible and checks the answer first', async ({ page }) => {
@@ -78,6 +88,9 @@ test('Probability Model Builder keeps the first exact result above the mobile do
   const updateDismiss = page.getByRole('button', { name: 'Later', exact: true });
   if (await updateDismiss.isVisible()) await updateDismiss.click();
   await page.locator('.workspace-scroll').evaluate((element) => { element.scrollTop = 0; });
+  const workbench = page.getByTestId('probability-model-builder');
+  await workbench.getByLabel('Counting model').selectOption('permutation');
+  await workbench.getByRole('button', { name: 'Check model' }).click();
   const metrics = await page.getByTestId('probability-model-builder').evaluate((element) => {
     const result = element.querySelector<HTMLElement>('[data-probability-result] strong');
     const dock = document.querySelector<HTMLElement>('.mobile-nav');

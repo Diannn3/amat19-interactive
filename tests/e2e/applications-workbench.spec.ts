@@ -50,10 +50,19 @@ test('@core Advanced view keeps simplex and Markov subordinate to the model', as
   const workbench = page.getByTestId('optimization-strategy-workbench');
   await workbench.getByRole('button', { name: 'Advanced' }).click();
 
+  await expect(workbench.getByText('Simplex optimum Z = 11')).not.toBeVisible();
+  await workbench.getByText('Simplex trace for current linear program').click();
   await expect(workbench.getByText('Simplex optimum Z = 11')).toBeVisible();
   await workbench.getByText('Two-state Markov forecast').click();
+  await expect(workbench.getByText('After 3 steps: (86/125, 39/125)')).not.toBeVisible();
+  await workbench.getByRole('button', { name: 'Run forecast' }).click();
   await expect(workbench.getByText('After 3 steps: (86/125, 39/125)')).toBeVisible();
   await expect(workbench.getByText('Stationary: (2/3, 1/3)')).toBeVisible();
+  await workbench.getByLabel('Steps').fill('4');
+  await expect(workbench.getByText('After 3 steps: (86/125, 39/125)')).not.toBeVisible();
+  await workbench.getByRole('button', { name: 'Run forecast' }).click();
+  await expect(workbench.getByText('After 4 steps: (86/125, 39/125)')).not.toBeVisible();
+  await expect(workbench.getByText(/After 4 steps:/)).toBeVisible();
 });
 
 test('Optimization & Strategy keeps the exact optimum above the mobile dock', async ({ page }) => {

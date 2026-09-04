@@ -44,7 +44,7 @@ export const currentCourseProfile:CourseProfile={
   {id:'applications',title:'Optimization & Strategy',description:'Formulate an optimization or strategy model before solving it.',notation:'max z = cᵀx',href:'/workbenches/applications',absorbedLabIds:['linear-programming','game-theory','markov']}
  ],
  skills:[
-  {id:'logic.propositions',module:'logic',title:'Propositions & connectives',description:'Recognize proposition structure and connect controlled language to logical symbols.',status:'implemented',prerequisiteIds:[],relatedLab:'/workbenches/logic?mode=table'},
+  {id:'logic.propositions',module:'logic',title:'Propositions & connectives',description:'Recognize proposition structure and connect controlled language to logical symbols.',status:'implemented',prerequisiteIds:[],relatedLab:'/workbenches/logic?mode=translate'},
   {id:'logic.truth-values',module:'logic',title:'Truth values & truth tables',description:'Generate assignments, evaluate subexpressions, and classify propositions.',status:'implemented',prerequisiteIds:['logic.propositions'],relatedLab:'/workbenches/logic?mode=table'},
   {id:'logic.equivalence',module:'logic',title:'Logical equivalence',description:'Compare propositions semantically and validate named equivalence-rule rewrites.',status:'implemented',prerequisiteIds:['logic.truth-values'],relatedLab:'/workbenches/logic?mode=compare'},
   {id:'logic.argument-validity',module:'logic',title:'Argument validity',description:'Find or rule out true-premise/false-conclusion counterexamples.',status:'implemented',prerequisiteIds:['logic.truth-values'],relatedLab:'/workbenches/logic?mode=argument'},

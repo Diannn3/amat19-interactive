@@ -12,9 +12,15 @@ import { Feedback } from '../ui/Feedback';
 import { loadDraft, saveDraft } from '../../lib/draft';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
 import { readWorkbenchOption } from '../../lib/workbench-route';
+import {
+  checkLogicTranslation,
+  LOGIC_TRANSLATION_PROMPTS,
+  type LogicTranslationFeedback,
+  type LogicTranslationPrompt,
+} from '../../lib/logic-translation';
 import FormalProofLab from '../labs/formal-proof/FormalProofLab';
 
-type Mode = 'table' | 'compare' | 'argument' | 'proof';
+type Mode = 'translate' | 'table' | 'compare' | 'argument' | 'proof';
 type Draft = {
   mode: Mode;
   expression: string;
@@ -22,6 +28,8 @@ type Draft = {
   right: string;
   premises: string;
   conclusion: string;
+  translationPromptId?: LogicTranslationPrompt['id'];
+  translationAnswer?: string;
 };
 
 const LAB_ID = 'workbench.logic-proof';
@@ -33,9 +41,12 @@ const INITIAL_DRAFT: Draft = {
   right: '~Q -> ~P',
   premises: 'P -> Q\nQ',
   conclusion: 'P',
+  translationPromptId: 'if-then',
+  translationAnswer: '',
 };
 
 const MODES: Array<{ id: Mode; label: string }> = [
+  { id: 'translate', label: 'Translate' },
   { id: 'table', label: 'Truth table' },
   { id: 'compare', label: 'Compare' },
   { id: 'argument', label: 'Argument' },
@@ -69,6 +80,10 @@ export default function LogicProofWorkbench() {
   const [premises, setPremises] = useState(INITIAL_DRAFT.premises);
   const [conclusion, setConclusion] = useState(INITIAL_DRAFT.conclusion);
   const [argumentChecked, setArgumentChecked] = useState(false);
+  const [translationPromptId, setTranslationPromptId] = useState<LogicTranslationPrompt['id']>(INITIAL_DRAFT.translationPromptId!);
+  const [translationAnswer, setTranslationAnswer] = useState(INITIAL_DRAFT.translationAnswer!);
+  const [translationFeedback, setTranslationFeedback] = useState<LogicTranslationFeedback>();
+  const [translationRevealed, setTranslationRevealed] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -82,6 +97,8 @@ export default function LogicProofWorkbench() {
         setRight(draft.right);
         setPremises(draft.premises);
         setConclusion(draft.conclusion);
+        setTranslationPromptId(draft.translationPromptId ?? INITIAL_DRAFT.translationPromptId!);
+        setTranslationAnswer(draft.translationAnswer ?? '');
       }
       if (!draft && requestedMode) setMode(requestedMode);
       setHydrated(true);
@@ -89,7 +106,7 @@ export default function LogicProofWorkbench() {
     return () => { active = false; };
   }, []);
 
-  const draft = useMemo<Draft>(() => ({ mode, expression, left, right, premises, conclusion }), [mode, expression, left, right, premises, conclusion]);
+  const draft = useMemo<Draft>(() => ({ mode, expression, left, right, premises, conclusion, translationPromptId, translationAnswer }), [mode, expression, left, right, premises, conclusion, translationPromptId, translationAnswer]);
   useEffect(() => {
     if (!hydrated) return;
     const timer = window.setTimeout(() => { void saveDraft(LAB_ID, CONTENT_VERSION, draft); }, 250);
@@ -115,6 +132,21 @@ export default function LogicProofWorkbench() {
     }
   }, [premises, conclusion]);
 
+  const translationPrompt = LOGIC_TRANSLATION_PROMPTS.find((item) => item.id === translationPromptId) ?? LOGIC_TRANSLATION_PROMPTS[0]!;
+
+  function selectMode(next: Mode) {
+    setMode(next);
+    setArgumentChecked(false);
+    setTranslationFeedback(undefined);
+    setTranslationRevealed(false);
+  }
+
+  function checkTranslation() {
+    const feedback = checkLogicTranslation(translationAnswer, translationPrompt.expected);
+    setTranslationFeedback(feedback);
+    setTranslationRevealed(feedback.status === 'correct');
+  }
+
   return (
     <section className="logic-workbench" data-testid="logic-proof-workbench" data-hydrated={hydrated ? 'true' : undefined}>
       <fieldset className="logic-workbench__mode-fieldset" disabled={!hydrated}>
@@ -128,13 +160,32 @@ export default function LogicProofWorkbench() {
               type="button"
               aria-pressed={mode === item.id}
               key={item.id}
-              onClick={() => setMode(item.id)}
+              onClick={() => selectMode(item.id)}
             >
               {item.label}
             </button>
           ))}
         </div>
       </fieldset>
+
+      {mode === 'translate' && (
+        <section className="logic-workbench__stage" aria-labelledby="translation-heading">
+          <header className="logic-workbench__header">
+            <h2 id="translation-heading">Turn controlled language into symbols.</h2>
+            <p>Read the relationship first, then write the proposition with the notation used in the course.</p>
+          </header>
+          <form className="logic-workbench__translation-form" onSubmit={(event) => { event.preventDefault(); checkTranslation(); }}>
+            <fieldset disabled={!hydrated}>
+              <legend className="sr-only">Controlled-language translation</legend>
+              <label className="form-field"><span className="form-field__label">Statement to translate</span><select data-primary-control className="select-input" value={translationPrompt.id} onChange={(event) => { setTranslationPromptId(event.target.value as LogicTranslationPrompt['id']); setTranslationAnswer(''); setTranslationFeedback(undefined); setTranslationRevealed(false); }}>{LOGIC_TRANSLATION_PROMPTS.map((item) => <option key={item.id} value={item.id}>{item.sentence}</option>)}</select></label>
+              <label className="form-field"><span className="form-field__label">Your symbolic form</span><input data-primary-control className="text-input logic-input" aria-label="Symbolic translation" value={translationAnswer} onChange={(event) => { setTranslationAnswer(event.target.value); setTranslationFeedback(undefined); setTranslationRevealed(false); }} placeholder="For example, P → Q" autoComplete="off" spellCheck={false} /></label>
+              <Button data-primary-control variant="primary" type="submit">Check translation</Button>
+            </fieldset>
+          </form>
+          <div data-logic-translation-feedback>{translationFeedback && <Feedback tone={translationFeedback.status === 'correct' ? 'success' : 'error'}>{translationFeedback.message}</Feedback>}</div>
+          {translationRevealed && <div className="logic-workbench__translation-result" data-logic-translation-result><strong>Canonical form</strong><span>{translationPrompt.expected}</span><small>{translationPrompt.explanation}</small></div>}
+        </section>
+      )}
 
       {mode === 'table' && (
         <section className="logic-workbench__stage" aria-labelledby="truth-table-heading">
