@@ -18,6 +18,13 @@ This is an incremental implementation record, not a release certificate. Branch 
 - The full valuation and trace remain behind an explicit “Show full calculation” action. The mobile check action stays above the dock across the configured Chromium, Firefox, and WebKit runs.
 - Targeted finance verification: 77 browser tests passed across the configured viewport/browser projects; the complete Node suite passed with 186 tests.
 
+### Row Operations Coach stepwise practice delivered (2026-09-04)
+
+- The coach now asks for the affected row before a legal operation can be applied; incorrect candidates receive the first wrong column without exposing the full answer.
+- The same workbench now includes a focused Matrix arithmetic mode for exact addition, subtraction, and multiplication. A complete candidate is checked before the exact result is revealed.
+- Goal switching resets the instructional context, target summaries stay collapsed until requested, and mobile keeps the matrix, operation controls, candidate field, and 44px check action above the dock.
+- Final targeted coverage is green through a 65-case configured browser run plus the final 6-case WebKit rerun after the last mobile spacing adjustment. The new pure feedback suite passes 5/5; Astro check and the production build also pass.
+
 ### Verification of route retirement (2026-09-04)
 
 - Architecture/content audits and Astro checks passed (0 errors, 0 warnings; one pre-existing service-worker typing hint).
@@ -32,12 +39,11 @@ This is an incremental implementation record, not a release certificate. Branch 
 
 Consolidating destinations does not by itself fulfill the brief. These are acceptance gaps to close before declaring the goal complete:
 
-1. Row Operations Coach currently executes a chosen legal operation; it must also diagnose a student-entered arithmetic result. Matrix arithmetic remains a supporting-mode gap.
-2. Probability currently groups calculators rather than synchronizing representations of one model. Counting, conditioning, Bayes, and simulation need a coherent model/view distinction.
-3. Optimization still reveals its solution immediately. Formulation/corner checks and dominance reasoning need student actions before the solution.
-4. Logic needs translation coverage and a full audit of proof-mode feedback, notation, and visible implementation metadata.
-5. Audit all modes, not only default pages, for mobile first-action visibility, local error placement, keyboard use, forced colors, reduced motion, and Axe.
-6. Complete `verify:full` plus production PWA checks and inspect final screenshots before a release claim.
+1. Probability currently groups calculators rather than synchronizing representations of one model. Counting, conditioning, Bayes, and simulation need a coherent model/view distinction.
+2. Optimization still reveals its solution immediately. Formulation/corner checks and dominance reasoning need student actions before the solution.
+3. Logic needs translation coverage and a full audit of proof-mode feedback, notation, and visible implementation metadata.
+4. Audit all modes, not only default pages, for mobile first-action visibility, local error placement, keyboard use, forced colors, reduced motion, and Axe.
+5. Complete `verify:full` plus production PWA checks and inspect final screenshots before a release claim.
 
 ## Dependency boundary
 
