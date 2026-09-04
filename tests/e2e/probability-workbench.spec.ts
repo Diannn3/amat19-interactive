@@ -65,9 +65,9 @@ test('@core Verification is reproducible and labelled as evidence, not proof', a
 test('@core event-table edits stay synchronized across Bayes and verification views', async ({ page }) => {
   const workbench = page.getByTestId('probability-model-builder');
   await workbench.getByRole('button', { name: 'Conditioning' }).click();
-  await workbench.getByLabel('A and B').fill('10');
+  await workbench.getByRole('spinbutton', { name: 'A and B', exact: true }).fill('10');
   await workbench.getByRole('button', { name: 'Bayes' }).click();
-  await expect(workbench.getByLabel('A and B')).toHaveValue('10');
+  await expect(workbench.getByRole('spinbutton', { name: 'A and B', exact: true })).toHaveValue('10');
   await workbench.getByRole('button', { name: 'Verify' }).click();
   await expect(workbench.getByText(/Exact P\(B\) from this table/)).toBeVisible();
 });
@@ -75,6 +75,8 @@ test('@core event-table edits stay synchronized across Bayes and verification vi
 test('Probability Model Builder keeps the first exact result above the mobile dock', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
+  const updateDismiss = page.getByRole('button', { name: 'Later', exact: true });
+  if (await updateDismiss.isVisible()) await updateDismiss.click();
   await page.locator('.workspace-scroll').evaluate((element) => { element.scrollTop = 0; });
   const metrics = await page.getByTestId('probability-model-builder').evaluate((element) => {
     const result = element.querySelector<HTMLElement>('[data-probability-result] strong');

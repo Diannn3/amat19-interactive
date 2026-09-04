@@ -25,6 +25,13 @@ This is an incremental implementation record, not a release certificate. Branch 
 - Goal switching resets the instructional context, target summaries stay collapsed until requested, and mobile keeps the matrix, operation controls, candidate field, and 44px check action above the dock.
 - Final targeted coverage is green through a 65-case configured browser run plus the final 6-case WebKit rerun after the last mobile spacing adjustment. The new pure feedback suite passes 5/5; Astro check and the production build also pass.
 
+### Probability shared event model delivered (2026-09-04)
+
+- Conditioning, Bayes, and seeded verification now share the same canonical four-region event table. Bayes derives its prior, likelihood paths, and posterior from that table; verification simulates the table's `P(B)` instead of an unrelated probability input.
+- Conditional and posterior answers are checked locally before exact results or path accounting are shown. Invalid and incorrect answers do not disclose the target value.
+- Counting remains an explicit separate counting-rule view; it is not being presented as another representation of the binary event table.
+- Targeted Probability verification: 77 browser tests passed across the configured viewport/browser projects; the pure answer-feedback suite passes 3/3; the complete Node suite passes 194/194; Astro check and the production build pass.
+
 ### Verification of route retirement (2026-09-04)
 
 - Architecture/content audits and Astro checks passed (0 errors, 0 warnings; one pre-existing service-worker typing hint).
@@ -39,7 +46,7 @@ This is an incremental implementation record, not a release certificate. Branch 
 
 Consolidating destinations does not by itself fulfill the brief. These are acceptance gaps to close before declaring the goal complete:
 
-1. Probability currently groups calculators rather than synchronizing representations of one model. Counting, conditioning, Bayes, and simulation need a coherent model/view distinction.
+1. Counting remains a separate model from the shared event table. Add a student-first counting check and decide whether counting should become a first-class course-directory view or remain an explicit setup helper.
 2. Optimization still reveals its solution immediately. Formulation/corner checks and dominance reasoning need student actions before the solution.
 3. Logic needs translation coverage and a full audit of proof-mode feedback, notation, and visible implementation metadata.
 4. Audit all modes, not only default pages, for mobile first-action visibility, local error placement, keyboard use, forced colors, reduced motion, and Axe.

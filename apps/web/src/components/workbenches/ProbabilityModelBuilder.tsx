@@ -136,7 +136,7 @@ export default function ProbabilityModelBuilder() {
   }, [cells]);
 
   const bayes = useMemo(() => {
-    if (!conditioning.table || !conditioning.analysis) return { result: undefined, error: conditioning.error };
+    if (!conditioning.table || !conditioning.analysis) return { result: undefined, error: conditioning.error ?? 'Build a valid event table first.' };
     try {
       const notACount = conditioning.analysis.total - conditioning.analysis.countA;
       if (!conditioning.analysis.pBGivenA || notACount === 0n) throw new RangeError('Bayes needs observations in both A and not A.');
@@ -155,8 +155,10 @@ export default function ProbabilityModelBuilder() {
 
   function updateCell(index: number, value: number) {
     setCells((current) => current.map((cell, cellIndex) => cellIndex === index ? value : cell) as [number, number, number, number]);
+    setConditionalAnswerRaw('');
     setConditionalFeedback(undefined);
     setConditionalRevealed(false);
+    setBayesAnswerRaw('');
     setBayesFeedback(undefined);
     setBayesRevealed(false);
     setSimulation(undefined);
@@ -165,8 +167,10 @@ export default function ProbabilityModelBuilder() {
 
   function selectMode(next: Mode) {
     setMode(next);
+    setConditionalAnswerRaw('');
     setConditionalFeedback(undefined);
     setConditionalRevealed(false);
+    setBayesAnswerRaw('');
     setBayesFeedback(undefined);
     setBayesRevealed(false);
     setSimulation(undefined);
@@ -225,7 +229,7 @@ export default function ProbabilityModelBuilder() {
 
       {mode === 'conditioning' && <section className="probability-builder__stage" aria-labelledby="conditioning-heading">
         <header className="probability-builder__header"><h2 id="conditioning-heading">Shrink the sample space first.</h2><p>The highlighted event becomes the denominator. Edit the same four regions used by the other probability views.</p></header>
-        <EventModelTable cells={cells} condition={condition} hydrated={hydrated} showConditionChoice onConditionChange={(next) => { setCondition(next); setConditionalFeedback(undefined); setConditionalRevealed(false); }} onCellChange={updateCell} />
+        <EventModelTable cells={cells} condition={condition} hydrated={hydrated} showConditionChoice onConditionChange={(next) => { setCondition(next); setConditionalAnswerRaw(''); setConditionalFeedback(undefined); setConditionalRevealed(false); }} onCellChange={updateCell} />
         {conditioning.error ? <Feedback tone="error" role="alert">{conditioning.error}</Feedback> : conditioning.analysis && <>
           <form className="probability-builder__answer" onSubmit={(event) => { event.preventDefault(); checkConditionalAnswer(); }}>
             <label className="form-field"><span className="form-field__label">Conditional probability answer</span><input data-primary-control className="text-input" name="conditional-answer" value={conditionalAnswerRaw} onChange={(event) => { setConditionalAnswerRaw(event.target.value); setConditionalFeedback(undefined); setConditionalRevealed(false); }} placeholder="For example, 4/5" autoComplete="off" /></label>
@@ -297,8 +301,8 @@ function EventModelTable({
       <table aria-label="Two-way count table" className="probability-builder__two-way">
         <thead><tr><th></th><th data-active={condition === 'a-given-b'}>B</th><th>not B</th></tr></thead>
         <tbody>
-          <tr data-active={condition === 'b-given-a'}><th>A</th><td><label><span className="sr-only">A and B</span><input data-primary-control type="number" min="0" value={Number.isNaN(cells[0]) ? '' : cells[0]} onChange={(event) => onCellChange(0, Number(event.target.value))} /></label></td><td><label><span className="sr-only">A and not B</span><input data-primary-control type="number" min="0" value={Number.isNaN(cells[1]) ? '' : cells[1]} onChange={(event) => onCellChange(1, Number(event.target.value))} /></label></td></tr>
-          <tr><th>not A</th><td><label><span className="sr-only">not A and B</span><input data-primary-control type="number" min="0" value={Number.isNaN(cells[2]) ? '' : cells[2]} onChange={(event) => onCellChange(2, Number(event.target.value))} /></label></td><td><label><span className="sr-only">not A and not B</span><input data-primary-control type="number" min="0" value={Number.isNaN(cells[3]) ? '' : cells[3]} onChange={(event) => onCellChange(3, Number(event.target.value))} /></label></td></tr>
+          <tr data-active={condition === 'b-given-a'}><th>A</th><td><label><span className="sr-only">A and B</span><input data-primary-control disabled={!hydrated} type="number" min="0" value={Number.isNaN(cells[0]) ? '' : cells[0]} onChange={(event) => onCellChange(0, Number(event.target.value))} /></label></td><td><label><span className="sr-only">A and not B</span><input data-primary-control disabled={!hydrated} type="number" min="0" value={Number.isNaN(cells[1]) ? '' : cells[1]} onChange={(event) => onCellChange(1, Number(event.target.value))} /></label></td></tr>
+          <tr><th>not A</th><td><label><span className="sr-only">not A and B</span><input data-primary-control disabled={!hydrated} type="number" min="0" value={Number.isNaN(cells[2]) ? '' : cells[2]} onChange={(event) => onCellChange(2, Number(event.target.value))} /></label></td><td><label><span className="sr-only">not A and not B</span><input data-primary-control disabled={!hydrated} type="number" min="0" value={Number.isNaN(cells[3]) ? '' : cells[3]} onChange={(event) => onCellChange(3, Number(event.target.value))} /></label></td></tr>
         </tbody>
       </table>
     </div>
