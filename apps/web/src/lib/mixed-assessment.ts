@@ -50,7 +50,7 @@ function logicExercise(random: () => number, index: number): AssessmentExercise 
     prompt: `Without relying on a single row, classify ${expression}.`,
     answer: classification, distractors: ['tautology', 'contradiction', 'contingent'],
     explanation: `Enumerating all valuations makes the final column ${classification}. Classification is a statement about the entire final column, not one convenient assignment.`,
-    labHref: '/labs/truth-table'
+    labHref: '/workbenches/logic?mode=table'
   }, random);
 }
 function countingExercise(random: () => number, index: number,context:BuildContext): AssessmentExercise {
@@ -63,7 +63,7 @@ function countingExercise(random: () => number, index: number,context:BuildConte
     prompt: order ? `Choose and arrange ${r} distinct objects from ${n}. How many outcomes are possible?` : `Choose a group of ${r} distinct objects from ${n}; order does not matter. How many groups are possible?`,
     answer: answerValue.toString(), distractors: [other.toString(), BigInt(n * r).toString(), BigInt(n ** r).toString()],
     explanation: order ? `Order creates distinct outcomes, so use P(${n}, ${r}) = ${answerValue}.` : `Rearranging the same selected group does not create a new outcome, so use C(${n}, ${r}) = ${answerValue}.`,
-    labHref: '/labs/counting'
+    labHref: '/workbenches/probability?mode=counting'
   }, random);
 }
 function conditionalExercise(random: () => number, index: number): AssessmentExercise {
@@ -75,7 +75,7 @@ function conditionalExercise(random: () => number, index: number): AssessmentExe
     prompt: `A∩B=${ab}, A∩Bᶜ=${aNotB}, Aᶜ∩B=${notAB}, Aᶜ∩Bᶜ=${neither}. Find P(A|B).`,
     answer, distractors: [analysis.pBGivenA!.toString(), analysis.pIntersection.toString(), analysis.pA.toString()],
     explanation: `Once B is given, the active universe contains |B|=${analysis.countB}. The favorable part is |A∩B|=${ab}, so P(A|B)=${answer}.`,
-    labHref: '/labs/conditional-probability'
+    labHref: '/workbenches/probability?mode=conditioning'
   }, random);
 }
 function financeExercise(random: () => number, index: number,context:BuildContext): AssessmentExercise {
@@ -91,7 +91,7 @@ function financeExercise(random: () => number, index: number,context:BuildContex
     prompt: `₱${principal} earns ${(rate * 100).toFixed(0)}% per year for ${years} years using ${compound ? 'annual compound' : 'simple'} interest. What is the accumulated value?`,
     answer, distractors: [roundFinance(wrongModel, 2).toFixed(2), roundFinance(principal * rate * years, 2).toFixed(2), roundFinance(principal * (1 + rate), 2).toFixed(2)],
     explanation: compound ? `Compound interest uses A=P(1+i)^t, giving ₱${answer}.` : `Simple interest uses A=P(1+it), giving ₱${answer}.`,
-    labHref: '/labs/interest'
+    labHref: '/workbenches/finance?scenario=cashflows'
   }, random);
 }
 function matrixExercise(random: () => number, index: number): AssessmentExercise {
@@ -103,7 +103,7 @@ function matrixExercise(random: () => number, index: number): AssessmentExercise
     prompt: `For A=[[${a},${b}],[${c},${d}]] and B=[[2,1],[1,3]], what is entry (1,1) of AB?`,
     answer, distractors: [String(a + b), String(a * 2 + b * 3), String(a * b + 2)],
     explanation: `Entry (1,1) is row 1 of A dotted with column 1 of B: ${a}(2)+${b}(1)=${answer}.`,
-    labHref: '/labs/matrix-operations'
+    labHref: '/workbenches/linear?goal=rref'
   }, random);
 }
 function systemExercise(random: () => number, index: number): AssessmentExercise {
@@ -120,7 +120,7 @@ function systemExercise(random: () => number, index: number): AssessmentExercise
     prompt: `Classify the system represented by augmented matrix [[${selected.rows[0].join(',')}],[${selected.rows[1].join(',')}]].`,
     answer: actual, distractors: ['unique', 'infinite', 'inconsistent'],
     explanation: `Exact Gauss–Jordan reduction classifies this system as ${actual}. A contradictory row means inconsistent; a missing pivot with no contradiction means infinitely many solutions.`,
-    labHref: '/labs/row-reduction'
+    labHref: '/workbenches/linear?goal=system'
   }, random);
 }
 function lpExercise(random: () => number, index: number): AssessmentExercise {
@@ -137,7 +137,7 @@ function lpExercise(random: () => number, index: number): AssessmentExercise {
     prompt: `Maximize Z=${cx}x+${cy}y subject to x+y≤4, x≤3, y≤3, x,y≥0. Which listed corner is optimal?`,
     answer, distractors: [`(0, 0), Z=0`, `(3, 0), Z=${3 * cx}`, `(0, 3), Z=${3 * cy}`],
     explanation: `A bounded two-variable linear program reaches an optimum at a feasible corner. Evaluating all feasible vertices gives ${answer}.`,
-    labHref: '/labs/linear-programming'
+    labHref: '/workbenches/applications?mode=linear'
   }, random);
 }
 function gameExercise(random: () => number, index: number): AssessmentExercise {
@@ -151,7 +151,7 @@ function gameExercise(random: () => number, index: number): AssessmentExercise {
     prompt: `For the row-player payoff matrix [[${values[0]!.join(',')}],[${values[1]!.join(',')}]], compare maximin and minimax.`,
     answer, distractors: ['pure saddle point exists', 'no pure saddle; mixed analysis is needed', 'the game is infeasible', 'the matrix must be inverted first'],
     explanation: `The row player guarantees ${lo.toString()} and the column player holds the payoff to ${hi.toString()}. ${lo.equals(hi) ? 'Because they match, that value is a saddle-point game.' : 'Because they differ, there is no pure saddle point.'}`,
-    labHref: '/labs/game-theory'
+    labHref: '/workbenches/applications?mode=game'
   }, random);
 }
 

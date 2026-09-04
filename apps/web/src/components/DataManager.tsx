@@ -98,8 +98,8 @@ export default function DataManager() {
     <section className="data-manager" data-testid="data-manager">
       <div className="data-manager__head">
         <div>
-          <p className="section-label">Local-first data</p>
           <h2>Your work stays in this browser.</h2>
+          <p className="section-context">Local-first data</p>
           <p>AMAT 19 stores study history in local browser storage. Export a portable JSON copy whenever you want; no account is required.</p>
         </div>
         <Badge>v{CURRENT_SCHEMA_VERSION}</Badge>

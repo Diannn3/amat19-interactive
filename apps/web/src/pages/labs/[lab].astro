@@ -1,0 +1,39 @@
+---
+import { legacyLabAliases } from '@amat19/course-content';
+
+export function getStaticPaths() {
+  return Object.entries(legacyLabAliases).map(([lab, alias]) => ({
+    params: { lab },
+    props: { destination: alias.destination, legacyModes: alias.legacyModes ?? {} },
+  }));
+}
+
+interface Props {
+  destination: string;
+  legacyModes: Record<string, string>;
+}
+
+const { destination, legacyModes } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Opening your workbench</title>
+    <script is:inline define:vars={{ destination, legacyModes }}>
+      const mode = new URLSearchParams(window.location.search).get('mode');
+      const target = mode && Object.prototype.hasOwnProperty.call(legacyModes, mode)
+        ? legacyModes[mode]
+        : destination;
+      window.location.replace(target);
+    </script>
+    <meta http-equiv="refresh" content={`0;url=${destination}`} />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={destination} />
+  </head>
+  <body>
+    <p>This tool now lives in a focused course workbench.</p>
+    <a href={destination}>Open the workbench</a>
+  </body>
+</html>

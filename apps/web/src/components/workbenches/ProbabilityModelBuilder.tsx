@@ -16,6 +16,7 @@ import { Button } from '../ui/Button';
 import { Feedback } from '../ui/Feedback';
 import { loadDraft, saveDraft } from '../../lib/draft';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
+import { readWorkbenchOption } from '../../lib/workbench-route';
 
 type Mode = 'counting' | 'conditioning' | 'bayes' | 'verify';
 type Condition = 'a-given-b' | 'b-given-a';
@@ -98,14 +99,16 @@ export default function ProbabilityModelBuilder() {
 
   useEffect(() => {
     let active = true;
+    const requestedMode = readWorkbenchOption('mode', MODES.map((item) => item.id));
     loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((draft) => {
       if (!active) return;
       if (draft) {
-        setMode(draft.mode); setOrderMatters(draft.orderMatters); setRepetitionAllowed(draft.repetitionAllowed);
+        setMode(requestedMode ?? draft.mode); setOrderMatters(draft.orderMatters); setRepetitionAllowed(draft.repetitionAllowed);
         setN(draft.n); setR(draft.r); setCells(draft.cells); setCondition(draft.condition);
         setPrior(draft.prior); setSensitivity(draft.sensitivity); setFalsePositive(draft.falsePositive);
         setProbability(draft.probability); setTrials(draft.trials); setSeed(draft.seed);
       }
+      if (!draft && requestedMode) setMode(requestedMode);
       setHydrated(true);
     }).catch(() => setHydrated(true));
     return () => { active = false; };

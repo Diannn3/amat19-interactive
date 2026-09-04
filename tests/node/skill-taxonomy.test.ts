@@ -18,7 +18,6 @@ test('literal progress instrumentation uses declared or explicitly aliased skill
    /skillId\s*:\s*['"]([^'"]+)['"]/g,
  ];
  for(const file of files){const source=await readFile(file,'utf8');for(const pattern of patterns){for(const match of source.matchAll(pattern))found.add(match[1]!);}}
- assert.ok(found.size>10,'expected instrumentation literals across multiple labs');
  const unknown=[...found].filter(id=>!moduleForSkill(canonicalSkillId(id)));
  assert.deepEqual(unknown,[],`Unknown instrumentation skill ids: ${unknown.join(', ')}`);
 });

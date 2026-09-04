@@ -18,6 +18,7 @@ import { Feedback } from '../ui/Feedback';
 import { loadDraft, saveDraft } from '../../lib/draft';
 import { parseNonnegativeIntegerInput } from '../../lib/integer-input';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
+import { readWorkbenchOption } from '../../lib/workbench-route';
 
 type Goal = 'system' | 'inverse' | 'rref';
 type OperationKind = RowOperationInput['kind'];
@@ -31,6 +32,7 @@ type StoredDraft = {
 
 const LAB_ID = 'linear.row-operations-coach';
 const CONTENT_VERSION = '1';
+const GOALS: readonly Goal[] = ['system', 'inverse', 'rref'];
 const SAMPLES: Record<Goal, string> = {
   system: '1 1 3\n1 -1 1',
   inverse: '2 4\n0 -2',
@@ -133,8 +135,16 @@ export default function RowOperationsCoach() {
   };
 
   useEffect(() => {
+    const requestedGoal = readWorkbenchOption('goal', GOALS);
     loadDraft<StoredDraft>(LAB_ID, CONTENT_VERSION).then((saved) => {
-      if (!userInteracted.current && saved) {
+      if (!userInteracted.current && requestedGoal && requestedGoal !== saved?.goal) {
+        const raw = SAMPLES[requestedGoal];
+        setGoal(requestedGoal);
+        setSourceRaw(raw);
+        setEditorRaw(raw);
+        setCurrent(startingMatrix(parse(raw), requestedGoal));
+        setHistory([]);
+      } else if (!userInteracted.current && saved) {
         try {
           const restoredSource = parse(saved.sourceRaw);
           const restoredCurrent = parse(saved.currentRaw);

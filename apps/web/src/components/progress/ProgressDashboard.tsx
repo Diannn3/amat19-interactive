@@ -35,7 +35,7 @@ export default function ProgressDashboard() {
   const secureCount = coreSkills.length - needsAttention.length;
   const recordedCount = coreSkills.filter((skill) => byId.has(skill.id)).length;
 
-  if (!records) return <div className="progress-dashboard"><Skeleton className="h-32" /><Skeleton className="h-80" /></div>;
+  if (!records) return <div className="progress-dashboard" data-testid="progress-dashboard"><Skeleton className="h-32" /><Skeleton className="h-80" /></div>;
 
   return <div className="progress-dashboard" data-testid="progress-dashboard">
     <section className="progress-overview" aria-labelledby="progress-coverage-heading">

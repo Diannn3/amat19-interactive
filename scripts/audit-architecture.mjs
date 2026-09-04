@@ -50,11 +50,24 @@ for (const file of await filesUnder('apps/web/src')) {
 }
 
 const labPages = (await filesUnder('apps/web/src/pages/labs')).filter((file) => file.endsWith('.astro'));
-for (const file of labPages) {
+if (labPages.length !== 1 || !labPages[0]?.endsWith(`${path.sep}[lab].astro`)) {
+  violations.push(`apps/web/src/pages/labs: expected one dynamic compatibility route; found ${labPages.length}`);
+} else {
+  const source = await readFile(path.join(ROOT, labPages[0]), 'utf8');
+  if (!source.includes('legacyLabAliases') || !source.includes('window.location.replace') || !source.includes('http-equiv="refresh"')) {
+    violations.push(`${labPages[0]}: legacy lab route must resolve through the canonical alias registry`);
+  }
+  if (/client:(load|idle|visible|only|media)/.test(source)) {
+    violations.push(`${labPages[0]}: compatibility redirects must not hydrate a client root`);
+  }
+}
+
+const workbenchPages = (await filesUnder('apps/web/src/pages/workbenches')).filter((file) => file.endsWith('.astro'));
+for (const file of workbenchPages) {
   const source = await readFile(path.join(ROOT, file), 'utf8');
   const hydrationCount = (source.match(/client:(load|idle|visible|only|media)/g) ?? []).length;
   if (hydrationCount !== 1 || !source.includes('client:load')) {
-    violations.push(`${file}: expected exactly one client:load lab root; found ${hydrationCount} hydration directives`);
+    violations.push(`${file}: expected exactly one client:load workbench root; found ${hydrationCount} hydration directives`);
   }
 }
 
@@ -74,5 +87,6 @@ if (violations.length) {
 
 console.log('Architecture audit PASS');
 console.log(`- ${PURE_PACKAGES.length} domain/content packages remain DOM/framework independent`);
-console.log(`- ${labPages.length} lab routes each hydrate exactly one client:load root`);
+console.log(`- ${workbenchPages.length} workbench routes each hydrate exactly one client:load root`);
+console.log('- legacy lab URLs resolve through one non-hydrated compatibility route');
 console.log('- no dynamic JS evaluation, unsafe raw HTML rendering, or overlapping monolithic UI suites detected');

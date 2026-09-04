@@ -97,14 +97,13 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     expect(commandCopy).not.toMatch(/\b(live|implemented|engine-ready)\b/i);
   });
 
-  test('learner-facing lab explanations avoid implementation mechanics', async ({ page }) => {
+  test('learner-facing workbench explanations avoid implementation mechanics', async ({ page }) => {
     for (const route of [
-      '/labs/conditional-probability',
-      '/labs/cashflow-timeline',
-      '/labs/interest',
-      '/labs/distribution',
-      '/labs/probability-simulation',
-      '/labs/row-reduction',
+      '/workbenches/logic',
+      '/workbenches/probability',
+      '/workbenches/finance',
+      '/workbenches/linear',
+      '/workbenches/applications',
     ]) {
       await page.goto(route);
       await expect(page.locator('main')).not.toContainText(/\bworker\b|internal value|deterministic run|engine(?:'s)? (?:trace|step)|probability engine/i);
@@ -141,42 +140,16 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     await expect(dataManager).toContainText('Your work stays in this browser.');
   });
 
-  test('shared lab shell gives the math canvas a three-zone frame', async ({ page }) => {
-    await page.goto('/labs/truth-table');
+  test('shared workbench shell keeps the tool first and resources secondary', async ({ page }) => {
+    await page.goto('/workbenches/logic');
 
-    await expect(page.locator('.lab-route__context-rail')).toBeVisible();
-    await expect(page.locator('.lab-route__canvas')).toBeVisible();
-    await expect(page.locator('.lab-route__support')).toBeVisible();
-    await expect(page.locator('[data-lab-shell]')).toHaveCount(1);
-  });
-
-  test('lab header avoids repeating context-rail metadata', async ({ page }) => {
-    await page.goto('/labs/truth-table');
-
-    await expect(page.locator('.lab-route__header h1')).toHaveText('Truth Table Lab');
-    await expect(page.locator('.lab-route__header .lab-route__context')).toHaveCount(0);
-    await expect(page.locator('.lab-route__context-rail')).toContainText('Core course path');
-    await expect(page.getByRole('navigation', { name: 'Lab actions' })).toBeVisible();
-  });
-
-  test('lab context rail does not duplicate its module return action', async ({ page }) => {
-    await page.goto('/labs/truth-table');
-
-    const rail = page.locator('.lab-route__context-rail');
-    await expect(page.getByRole('link', { name: 'Back to Logic', exact: true })).toHaveCount(1);
-    await expect(rail.getByRole('link', { name: 'All Logic work', exact: true })).toHaveCount(0);
-    await expect(rail.getByRole('link')).toHaveCount(3);
-    for (const label of ['Read the concept', 'Check notation', 'Practice this module']) {
-      await expect(rail.getByRole('link', { name: label, exact: true })).toBeVisible();
-    }
-  });
-
-  test('tablet lab context rail gives the remaining routes equal space', async ({ page }) => {
-    test.skip((page.viewportSize()?.width ?? 0) !== 1024, 'Tablet layout contract only.');
-    await page.goto('/labs/truth-table');
-
-    const columns = await page.locator('.lab-route__context-rail nav').evaluate((nav) => getComputedStyle(nav).gridTemplateColumns.split(' ').length);
-    expect(columns).toBe(3);
+    await expect(page.getByTestId('workbench-shell')).toBeVisible();
+    await expect(page.locator('[data-workbench-canvas]')).toBeVisible();
+    await expect(page.locator('.lab-route__context-rail, .lab-route__support')).toHaveCount(0);
+    const resources = page.getByRole('navigation', { name: 'Workbench resources' });
+    await expect(resources.getByRole('link', { name: 'Logic' })).toHaveAttribute('href', '/modules/logic');
+    await expect(resources.getByRole('link', { name: 'Notes' })).toHaveAttribute('href', '/modules/logic?view=notes');
+    await expect(resources.getByRole('link', { name: 'Notation' })).toHaveAttribute('href', '/reference');
   });
 
   test('reference filters restore from the URL and remain expandable', async ({ page }) => {

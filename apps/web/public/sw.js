@@ -1,4 +1,4 @@
-const VERSION = 'amat19-workbenches-v1';
+const VERSION = 'amat19-workbenches-v2';
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
 const NAVIGATION_TIMEOUT_MS = 4000;
@@ -22,33 +22,24 @@ const CORE_ROUTES = [
   '/workbenches/finance',
   '/workbenches/linear',
   '/workbenches/applications',
-  '/labs/logic-basics',
-  '/labs/truth-table',
-  '/labs/equivalence',
-  '/labs/formal-proof',
-  '/labs/counting',
-  '/labs/conditional-probability',
-  '/labs/distribution',
-  '/labs/probability-simulation',
-  '/labs/bayes',
-  '/labs/interest',
-  '/labs/cashflow-timeline',
-  '/labs/annuity',
-  '/labs/bonds',
-  '/labs/matrix-operations',
-  '/labs/row-reduction',
-  '/labs/linear-programming',
-  '/labs/game-theory',
-  '/labs/markov',
   '/offline.html',
   '/manifest.webmanifest'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(PAGE_CACHE).then(async (cache) => {
-      await Promise.allSettled(CORE_ROUTES.map((url) => cache.add(url)));
-    })
+    (async () => {
+      const response = await fetch('/sw-assets.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('The offline asset manifest is unavailable.');
+      const manifest = await response.json();
+      if (!Array.isArray(manifest.assets) || manifest.assets.length === 0 ||
+          !manifest.assets.every(asset => typeof asset === 'string' && /^\/_astro\/[\w./-]+\.(?:js|css|woff2?)$/.test(asset))) {
+        throw new Error('The offline asset manifest is invalid.');
+      }
+      const [pages, assets] = await Promise.all([caches.open(PAGE_CACHE), caches.open(STATIC_CACHE)]);
+      // A partial installation must not replace a working offline version.
+      await Promise.all([pages.addAll(CORE_ROUTES), assets.addAll(manifest.assets)]);
+    })()
   );
   // Deliberately do not skipWaiting(): an active study session chooses when updates apply.
 });
@@ -100,7 +91,10 @@ async function networkFirst(request) {
 }
 
 async function cacheFirst(request) {
-  const cached = await caches.match(request);
+  // These same-origin hashed files are identical for classic and CORS module
+  // requests. A server's Vary: Origin must not invalidate their install cache.
+  const immutableChunk = new URL(request.url).pathname.startsWith('/_astro/');
+  const cached = await caches.match(request, { ignoreVary: immutableChunk });
   if (cached) return cached;
   const response = await fetch(request);
   if (response.ok) {

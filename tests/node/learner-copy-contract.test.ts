@@ -1,24 +1,14 @@
 import assert from 'node:assert/strict';
-import { readdir, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { fileURLToPath } from 'node:url';
+import { currentCourseProfile } from '../../packages/course-content/src/index.ts';
 
-const labsDirectory = new URL('../../apps/web/src/pages/labs/', import.meta.url);
-const labsDirectoryPath = fileURLToPath(labsDirectory);
 const implementationLanguage = /parsed proposition tree|evaluating text dynamically|free-form NLP|\bBigInt\b|\bWeb Worker\b|deterministic step validation|older-handout topic|high-precision arithmetic/i;
 
-test('lab route descriptions stay learner-facing', async () => {
-  const files = (await readdir(labsDirectory)).filter((file) => file.endsWith('.astro'));
-  const violations: string[] = [];
-
-  for (const file of files) {
-    const source = await readFile(join(labsDirectoryPath, file), 'utf8');
-    const description = source.match(/<LabShell[^\n]*description="([^"]+)"/)?.[1];
-    assert.ok(description, `${file} should declare a route description`);
-    if (implementationLanguage.test(description)) violations.push(`${file}: ${description}`);
-  }
-
+test('workbench route descriptions stay learner-facing', () => {
+  const violations = currentCourseProfile.workbenches
+    .filter((workbench) => implementationLanguage.test(workbench.description))
+    .map((workbench) => `${workbench.id}: ${workbench.description}`);
   assert.deepEqual(violations, []);
 });
 
@@ -35,12 +25,12 @@ test('practice navigation labels do not expose generation metadata', async () =>
 test('learner-facing lab copy does not expose implementation mechanics', async () => {
   const files = [
     '../../apps/web/src/components/math/StepTrace.tsx',
-    '../../apps/web/src/components/labs/conditional-probability/ConditionalProbabilityLab.tsx',
-    '../../apps/web/src/components/labs/finance/CashflowTimelineLab.tsx',
-    '../../apps/web/src/components/labs/finance/InterestLab.tsx',
-    '../../apps/web/src/components/labs/distribution/DistributionLab.tsx',
-    '../../apps/web/src/components/labs/simulation/ProbabilitySimulationLab.tsx',
-    '../../apps/web/src/components/labs/matrices/RowReductionLab.tsx',
+    '../../apps/web/src/components/workbenches/LogicProofWorkbench.tsx',
+    '../../apps/web/src/components/workbenches/ProbabilityModelBuilder.tsx',
+    '../../apps/web/src/components/workbenches/MoneyTimelineWorkbench.tsx',
+    '../../apps/web/src/components/workbenches/RowOperationsCoach.tsx',
+    '../../apps/web/src/components/workbenches/OptimizationStrategyWorkbench.tsx',
+    '../../apps/web/src/components/labs/formal-proof/FormalProofLab.tsx',
     '../../apps/web/src/layouts/AppLayout.astro',
   ];
   const sources = await Promise.all(files.map((file) => readFile(new URL(file, import.meta.url), 'utf8')));

@@ -107,7 +107,7 @@ test('@core shell navigation controls meet the 44px touch target contract', asyn
   await assertTouchTargets(['.topbar-home', '.topbar-search', '.mobile-more-menu > summary']);
 });
 
-test('@core math lab controls meet the 44px touch target contract', async ({ page }) => {
+test('@core workbench controls meet the 44px touch target contract', async ({ page }) => {
   const waitForClientLoad = async () => {
     const islands = page.locator('astro-island[client="load"]');
     const islandCount = await islands.count();
@@ -131,30 +131,14 @@ test('@core math lab controls meet the 44px touch target contract', async ({ pag
     }
   };
 
-  await page.goto('/labs/truth-table');
-  await waitForClientLoad();
-  await assertVisibleTouchTargets('.amat-tabs__trigger', '/labs/truth-table');
-  await assertVisibleTouchTargets('.truth-table__cell-button', '/labs/truth-table');
-  await page.getByRole('button', { name: 'Practice', exact: true }).click();
-  await assertVisibleTouchTargets('.truth-table__practice-cell', '/labs/truth-table');
-  await page.getByRole('button', { name: 'Build', exact: true }).click();
-  await page.getByLabel('Predicted number of rows').fill('4');
-  await page.getByRole('button', { name: 'Check rows', exact: true }).click();
-  await page.getByRole('button', { name: /I see the pattern/i }).click();
-  await assertVisibleTouchTargets('.truth-build__row-picker button', '/labs/truth-table');
-
-  await page.goto('/labs/equivalence');
-  await waitForClientLoad();
-  await assertVisibleTouchTargets('.text-chip', '/labs/equivalence');
-
-  await page.goto('/labs/matrix-operations');
-  await waitForClientLoad();
-  await assertVisibleTouchTargets('.matrix-cell-button', '/labs/matrix-operations');
-  await assertVisibleTouchTargets('.matrix-editor__cell', '/labs/matrix-operations');
-
-  await page.goto('/labs/row-reduction');
-  await waitForClientLoad();
-  await assertVisibleTouchTargets('.matrix-editor__cell', '/labs/row-reduction');
+  for (const route of ['/workbenches/logic', '/workbenches/probability', '/workbenches/finance', '/workbenches/linear', '/workbenches/applications']) {
+    await page.goto(route);
+    await waitForClientLoad();
+    const selector = route.endsWith('/finance')
+      ? '[data-primary-controls] input, [data-primary-controls] select, [data-primary-controls] button'
+      : '[data-primary-control]';
+    await assertVisibleTouchTargets(selector, route);
+  }
 });
 
 test('home presents a brand-first route index around real AMAT course objects', async ({ page }) => {
@@ -182,25 +166,12 @@ test('public surfaces obey the anti-vibecode hierarchy and status semantics', as
     '/saved',
     '/settings',
     '/modules/logic',
-    '/labs/truth-table',
+    '/workbenches/logic',
     '/lessons/logic/truth-tables',
-    '/labs/annuity',
-    '/labs/bayes',
-    '/labs/bonds',
-    '/labs/cashflow-timeline',
-    '/labs/conditional-probability',
-    '/labs/counting',
-    '/labs/distribution',
-    '/labs/equivalence',
-    '/labs/formal-proof',
-    '/labs/game-theory',
-    '/labs/interest',
-    '/labs/linear-programming',
-    '/labs/logic-basics',
-    '/labs/markov',
-    '/labs/matrix-operations',
-    '/labs/probability-simulation',
-    '/labs/row-reduction',
+    '/workbenches/probability',
+    '/workbenches/finance',
+    '/workbenches/linear',
+    '/workbenches/applications',
   ];
 
   for (const route of routes) {
@@ -291,12 +262,12 @@ test('command palette groups results and supports arrow-key selection', async ({
   await expect(palette.getByRole('group', { name: 'Workspace', exact: true })).toBeVisible();
 
   await input.fill('conditional');
-  const result = palette.getByRole('option', { name: /Conditional Probability Lab/i }).first();
+  const result = palette.getByRole('option', { name: /Probability Model Builder/i }).first();
   await expect(result).toBeVisible();
   await page.keyboard.press('ArrowDown');
   await expect(result).toHaveAttribute('aria-selected', 'true');
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/labs\/conditional-probability/);
+  await expect(page).toHaveURL(/\/workbenches\/probability/);
 });
 
 test('command palette exposes a screen-reader combobox and listbox contract', async ({ page }) => {
@@ -363,11 +334,11 @@ test('open command palette has no serious accessibility violations', async ({ pa
   expect(results.violations.filter((violation) => ['critical', 'serious'].includes(violation.impact ?? ''))).toEqual([]);
 });
 
-test('hydrated lab registers a persistence flush before a PWA update', async ({ page }) => {
-  await page.goto('/labs/equivalence');
+test('hydrated workbench registers a persistence flush before a PWA update', async ({ page }) => {
+  await page.goto('/workbenches/logic?mode=compare');
   const islandCount = await page.locator('astro-island[client="load"]').count();
   await expect(page.locator('astro-island[client="load"][client-render-time]')).toHaveCount(islandCount);
-  await expect(page.getByTestId('equivalence-lab')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.getByTestId('logic-proof-workbench')).toHaveAttribute('data-hydrated', 'true');
 
   const taskCount = await page.evaluate(() => {
     const detail = { tasks: [] as Array<() => Promise<unknown> | unknown> };
@@ -450,7 +421,7 @@ test('progress leads with needs attention and can reveal full core evidence', as
 test('mobile routes do not create page-level horizontal overflow', async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 375, height: 812 });
-  for (const route of ['/', '/modules/logic', '/modules/logic?view=practice', '/labs/annuity', '/labs/bayes', '/labs/bonds', '/labs/cashflow-timeline', '/labs/conditional-probability', '/labs/counting', '/labs/distribution', '/labs/equivalence', '/labs/formal-proof', '/labs/game-theory', '/labs/interest', '/labs/linear-programming', '/labs/logic-basics', '/labs/markov', '/labs/matrix-operations', '/labs/probability-simulation', '/labs/row-reduction', '/labs/truth-table', '/exam', '/reference', '/progress']) {
+  for (const route of ['/', '/modules/logic', '/modules/logic?view=practice', '/workbenches/logic', '/workbenches/probability', '/workbenches/finance', '/workbenches/linear', '/workbenches/applications', '/exam', '/reference', '/progress']) {
     await page.goto(route);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow, route).toBe(false);
@@ -466,15 +437,16 @@ test('@core contextual retrieval, mixed check, and reference surfaces render', a
   await expect(page.getByRole('heading', { name: /map of the symbols/i })).toBeVisible();
 });
 
-test('@core truth table mode switch is keyboard-accessible', async ({ page }) => {
-  await page.goto('/labs/truth-table');
-  const lab = page.getByTestId('truth-table-lab');
-  await expect(lab).toHaveAttribute('data-hydrated', 'true');
-  const modes = page.getByRole('group', { name: 'Truth table mode' });
-  await expect(modes.getByRole('button', { name: 'Explore' })).toHaveAttribute('aria-pressed', 'true');
-  await modes.getByRole('button', { name: 'Build' }).click();
-  await expect(modes.getByRole('button', { name: 'Build' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('region', { name: 'Guided truth table builder' })).toBeVisible();
+test('@core logic task switch is keyboard-accessible', async ({ page }) => {
+  await page.goto('/workbenches/logic');
+  const workbench = page.getByTestId('logic-proof-workbench');
+  await expect(workbench).toHaveAttribute('data-hydrated', 'true');
+  const modes = page.getByRole('group', { name: 'Logic task' });
+  await expect(modes.getByRole('button', { name: 'Truth table' })).toHaveAttribute('aria-pressed', 'true');
+  await modes.getByRole('button', { name: 'Compare' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(modes.getByRole('button', { name: 'Compare' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('heading', { name: 'Find the row that separates them.' })).toBeVisible();
 });
 
 test('reference browser searches, filters by module, and expands assumptions', async ({ page }) => {

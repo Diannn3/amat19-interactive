@@ -22,6 +22,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { loadDraft, saveDraft } from '../../lib/draft';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
 import { Feedback } from '../ui/Feedback';
+import { readWorkbenchOption } from '../../lib/workbench-route';
 
 type Mode = 'linear' | 'game' | 'advanced';
 type ConstraintRow = { a: string; b: string; relation: Constraint2D['relation']; c: string };
@@ -39,6 +40,7 @@ type Draft = {
 
 const LAB_ID = 'workbench.optimization-strategy';
 const CONTENT_VERSION = '1';
+const MODES: readonly Mode[] = ['linear', 'game', 'advanced'];
 const DEFAULT_CONSTRAINTS: ConstraintRow[] = [
   { a: '1', b: '1', relation: '<=', c: '4' },
   { a: '1', b: '0', relation: '<=', c: '3' },
@@ -78,13 +80,15 @@ export default function OptimizationStrategyWorkbench() {
 
   useEffect(() => {
     let active = true;
+    const requestedMode = readWorkbenchOption('mode', MODES);
     loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((draft) => {
       if (!active) return;
       if (draft) {
-        setMode(draft.mode); setCx(draft.cx); setCy(draft.cy); setSense(draft.sense); setConstraints(draft.constraints);
+        setMode(requestedMode ?? draft.mode); setCx(draft.cx); setCy(draft.cy); setSense(draft.sense); setConstraints(draft.constraints);
         setGame(draft.game); setMarkov(draft.markov); setInitialA(draft.initialA); setMarkovSteps(draft.markovSteps);
         setScenario('custom');
       }
+      if (!draft && requestedMode) setMode(requestedMode);
       setHydrated(true);
     }).catch(() => setHydrated(true));
     return () => { active = false; };
@@ -217,7 +221,7 @@ function LpGraph({ constraints, result }: { constraints: ConstraintRow[]; result
   const center = points.reduce((value, point) => ({ x: value.x + point.x / Math.max(points.length, 1), y: value.y + point.y / Math.max(points.length, 1) }), { x: 0, y: 0 });
   const hull = [...points].sort((left, right) => Math.atan2(left.y - center.y, left.x - center.x) - Math.atan2(right.y - center.y, right.x - center.x));
   const boundedLabel = result.regionBounded ? 'Bounded' : 'Unbounded';
-  return <figure className="strategy-workbench__plot" role="region" aria-label="Linear programming plot; scroll horizontally to inspect the full coordinate plane" tabIndex={0}><svg viewBox="0 0 600 380" role="img" aria-label={`${boundedLabel} feasible region with ${points.length} corner points`}><line className="strategy-workbench__axis" x1="48" y1="340" x2="570" y2="340"/><line className="strategy-workbench__axis" x1="48" y1="340" x2="48" y2="28"/><text x="576" y="346">x</text><text x="35" y="22">y</text>{result.regionBounded && hull.length >= 3 && <polygon className="strategy-workbench__region" points={hull.map((point) => `${sx(point.x)},${sy(point.y)}`).join(' ')} />}{constraints.map((constraint, index) => { const line = constraintLine(constraint, max); return line.length === 2 ? <g key={index}><line className="strategy-workbench__boundary" x1={sx(line[0]!.x)} y1={sy(line[0]!.y)} x2={sx(line[1]!.x)} y2={sy(line[1]!.y)} /><text x={sx(line[0]!.x) + 5} y={sy(line[0]!.y) - 6}>C{index + 1}</text></g> : null; })}{points.map((point, index) => <g key={index}><circle className={result.optima.some((candidate) => candidate.point.x.equals(point.exact.x) && candidate.point.y.equals(point.exact.y)) ? 'strategy-workbench__point strategy-workbench__point--best' : 'strategy-workbench__point'} cx={sx(point.x)} cy={sy(point.y)} r="6"/><text x={sx(point.x) + 8} y={sy(point.y) - 8}>{pointText(point.exact)}</text></g>)}</svg><figcaption>{result.message}</figcaption></figure>;
+  return <figure className="strategy-workbench__plot" aria-label="Linear programming plot; scroll horizontally to inspect the full coordinate plane" tabIndex={0}><svg viewBox="0 0 600 380" role="img" aria-label={`${boundedLabel} feasible region with ${points.length} corner points`}><line className="strategy-workbench__axis" x1="48" y1="340" x2="570" y2="340"/><line className="strategy-workbench__axis" x1="48" y1="340" x2="48" y2="28"/><text x="576" y="346">x</text><text x="35" y="22">y</text>{result.regionBounded && hull.length >= 3 && <polygon className="strategy-workbench__region" points={hull.map((point) => `${sx(point.x)},${sy(point.y)}`).join(' ')} />}{constraints.map((constraint, index) => { const line = constraintLine(constraint, max); return line.length === 2 ? <g key={index}><line className="strategy-workbench__boundary" x1={sx(line[0]!.x)} y1={sy(line[0]!.y)} x2={sx(line[1]!.x)} y2={sy(line[1]!.y)} /><text x={sx(line[0]!.x) + 5} y={sy(line[0]!.y) - 6}>C{index + 1}</text></g> : null; })}{points.map((point, index) => <g key={index}><circle className={result.optima.some((candidate) => candidate.point.x.equals(point.exact.x) && candidate.point.y.equals(point.exact.y)) ? 'strategy-workbench__point strategy-workbench__point--best' : 'strategy-workbench__point'} cx={sx(point.x)} cy={sy(point.y)} r="6"/><text x={sx(point.x) + 8} y={sy(point.y) - 8}>{pointText(point.exact)}</text></g>)}</svg><figcaption>{result.message}</figcaption></figure>;
 }
 
 function constraintLine(row: ConstraintRow, max: number): Array<{ x: number; y: number }> {

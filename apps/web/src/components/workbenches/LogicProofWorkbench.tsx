@@ -11,6 +11,7 @@ import { Button } from '../ui/Button';
 import { Feedback } from '../ui/Feedback';
 import { loadDraft, saveDraft } from '../../lib/draft';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
+import { readWorkbenchOption } from '../../lib/workbench-route';
 import FormalProofLab from '../labs/formal-proof/FormalProofLab';
 
 type Mode = 'table' | 'compare' | 'argument' | 'proof';
@@ -71,16 +72,18 @@ export default function LogicProofWorkbench() {
 
   useEffect(() => {
     let active = true;
+    const requestedMode = readWorkbenchOption('mode', MODES.map((item) => item.id));
     loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((draft) => {
       if (!active) return;
       if (draft) {
-        setMode(draft.mode);
+        setMode(requestedMode ?? draft.mode);
         setExpression(draft.expression);
         setLeft(draft.left);
         setRight(draft.right);
         setPremises(draft.premises);
         setConclusion(draft.conclusion);
       }
+      if (!draft && requestedMode) setMode(requestedMode);
       setHydrated(true);
     }).catch(() => setHydrated(true));
     return () => { active = false; };

@@ -21,18 +21,20 @@ test('PWA update waits for slow persistence work before activating the worker', 
     Object.assign(window, { __amatTestWorker: worker });
     window.addEventListener('amat:before-update', (event) => {
       const detail = (event as CustomEvent<{ tasks: Array<() => unknown> }>).detail;
-      detail.tasks.push(() => new Promise<void>((resolve) => window.setTimeout(resolve, 150)));
+      detail.tasks.push(() => new Promise<void>((resolve) => {
+        Object.assign(window, { __finishPersistence: resolve });
+      }));
     });
   });
 
-  await page.goto('/labs/equivalence');
-  await expect(page.getByTestId('equivalence-lab')).toHaveAttribute('data-hydrated', 'true', { timeout: 10_000 });
+  await page.goto('/workbenches/logic?mode=compare');
+  await expect(page.getByTestId('logic-proof-workbench')).toHaveAttribute('data-hydrated', 'true', { timeout: 10_000 });
   await expect(page.getByRole('button', { name: 'Save & update' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Save & update' }).click();
   await expect(page.getByRole('button', { name: 'Saving…' })).toBeDisabled();
-  await page.waitForTimeout(50);
-  await expect.poll(() => page.evaluate(() => (window as typeof window & { __amatTestWorker: { messages: unknown[] } }).__amatTestWorker.messages.length)).toBe(0);
+  expect(await page.evaluate(() => (window as typeof window & { __amatTestWorker: { messages: unknown[] } }).__amatTestWorker.messages.length)).toBe(0);
+  await page.evaluate(() => (window as typeof window & { __finishPersistence: () => void }).__finishPersistence());
 
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __amatTestWorker: { messages: unknown[] } }).__amatTestWorker.messages.length), { timeout: 2_000 }).toBe(1);
 });
@@ -62,8 +64,8 @@ test('PWA update stays pending when a persistence task fails', async ({ page }) 
     });
   });
 
-  await page.goto('/labs/equivalence');
-  await expect(page.getByTestId('equivalence-lab')).toHaveAttribute('data-hydrated', 'true', { timeout: 10_000 });
+  await page.goto('/workbenches/logic?mode=compare');
+  await expect(page.getByTestId('logic-proof-workbench')).toHaveAttribute('data-hydrated', 'true', { timeout: 10_000 });
   await expect(page.getByRole('button', { name: 'Save & update' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Save & update' }).click();
@@ -97,9 +99,35 @@ test('production PWA serves query-based study routes from the service-worker cac
     await page.getByRole('radio').first().check();
     await page.getByRole('button', { name: 'Check item' }).click();
     await expect(page.locator('.mixed-question__result')).toBeVisible();
-    await page.goto('/labs/bayes?offline=1', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByTestId('bayes-lab')).toBeVisible();
+    await page.goto('/workbenches/probability?mode=bayes&offline=1', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('probability-model-builder')).toBeVisible();
+    await expect(page.getByTestId('probability-model-builder')).toHaveAttribute('data-hydrated', 'true');
+    await expect(page.getByRole('button', { name: 'Bayes' })).toHaveAttribute('aria-pressed', 'true');
+    for (const [route, selector] of [
+      ['/workbenches/logic?mode=compare', 'logic-proof-workbench'],
+      ['/workbenches/finance?scenario=bond', 'money-timeline-workbench'],
+      ['/workbenches/linear?goal=inverse', 'row-operations-coach'],
+      ['/workbenches/applications?mode=game', 'optimization-strategy-workbench'],
+    ]) {
+      await page.goto(route!, { waitUntil: 'domcontentloaded' });
+      await expect(page.getByTestId(selector!)).toHaveAttribute('data-hydrated', 'true');
+    }
   } finally {
     await context.setOffline(false);
+  }
+});
+
+test('built legacy redirects preserve task selection with a no-script fallback', async ({ page, browser }) => {
+  await page.goto('/labs/truth-table?mode=argument');
+  await expect(page).toHaveURL(/\/workbenches\/logic\?mode=argument$/);
+  await expect(page.getByRole('button', { name: 'Argument', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  const noScript = await browser.newContext({ javaScriptEnabled: false, baseURL: 'http://127.0.0.1:4321' });
+  try {
+    const fallback = await noScript.newPage();
+    await fallback.goto('/labs/annuity');
+    await expect(fallback).toHaveURL(/\/workbenches\/finance\?scenario=annuity$/);
+    await expect(fallback.getByRole('heading', { name: 'Money Timeline', exact: true })).toBeVisible();
+  } finally {
+    await noScript.close();
   }
 });

@@ -16,6 +16,7 @@ import StepTrace from '../math/StepTrace';
 import { financeCertaintyLabel } from '../../lib/finance-display';
 import { loadDraft, saveDraft } from '../../lib/draft';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
+import { readWorkbenchOption } from '../../lib/workbench-route';
 
 type Scenario = 'cashflows' | 'annuity' | 'bond';
 type Flow = { id: number; time: string; amount: string };
@@ -47,6 +48,7 @@ type Computed = {
 
 const LAB_ID = 'finance.money-timeline';
 const CONTENT_VERSION = '1';
+const SCENARIOS: readonly Scenario[] = ['cashflows', 'annuity', 'bond'];
 const DEFAULT_FLOWS: Flow[] = [
   { id: 1, time: '0', amount: '-2000' },
   { id: 2, time: '3', amount: '2500' },
@@ -118,9 +120,10 @@ export default function MoneyTimelineWorkbench() {
   };
 
   useEffect(() => {
+    const requestedScenario = readWorkbenchOption('scenario', SCENARIOS);
     loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((saved) => {
       if (!userInteracted.current && saved) {
-        setScenario(saved.scenario);
+        setScenario(requestedScenario ?? saved.scenario);
         setFlows(saved.flows);
         setCashflowRate(saved.cashflowRate);
         setFocalDate(saved.focalDate);
@@ -135,6 +138,7 @@ export default function MoneyTimelineWorkbench() {
         setBondYield(saved.bondYield);
         setBondPeriods(saved.bondPeriods);
       }
+      if (!userInteracted.current && !saved && requestedScenario) setScenario(requestedScenario);
       setHydrated(true);
     });
   }, []);
