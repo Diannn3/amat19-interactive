@@ -2979,6 +2979,16 @@ body { background: var(--shell-maroon-950); }
 .strategy-workbench__header h2 { margin: 0; max-width: 20ch; color: var(--foreground); font-size: clamp(1.8rem, 3.1vw, 3.25rem); line-height: .98; letter-spacing: -.045em; text-wrap: balance; }
 .strategy-workbench__header p { margin: 0; color: var(--foreground-muted); line-height: 1.55; }
 .strategy-workbench__scenario { max-width: 22rem; }
+.strategy-workbench__coach { display: grid; gap: .75rem; padding: .85rem 0 .85rem .85rem; border-block: 1px solid var(--border); border-left: 3px solid var(--primary); }
+.strategy-workbench__coach-copy { display: grid; gap: .25rem; max-width: 62ch; }
+.strategy-workbench__coach-copy strong { color: var(--foreground); }
+.strategy-workbench__coach-copy p { margin: 0; color: var(--foreground-muted); line-height: 1.45; }
+.strategy-workbench__coach-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(8rem, auto); gap: .65rem; align-items: end; max-width: 56rem; }
+.strategy-workbench__coach--game .strategy-workbench__coach-form { grid-template-columns: minmax(0, 32rem) auto; }
+.strategy-workbench__coach-form input,
+.strategy-workbench__coach-form select,
+.strategy-workbench__coach-form button { min-height: 44px; }
+.strategy-workbench__coach-form button { align-self: end; white-space: nowrap; }
 .strategy-workbench__result { display: grid; gap: .15rem; min-height: 72px; padding: .75rem .9rem; border-left: 4px solid var(--primary); background: var(--surface-muted); }
 .strategy-workbench__result > span:first-child { color: var(--primary); font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .045em; }
 .strategy-workbench__result strong { color: var(--foreground); font: 800 clamp(1.15rem, 2.3vw, 1.75rem)/1.2 var(--font-mono); overflow-wrap: anywhere; }
@@ -3034,6 +3044,11 @@ body { background: var(--shell-maroon-950); }
   .strategy-workbench__stage { gap: .5rem; padding: .6rem 0 0; }
   .strategy-workbench__header h2 { max-width: 17ch; font-size: 1.7rem; line-height: 1.02; }
   .strategy-workbench__header p { display: none; }
+  .strategy-workbench__coach { gap: .55rem; padding-block: .65rem; }
+  .strategy-workbench__coach-copy p { display: none; }
+  .strategy-workbench__coach-form,
+  .strategy-workbench__coach--game .strategy-workbench__coach-form { grid-template-columns: 1fr; max-width: none; }
+  .strategy-workbench__coach-form button { width: 100%; }
   .strategy-workbench__result { min-height: 60px; padding-block: .45rem; }
   .strategy-workbench__result strong { font-size: 1.05rem; }
   .strategy-workbench__result small { font-size: .72rem; }
@@ -3049,6 +3064,7 @@ body { background: var(--shell-maroon-950); }
 @media (forced-colors: active) {
   .strategy-workbench__mode[data-active="true"],
   .strategy-workbench__stage,
+  .strategy-workbench__coach,
   .strategy-workbench__result,
   .strategy-workbench__plot { border-color: CanvasText; }
   .strategy-workbench__axis,
