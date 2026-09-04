@@ -61,8 +61,13 @@ test('Optimization & Strategy keeps the exact optimum above the mobile dock', as
   await page.reload();
   await page.locator('.workspace-scroll').evaluate((element) => { element.scrollTop = 0; });
   const workbench = page.getByTestId('optimization-strategy-workbench');
-  await workbench.getByLabel('Best corner x-coordinate').fill('3');
-  await workbench.getByLabel('Best corner y-coordinate').fill('1');
+  await expect(workbench).toHaveAttribute('data-hydrated', 'true');
+  const xAnswer = workbench.getByLabel('Best corner x-coordinate');
+  const yAnswer = workbench.getByLabel('Best corner y-coordinate');
+  await xAnswer.fill('3');
+  await yAnswer.fill('1');
+  await expect(xAnswer).toHaveValue('3');
+  await expect(yAnswer).toHaveValue('1');
   await workbench.getByRole('button', { name: 'Check corner' }).click();
   const metrics = await page.getByTestId('optimization-strategy-workbench').evaluate((element) => {
     const optimum = element.querySelector<HTMLElement>('[data-optimization-result] strong');
