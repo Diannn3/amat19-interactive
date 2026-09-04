@@ -8,13 +8,13 @@ test.beforeEach(async ({ page }) => {
 test('@core Money Timeline starts with one focused cash-flow model', async ({ page }) => {
   const workbench = page.getByTestId('money-timeline-workbench');
   await expect(workbench).toHaveAttribute('data-hydrated', 'true');
-  await expect(workbench.getByRole('heading', { level: 2, name: 'Put every amount on one timeline.' })).toBeVisible();
+  await expect(workbench.getByRole('heading', { level: 2, name: 'Move one cash flow.' })).toBeVisible();
 
   const scenario = workbench.getByLabel('Scenario');
   await expect(scenario).toHaveValue('cashflows');
   await expect(scenario.locator('option')).toHaveText(['Cash flows', 'Annuity', 'Bond']);
   await expect(workbench.locator('[data-money-timeline-object] svg')).toBeVisible();
-  await expect(workbench.getByText('Equivalent value', { exact: true })).toBeVisible();
+  await expect(workbench.getByText('Equivalent value', { exact: true })).not.toBeVisible();
 
   const primaryControls = workbench.locator('[data-primary-controls] input, [data-primary-controls] select, [data-primary-controls] button');
   expect(await primaryControls.count()).toBeLessThanOrEqual(8);
@@ -24,7 +24,7 @@ test('@core Money Timeline starts with one focused cash-flow model', async ({ pa
     expect(box!.height).toBeGreaterThanOrEqual(44);
   }
   const calculation = workbench.locator('.money-timeline__calculation');
-  await expect(calculation).not.toHaveAttribute('open');
+  await expect(calculation).toHaveAttribute('hidden', '');
   await expect(calculation.locator('.step-trace__item').first()).not.toBeVisible();
 });
 
@@ -33,14 +33,17 @@ test('@core annuity and bond presets reuse the timeline instead of opening separ
   const scenario = workbench.getByLabel('Scenario');
 
   await scenario.selectOption('annuity');
+  await workbench.getByText('Edit cash flows and rates', { exact: true }).click();
   await expect(workbench.getByLabel('Payment amount')).toBeVisible();
   await expect(workbench.getByLabel('Payment timing')).toBeVisible();
-  await expect(workbench.getByText('Present value', { exact: true })).toBeVisible();
+  await expect(workbench.getByText('Present value', { exact: true })).not.toBeVisible();
   await expect(workbench.locator('[data-money-timeline-object] svg')).toBeVisible();
 
   await scenario.selectOption('bond');
+  await workbench.getByText('Edit cash flows and rates', { exact: true }).click();
   await expect(workbench.getByLabel('Face value')).toBeVisible();
   await expect(workbench.getByLabel('Yield per coupon period')).toBeVisible();
+  await workbench.getByRole('button', { name: 'Show full calculation', exact: true }).click();
   await expect(workbench.locator('.money-timeline__result').getByText('Bond price', { exact: true })).toBeVisible();
   await expect(workbench.getByText('premium', { exact: true })).toBeVisible();
 });
@@ -48,12 +51,14 @@ test('@core annuity and bond presets reuse the timeline instead of opening separ
 test('Money Timeline keeps its primary object and controls reachable on a 375px phone', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
+  const updateDismiss = page.getByRole('button', { name: 'Later', exact: true });
+  if (await updateDismiss.isVisible()) await updateDismiss.click();
   await page.locator('.workspace-scroll').evaluate((element) => { element.scrollTop = 0; });
   const workbench = page.getByTestId('money-timeline-workbench');
   const metrics = await workbench.evaluate((element) => {
     const object = element.querySelector<HTMLElement>('[data-money-timeline-object]');
     const scenario = element.querySelector<HTMLElement>('[data-scenario-control]');
-    const result = element.querySelector<HTMLElement>('.money-timeline__result');
+    const result = element.querySelector<HTMLElement>('button[type="submit"]');
     const dock = document.querySelector<HTMLElement>('.mobile-nav');
     const objectBox = object?.getBoundingClientRect();
     const scenarioBox = scenario?.getBoundingClientRect();

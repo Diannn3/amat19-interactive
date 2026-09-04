@@ -17,6 +17,8 @@ import { financeCertaintyLabel } from '../../lib/finance-display';
 import { loadDraft, saveDraft } from '../../lib/draft';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
 import { readWorkbenchOption } from '../../lib/workbench-route';
+import type { MoneyStep } from '../../lib/money-step-feedback';
+import MoneyStepCoach from './MoneyStepCoach';
 
 type Scenario = 'cashflows' | 'annuity' | 'bond';
 type Flow = { id: number; time: string; amount: string };
@@ -38,6 +40,7 @@ type Draft = {
 };
 type Computed = {
   result?: FinanceResult;
+  step?: MoneyStep & { label: string };
   error?: string;
   resultLabel: string;
   resultDetail?: string;
@@ -182,7 +185,10 @@ export default function MoneyTimelineWorkbench() {
           tone: decimalNumber(flow.amount) < 0 ? 'muted' : 'accent',
         }));
         points.push({ time: decimalNumber(focalDate), label: 'Focal date', value: 'combine here', tone: 'primary' });
-        return { result, resultLabel: 'Equivalent value', points, ...bounds(points) };
+        const index = Math.max(0, flows.findIndex(flow => FinanceDecimal.from(flow.time).compare(focalDate) !== 0));
+        const flow = flows[index]!;
+        return { result, resultLabel: 'Equivalent value', points, ...bounds(points),
+          step: { label: `Cash flow ${index + 1}`, amount: flow.amount, time: flow.time, focalDate, rate: cashflowRate } };
       }
 
       if (scenario === 'annuity') {
@@ -205,6 +211,7 @@ export default function MoneyTimelineWorkbench() {
           resultDetail: annuityTiming === 'immediate' ? 'payments at each period end' : 'payments at each period start',
           points,
           ...bounds(points),
+          step: { label: 'Payment 1', amount: annuityPayment, time: String(start), focalDate: String(focal), rate: annuityRate },
         };
       }
 
@@ -231,6 +238,7 @@ export default function MoneyTimelineWorkbench() {
         resultDetail: result.classification,
         points,
         ...bounds(points),
+        step: { label: 'Redemption', amount: bondRedemption, time: String(count), focalDate: '0', rate: bondYield },
       };
     } catch (error) {
       return {
@@ -282,8 +290,8 @@ export default function MoneyTimelineWorkbench() {
     >
       <header className="money-timeline__header">
         <div>
-          <h2>Put every amount on one timeline.</h2>
-          <p>Choose a common focal date, then see exactly how each value moves.</p>
+          <h2>Move one cash flow.</h2>
+          <p>Choose a focal date, check a move, then combine the values.</p>
         </div>
         <fieldset className="money-timeline__scenario" data-scenario-control disabled={!hydrated}>
           <legend className="sr-only">Choose a finance scenario</legend>
@@ -308,17 +316,26 @@ export default function MoneyTimelineWorkbench() {
               ariaLabel={`${computed.resultLabel} timeline`}
             />
           ) : (
-            <div className="money-timeline__empty">Correct the highlighted scenario values to restore the timeline.</div>
+            <div className="money-timeline__empty">Edit the cash flows and rates to restore the timeline.</div>
           )}
-          <output className="money-timeline__result" aria-live="polite">
-            <span>{computed.resultLabel}</span>
-            {computed.result ? <strong>{currency.format(computed.result.value)}</strong> : <strong>—</strong>}
-            {computed.resultDetail && <small>{computed.resultDetail}</small>}
-            {computed.result && <small>{financeCertaintyLabel(computed.result)}</small>}
-          </output>
         </section>
 
-        <fieldset className="money-timeline__setup" data-primary-controls disabled={!hydrated}>
+        {computed.result && computed.step && (
+          <MoneyStepCoach key={JSON.stringify(draft)} step={computed.step} disabled={!hydrated}>
+            <output className="money-timeline__result" aria-live="polite">
+              <span>{computed.resultLabel}</span>
+              <strong>{currency.format(computed.result.value)}</strong>
+              {computed.resultDetail && <small>{computed.resultDetail}</small>}
+              <small>{financeCertaintyLabel(computed.result)}</small>
+            </output>
+            <StepTrace steps={computed.result.trace} title="Money timeline calculation" initialCount={computed.result.trace.length} />
+          </MoneyStepCoach>
+        )}
+      </div>
+
+      <details className="money-timeline__editor" key={scenario}>
+        <summary>Edit cash flows and rates</summary>
+        <fieldset className="money-timeline__setup" disabled={!hydrated}>
           <legend className="sr-only">{computed.resultLabel} inputs</legend>
           {scenario === 'cashflows' && (
             <>
@@ -388,14 +405,7 @@ export default function MoneyTimelineWorkbench() {
           {computed.error && <Feedback tone="error" role="alert">{computed.error}</Feedback>}
           <p className="money-timeline__storage-note">Changes stay in this browser.</p>
         </fieldset>
-      </div>
-
-      {computed.result && (
-        <details className="money-timeline__calculation">
-          <summary>Show calculation</summary>
-          <StepTrace steps={computed.result.trace} title="Money timeline calculation" initialCount={3} />
-        </details>
-      )}
+      </details>
     </section>
   );
 }

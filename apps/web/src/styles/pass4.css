@@ -1925,6 +1925,10 @@ body { background: var(--shell-maroon-950); }
   border: 0;
 }
 
+.money-timeline__scenario select {
+  height: 2.75rem;
+}
+
 .money-timeline__workspace {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(19rem, .7fr);
@@ -2054,6 +2058,67 @@ body { background: var(--shell-maroon-950); }
   padding-bottom: 1rem;
 }
 
+.money-step {
+  min-width: 0;
+  display: grid;
+  gap: .5rem;
+}
+
+.money-step h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.money-step__expression {
+  margin: 0;
+  color: var(--primary);
+  font: 500 1rem / 1.5 var(--font-amat-mono);
+  overflow-wrap: anywhere;
+}
+
+.money-step__fields {
+  display: grid;
+  grid-template-columns: minmax(5rem, .6fr) minmax(0, 1.4fr);
+  align-items: end;
+  gap: .5rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.money-step__fields .amat-button {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.money-step__feedback {
+  margin: .5rem 0 0;
+  color: var(--foreground-muted);
+  line-height: 1.5;
+}
+
+.money-step__feedback[data-status="incorrect"],
+.money-step__feedback[data-status="invalid"] {
+  color: var(--primary);
+  border-inline-start: .25rem solid currentColor;
+  padding-inline-start: .5rem;
+}
+
+.money-step > .amat-button {
+  justify-self: start;
+}
+
+.money-timeline__editor > summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 700;
+}
+
 @media (max-width: 900px) {
   .money-timeline__workspace {
     grid-template-columns: 1fr;
@@ -2067,7 +2132,18 @@ body { background: var(--shell-maroon-950); }
 
   .money-timeline__header {
     grid-template-columns: 1fr;
-    gap: .65rem;
+    gap: .5rem;
+  }
+
+  .money-timeline__header h2 {
+    font-size: 1.25rem;
+  }
+
+  .money-timeline__scenario .form-field {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
   }
 
   .money-timeline__header p {
@@ -2080,7 +2156,11 @@ body { background: var(--shell-maroon-950); }
 
   .money-timeline__object .finance-timeline svg,
   .money-timeline__empty {
-    min-height: 9.25rem;
+    min-height: 6rem;
+  }
+
+  .money-timeline__workspace {
+    gap: .5rem;
   }
 
   .money-timeline__result {
@@ -2098,6 +2178,11 @@ body { background: var(--shell-maroon-950); }
 }
 
 @media (max-width: 390px) {
+  .money-timeline__object .finance-timeline svg,
+  .money-timeline__empty {
+    min-height: 5.5rem;
+  }
+
   .money-timeline__flow {
     grid-template-columns: 1.6rem minmax(0, 1fr) minmax(4.5rem, .6fr);
     gap: .4rem;

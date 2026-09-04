@@ -17,6 +17,6 @@ test('annuity, bond, and interest timelines are gated by validated domain result
  assert.match(source,/const result = annuityValue\(/);
  assert.match(source,/const result = bondPrice\(/);
  assert.match(source,/const result = valueCashflowsAt\(/);
- assert.match(source,/computed\.result && \(/);
+ assert.match(source,/computed\.result && computed\.step && \(/);
  assert.doesNotMatch(source,/principal=\{Number\(principal\)\}/);
 });
