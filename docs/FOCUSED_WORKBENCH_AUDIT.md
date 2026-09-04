@@ -32,6 +32,13 @@ This is an incremental implementation record, not a release certificate. Branch 
 - Counting remains an explicit separate counting-rule view; it is not being presented as another representation of the binary event table.
 - Targeted Probability verification: 77 browser tests passed across the configured viewport/browser projects; the pure answer-feedback suite passes 3/3; the complete Node suite passes 194/194; Astro check and the production build pass.
 
+### Optimization step checks delivered (2026-09-04)
+
+- Bounded linear programs now ask the learner to choose the best feasible corner before revealing the objective value, optimum marker, or objective-value column. Unbounded and infeasible scenarios require an explicit model classification first.
+- Zero-sum games now ask for a strict-dominance comparison before revealing row/column security levels or the equilibrium. The default game accepts “no strict dominance,” while edited matrices are checked against the exact dominance engine.
+- Wrong and malformed answers stay local and do not disclose target coordinates, strategy pairs, or solution values. Editing a model resets the relevant coaching state.
+- Targeted applications verification: 66 browser tests passed across the configured Chromium, Firefox, and WebKit projects; the pure optimization feedback suite passes 7/7; Astro check passes with only the existing service-worker typing hint.
+
 ### Verification of route retirement (2026-09-04)
 
 - Architecture/content audits and Astro checks passed (0 errors, 0 warnings; one pre-existing service-worker typing hint).
@@ -47,7 +54,7 @@ This is an incremental implementation record, not a release certificate. Branch 
 Consolidating destinations does not by itself fulfill the brief. These are acceptance gaps to close before declaring the goal complete:
 
 1. Counting remains a separate model from the shared event table. Add a student-first counting check and decide whether counting should become a first-class course-directory view or remain an explicit setup helper.
-2. Optimization still reveals its solution immediately. Formulation/corner checks and dominance reasoning need student actions before the solution.
+2. Optimization's LP and game answers are now gated behind student checks. Continue by auditing the Advanced traces and checking whether the first action remains clear in every mode and custom model.
 3. Logic needs translation coverage and a full audit of proof-mode feedback, notation, and visible implementation metadata.
 4. Audit all modes, not only default pages, for mobile first-action visibility, local error placement, keyboard use, forced colors, reduced motion, and Axe.
 5. Complete `verify:full` plus production PWA checks and inspect final screenshots before a release claim.
