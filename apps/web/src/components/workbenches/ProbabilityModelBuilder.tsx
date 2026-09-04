@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button } from '../ui/Button';
 import { Feedback } from '../ui/Feedback';
 import { loadDraft, saveDraft } from '../../lib/draft';
+import { checkProbabilityAnswer, type ProbabilityAnswerFeedback } from '../../lib/probability-answer-feedback';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
 import { readWorkbenchOption } from '../../lib/workbench-route';
 
@@ -28,10 +29,6 @@ type Draft = {
   r: number;
   cells: [number, number, number, number];
   condition: Condition;
-  prior: string;
-  sensitivity: string;
-  falsePositive: string;
-  probability: string;
   trials: number;
   seed: string;
 };
@@ -46,10 +43,6 @@ const INITIAL: Draft = {
   r: 3,
   cells: [20, 10, 5, 15],
   condition: 'a-given-b',
-  prior: '1/5',
-  sensitivity: '4/5',
-  falsePositive: '1/10',
-  probability: '1/3',
   trials: 10_000,
   seed: 'amat19-verification',
 };
@@ -88,10 +81,12 @@ export default function ProbabilityModelBuilder() {
   const [r, setR] = useState(INITIAL.r);
   const [cells, setCells] = useState<[number, number, number, number]>(INITIAL.cells);
   const [condition, setCondition] = useState<Condition>(INITIAL.condition);
-  const [prior, setPrior] = useState(INITIAL.prior);
-  const [sensitivity, setSensitivity] = useState(INITIAL.sensitivity);
-  const [falsePositive, setFalsePositive] = useState(INITIAL.falsePositive);
-  const [probability, setProbability] = useState(INITIAL.probability);
+  const [conditionalAnswerRaw, setConditionalAnswerRaw] = useState('');
+  const [conditionalFeedback, setConditionalFeedback] = useState<ProbabilityAnswerFeedback>();
+  const [conditionalRevealed, setConditionalRevealed] = useState(false);
+  const [bayesAnswerRaw, setBayesAnswerRaw] = useState('');
+  const [bayesFeedback, setBayesFeedback] = useState<ProbabilityAnswerFeedback>();
+  const [bayesRevealed, setBayesRevealed] = useState(false);
   const [trials, setTrials] = useState(INITIAL.trials);
   const [seed, setSeed] = useState(INITIAL.seed);
   const [simulation, setSimulation] = useState<BernoulliSimulation>();
@@ -105,8 +100,7 @@ export default function ProbabilityModelBuilder() {
       if (draft) {
         setMode(requestedMode ?? draft.mode); setOrderMatters(draft.orderMatters); setRepetitionAllowed(draft.repetitionAllowed);
         setN(draft.n); setR(draft.r); setCells(draft.cells); setCondition(draft.condition);
-        setPrior(draft.prior); setSensitivity(draft.sensitivity); setFalsePositive(draft.falsePositive);
-        setProbability(draft.probability); setTrials(draft.trials); setSeed(draft.seed);
+        setTrials(draft.trials); setSeed(draft.seed);
       }
       if (!draft && requestedMode) setMode(requestedMode);
       setHydrated(true);
@@ -114,7 +108,7 @@ export default function ProbabilityModelBuilder() {
     return () => { active = false; };
   }, []);
 
-  const draft = useMemo<Draft>(() => ({ mode, orderMatters, repetitionAllowed, n, r, cells, condition, prior, sensitivity, falsePositive, probability, trials, seed }), [mode, orderMatters, repetitionAllowed, n, r, cells, condition, prior, sensitivity, falsePositive, probability, trials, seed]);
+  const draft = useMemo<Draft>(() => ({ mode, orderMatters, repetitionAllowed, n, r, cells, condition, trials, seed }), [mode, orderMatters, repetitionAllowed, n, r, cells, condition, trials, seed]);
   useEffect(() => {
     if (!hydrated) return;
     const timer = window.setTimeout(() => { void saveDraft(LAB_ID, CONTENT_VERSION, draft); }, 250);
@@ -142,21 +136,65 @@ export default function ProbabilityModelBuilder() {
   }, [cells]);
 
   const bayes = useMemo(() => {
+    if (!conditioning.table || !conditioning.analysis) return { result: undefined, error: conditioning.error };
     try {
-      return { result: analyzeBinaryBayes({ priorA: Rational.parse(prior), positiveGivenA: Rational.parse(sensitivity), positiveGivenNotA: Rational.parse(falsePositive) }), error: undefined };
+      const notACount = conditioning.analysis.total - conditioning.analysis.countA;
+      if (!conditioning.analysis.pBGivenA || notACount === 0n) throw new RangeError('Bayes needs observations in both A and not A.');
+      return {
+        result: analyzeBinaryBayes({
+          priorA: conditioning.analysis.pA,
+          positiveGivenA: conditioning.analysis.pBGivenA,
+          positiveGivenNotA: new Rational(conditioning.table.notAAndB, notACount),
+        }),
+        error: undefined,
+      };
     } catch (error) {
       return { result: undefined, error: errorText(error) };
     }
-  }, [prior, sensitivity, falsePositive]);
+  }, [conditioning]);
 
   function updateCell(index: number, value: number) {
     setCells((current) => current.map((cell, cellIndex) => cellIndex === index ? value : cell) as [number, number, number, number]);
+    setConditionalFeedback(undefined);
+    setConditionalRevealed(false);
+    setBayesFeedback(undefined);
+    setBayesRevealed(false);
+    setSimulation(undefined);
+    setSimulationError(undefined);
+  }
+
+  function selectMode(next: Mode) {
+    setMode(next);
+    setConditionalFeedback(undefined);
+    setConditionalRevealed(false);
+    setBayesFeedback(undefined);
+    setBayesRevealed(false);
+    setSimulation(undefined);
+    setSimulationError(undefined);
+  }
+
+  function checkConditionalAnswer() {
+    if (!conditioning.analysis) return;
+    const expected = condition === 'a-given-b' ? conditioning.analysis.pAGivenB : conditioning.analysis.pBGivenA;
+    if (!expected) return;
+    const result = checkProbabilityAnswer(conditionalAnswerRaw, expected, 'conditional probability');
+    setConditionalFeedback(result);
+    setConditionalRevealed(result.status === 'correct');
+  }
+
+  function checkBayesAnswer() {
+    if (!bayes.result) return;
+    const result = checkProbabilityAnswer(bayesAnswerRaw, bayes.result.posteriorAGivenPositive, 'posterior');
+    setBayesFeedback(result);
+    setBayesRevealed(result.status === 'correct');
   }
 
   function runVerification() {
     try {
+      const probability = conditioning.analysis?.pB;
+      if (!probability) throw new RangeError('Build a valid event table before running a simulation.');
       if (trials > 100_000) throw new RangeError('The interactive verifier is limited to 100,000 trials per run.');
-      setSimulation(simulateBernoulli({ probability: Rational.parse(probability), trials, seed, checkpointCount: 28 }));
+      setSimulation(simulateBernoulli({ probability, trials, seed, checkpointCount: 28 }));
       setSimulationError(undefined);
     } catch (error) {
       setSimulation(undefined);
@@ -169,7 +207,7 @@ export default function ProbabilityModelBuilder() {
       <fieldset className="probability-builder__mode-fieldset" disabled={!hydrated}>
         <legend className="sr-only">Choose a probability model</legend>
         <div className="probability-builder__modes" role="group" aria-label="Probability model">
-          {MODES.map((item) => <button data-primary-control className="probability-builder__mode" data-active={mode === item.id} aria-pressed={mode === item.id} type="button" key={item.id} onClick={() => setMode(item.id)}>{item.label}</button>)}
+          {MODES.map((item) => <button data-primary-control className="probability-builder__mode" data-active={mode === item.id} aria-pressed={mode === item.id} type="button" key={item.id} onClick={() => selectMode(item.id)}>{item.label}</button>)}
         </div>
       </fieldset>
 
@@ -186,45 +224,39 @@ export default function ProbabilityModelBuilder() {
       </section>}
 
       {mode === 'conditioning' && <section className="probability-builder__stage" aria-labelledby="conditioning-heading">
-        <header className="probability-builder__header"><h2 id="conditioning-heading">Shrink the sample space first.</h2><p>The highlighted row or column is the new denominator. Edit the four disjoint regions directly.</p></header>
-        <fieldset className="probability-builder__condition-choice" disabled={!hydrated}>
-          <legend>Question</legend>
-          <label><input data-primary-control type="radio" name="condition" checked={condition === 'a-given-b'} onChange={() => setCondition('a-given-b')} /> P(A | B)</label>
-          <label><input data-primary-control type="radio" name="condition" checked={condition === 'b-given-a'} onChange={() => setCondition('b-given-a')} /> P(B | A)</label>
-        </fieldset>
-        <div className="probability-builder__table-scroll" tabIndex={0}>
-          <table aria-label="Two-way count table" className="probability-builder__two-way">
-            <thead><tr><th></th><th data-active={condition === 'a-given-b'}>B</th><th>not B</th></tr></thead>
-            <tbody>
-              <tr data-active={condition === 'b-given-a'}><th>A</th><td><label><span className="sr-only">A and B</span><input data-primary-control type="number" min="0" value={cells[0]} onChange={(event) => updateCell(0, Number(event.target.value))} /></label></td><td><label><span className="sr-only">A and not B</span><input data-primary-control type="number" min="0" value={cells[1]} onChange={(event) => updateCell(1, Number(event.target.value))} /></label></td></tr>
-              <tr><th>not A</th><td><label><span className="sr-only">not A and B</span><input data-primary-control type="number" min="0" value={cells[2]} onChange={(event) => updateCell(2, Number(event.target.value))} /></label></td><td><label><span className="sr-only">not A and not B</span><input data-primary-control type="number" min="0" value={cells[3]} onChange={(event) => updateCell(3, Number(event.target.value))} /></label></td></tr>
-            </tbody>
-          </table>
-        </div>
-        {conditioning.error ? <Feedback tone="error" role="alert">{conditioning.error}</Feedback> : conditioning.analysis && <ConditionalResult condition={condition} analysis={conditioning.analysis} />}
+        <header className="probability-builder__header"><h2 id="conditioning-heading">Shrink the sample space first.</h2><p>The highlighted event becomes the denominator. Edit the same four regions used by the other probability views.</p></header>
+        <EventModelTable cells={cells} condition={condition} hydrated={hydrated} showConditionChoice onConditionChange={(next) => { setCondition(next); setConditionalFeedback(undefined); setConditionalRevealed(false); }} onCellChange={updateCell} />
+        {conditioning.error ? <Feedback tone="error" role="alert">{conditioning.error}</Feedback> : conditioning.analysis && <>
+          <form className="probability-builder__answer" onSubmit={(event) => { event.preventDefault(); checkConditionalAnswer(); }}>
+            <label className="form-field"><span className="form-field__label">Conditional probability answer</span><input data-primary-control className="text-input" name="conditional-answer" value={conditionalAnswerRaw} onChange={(event) => { setConditionalAnswerRaw(event.target.value); setConditionalFeedback(undefined); setConditionalRevealed(false); }} placeholder="For example, 4/5" autoComplete="off" /></label>
+            <Button data-primary-control variant="primary" type="submit">Check answer</Button>
+          </form>
+          <div id="conditional-answer-feedback">{conditionalFeedback && <Feedback tone={conditionalFeedback.status === 'correct' ? 'success' : 'error'}>{conditionalFeedback.message}</Feedback>}</div>
+          {conditionalRevealed && <ConditionalResult condition={condition} analysis={conditioning.analysis} />}
+          <Button type="button" variant="ghost" aria-expanded={conditionalRevealed} onClick={() => setConditionalRevealed((revealed) => !revealed)}>{conditionalRevealed ? 'Hide exact result' : 'Show exact result'}</Button>
+        </>}
       </section>}
 
       {mode === 'bayes' && <section className="probability-builder__stage" aria-labelledby="bayes-heading">
-        <header className="probability-builder__header"><h2 id="bayes-heading">Follow every path to the evidence.</h2><p>Multiply along each positive path, add those paths, then divide the target path by all positive evidence.</p></header>
-        <fieldset className="probability-builder__bayes-controls" disabled={!hydrated}>
-          <legend className="sr-only">Binary Bayes model</legend>
-          <label className="form-field"><span className="form-field__label">Prior P(A)</span><input data-primary-control className="text-input" value={prior} onChange={(event) => setPrior(event.target.value)} /></label>
-          <label className="form-field"><span className="form-field__label">Likelihood P(+ | A)</span><input data-primary-control className="text-input" value={sensitivity} onChange={(event) => setSensitivity(event.target.value)} /></label>
-          <label className="form-field"><span className="form-field__label">False positive P(+ | Aᶜ)</span><input data-primary-control className="text-input" value={falsePositive} onChange={(event) => setFalsePositive(event.target.value)} /></label>
-        </fieldset>
-        {bayes.error ? <Feedback tone="error" role="alert">{bayes.error}</Feedback> : bayes.result && <div className="probability-builder__bayes-paths">
-          <div><span>A → +</span><strong>{bayes.result.priorA.toString()} × {bayes.result.positiveGivenA.toString()} = {bayes.result.jointAPositive.toString()}</strong></div>
-          <div><span>Aᶜ → +</span><strong>{bayes.result.priorNotA.toString()} × {bayes.result.positiveGivenNotA.toString()} = {bayes.result.jointNotAPositive.toString()}</strong></div>
-          <div><span>All + evidence</span><strong>{bayes.result.jointAPositive.toString()} + {bayes.result.jointNotAPositive.toString()} = {bayes.result.positive.toString()}</strong></div>
-          <div className="probability-builder__result" data-probability-result><span>Posterior</span><strong>P(A | +) = {bayes.result.posteriorAGivenPositive.toString()}</strong><small>target joint path ÷ all paths ending in +</small></div>
-        </div>}
+        <header className="probability-builder__header"><h2 id="bayes-heading">Follow the same paths to the evidence.</h2><p>Bayes is another view of the event table: multiply each path, add the paths ending in B, then divide.</p></header>
+        <EventModelTable cells={cells} condition={condition} hydrated={hydrated} onCellChange={updateCell} />
+        {bayes.error ? <Feedback tone="error" role="alert">{bayes.error}</Feedback> : bayes.result && <>
+          <form className="probability-builder__answer" onSubmit={(event) => { event.preventDefault(); checkBayesAnswer(); }}>
+            <label className="form-field"><span className="form-field__label">Posterior probability answer</span><input data-primary-control className="text-input" name="posterior-answer" value={bayesAnswerRaw} onChange={(event) => { setBayesAnswerRaw(event.target.value); setBayesFeedback(undefined); setBayesRevealed(false); }} placeholder="For example, 4/5" autoComplete="off" /></label>
+            <Button data-primary-control variant="primary" type="submit">Check answer</Button>
+          </form>
+          <div id="bayes-answer-feedback">{bayesFeedback && <Feedback tone={bayesFeedback.status === 'correct' ? 'success' : 'error'}>{bayesFeedback.message}</Feedback>}</div>
+          {bayesRevealed && <BayesPaths result={bayes.result} />}
+          <Button type="button" variant="ghost" aria-expanded={bayesRevealed} onClick={() => setBayesRevealed((revealed) => !revealed)}>{bayesRevealed ? 'Hide path accounting' : 'Show path accounting'}</Button>
+        </>}
       </section>}
 
       {mode === 'verify' && <section className="probability-builder__stage" aria-labelledby="verify-heading">
-        <header className="probability-builder__header"><h2 id="verify-heading">Check long-run behavior without calling it proof.</h2><p>A seed makes the run reproducible. Change it to test whether the same convergence pattern persists.</p></header>
+        <header className="probability-builder__header"><h2 id="verify-heading">Check long-run behavior without calling it proof.</h2><p>Run the event B from the same table. A seed makes the experiment reproducible; the result remains evidence, not proof.</p></header>
+        <EventModelTable cells={cells} condition={condition} hydrated={hydrated} onCellChange={updateCell} />
+        {conditioning.analysis && <div className="probability-builder__exact-event"><span>Exact P(B) from this table</span><strong>{conditioning.analysis.pB.toString()}</strong><small>The simulation below should move toward this value.</small></div>}
         <fieldset className="probability-builder__verify-controls" disabled={!hydrated}>
           <legend className="sr-only">Simulation verification</legend>
-          <label className="form-field"><span className="form-field__label">Theoretical probability</span><input data-primary-control className="text-input" value={probability} onChange={(event) => { setProbability(event.target.value); setSimulation(undefined); }} /></label>
           <label className="form-field"><span className="form-field__label">Trials</span><input data-primary-control className="text-input" type="number" min="1" max="100000" step="1000" value={trials} onChange={(event) => { setTrials(Number(event.target.value)); setSimulation(undefined); }} /></label>
           <label className="form-field"><span className="form-field__label">Seed</span><input data-primary-control className="text-input" value={seed} onChange={(event) => { setSeed(event.target.value); setSimulation(undefined); }} /></label>
           <Button data-primary-control variant="primary" type="button" onClick={runVerification}>Run verification</Button>
@@ -234,6 +266,52 @@ export default function ProbabilityModelBuilder() {
       </section>}
     </section>
   );
+}
+
+function EventModelTable({
+  cells,
+  condition,
+  hydrated,
+  showConditionChoice = false,
+  onConditionChange,
+  onCellChange,
+}: {
+  cells: [number, number, number, number];
+  condition: Condition;
+  hydrated: boolean;
+  showConditionChoice?: boolean;
+  onConditionChange?: (condition: Condition) => void;
+  onCellChange: (index: number, value: number) => void;
+}) {
+  return <section className="probability-builder__event-model" aria-labelledby="event-model-heading">
+    <div className="probability-builder__event-model-heading">
+      <h3 id="event-model-heading">One shared event model.</h3>
+      <p>Edit four disjoint regions; the conditional, Bayes, and simulation views use these same counts.</p>
+    </div>
+    {showConditionChoice && onConditionChange && <fieldset className="probability-builder__condition-choice" disabled={!hydrated}>
+      <legend>Question</legend>
+      <label><input data-primary-control type="radio" name="condition" checked={condition === 'a-given-b'} onChange={() => onConditionChange('a-given-b')} /> P(A | B)</label>
+      <label><input data-primary-control type="radio" name="condition" checked={condition === 'b-given-a'} onChange={() => onConditionChange('b-given-a')} /> P(B | A)</label>
+    </fieldset>}
+    <div className="probability-builder__table-scroll" tabIndex={0}>
+      <table aria-label="Two-way count table" className="probability-builder__two-way">
+        <thead><tr><th></th><th data-active={condition === 'a-given-b'}>B</th><th>not B</th></tr></thead>
+        <tbody>
+          <tr data-active={condition === 'b-given-a'}><th>A</th><td><label><span className="sr-only">A and B</span><input data-primary-control type="number" min="0" value={Number.isNaN(cells[0]) ? '' : cells[0]} onChange={(event) => onCellChange(0, Number(event.target.value))} /></label></td><td><label><span className="sr-only">A and not B</span><input data-primary-control type="number" min="0" value={Number.isNaN(cells[1]) ? '' : cells[1]} onChange={(event) => onCellChange(1, Number(event.target.value))} /></label></td></tr>
+          <tr><th>not A</th><td><label><span className="sr-only">not A and B</span><input data-primary-control type="number" min="0" value={Number.isNaN(cells[2]) ? '' : cells[2]} onChange={(event) => onCellChange(2, Number(event.target.value))} /></label></td><td><label><span className="sr-only">not A and not B</span><input data-primary-control type="number" min="0" value={Number.isNaN(cells[3]) ? '' : cells[3]} onChange={(event) => onCellChange(3, Number(event.target.value))} /></label></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>;
+}
+
+function BayesPaths({ result }: { result: ReturnType<typeof analyzeBinaryBayes> }) {
+  return <div className="probability-builder__bayes-paths">
+    <div><span>A → B</span><strong>{result.priorA.toString()} × {result.positiveGivenA.toString()} = {result.jointAPositive.toString()}</strong></div>
+    <div><span>Aᶜ → B</span><strong>{result.priorNotA.toString()} × {result.positiveGivenNotA.toString()} = {result.jointNotAPositive.toString()}</strong></div>
+    <div><span>All B evidence</span><strong>{result.jointAPositive.toString()} + {result.jointNotAPositive.toString()} = {result.positive.toString()}</strong></div>
+    <div className="probability-builder__result" data-probability-result><span>Posterior</span><strong>P(A | B) = {result.posteriorAGivenPositive.toString()}</strong><small>target path ÷ all paths ending in B</small></div>
+  </div>;
 }
 
 function ConditionalResult({ condition, analysis }: { condition: Condition; analysis: ReturnType<typeof analyzeTwoWayTable> }) {

@@ -16,21 +16,40 @@ test('@core Counting selects the model before showing the exact count', async ({
   expect(await visiblePrimaryControls.count()).toBeLessThanOrEqual(8);
 });
 
-test('@core Conditioning keeps the active denominator visible', async ({ page }) => {
+test('@core Conditioning keeps the active denominator visible and checks the answer first', async ({ page }) => {
   const workbench = page.getByTestId('probability-model-builder');
   await workbench.getByRole('button', { name: 'Conditioning' }).click();
 
+  await expect(workbench.getByRole('table', { name: 'Two-way count table' })).toBeVisible();
+  await expect(workbench.getByLabel('Conditional probability answer')).toBeVisible();
+  await expect(workbench.getByText('P(A | B) = 4/5')).not.toBeVisible();
+
+  await workbench.getByLabel('Conditional probability answer').fill('3/5');
+  await workbench.getByRole('button', { name: 'Check answer', exact: true }).click();
+  await expect(workbench.getByRole('status')).toContainText('Recheck');
+  await expect(workbench.getByText('P(A | B) = 4/5')).not.toBeVisible();
+
+  await workbench.getByLabel('Conditional probability answer').fill('4/5');
+  await workbench.getByRole('button', { name: 'Check answer', exact: true }).click();
+  await expect(workbench.getByRole('status')).toContainText('Correct');
   await expect(workbench.getByText('P(A | B) = 4/5')).toBeVisible();
   await expect(workbench.getByText('20 favorable inside 25 observations in B.')).toBeVisible();
-  await expect(workbench.getByRole('table', { name: 'Two-way count table' })).toBeVisible();
 });
 
-test('@core Bayes follows joint paths to the posterior', async ({ page }) => {
+test('@core Bayes reuses the event table and checks the posterior first', async ({ page }) => {
   const workbench = page.getByTestId('probability-model-builder');
   await workbench.getByRole('button', { name: 'Bayes' }).click();
 
-  await expect(workbench.getByText('P(A | +) = 2/3')).toBeVisible();
-  await expect(workbench.getByText('4/25 + 2/25 = 6/25')).toBeVisible();
+  await expect(workbench.getByRole('table', { name: 'Two-way count table' })).toBeVisible();
+  await expect(workbench.getByLabel('Posterior probability answer')).toBeVisible();
+  await expect(workbench.getByText('P(A | B) = 4/5')).not.toBeVisible();
+  await expect(workbench.getByText('A → B', { exact: true })).not.toBeVisible();
+
+  await workbench.getByLabel('Posterior probability answer').fill('4/5');
+  await workbench.getByRole('button', { name: 'Check answer', exact: true }).click();
+  await expect(workbench.getByRole('status')).toContainText('Correct');
+  await expect(workbench.getByText('P(A | B) = 4/5')).toBeVisible();
+  await expect(workbench.getByText('A → B', { exact: true })).toBeVisible();
 });
 
 test('@core Verification is reproducible and labelled as evidence, not proof', async ({ page }) => {
@@ -39,8 +58,18 @@ test('@core Verification is reproducible and labelled as evidence, not proof', a
   await workbench.getByRole('button', { name: 'Run verification' }).click();
 
   await expect(workbench.getByText(/Completed 10,000 seeded trials/)).toBeVisible();
-  await expect(workbench.getByText('Theoretical probability 1/3')).toBeVisible();
+  await expect(workbench.getByText('Theoretical probability 1/2')).toBeVisible();
   await expect(workbench.getByText(/Simulation is evidence, not proof/)).toBeVisible();
+});
+
+test('@core event-table edits stay synchronized across Bayes and verification views', async ({ page }) => {
+  const workbench = page.getByTestId('probability-model-builder');
+  await workbench.getByRole('button', { name: 'Conditioning' }).click();
+  await workbench.getByLabel('A and B').fill('10');
+  await workbench.getByRole('button', { name: 'Bayes' }).click();
+  await expect(workbench.getByLabel('A and B')).toHaveValue('10');
+  await workbench.getByRole('button', { name: 'Verify' }).click();
+  await expect(workbench.getByText(/Exact P\(B\) from this table/)).toBeVisible();
 });
 
 test('Probability Model Builder keeps the first exact result above the mobile dock', async ({ page }) => {

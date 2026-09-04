@@ -2799,7 +2799,6 @@ body { background: var(--shell-maroon-950); }
 .probability-builder__mode-fieldset,
 .probability-builder__counting-controls,
 .probability-builder__condition-choice,
-.probability-builder__bayes-controls,
 .probability-builder__verify-controls {
   min-width: 0;
   margin: 0;
@@ -2841,15 +2840,47 @@ body { background: var(--shell-maroon-950); }
 .probability-builder__header p { margin: 0; color: var(--foreground-muted); line-height: 1.55; }
 
 .probability-builder__counting-controls,
-.probability-builder__bayes-controls,
 .probability-builder__verify-controls {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: .75rem;
 }
 
-.probability-builder__bayes-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.probability-builder__verify-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .probability-builder__verify-controls > button { align-self: end; }
+
+.probability-builder__event-model {
+  display: grid;
+  gap: .7rem;
+  min-width: 0;
+  padding-block: .75rem;
+  border-block: 1px solid var(--border);
+}
+
+.probability-builder__event-model-heading { display: grid; gap: .2rem; }
+.probability-builder__event-model-heading h3 { margin: 0; font-size: 1.05rem; line-height: 1.25; }
+.probability-builder__event-model-heading p { margin: 0; color: var(--foreground-muted); line-height: 1.45; }
+
+.probability-builder__answer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: .75rem;
+}
+
+.probability-builder__answer .form-field { min-width: 0; }
+.probability-builder__answer .amat-button { min-height: 44px; }
+
+.probability-builder__exact-event {
+  display: grid;
+  gap: .15rem;
+  padding: .75rem .9rem;
+  border-left: 4px solid var(--accent);
+  background: var(--surface-muted);
+}
+.probability-builder__exact-event span { color: var(--primary); font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .045em; }
+.probability-builder__exact-event strong { color: var(--foreground); font: 800 clamp(1.15rem, 2.3vw, 1.75rem)/1.2 var(--font-mono); }
+.probability-builder__exact-event small { color: var(--foreground-muted); line-height: 1.4; }
 
 .probability-builder__result {
   display: grid;
@@ -2911,10 +2942,13 @@ body { background: var(--shell-maroon-950); }
   .probability-builder__counting-controls .form-field__label { font-size: .72rem; }
   .probability-builder__result { min-height: 58px; padding-block: .45rem; }
   .probability-builder__result strong { font-size: 1.05rem; }
-  .probability-builder__bayes-controls,
   .probability-builder__verify-controls,
   .probability-builder__bayes-paths,
   .probability-builder__simulation { grid-template-columns: 1fr; }
+  .probability-builder__event-model { gap: .5rem; padding-block: .55rem; }
+  .probability-builder__event-model-heading p { display: none; }
+  .probability-builder__answer { gap: .5rem; }
+  .probability-builder__answer .amat-button { padding-inline: .75rem; }
   .probability-builder__bayes-paths > div { border-right: 0; border-bottom: 1px solid var(--border); }
   .probability-builder__bayes-paths > div:nth-child(3) { border-bottom: 0; }
   .probability-builder__simulation svg { min-height: 9rem; }
@@ -2923,6 +2957,9 @@ body { background: var(--shell-maroon-950); }
 @media (forced-colors: active) {
   .probability-builder__mode[data-active="true"],
   .probability-builder__stage,
+  .probability-builder__event-model,
+  .probability-builder__answer,
+  .probability-builder__exact-event,
   .probability-builder__result,
   .probability-builder__table-scroll { border-color: CanvasText; }
   .probability-builder__theory-line,
