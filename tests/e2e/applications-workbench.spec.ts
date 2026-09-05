@@ -34,7 +34,7 @@ test('@core Linear program custom objective updates the exact optimum', async ({
 
 test('@core Game theory exposes security levels and the mixed strategy', async ({ page }) => {
   const workbench = page.getByTestId('optimization-strategy-workbench');
-  await workbench.getByRole('button', { name: 'Zero-sum game' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('game');
 
   await expect(workbench.getByText('Mixed equilibrium')).not.toBeVisible();
   await workbench.getByLabel('Dominance check').selectOption('none');
@@ -48,7 +48,7 @@ test('@core Game theory exposes security levels and the mixed strategy', async (
 
 test('@core Advanced view keeps simplex and Markov subordinate to the model', async ({ page }) => {
   const workbench = page.getByTestId('optimization-strategy-workbench');
-  await workbench.getByRole('button', { name: 'Advanced' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('advanced');
 
   await expect(workbench.getByText('Simplex optimum Z = 11')).not.toBeVisible();
   await workbench.getByText('Simplex trace for current linear program').click();

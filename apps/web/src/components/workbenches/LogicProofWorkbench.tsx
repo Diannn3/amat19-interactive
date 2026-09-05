@@ -19,6 +19,7 @@ import {
   type LogicTranslationPrompt,
 } from '../../lib/logic-translation';
 import FormalProofLab from '../labs/formal-proof/FormalProofLab';
+import WorkbenchTaskPicker, { type WorkbenchTaskOption } from './WorkbenchTaskPicker';
 
 type Mode = 'translate' | 'table' | 'compare' | 'argument' | 'proof';
 type Draft = {
@@ -35,7 +36,7 @@ type Draft = {
 const LAB_ID = 'workbench.logic-proof';
 const CONTENT_VERSION = '1';
 const INITIAL_DRAFT: Draft = {
-  mode: 'table',
+  mode: 'translate',
   expression: 'P -> Q',
   left: 'P -> Q',
   right: '~Q -> ~P',
@@ -45,13 +46,18 @@ const INITIAL_DRAFT: Draft = {
   translationAnswer: '',
 };
 
-const MODES: Array<{ id: Mode; label: string }> = [
-  { id: 'translate', label: 'Translate' },
-  { id: 'table', label: 'Truth table' },
-  { id: 'compare', label: 'Compare' },
-  { id: 'argument', label: 'Argument' },
-  { id: 'proof', label: 'Guided proof' },
+const MODE_VALUES: readonly Mode[] = ['translate', 'table', 'compare', 'argument', 'proof'];
+const TASK_OPTIONS: readonly WorkbenchTaskOption[] = [
+  { value: 'translate', label: 'Translate a statement', group: 'Start here' },
+  { value: 'table', label: 'Truth table', group: 'See the pattern' },
+  { value: 'compare', label: 'Compare expressions', group: 'Test reasoning' },
+  { value: 'argument', label: 'Test an argument', group: 'Test reasoning' },
+  { value: 'proof', label: 'Build a proof', group: 'Go deeper' },
 ];
+
+function isMode(value: unknown): value is Mode {
+  return typeof value === 'string' && MODE_VALUES.includes(value as Mode);
+}
 
 function message(error: unknown): string {
   return error instanceof Error ? error.message : 'The logic expression could not be analyzed.';
@@ -87,11 +93,11 @@ export default function LogicProofWorkbench() {
 
   useEffect(() => {
     let active = true;
-    const requestedMode = readWorkbenchOption('mode', MODES.map((item) => item.id));
+    const requestedMode = readWorkbenchOption('mode', MODE_VALUES);
     loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((draft) => {
       if (!active) return;
       if (draft) {
-        setMode(requestedMode ?? draft.mode);
+        setMode(requestedMode ?? (isMode(draft.mode) ? draft.mode : INITIAL_DRAFT.mode));
         setExpression(draft.expression);
         setLeft(draft.left);
         setRight(draft.right);
@@ -149,24 +155,12 @@ export default function LogicProofWorkbench() {
 
   return (
     <section className="logic-workbench" data-testid="logic-proof-workbench" data-hydrated={hydrated ? 'true' : undefined}>
-      <fieldset className="logic-workbench__mode-fieldset" disabled={!hydrated}>
-        <legend className="sr-only">Choose a logic task</legend>
-        <div className="logic-workbench__modes" role="group" aria-label="Logic task">
-          {MODES.map((item) => (
-            <button
-              data-primary-control
-              className="logic-workbench__mode"
-              data-active={mode === item.id}
-              type="button"
-              aria-pressed={mode === item.id}
-              key={item.id}
-              onClick={() => selectMode(item.id)}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+      <WorkbenchTaskPicker
+        value={mode}
+        options={TASK_OPTIONS}
+        disabled={!hydrated}
+        onChange={(value) => { if (isMode(value)) selectMode(value); }}
+      />
 
       {mode === 'translate' && (
         <section className="logic-workbench__stage" aria-labelledby="translation-heading">

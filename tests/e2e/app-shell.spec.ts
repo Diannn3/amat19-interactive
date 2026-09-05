@@ -441,11 +441,12 @@ test('@core logic task switch is keyboard-accessible', async ({ page }) => {
   await page.goto('/workbenches/logic');
   const workbench = page.getByTestId('logic-proof-workbench');
   await expect(workbench).toHaveAttribute('data-hydrated', 'true');
-  const modes = page.getByRole('group', { name: 'Logic task' });
-  await expect(modes.getByRole('button', { name: 'Truth table' })).toHaveAttribute('aria-pressed', 'true');
-  await modes.getByRole('button', { name: 'Compare' }).focus();
-  await page.keyboard.press('Enter');
-  await expect(modes.getByRole('button', { name: 'Compare' })).toHaveAttribute('aria-pressed', 'true');
+  const picker = workbench.getByRole('combobox', { name: 'Choose a task' });
+  await expect(picker).toHaveValue('translate');
+  await picker.focus();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await expect(picker).toHaveValue('compare');
   await expect(page.getByRole('heading', { name: 'Find the row that separates them.' })).toBeVisible();
 });
 

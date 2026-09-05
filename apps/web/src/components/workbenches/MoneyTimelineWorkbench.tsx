@@ -19,6 +19,7 @@ import { usePersistenceFlush } from '../../lib/use-persistence-flush';
 import { readWorkbenchOption } from '../../lib/workbench-route';
 import type { MoneyStep } from '../../lib/money-step-feedback';
 import MoneyStepCoach from './MoneyStepCoach';
+import WorkbenchTaskPicker, { type WorkbenchTaskOption } from './WorkbenchTaskPicker';
 
 type Scenario = 'cashflows' | 'annuity' | 'bond';
 type Flow = { id: number; time: string; amount: string };
@@ -52,6 +53,11 @@ type Computed = {
 const LAB_ID = 'finance.money-timeline';
 const CONTENT_VERSION = '1';
 const SCENARIOS: readonly Scenario[] = ['cashflows', 'annuity', 'bond'];
+const TASK_OPTIONS: readonly WorkbenchTaskOption[] = [
+  { value: 'cashflows', label: 'Move cash flows', group: 'Start here' },
+  { value: 'annuity', label: 'Value an annuity', group: 'Common models' },
+  { value: 'bond', label: 'Price a bond', group: 'Common models' },
+];
 const DEFAULT_FLOWS: Flow[] = [
   { id: 1, time: '0', amount: '-2000' },
   { id: 2, time: '3', amount: '2500' },
@@ -85,6 +91,10 @@ function bounds(points: TimelinePoint[]) {
   const minTime = Math.min(...times);
   const max = Math.max(...times);
   return { minTime, maxTime: max === minTime ? minTime + 1 : max };
+}
+
+function isScenario(value: unknown): value is Scenario {
+  return typeof value === 'string' && SCENARIOS.includes(value as Scenario);
 }
 
 export default function MoneyTimelineWorkbench() {
@@ -125,8 +135,9 @@ export default function MoneyTimelineWorkbench() {
   useEffect(() => {
     const requestedScenario = readWorkbenchOption('scenario', SCENARIOS);
     loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((saved) => {
+      const savedScenario = saved && isScenario(saved.scenario) ? saved.scenario : undefined;
       if (!userInteracted.current && saved) {
-        setScenario(requestedScenario ?? saved.scenario);
+        setScenario(requestedScenario ?? savedScenario ?? 'cashflows');
         setFlows(saved.flows);
         setCashflowRate(saved.cashflowRate);
         setFocalDate(saved.focalDate);
@@ -143,7 +154,7 @@ export default function MoneyTimelineWorkbench() {
       }
       if (!userInteracted.current && !saved && requestedScenario) setScenario(requestedScenario);
       setHydrated(true);
-    });
+    }).catch(() => setHydrated(true));
   }, []);
 
   useEffect(() => {
@@ -293,17 +304,14 @@ export default function MoneyTimelineWorkbench() {
           <h2>Move one cash flow.</h2>
           <p>Choose a focal date, check a move, then combine the values.</p>
         </div>
-        <fieldset className="money-timeline__scenario" data-scenario-control disabled={!hydrated}>
-          <legend className="sr-only">Choose a finance scenario</legend>
-          <label className="form-field">
-            <span className="form-field__label">Scenario</span>
-            <select className="select-input" name="finance-scenario" value={scenario} onChange={(event) => setScenario(event.target.value as Scenario)}>
-              <option value="cashflows">Cash flows</option>
-              <option value="annuity">Annuity</option>
-              <option value="bond">Bond</option>
-            </select>
-          </label>
-        </fieldset>
+        <div className="money-timeline__scenario" data-scenario-control>
+          <WorkbenchTaskPicker
+            value={scenario}
+            options={TASK_OPTIONS}
+            disabled={!hydrated}
+            onChange={(value) => { if (isScenario(value)) setScenario(value); }}
+          />
+        </div>
       </header>
 
       <div className="money-timeline__workspace">

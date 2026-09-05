@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 
 test('@core Translate checks controlled language before showing canonical notation', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('button', { name: 'Translate' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('translate');
   await expect(workbench.getByRole('heading', { name: 'Turn controlled language into symbols.' })).toBeVisible();
   await expect(workbench.locator('[data-logic-translation-result]')).not.toBeVisible();
 
@@ -24,7 +24,7 @@ test('@core Translate checks controlled language before showing canonical notati
 
 test('@core Translate accepts a second controlled-language template and keyboard aliases', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('button', { name: 'Translate' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('translate');
   await workbench.getByLabel('Statement to translate').selectOption('iff');
   await workbench.getByLabel('Symbolic translation').fill('P <-> Q');
   await workbench.getByRole('button', { name: 'Check translation' }).click();
@@ -34,6 +34,7 @@ test('@core Translate accepts a second controlled-language template and keyboard
 test('@core Logic & Proof opens on a complete exact truth table', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
   await expect(workbench).toHaveAttribute('data-hydrated', 'true');
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('table');
   await expect(workbench.getByRole('heading', { name: 'See every truth value.' })).toBeVisible();
   await expect(workbench.getByLabel('Logic expression')).toHaveValue('P -> Q');
   await expect(workbench.getByRole('status')).toContainText('contingent');
@@ -50,7 +51,7 @@ test('@core Logic & Proof opens on a complete exact truth table', async ({ page 
 
 test('@core Compare exposes a counterexample instead of only a verdict', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('button', { name: 'Compare' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('compare');
   await expect(workbench.getByText('Equivalent everywhere.')).toBeVisible();
 
   await workbench.getByLabel('Expression B').fill('Q -> P');
@@ -61,7 +62,7 @@ test('@core Compare exposes a counterexample instead of only a verdict', async (
 
 test('@core Argument validity names a falsifying assignment', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('button', { name: 'Argument' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('argument');
   await workbench.getByRole('button', { name: 'Check validity' }).click();
 
   await expect(workbench.getByText('Invalid argument.')).toBeVisible();
@@ -71,14 +72,14 @@ test('@core Argument validity names a falsifying assignment', async ({ page }) =
 
 test('Guided proof stays inside the same workbench', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('button', { name: 'Guided proof' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('proof');
   await expect(workbench.getByTestId('formal-proof-lab')).toHaveAttribute('data-hydrated', 'true');
   await expect(workbench.getByRole('heading', { name: 'Derive the goal one justified line at a time.' })).toBeVisible();
 });
 
 test('@core Guided proof keeps implementation metadata out of copy and localizes invalid-line feedback', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('button', { name: 'Guided proof' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('proof');
   const proof = workbench.getByTestId('formal-proof-lab');
   await expect(proof).toHaveAttribute('data-hydrated', 'true');
   await expect(proof.getByText('Scoped formal proof workspace')).not.toBeVisible();
@@ -93,6 +94,7 @@ test('@core Guided proof keeps implementation metadata out of copy and localizes
 test('Logic & Proof keeps the expression and truth table above the mobile dock', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
+  await page.getByTestId('logic-proof-workbench').getByRole('combobox', { name: 'Choose a task' }).selectOption('table');
   await page.locator('.workspace-scroll').evaluate((element) => { element.scrollTop = 0; });
   const metrics = await page.getByTestId('logic-proof-workbench').evaluate((element) => {
     const input = element.querySelector<HTMLElement>('[aria-label="Logic expression"]');

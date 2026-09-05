@@ -10,9 +10,9 @@ test('@core Money Timeline starts with one focused cash-flow model', async ({ pa
   await expect(workbench).toHaveAttribute('data-hydrated', 'true');
   await expect(workbench.getByRole('heading', { level: 2, name: 'Move one cash flow.' })).toBeVisible();
 
-  const scenario = workbench.getByLabel('Scenario');
+  const scenario = workbench.getByRole('combobox', { name: 'Choose a task' });
   await expect(scenario).toHaveValue('cashflows');
-  await expect(scenario.locator('option')).toHaveText(['Cash flows', 'Annuity', 'Bond']);
+  await expect(scenario.locator('option')).toHaveText(['Move cash flows', 'Value an annuity', 'Price a bond']);
   await expect(workbench.locator('[data-money-timeline-object] svg')).toBeVisible();
   await expect(workbench.getByText('Equivalent value', { exact: true })).not.toBeVisible();
 
@@ -30,7 +30,7 @@ test('@core Money Timeline starts with one focused cash-flow model', async ({ pa
 
 test('@core annuity and bond presets reuse the timeline instead of opening separate tools', async ({ page }) => {
   const workbench = page.getByTestId('money-timeline-workbench');
-  const scenario = workbench.getByLabel('Scenario');
+  const scenario = workbench.getByRole('combobox', { name: 'Choose a task' });
 
   await scenario.selectOption('annuity');
   await workbench.getByText('Edit cash flows and rates', { exact: true }).click();

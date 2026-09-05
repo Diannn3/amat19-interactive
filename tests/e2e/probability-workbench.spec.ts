@@ -28,7 +28,7 @@ test('@core Counting selects the model before showing the exact count', async ({
 
 test('@core Conditioning keeps the active denominator visible and checks the answer first', async ({ page }) => {
   const workbench = page.getByTestId('probability-model-builder');
-  await workbench.getByRole('button', { name: 'Conditioning' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('conditioning');
 
   await expect(workbench.getByRole('table', { name: 'Two-way count table' })).toBeVisible();
   await expect(workbench.getByLabel('Conditional probability answer')).toBeVisible();
@@ -48,7 +48,7 @@ test('@core Conditioning keeps the active denominator visible and checks the ans
 
 test('@core Bayes reuses the event table and checks the posterior first', async ({ page }) => {
   const workbench = page.getByTestId('probability-model-builder');
-  await workbench.getByRole('button', { name: 'Bayes' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('bayes');
 
   await expect(workbench.getByRole('table', { name: 'Two-way count table' })).toBeVisible();
   await expect(workbench.getByLabel('Posterior probability answer')).toBeVisible();
@@ -64,7 +64,7 @@ test('@core Bayes reuses the event table and checks the posterior first', async 
 
 test('@core Verification is reproducible and labelled as evidence, not proof', async ({ page }) => {
   const workbench = page.getByTestId('probability-model-builder');
-  await workbench.getByRole('button', { name: 'Verify' }).click();
+  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('verify');
   await workbench.getByRole('button', { name: 'Run verification' }).click();
 
   await expect(workbench.getByText(/Completed 10,000 seeded trials/)).toBeVisible();
@@ -74,11 +74,12 @@ test('@core Verification is reproducible and labelled as evidence, not proof', a
 
 test('@core event-table edits stay synchronized across Bayes and verification views', async ({ page }) => {
   const workbench = page.getByTestId('probability-model-builder');
-  await workbench.getByRole('button', { name: 'Conditioning' }).click();
+  const picker = workbench.getByRole('combobox', { name: 'Choose a task' });
+  await picker.selectOption('conditioning');
   await workbench.getByRole('spinbutton', { name: 'A and B', exact: true }).fill('10');
-  await workbench.getByRole('button', { name: 'Bayes' }).click();
+  await picker.selectOption('bayes');
   await expect(workbench.getByRole('spinbutton', { name: 'A and B', exact: true })).toHaveValue('10');
-  await workbench.getByRole('button', { name: 'Verify' }).click();
+  await picker.selectOption('verify');
   await expect(workbench.getByText(/Exact P\(B\) from this table/)).toBeVisible();
 });
 

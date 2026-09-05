@@ -35,24 +35,24 @@ test('route parameters select the intended workbench tool', async ({ page }, tes
   test.skip(!['mobile-375', 'desktop-1280'].includes(testInfo.project.name));
 
   await page.goto('/workbenches/logic?mode=compare');
-  await expect(page.getByRole('button', { name: 'Compare' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('compare');
 
   await page.goto('/workbenches/probability?mode=bayes');
-  await expect(page.getByRole('button', { name: 'Bayes' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('bayes');
 
   await page.goto('/workbenches/finance?scenario=annuity');
-  await expect(page.getByLabel('Scenario')).toHaveValue('annuity');
+  await expect(page.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('annuity');
 
   await page.goto('/workbenches/linear?goal=inverse');
-  await expect(page.getByLabel('Goal')).toHaveValue('inverse');
+  await expect(page.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('inverse');
 
   await page.goto('/workbenches/applications?mode=game');
-  await expect(page.getByRole('button', { name: 'Zero-sum game' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('game');
 });
 
 test('legacy argument links retain their selected task', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-1280');
   await page.goto('/labs/truth-table?mode=argument');
   await expect(page).toHaveURL(/\/workbenches\/logic\?mode=argument$/);
-  await expect(page.getByRole('button', { name: 'Argument', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('argument');
 });

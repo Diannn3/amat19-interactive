@@ -1,6 +1,6 @@
 # Focused workbench implementation audit
 
-This is an incremental implementation record, not a release certificate. Branch work started from `82b2ab2`; no push or deployment is included.
+This is an incremental implementation record, not a release certificate. Branch work started from `82b2ab2`; the current focused-workbench pass is locally verified and has not been deployed.
 
 ## Consolidation delivered
 
@@ -57,6 +57,14 @@ This is an incremental implementation record, not a release certificate. Branch 
 - Markov forecast output is released by an explicit “Run forecast” action and is cleared whenever transition values, the initial distribution, or the step count changes, so stale results are not mistaken for the current model.
 - Targeted Applications verification: 66 browser cases passed across the configured viewport/browser projects, with one Firefox startup stall passing on a serial rerun. The updated Advanced assertions pass on desktop and mobile layouts.
 
+### Focused task picker and first-action pass delivered (2026-09-05)
+
+- Replaced the persistent Logic, Probability, and Applications mode bars and normalized Finance and Linear selectors into one shared native “Choose a task” picker with grouped, learner-facing options.
+- Foundation defaults are Translate a statement, Count outcomes, Move cash flows, Solve a system, and Graphical linear program. Internal task values, query parameters, legacy routes, draft keys/content versions, and exact math engines remain unchanged.
+- Query-selected tasks take precedence over saved drafts; valid saved tasks continue without a query; invalid persisted task values fall back safely. Switching tasks clears stale task-specific feedback and result disclosure.
+- Short-height responsive rules keep the first mathematical action above the mobile dock at 375x667 and 640x480 while preserving local scrolling for dense mathematical tables and the existing shell.
+- Verification: `pnpm run verify` passed (208 Node tests, 5 Vitest tests, Astro check with 0 errors/0 warnings and one existing service-worker hint, and a 62-page production build). The full changed browser matrix completed with 816 passes and 29 intentional skips; the two follow-up failures were corrected and passed in serial reruns: task-picker mobile-375 8/8, Firefox 8/8, WebKit 8/8, and Finance WebKit 4/4. Production PWA checks passed 4/4.
+
 ### Verification of route retirement (2026-09-04)
 
 - Architecture/content audits and Astro checks passed (0 errors, 0 warnings; one pre-existing service-worker typing hint).
@@ -74,8 +82,8 @@ Consolidating destinations does not by itself fulfill the brief. These are accep
 1. Counting is now an explicit setup helper separate from the shared event table. Decide later whether a first-class course-directory view is warranted; no duplicate event representation is needed for this pass.
 2. Optimization's LP, game, and Advanced outputs are now gated behind learner actions. Continue with a full audit of custom model error placement and first actions across all workbench modes.
 3. Logic translation and proof feedback are delivered. Continue with notation edge cases and a full audit of proof scopes and alternate methods.
-4. Audit all modes, not only default pages, for mobile first-action visibility, local error placement, keyboard use, forced colors, reduced motion, and Axe.
-5. Complete `verify:full` plus production PWA checks and inspect final screenshots before a release claim.
+4. The shared picker and first-action pass are covered across the configured responsive/browser matrix. Remaining UX work is mode-specific: improve custom-model error placement, notation edge cases, and alternate proof methods without expanding the picker or adding new routes.
+5. The final screenshots and release review remain separate from this implementation record; deployment is intentionally outside this pass.
 
 ## Dependency boundary
 

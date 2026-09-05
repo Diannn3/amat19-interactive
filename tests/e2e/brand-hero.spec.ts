@@ -61,6 +61,7 @@ test.describe('AMAT 19 brand hero and identity', () => {
   });
 
   test('identity remains legible in the compact rail and the Developer dialog is axe-clean', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
     const mark = page.locator('[data-brand-mark]');
     await expect(mark).toHaveCSS('width', '44px');

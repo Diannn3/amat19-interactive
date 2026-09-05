@@ -42,7 +42,7 @@ test('@core coach applies and undoes an exact elementary row operation', async (
 test('@core inverse and RREF goals stay in the same coach', async ({ page }) => {
   const coach = page.getByTestId('row-operations-coach');
   await expect(coach).toHaveAttribute('data-hydrated', 'true');
-  const goal = coach.getByLabel('Goal');
+  const goal = coach.getByRole('combobox', { name: 'Choose a task' });
 
   await goal.selectOption('inverse');
   await expect(coach.getByLabel('Current augmented matrix')).toHaveAttribute('aria-label', /2, 4, 1, 0/);
@@ -60,7 +60,7 @@ test('@core inverse and RREF goals stay in the same coach', async ({ page }) => 
 test('@core matrix arithmetic checks a complete result before revealing the exact matrix', async ({ page }) => {
   const coach = page.getByTestId('row-operations-coach');
   await expect(coach).toHaveAttribute('data-hydrated', 'true');
-  await coach.getByLabel('Goal').selectOption('arithmetic');
+  await coach.getByRole('combobox', { name: 'Choose a task' }).selectOption('arithmetic');
   await expect(coach.getByRole('img', { name: /Matrix A:/ })).toBeVisible();
   await expect(coach.getByRole('img', { name: /Matrix B:/ })).toBeVisible();
   await expect(coach.getByLabel('Candidate result matrix')).toBeVisible();

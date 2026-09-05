@@ -102,7 +102,7 @@ test('production PWA serves query-based study routes from the service-worker cac
     await page.goto('/workbenches/probability?mode=bayes&offline=1', { waitUntil: 'domcontentloaded' });
     await expect(page.getByTestId('probability-model-builder')).toBeVisible();
     await expect(page.getByTestId('probability-model-builder')).toHaveAttribute('data-hydrated', 'true');
-    await expect(page.getByRole('button', { name: 'Bayes' })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('bayes');
     for (const [route, selector] of [
       ['/workbenches/logic?mode=compare', 'logic-proof-workbench'],
       ['/workbenches/finance?scenario=bond', 'money-timeline-workbench'],
@@ -120,7 +120,7 @@ test('production PWA serves query-based study routes from the service-worker cac
 test('built legacy redirects preserve task selection with a no-script fallback', async ({ page, browser }) => {
   await page.goto('/labs/truth-table?mode=argument');
   await expect(page).toHaveURL(/\/workbenches\/logic\?mode=argument$/);
-  await expect(page.getByRole('button', { name: 'Argument', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('argument');
   const noScript = await browser.newContext({ javaScriptEnabled: false, baseURL: 'http://127.0.0.1:4321' });
   try {
     const fallback = await noScript.newPage();

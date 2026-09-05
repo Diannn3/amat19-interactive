@@ -19,6 +19,7 @@ import { checkProbabilityAnswer, type ProbabilityAnswerFeedback } from '../../li
 import { checkCountingModel, COUNTING_METHOD_OPTIONS, isCountingMethod, type CountingAnswerFeedback, type CountingMethod } from '../../lib/counting-answer-feedback';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
 import { readWorkbenchOption } from '../../lib/workbench-route';
+import WorkbenchTaskPicker, { type WorkbenchTaskOption } from './WorkbenchTaskPicker';
 
 type Mode = 'counting' | 'conditioning' | 'bayes' | 'verify';
 type Condition = 'a-given-b' | 'b-given-a';
@@ -49,12 +50,17 @@ const INITIAL: Draft = {
   seed: 'amat19-verification',
 };
 
-const MODES: Array<{ id: Mode; label: string }> = [
-  { id: 'counting', label: 'Counting' },
-  { id: 'conditioning', label: 'Conditioning' },
-  { id: 'bayes', label: 'Bayes' },
-  { id: 'verify', label: 'Verify' },
+const MODE_VALUES: readonly Mode[] = ['counting', 'conditioning', 'bayes', 'verify'];
+const TASK_OPTIONS: readonly WorkbenchTaskOption[] = [
+  { value: 'counting', label: 'Count outcomes', group: 'Start here' },
+  { value: 'conditioning', label: 'Condition on an event', group: 'Model events' },
+  { value: 'bayes', label: 'Apply Bayes', group: 'Model events' },
+  { value: 'verify', label: 'Run a seeded check', group: 'Check evidence' },
 ];
+
+function isMode(value: unknown): value is Mode {
+  return typeof value === 'string' && MODE_VALUES.includes(value as Mode);
+}
 
 function errorText(error: unknown): string {
   return error instanceof Error ? error.message : 'This probability model could not be evaluated.';
@@ -99,11 +105,11 @@ export default function ProbabilityModelBuilder() {
 
   useEffect(() => {
     let active = true;
-    const requestedMode = readWorkbenchOption('mode', MODES.map((item) => item.id));
+    const requestedMode = readWorkbenchOption('mode', MODE_VALUES);
     loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((draft) => {
       if (!active) return;
       if (draft) {
-        setMode(requestedMode ?? draft.mode); setOrderMatters(draft.orderMatters); setRepetitionAllowed(draft.repetitionAllowed);
+        setMode(requestedMode ?? (isMode(draft.mode) ? draft.mode : INITIAL.mode)); setOrderMatters(draft.orderMatters); setRepetitionAllowed(draft.repetitionAllowed);
         setN(draft.n); setR(draft.r); setCountingMethod(isCountingMethod(draft.countingMethod) ? draft.countingMethod : ''); setCells(draft.cells); setCondition(draft.condition);
         setTrials(draft.trials); setSeed(draft.seed);
       }
@@ -172,6 +178,7 @@ export default function ProbabilityModelBuilder() {
 
   function selectMode(next: Mode) {
     setMode(next);
+    resetCountingModel();
     setConditionalAnswerRaw('');
     setConditionalFeedback(undefined);
     setConditionalRevealed(false);
@@ -230,12 +237,12 @@ export default function ProbabilityModelBuilder() {
 
   return (
     <section className="probability-builder" data-testid="probability-model-builder" data-hydrated={hydrated ? 'true' : undefined}>
-      <fieldset className="probability-builder__mode-fieldset" disabled={!hydrated}>
-        <legend className="sr-only">Choose a probability model</legend>
-        <div className="probability-builder__modes" role="group" aria-label="Probability model">
-          {MODES.map((item) => <button data-primary-control className="probability-builder__mode" data-active={mode === item.id} aria-pressed={mode === item.id} type="button" key={item.id} onClick={() => selectMode(item.id)}>{item.label}</button>)}
-        </div>
-      </fieldset>
+      <WorkbenchTaskPicker
+        value={mode}
+        options={TASK_OPTIONS}
+        disabled={!hydrated}
+        onChange={(value) => { if (isMode(value)) selectMode(value); }}
+      />
 
       {mode === 'counting' && <section className="probability-builder__stage" aria-labelledby="counting-heading">
         <header className="probability-builder__header"><h2 id="counting-heading">Name what makes an outcome different.</h2><p>Order and repetition choose the formula. Set those rules before entering the size of the selection.</p></header>

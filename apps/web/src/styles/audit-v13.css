@@ -14,6 +14,19 @@
   min-height: 45px;
 }
 
+/* Keep the primary interaction contract safely above 44px in Firefox, where
+   2.75rem can resolve to 43.999984px after layout rounding. */
+button[data-primary-control],
+select[data-primary-control],
+textarea[data-primary-control],
+input[data-primary-control]:not([type="radio"]):not([type="checkbox"]),
+[data-primary-controls] button,
+[data-primary-controls] select,
+[data-primary-controls] textarea,
+[data-primary-controls] input:not([type="radio"]):not([type="checkbox"]) {
+  min-height: 45px;
+}
+
 /* Prevent intrinsic widths in the graphical-LP editor from widening its narrow
    control column by a couple of pixels in Firefox. Content wraps instead. */
 .lp-lab__controls,

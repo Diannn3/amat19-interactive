@@ -33,6 +33,7 @@ import {
   type ModelStatus,
   type OptimizationAnswerFeedback,
 } from '../../lib/optimization-answer-feedback';
+import WorkbenchTaskPicker, { type WorkbenchTaskOption } from './WorkbenchTaskPicker';
 
 type Mode = 'linear' | 'game' | 'advanced';
 type ConstraintRow = { a: string; b: string; relation: Constraint2D['relation']; c: string };
@@ -50,7 +51,12 @@ type Draft = {
 
 const LAB_ID = 'workbench.optimization-strategy';
 const CONTENT_VERSION = '1';
-const MODES: readonly Mode[] = ['linear', 'game', 'advanced'];
+const MODE_VALUES: readonly Mode[] = ['linear', 'game', 'advanced'];
+const TASK_OPTIONS: readonly WorkbenchTaskOption[] = [
+  { value: 'linear', label: 'Graphical linear program', group: 'Start here' },
+  { value: 'game', label: 'Zero-sum game', group: 'Compare strategies' },
+  { value: 'advanced', label: 'Simplex and Markov', group: 'Go deeper' },
+];
 const DEFAULT_CONSTRAINTS: ConstraintRow[] = [
   { a: '1', b: '1', relation: '<=', c: '4' },
   { a: '1', b: '0', relation: '<=', c: '3' },
@@ -74,6 +80,10 @@ const DOMINANCE_OPTIONS: ReadonlyArray<{ value: DominanceChoice; label: string }
   { value: 'column:1>2', label: 'Column 1 is strictly dominated by Column 2' },
   { value: 'column:2>1', label: 'Column 2 is strictly dominated by Column 1' },
 ];
+
+function isMode(value: unknown): value is Mode {
+  return typeof value === 'string' && MODE_VALUES.includes(value as Mode);
+}
 
 function errorText(error: unknown): string {
   return error instanceof Error ? error.message : 'The model could not be evaluated.';
@@ -107,11 +117,11 @@ export default function OptimizationStrategyWorkbench() {
 
   useEffect(() => {
     let active = true;
-    const requestedMode = readWorkbenchOption('mode', MODES);
+    const requestedMode = readWorkbenchOption('mode', MODE_VALUES);
     loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((draft) => {
       if (!active) return;
       if (draft) {
-        setMode(requestedMode ?? draft.mode); setCx(draft.cx); setCy(draft.cy); setSense(draft.sense); setConstraints(draft.constraints);
+        setMode(requestedMode ?? (isMode(draft.mode) ? draft.mode : INITIAL.mode)); setCx(draft.cx); setCy(draft.cy); setSense(draft.sense); setConstraints(draft.constraints);
         setGame(draft.game); setMarkov(draft.markov); setInitialA(draft.initialA); setMarkovSteps(draft.markovSteps);
         setScenario('custom');
       }
@@ -230,14 +240,12 @@ export default function OptimizationStrategyWorkbench() {
   }
 
   return <section className="strategy-workbench" data-testid="optimization-strategy-workbench" data-hydrated={hydrated ? 'true' : undefined}>
-    <fieldset className="strategy-workbench__mode-fieldset" disabled={!hydrated}>
-      <legend className="sr-only">Choose an applications model</legend>
-      <div className="strategy-workbench__modes" role="group" aria-label="Applications model">
-        <button data-primary-control className="strategy-workbench__mode" data-active={mode === 'linear'} aria-pressed={mode === 'linear'} type="button" onClick={() => selectMode('linear')}>Linear program</button>
-        <button data-primary-control className="strategy-workbench__mode" data-active={mode === 'game'} aria-pressed={mode === 'game'} type="button" onClick={() => selectMode('game')}>Zero-sum game</button>
-        <button data-primary-control className="strategy-workbench__mode" data-active={mode === 'advanced'} aria-pressed={mode === 'advanced'} type="button" onClick={() => selectMode('advanced')}>Advanced</button>
-      </div>
-    </fieldset>
+    <WorkbenchTaskPicker
+      value={mode}
+      options={TASK_OPTIONS}
+      disabled={!hydrated}
+      onChange={(value) => { if (isMode(value)) selectMode(value); }}
+    />
 
     {mode === 'linear' && <section className="strategy-workbench__stage" aria-labelledby="lp-heading">
       <header className="strategy-workbench__header"><h2 id="lp-heading">See the feasible region before choosing a corner.</h2><p>Each inequality removes part of the plane. Only feasible corners can optimize a bounded linear objective.</p></header>

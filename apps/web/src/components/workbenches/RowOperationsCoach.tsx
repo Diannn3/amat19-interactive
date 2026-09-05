@@ -27,6 +27,7 @@ import {
   type MatrixArithmeticFeedback,
   type RowStepFeedback,
 } from '../../lib/row-step-feedback';
+import WorkbenchTaskPicker, { type WorkbenchTaskOption } from './WorkbenchTaskPicker';
 
 type Goal = 'system' | 'inverse' | 'rref' | 'arithmetic';
 type OperationKind = RowOperationInput['kind'];
@@ -43,6 +44,12 @@ type StoredDraft = {
 const LAB_ID = 'linear.row-operations-coach';
 const CONTENT_VERSION = '2';
 const GOALS: readonly Goal[] = ['system', 'inverse', 'rref', 'arithmetic'];
+const TASK_OPTIONS: readonly WorkbenchTaskOption[] = [
+  { value: 'system', label: 'Solve a system', group: 'Start here' },
+  { value: 'rref', label: 'Reach RREF', group: 'Inspect the matrix' },
+  { value: 'inverse', label: 'Find an inverse', group: 'Inspect the matrix' },
+  { value: 'arithmetic', label: 'Matrix arithmetic', group: 'Calculate' },
+];
 const SAMPLES: Record<Goal, string> = {
   system: '1 1 3\n1 -1 1',
   inverse: '2 4\n0 -2',
@@ -69,6 +76,10 @@ function startingMatrix(source: Matrix, goal: Goal) {
   if (source.some((row) => row.length !== source.length)) throw new RangeError('Inverse mode needs a square matrix.');
   const unit = identity(source.length);
   return source.map((row, index) => [...row, ...unit[index]!]);
+}
+
+function isGoal(value: unknown): value is Goal {
+  return typeof value === 'string' && GOALS.includes(value as Goal);
 }
 
 function MatrixBoard({ value, label, splitAfter }: { value: Matrix; label: string; splitAfter?: number }) {
@@ -174,7 +185,7 @@ export default function RowOperationsCoach() {
   useEffect(() => {
     const requestedGoal = readWorkbenchOption('goal', GOALS);
     loadDraft<StoredDraft>(LAB_ID, CONTENT_VERSION).then((saved) => {
-      const savedGoal = saved && GOALS.includes(saved.goal) ? saved.goal : undefined;
+      const savedGoal = saved && isGoal(saved.goal) ? saved.goal : undefined;
       if (!userInteracted.current && requestedGoal && requestedGoal !== savedGoal) {
         const raw = SAMPLES[requestedGoal];
         setGoal(requestedGoal);
@@ -377,18 +388,14 @@ export default function RowOperationsCoach() {
           <h2>Change one row. See what stays equivalent.</h2>
           <p>Build the reduction yourself; ask for one next move only when you need it.</p>
         </div>
-        <fieldset className="row-coach__goal" disabled={!hydrated}>
-          <legend className="sr-only">Choose a row-reduction goal</legend>
-          <label className="form-field">
-            <span className="form-field__label">Goal</span>
-            <select data-primary-control className="select-input" name="row-coach-goal" value={goal} onChange={(event) => selectGoal(event.target.value as Goal)}>
-              <option value="system">Solve a system</option>
-              <option value="inverse">Find an inverse</option>
-              <option value="rref">Find RREF</option>
-              <option value="arithmetic">Matrix arithmetic</option>
-            </select>
-          </label>
-        </fieldset>
+        <div className="row-coach__goal">
+          <WorkbenchTaskPicker
+            value={goal}
+            options={TASK_OPTIONS}
+            disabled={!hydrated}
+            onChange={(value) => { if (isGoal(value)) selectGoal(value); }}
+          />
+        </div>
       </header>
 
       {analysis.kind === 'error' ? (
