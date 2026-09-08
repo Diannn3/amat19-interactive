@@ -3,7 +3,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
 
-const outDir = path.resolve('artifacts/round2');
+const port = process.env.PORT || 6768;
+const outDir = path.resolve('artifacts/round3');
 fs.mkdirSync(outDir, { recursive: true });
 
 async function capture() {
@@ -24,33 +25,33 @@ async function capture() {
 
   // 1. Home Desktop
   const pageHomeDesk = await desktop.newPage();
-  await pageHomeDesk.goto('http://127.0.0.1:6767/');
+  await pageHomeDesk.goto(`http://127.0.0.1:${port}/`);
   await pageHomeDesk.waitForLoadState('networkidle');
   await pageHomeDesk.screenshot({ path: path.join(outDir, 'home-desktop.png'), fullPage: false });
   await pageHomeDesk.screenshot({ path: path.join(outDir, 'home-desktop-full.png'), fullPage: true });
 
   // 2. Home Mobile
   const pageHomeMob = await mobile.newPage();
-  await pageHomeMob.goto('http://127.0.0.1:6767/');
+  await pageHomeMob.goto(`http://127.0.0.1:${port}/`);
   await pageHomeMob.waitForLoadState('networkidle');
   await pageHomeMob.screenshot({ path: path.join(outDir, 'home-mobile.png'), fullPage: false });
 
   // 3. Course Desktop
   const pageCourseDesk = await desktop.newPage();
-  await pageCourseDesk.goto('http://127.0.0.1:6767/course');
+  await pageCourseDesk.goto(`http://127.0.0.1:${port}/course`);
   await pageCourseDesk.waitForLoadState('networkidle');
   await pageCourseDesk.screenshot({ path: path.join(outDir, 'course-desktop.png'), fullPage: false });
   await pageCourseDesk.screenshot({ path: path.join(outDir, 'course-desktop-full.png'), fullPage: true });
 
   // 4. Course Mobile
   const pageCourseMob = await mobile.newPage();
-  await pageCourseMob.goto('http://127.0.0.1:6767/course');
+  await pageCourseMob.goto(`http://127.0.0.1:${port}/course`);
   await pageCourseMob.waitForLoadState('networkidle');
   await pageCourseMob.screenshot({ path: path.join(outDir, 'course-mobile.png'), fullPage: false });
 
   // 5. Logic Workbench Desktop
   const pageLogicDesk = await desktop.newPage();
-  await pageLogicDesk.goto('http://127.0.0.1:6767/workbenches/logic');
+  await pageLogicDesk.goto(`http://127.0.0.1:${port}/workbenches/logic`);
   await pageLogicDesk.waitForLoadState('networkidle');
   await pageLogicDesk.screenshot({ path: path.join(outDir, 'logic-desktop.png'), fullPage: false });
 
@@ -62,8 +63,19 @@ async function capture() {
     await pageLogicDesk.screenshot({ path: path.join(outDir, 'logic-table-instrument.png'), fullPage: false });
   }
 
+  // 7. Logic Mobile Table
+  const pageLogicMob = await mobile.newPage();
+  await pageLogicMob.goto(`http://127.0.0.1:${port}/workbenches/logic`);
+  await pageLogicMob.waitForLoadState('networkidle');
+  const taskSelectMob = pageLogicMob.getByLabel('Choose a task');
+  if (await taskSelectMob.isVisible()) {
+    await taskSelectMob.selectOption('table');
+    await pageLogicMob.waitForTimeout(400);
+    await pageLogicMob.screenshot({ path: path.join(outDir, 'logic-mobile-table.png'), fullPage: false });
+  }
+
   await browser.close();
-  console.log('Screenshots captured successfully in artifacts/round2');
+  console.log('Screenshots captured successfully in artifacts/round3');
 }
 
 capture().catch((err) => {
