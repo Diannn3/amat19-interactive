@@ -1,0 +1,1355 @@
+/* ==========================================================================
+   AMAT 19 Apple Interface Engineering Design System
+   Benchmarked against WWDC fluid physics, visionOS/macOS optical glass,
+   and Emil Kowalski's 10 motion standards.
+   ========================================================================== */
+
+/* Precision Engineering Grid Background */
+body {
+  background-color: #fbfbfd !important;
+  background-image: 
+    radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.95) 0%, transparent 70%),
+    linear-gradient(to right, rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.035) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 40px 40px, 40px 40px !important;
+  background-attachment: fixed !important;
+}
+
+/* Optical Liquid Glass Card */
+.apple-glass-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.76) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 12px 32px -4px rgba(0, 0, 0, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.98) !important;
+  border-radius: 22px !important;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1), border-color 220ms ease !important;
+  overflow: hidden;
+}
+
+.apple-glass-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 20px 48px -8px rgba(0, 0, 0, 0.09), inset 0 1px 1px 0 rgba(255, 255, 255, 1) !important;
+  border-color: rgba(255, 255, 255, 1) !important;
+}
+
+.apple-glass-card:active {
+  transform: translateY(0px) scale(0.985) !important;
+  transition: transform 60ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Specular Top-Edge Razor Highlight */
+.apple-glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.98) 20%, rgba(255, 255, 255, 0.98) 80%, transparent 100%);
+  pointer-events: none;
+  border-radius: 22px 22px 0 0;
+  z-index: 2;
+}
+
+/* Dynamic Spotlight Illumination Overlay */
+.apple-glass-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.45), transparent 70%);
+  opacity: var(--spotlight-opacity, 0);
+  transition: opacity 250ms ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Recessed 3D Icon Squircle */
+.apple-icon-squircle {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 1);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), inset 0 1px 1.5px rgba(255, 255, 255, 1);
+  flex-shrink: 0;
+  color: #18181b;
+}
+
+/* Circular Arrow Action Button */
+.apple-action-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  color: #3f3f46;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.apple-glass-card:hover .apple-action-circle {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+  transform: scale(1.06);
+}
+
+/* Primary Black Pill Button */
+.apple-btn-black {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.65rem;
+  border-radius: 999px;
+  background: #111111 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), background 180ms ease, box-shadow 180ms ease;
+  text-decoration: none;
+}
+
+.apple-btn-black:hover {
+  background: #27272a !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+}
+
+.apple-btn-black:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Secondary Translucent Glass Pill Button */
+.apple-btn-glass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.09) !important;
+  color: #18181b !important;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.apple-btn-glass:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.apple-btn-glass:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Monolithic Stacked Hero Typography */
+.home-hero__display {
+  display: flex;
+  flex-direction: column;
+  font: 800 clamp(2.8rem, 4.8vw, 4.6rem)/0.98 var(--font-apple-system, -apple-system, BlinkMacSystemFont, sans-serif);
+  letter-spacing: -0.04em;
+  color: #09090b;
+}
+
+/* Hero Metrics Row (Image 1) */
+.home-hero__specs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.7);
+}
+
+.home-spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.home-spec-item__val {
+  font: 800 1.6rem/1 var(--font-apple-system, sans-serif);
+  color: #09090b;
+  letter-spacing: -0.03em;
+}
+
+.home-spec-item__label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #18181b;
+  letter-spacing: -0.01em;
+}
+
+.home-spec-item__sub {
+  font-size: 0.72rem;
+  color: #71717a;
+  line-height: 1.35;
+}
+
+/* Scroll Indicator (Image 1) */
+.home-scroll-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 3rem auto 1.5rem;
+  color: #71717a;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.home-scroll-pill {
+  width: 20px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(113, 113, 122, 0.35);
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  padding-top: 5px;
+}
+
+.home-scroll-dot {
+  width: 4px;
+  height: 6px;
+  border-radius: 2px;
+  background: #27272a;
+  animation: scrollBob 1.8s infinite cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@keyframes scrollBob {
+  0%, 100% { transform: translateY(0); opacity: 0.9; }
+  50% { transform: translateY(8px); opacity: 0.2; }
+}
+
+/* Homepage Workbench Ledger Override to Floating Stack */
+.home-workbench-ledger {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.home-workbench-ledger__heading {
+  display: none !important;
+}
+
+.home-workbench-ledger ol {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+
+.home-workbench-ledger li {
+  border: none !important;
+  padding: 0 !important;
+}
+
+.home-workbench-link.apple-glass-card {
+  display: grid !important;
+  grid-template-columns: 48px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 1.1rem !important;
+  padding: 1.1rem 1.35rem !important;
+  text-decoration: none !important;
+  color: #18181b !important;
+  min-height: 4.8rem !important;
+}
+
+.home-workbench-link__title {
+  font-size: 1.12rem !important;
+  font-weight: 700 !important;
+  color: #09090b !important;
+  letter-spacing: -0.02em !important;
+}
+
+.home-workbench-link__description {
+  font-size: 0.86rem !important;
+  color: #71717a !important;
+  line-height: 1.4 !important;
+}
+
+.home-workbench-link__meta {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  margin-bottom: 0.2rem !important;
+}
+
+.home-workbench-link__tag {
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  color: #71717a !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+}
+
+.home-workbench-link code[data-home-notation] {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.18rem 0.5rem !important;
+  border-radius: 6px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+  color: #18181b !important;
+}
+
+/* Mathematical Formula Notation Chip */
+.apple-formula-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  font-family: var(--font-amat-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #27272a;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 1);
+}
+
+/* Step Journey Section (Image 2) */
+.home-journey {
+  margin-top: clamp(3rem, 6vw, 5rem);
+  padding-block: clamp(2rem, 4vw, 3.5rem);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.home-journey__header {
+  max-width: 44rem;
+  margin-bottom: 2.5rem;
+}
+
+.home-journey__title {
+  font: 800 clamp(2rem, 3.5vw, 3rem)/1.08 var(--font-apple-system, sans-serif);
+  letter-spacing: -0.035em;
+  color: #09090b;
+  margin: 0 0 0.85rem;
+}
+
+.home-journey__lede {
+  color: #71717a;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.home-journey__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.home-journey__step {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.home-journey__step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home-journey__step-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #a1a1aa;
+  font-family: var(--font-amat-mono);
+}
+
+.home-journey__step h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #09090b;
+  letter-spacing: -0.02em;
+}
+
+.home-journey__step p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #71717a;
+  line-height: 1.48;
+}
+
+@media (max-width: 1024px) {
+  .home-journey__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .home-journey__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Glass Pill Filter */
+.apple-filter-pill {
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #52525b;
+  transition: all 160ms ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.apple-filter-pill:hover,
+.apple-filter-pill.is-active {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+}
+
+/* ==========================================================================
+   Course Map & Workbench Directory (Images 3 & 4)
+   ========================================================================== */
+
+.course-page {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 4vw, 3.5rem);
+}
+
+.course-hero__title {
+  font: 800 clamp(2.4rem, 4.2vw, 3.8rem)/1.04 var(--font-apple-system, sans-serif) !important;
+  letter-spacing: -0.04em !important;
+  color: #09090b !important;
+  margin: 0 0 0.75rem !important;
+}
+
+.course-hero__lede {
+  color: #71717a !important;
+  font-size: 1.05rem !important;
+  max-width: 48rem !important;
+  line-height: 1.55 !important;
+  margin: 0 0 1.5rem !important;
+}
+
+/* Course Search & Filter Bar */
+.course-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.course-search-input-wrap {
+  position: relative;
+  max-width: 32rem;
+}
+
+.course-search-input-wrap svg {
+  position: absolute;
+  left: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #71717a;
+  pointer-events: none;
+}
+
+.course-search-input {
+  width: 100%;
+  padding: 0.75rem 1.2rem 0.75rem 2.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 0.92rem;
+  color: #18181b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  transition: all 180ms ease;
+  outline: none;
+}
+
+.course-search-input:focus {
+  border-color: #18181b;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.course-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* 5-Column Workbench Directory */
+.workbench-grid.workbench-directory {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 1.15rem !important;
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.workbench-grid.workbench-directory .workbench-grid__item {
+  grid-column: span 1 !important;
+}
+
+@media (max-width: 1200px) {
+  .workbench-grid.workbench-directory {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .workbench-grid.workbench-directory {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.workbench-card.apple-glass-card {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  padding: 1.4rem !important;
+  border-radius: 24px !important;
+  min-height: 22rem !important;
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+.workbench-card__header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  margin-bottom: 1.25rem !important;
+}
+
+.workbench-card__index {
+  font-family: var(--font-amat-mono) !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  color: #a1a1aa !important;
+}
+
+.workbench-card__title {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: #09090b !important;
+  letter-spacing: -0.025em !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.workbench-card__desc {
+  font-size: 0.86rem !important;
+  color: #71717a !important;
+  line-height: 1.45 !important;
+  margin: 0 0 1.25rem !important;
+}
+
+.workbench-card__topics {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.35rem !important;
+  margin-bottom: 1.25rem !important;
+}
+
+.workbench-card__topic-tag {
+  font-size: 0.72rem !important;
+  padding: 0.2rem 0.55rem !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  color: #52525b !important;
+}
+
+.workbench-card__footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-top: auto !important;
+  padding-top: 1rem !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.workbench-card__action-text {
+  font-size: 0.86rem !important;
+  font-weight: 600 !important;
+  color: #18181b !important;
+}
+
+/* Connected Course Companion Bar */
+.course-companion-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem 1.65rem;
+  border-radius: 20px;
+}
+
+.course-companion-bar__copy {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.course-companion-bar__info strong {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #09090b;
+}
+
+.course-companion-bar__info p {
+  margin: 0.15rem 0 0;
+  font-size: 0.86rem;
+  color: #71717a;
+}
+
+/* Syllabus & Resources Section (Image 4) */
+.course-syllabus-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 960px) {
+  .course-syllabus-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.course-timeline-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.course-timeline-card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.15rem;
+  padding: 1.15rem 1.4rem;
+  border-radius: 18px;
+}
+
+.course-side-widget {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.course-resource-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.course-resource-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+  color: inherit;
+  transition: all 180ms ease;
+}
+
+.course-resource-item:hover {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  transform: translateX(2px);
+}
+
+/* ==========================================================================
+   Apple-Grade Glass Shell & Global Navigation (HIG Elevation)
+   ========================================================================== */
+
+/* Workspace: pure platinum/white with crisp engineering grid */
+.workspace-scroll {
+  background-color: #f8fafc !important;
+  background-image: 
+    radial-gradient(ellipse 80% 60% at 75% 30%, rgba(224, 236, 255, 0.5) 0%, rgba(248, 250, 252, 0) 70%),
+    radial-gradient(ellipse 60% 40% at 15% 15%, rgba(241, 245, 249, 0.7) 0%, transparent 60%),
+    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px !important;
+}
+
+.workspace {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Sidebar elevated to macOS / visionOS frosted liquid glass */
+.app-frame > .sidebar {
+  background: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(32px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
+  border: 1px solid rgba(226, 232, 240, 0.85) !important;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+}
+
+.brand-row {
+  border-bottom: 1px solid rgba(226, 232, 240, 0.7) !important;
+}
+
+.wordmark__course {
+  color: #0f172a !important;
+}
+
+.wordmark__descriptor {
+  color: #64748b !important;
+}
+
+.icon-button.sidebar-toggle {
+  color: #475569 !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-radius: 8px !important;
+}
+
+.icon-button.sidebar-toggle:hover {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.nav-link,
+.utility-nav-link,
+.utility-nav-action,
+.more-flyout-trigger,
+.more-menu__summary {
+  color: #475569 !important;
+  border-radius: 12px !important;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.nav-link:hover,
+.utility-nav-link:hover,
+.utility-nav-action:hover,
+.more-flyout-trigger:hover,
+.more-menu__summary:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: #0f172a !important;
+}
+
+.nav-link.is-active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 999px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+}
+
+.nav-link.is-active .nav-icon {
+  color: #ffffff !important;
+}
+
+.nav-active-rail {
+  display: none !important;
+}
+
+/* Topbar Apple Frosted Glass */
+.topbar {
+  background: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.7) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-inline: 1.75rem !important;
+}
+
+.topbar-home-label {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  font-size: 1.1rem !important;
+  text-transform: none !important;
+}
+
+.topbar-title {
+  display: none !important;
+}
+
+/* Center Topbar Navigation */
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2.2rem;
+}
+
+.topbar-nav-link {
+  position: relative;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+  text-decoration: none;
+  padding: 0.4rem 0.2rem;
+  transition: color 150ms ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.topbar-nav-link:hover {
+  color: #0f172a;
+}
+
+.topbar-nav-link.is-active {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.topbar-nav-dot {
+  position: absolute;
+  bottom: -4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #0f172a;
+}
+
+@media (max-width: 900px) {
+  .topbar-nav {
+    display: none;
+  }
+}
+
+.topbar-search {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+  padding: 0 1.1rem !important;
+  height: 2.45rem !important;
+  min-height: 2.45rem !important;
+  color: #64748b !important;
+}
+
+.topbar-search:hover {
+  border-color: #cbd5e1 !important;
+  background: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+.topbar-search kbd {
+  background: rgba(241, 245, 249, 0.9) !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  border-radius: 6px !important;
+  font-size: 0.68rem !important;
+  color: #64748b !important;
+}
+
+.topbar-status {
+  background: rgba(241, 245, 249, 0.9) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  color: #475569 !important;
+  border-radius: 999px !important;
+  padding: 0.38rem 0.95rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+}
+
+/* ==========================================================================
+   Workbench Route & Instrument Styling (Image 5 HIG Elevation)
+   ========================================================================== */
+
+.workbench-route__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.workbench-route__heading h1 {
+  font: 800 clamp(2.4rem, 4vw, 3.5rem)/1.06 var(--font-apple-system, sans-serif) !important;
+  letter-spacing: -0.04em !important;
+  color: #09090b !important;
+  margin: 0 0 0.6rem !important;
+}
+
+.workbench-route__heading p {
+  color: #64748b !important;
+  font-size: 1.05rem !important;
+  max-width: 44rem !important;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+}
+
+.workbench-route__links {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.workbench-route__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #334155;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: all 160ms ease;
+}
+
+.workbench-route__links a:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+/* Logic Workbench Instrument Stage */
+.logic-workbench {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.logic-workbench__stage {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 16px 36px -6px rgba(15, 23, 42, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+}
+
+.logic-workbench__stage h2 {
+  font: 750 clamp(1.4rem, 2.2vw, 1.8rem)/1.2 var(--font-apple-system, sans-serif) !important;
+  letter-spacing: -0.03em !important;
+  color: #0f172a !important;
+  margin: 0 0 0.4rem !important;
+}
+
+.logic-workbench__stage p {
+  color: #64748b !important;
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+  margin: 0 0 1.5rem !important;
+}
+
+.workbench-task-picker {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 16px;
+  padding: 0.75rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.workbench-task-picker__label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.workbench-task-picker__select {
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  font-size: 0.88rem !important;
+  font-weight: 500 !important;
+  color: #0f172a !important;
+  padding: 0.45rem 1.1rem !important;
+}
+
+/* Logic Workbench Stage Header Row */
+.logic-workbench__header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* 2-Column Instrument Layout */
+.logic-instrument-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .logic-instrument-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.logic-instrument-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.logic-input-bar {
+  position: relative;
+  width: 100%;
+}
+
+.logic-input--large {
+  font-size: 1.15rem !important;
+  font-family: var(--font-amat-mono) !important;
+  padding: 0.85rem 1.2rem !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02), inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+}
+
+.logic-input--large:focus {
+  border-color: #0f172a !important;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Keypad Pills */
+.logic-keypad {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.apple-keypad-pill {
+  min-width: 2.35rem;
+  height: 2.35rem;
+  padding: 0 0.65rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  font-family: var(--font-amat-mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 140ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-keypad-pill:hover {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.apple-keypad-pill:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.apple-keypad-pill--backspace {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* Logic Summary Badge */
+.logic-summary-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(241, 245, 249, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+}
+
+.logic-summary-class {
+  font-size: 0.82rem;
+  color: #0f172a;
+  text-transform: capitalize;
+}
+
+.logic-summary-meta {
+  font-size: 0.76rem;
+  color: #64748b;
+  font-family: var(--font-amat-mono);
+}
+
+/* Truth Table Apple Polish */
+.logic-workbench__table-scroll table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.logic-workbench__table-scroll th {
+  background: rgba(248, 250, 252, 0.95);
+  font-family: var(--font-amat-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #334155;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  text-align: center;
+}
+
+.logic-workbench__table-scroll td {
+  font-family: var(--font-amat-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.65rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+  color: #1e293b;
+}
+
+.logic-workbench__table-scroll tr[data-result="true"] td:last-child {
+  color: #059669;
+  font-weight: 700;
+}
+
+.logic-workbench__table-scroll tr[data-result="false"] td:last-child {
+  color: #e11d48;
+  font-weight: 700;
+}
+
+/* Companion Aside Cards */
+.logic-instrument-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.logic-aside-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.logic-aside-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logic-aside-card__header strong {
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.logic-aside-card__desc {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 0 !important;
+}
+
+/* Venn Diagram SVG */
+.logic-venn-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0;
+}
+
+.venn-svg {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+}
+
+.venn-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.venn-caption strong {
+  font-size: 0.82rem;
+  color: #0f172a;
+}
+
+.venn-caption small {
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+/* Common Statements List */
+.common-statements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.common-statement-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(248, 250, 252, 0.75);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  cursor: pointer;
+  text-align: left;
+  transition: all 150ms ease;
+}
+
+.common-statement-item:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  transform: translateX(2px);
+}
+
+.statement-name {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.statement-formula {
+  display: block;
+  font-size: 0.74rem;
+  font-family: var(--font-amat-mono);
+  color: #64748b;
+}
+
+.statement-arrow {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+/* Try These Examples Bar */
+.logic-examples-bar {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.logic-examples-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.logic-examples-header strong {
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.logic-examples-header small {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.logic-examples-deck {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .logic-examples-deck {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.logic-example-card {
+  padding: 0.75rem 0.95rem !important;
+  border-radius: 14px !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.25rem !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+}
+
+.logic-example-card__formula {
+  font-family: var(--font-amat-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.logic-example-card__label {
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+/* High Contrast & Reduced Motion */
+@media (prefers-contrast: more) {
+  .apple-glass-card {
+    background: #ffffff !important;
+    border: 1.5px solid #111111 !important;
+    backdrop-filter: none !important;
+  }
+  .apple-icon-squircle {
+    border: 1.5px solid #111111 !important;
+  }
+  .apple-action-circle {
+    border: 1.5px solid #111111 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apple-glass-card,
+  .apple-btn-black,
+  .apple-btn-glass,
+  .apple-action-circle {
+    transition: opacity 100ms ease !important;
+    transform: none !important;
+  }
+}

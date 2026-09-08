@@ -64,6 +64,18 @@
   --gradient-ember: linear-gradient(120deg, #651013 0%, #9b2d1b 42%, #d57a35 100%);
   --gradient-paper: radial-gradient(circle at 18% 10%, rgb(199 106 42 / 0.12), transparent 34%), radial-gradient(circle at 88% 6%, rgb(123 17 19 / 0.08), transparent 30%);
   --gradient-soft: linear-gradient(135deg, #fffdf9 0%, #fff4e8 52%, #f9e4d2 100%);
+  /* Apple Material Tiers & Optical Glass Constants */
+  --material-ultra-thin: rgba(255, 255, 255, 0.65);
+  --material-thin: rgba(255, 255, 255, 0.75);
+  --material-regular: rgba(255, 255, 255, 0.85);
+  --material-thick: rgba(255, 255, 255, 0.95);
+  --apple-blur: 28px;
+  --apple-saturate: 190%;
+  --apple-spring-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --apple-spring-exit: cubic-bezier(0.7, 0, 0.84, 0);
+  --apple-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.02), 0 12px 32px -4px rgba(0, 0, 0, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  --apple-shadow-hover: 0 1px 2px rgba(0, 0, 0, 0.03), 0 20px 48px -8px rgba(0, 0, 0, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 1);
+  --apple-border-specular: 1px solid rgba(255, 255, 255, 0.85);
 }
 
 @media (forced-colors: active) {

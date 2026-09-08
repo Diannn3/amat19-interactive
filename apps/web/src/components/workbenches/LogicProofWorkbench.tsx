@@ -184,35 +184,167 @@ export default function LogicProofWorkbench() {
       {mode === 'table' && (
         <section className="logic-workbench__stage" aria-labelledby="truth-table-heading">
           <header className="logic-workbench__header">
-            <h2 id="truth-table-heading">See every truth value.</h2>
-            <p>Enter one proposition. The table keeps each subexpression visible so you can find the row that changes the result.</p>
-          </header>
-          <fieldset className="logic-workbench__controls" disabled={!hydrated}>
-            <label className="form-field">
-              <span className="form-field__label">Expression</span>
-              <input
-                data-primary-control
-                className="text-input logic-input"
-                aria-label="Logic expression"
-                value={expression}
-                onChange={(event) => setExpression(event.target.value)}
-                autoComplete="off"
-                spellCheck={false}
-              />
-              <span className="form-field__hint">Use ~, &amp;, |, -&gt;, &lt;-&gt; or ¬, ∧, ∨, →, ↔.</span>
-            </label>
-          </fieldset>
-          {tableAnalysis.error ? (
-            <Feedback tone="error" role="alert">{tableAnalysis.error}</Feedback>
-          ) : tableAnalysis.table && tableAnalysis.formatted ? (
-            <>
-              <div className="logic-workbench__summary" role="status" aria-live="polite">
-                <strong>{tableAnalysis.table.classification}</strong>
-                <span>{tableAnalysis.table.rows.length} rows · {tableAnalysis.table.symbols.length} variables · {tableAnalysis.formatted}</span>
+            <div className="logic-workbench__header-row">
+              <div>
+                <h2 id="truth-table-heading">See every truth value.</h2>
+                <p>Enter one proposition. The table keeps each subexpression visible so you can find the row that changes the result.</p>
               </div>
-              <TruthTable table={tableAnalysis.table} formatted={tableAnalysis.formatted} />
-            </>
-          ) : null}
+              <button
+                type="button"
+                className="apple-filter-pill"
+                onClick={() => setExpression('')}
+                aria-label="Clear expression"
+              >
+                Clear
+              </button>
+            </div>
+          </header>
+
+          <div className="logic-instrument-grid">
+            <div className="logic-instrument-main">
+              <fieldset className="logic-workbench__controls" disabled={!hydrated}>
+                <label className="form-field">
+                  <span className="form-field__label">Logic expression</span>
+                  <div className="logic-input-bar">
+                    <input
+                      data-primary-control
+                      className="text-input logic-input logic-input--large"
+                      aria-label="Logic expression"
+                      value={expression}
+                      onChange={(event) => setExpression(event.target.value)}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+                  <span className="form-field__hint">Use ~, &amp;, |, -&gt;, &lt;-&gt; or ¬, ∧, ∨, →, ↔.</span>
+                </label>
+              </fieldset>
+
+              <div className="logic-keypad" role="group" aria-label="Mathematical operator keypad">
+                {['¬', '∧', '∨', '→', '↔', '(', ')', 'P', 'Q', 'R', 'S', 'T'].map((sym) => (
+                  <button
+                    key={sym}
+                    type="button"
+                    className="apple-keypad-pill"
+                    onClick={() => setExpression((prev) => prev + (prev.length > 0 && !prev.endsWith(' ') && !['(', ')', '¬'].includes(sym) ? ' ' : '') + sym)}
+                  >
+                    {sym}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className="apple-keypad-pill apple-keypad-pill--backspace"
+                  onClick={() => setExpression((prev) => prev.slice(0, -1).trimEnd())}
+                  aria-label="Backspace"
+                >
+                  ⌫
+                </button>
+              </div>
+
+              {tableAnalysis.error ? (
+                <Feedback tone="error" role="alert">{tableAnalysis.error}</Feedback>
+              ) : tableAnalysis.table && tableAnalysis.formatted ? (
+                <>
+                  <div className="logic-workbench__summary" role="status" aria-live="polite">
+                    <div className="logic-summary-badge">
+                      <strong className="logic-summary-class">{tableAnalysis.table.classification}</strong>
+                      <span className="logic-summary-meta">{tableAnalysis.table.rows.length} rows &middot; {tableAnalysis.table.symbols.length} variables &middot; {tableAnalysis.formatted}</span>
+                    </div>
+                  </div>
+                  <TruthTable table={tableAnalysis.table} formatted={tableAnalysis.formatted} />
+                </>
+              ) : null}
+            </div>
+
+            <aside className="logic-instrument-aside">
+              <div className="logic-aside-card apple-glass-card">
+                <div className="logic-aside-card__header">
+                  <strong>Visualize with Sets</strong>
+                  <span className="apple-formula-chip">A &cap; B</span>
+                </div>
+                <p className="logic-aside-card__desc">Explore set relationships for logical statements.</p>
+                <div className="logic-venn-diagram" aria-label="Venn diagram showing intersection of sets A and B">
+                  <svg viewBox="0 0 220 120" className="venn-svg" aria-hidden="true">
+                    <circle cx="85" cy="60" r="44" fill="rgba(241, 245, 249, 0.7)" stroke="#94a3b8" strokeWidth="1.5" />
+                    <circle cx="135" cy="60" r="44" fill="rgba(241, 245, 249, 0.7)" stroke="#94a3b8" strokeWidth="1.5" />
+                    <path d="M 110,26 A 44,44 0 0,1 110,94 A 44,44 0 0,1 110,26" fill="rgba(148, 163, 184, 0.35)" stroke="#64748b" strokeWidth="1.5" />
+                    <text x="68" y="65" fill="#475569" fontSize="13" fontWeight="600">A</text>
+                    <text x="146" y="65" fill="#475569" fontSize="13" fontWeight="600">B</text>
+                  </svg>
+                  <div className="venn-caption">
+                    <strong>A &cap; B</strong>
+                    <small>Elements in both A and B.</small>
+                  </div>
+                </div>
+              </div>
+
+              <div className="logic-aside-card apple-glass-card">
+                <div className="logic-aside-card__header">
+                  <strong>Common Statements</strong>
+                </div>
+                <p className="logic-aside-card__desc">Try an example or modify it.</p>
+                <div className="common-statements-list">
+                  <button type="button" className="common-statement-item" onClick={() => setExpression('~(P & Q) <-> (~P | ~Q)')}>
+                    <div>
+                      <span className="statement-name">De Morgan's Law</span>
+                      <span className="statement-formula">&not;(P &and; Q) &equiv; &not;P &or; &not;Q</span>
+                    </div>
+                    <span className="statement-arrow" aria-hidden="true">&rarr;</span>
+                  </button>
+                  <button type="button" className="common-statement-item" onClick={() => setExpression('P -> Q')}>
+                    <div>
+                      <span className="statement-name">Implication</span>
+                      <span className="statement-formula">P &rarr; Q</span>
+                    </div>
+                    <span className="statement-arrow" aria-hidden="true">&rarr;</span>
+                  </button>
+                  <button type="button" className="common-statement-item" onClick={() => setExpression('P <-> Q')}>
+                    <div>
+                      <span className="statement-name">Biconditional</span>
+                      <span className="statement-formula">P &harr; Q</span>
+                    </div>
+                    <span className="statement-arrow" aria-hidden="true">&rarr;</span>
+                  </button>
+                  <button type="button" className="common-statement-item" onClick={() => setExpression('(P -> Q) <-> (~Q -> ~P)')}>
+                    <div>
+                      <span className="statement-name">Contrapositive</span>
+                      <span className="statement-formula">(P &rarr; Q) &equiv; (&not;Q &rarr; &not;P)</span>
+                    </div>
+                    <span className="statement-arrow" aria-hidden="true">&rarr;</span>
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <div className="logic-examples-bar">
+            <div className="logic-examples-header">
+              <strong>Try These Examples</strong>
+              <small>Click to load an example into the workbench.</small>
+            </div>
+            <div className="logic-examples-deck">
+              <button type="button" className="logic-example-card apple-glass-card" onClick={() => setExpression('P -> Q')}>
+                <span className="logic-example-card__formula">P &rarr; Q</span>
+                <span className="logic-example-card__label">Simple implication</span>
+              </button>
+              <button type="button" className="logic-example-card apple-glass-card" onClick={() => setExpression('(P & Q) | R')}>
+                <span className="logic-example-card__formula">(P &and; Q) &or; R</span>
+                <span className="logic-example-card__label">Mixed operators</span>
+              </button>
+              <button type="button" className="logic-example-card apple-glass-card" onClick={() => setExpression('~(P | Q)')}>
+                <span className="logic-example-card__formula">&not;(P &or; Q)</span>
+                <span className="logic-example-card__label">De Morgan's Law</span>
+              </button>
+              <button type="button" className="logic-example-card apple-glass-card" onClick={() => setExpression('P <-> Q')}>
+                <span className="logic-example-card__formula">P &harr; Q</span>
+                <span className="logic-example-card__label">Equivalence</span>
+              </button>
+              <button type="button" className="logic-example-card apple-glass-card" onClick={() => setExpression('(P -> Q) -> (~Q -> ~P)')}>
+                <span className="logic-example-card__formula">(P &rarr; Q) &rarr; (&not;Q &rarr; &not;P)</span>
+                <span className="logic-example-card__label">Contrapositive</span>
+              </button>
+            </div>
+          </div>
         </section>
       )}
 

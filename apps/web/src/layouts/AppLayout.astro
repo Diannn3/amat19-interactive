@@ -4,6 +4,7 @@ import '@fontsource-variable/jetbrains-mono';
 import '../styles/global.css';
 import '../styles/pass4.css';
 import '../styles/audit-v13.css';
+import '../styles/apple-glass.css';
 import CommandPalette from '../components/navigation/CommandPalette';
 import DeveloperContact from '../components/navigation/DeveloperContact.astro';
 import BrandMark from '../components/brand/BrandMark.astro';
@@ -142,6 +143,25 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
               <span class="topbar-title">{title}</span>
             </div>
           </div>
+
+          <nav class="topbar-nav" aria-label="Primary destinations">
+            <a class:list={['topbar-nav-link', { 'is-active': currentPath === '/' }]} href="/">
+              Home
+              {currentPath === '/' && <span class="topbar-nav-dot" aria-hidden="true"></span>}
+            </a>
+            <a class:list={['topbar-nav-link', { 'is-active': currentPath.startsWith('/workbenches') }]} href="/course">
+              Workbenches
+              {currentPath.startsWith('/workbenches') && <span class="topbar-nav-dot" aria-hidden="true"></span>}
+            </a>
+            <a class:list={['topbar-nav-link', { 'is-active': currentPath === '/course' || currentPath.startsWith('/modules') }]} href="/course">
+              Course
+              {(currentPath === '/course' || currentPath.startsWith('/modules')) && <span class="topbar-nav-dot" aria-hidden="true"></span>}
+            </a>
+            <a class:list={['topbar-nav-link', { 'is-active': currentPath.startsWith('/reference') }]} href="/reference">
+              Resources
+              {currentPath.startsWith('/reference') && <span class="topbar-nav-dot" aria-hidden="true"></span>}
+            </a>
+          </nav>
 
           <div class="topbar-actions">
             <button class="topbar-search" type="button" data-command-button aria-haspopup="dialog" aria-label="Search AMAT 19">

@@ -1,12 +1,12 @@
 ---
 import { currentCourseProfile } from '@amat19/course-content';
-import { ArrowRight, BookOpen, GraduationCap, ClipboardCheck, BarChart3 } from 'lucide-react';
+import { ArrowRight, BookOpen, GraduationCap, ClipboardCheck, BarChart3, Search, Grid3X3, Network, Infinity } from 'lucide-react';
 import AppLayout from '../layouts/AppLayout.astro';
 
 const modulesById = new Map(currentCourseProfile.modules.map((module) => [module.id, module]));
 
 const moduleTopics: Record<string, string[]> = {
-  logic: ['Truth Tables', 'Equivalence', 'Formal Proof'],
+  logic: ['Propositions', 'Truth Tables', 'Logical Equivalence'],
   probability: ['Counting Models', 'Conditioning', 'Bayes Update'],
   finance: ['Interest Rates', 'Cash Timelines', 'Annuities'],
   linear: ['Row Operations', 'Matrix Inverse', 'Systems'],
@@ -18,27 +18,40 @@ const moduleTopics: Record<string, string[]> = {
   <div class="course-page">
     <header class="course-hero">
       <div class="course-hero__header">
-        <h1 class="course-hero__title">Five tools for the hard parts.</h1>
+        <h1 class="course-hero__title">Explore the Workbenches.</h1>
         <p class="course-hero__lede">
-          Choose a course module. Each dedicated workbench combines canonical theory, active calculators, step validation, and retrieval practice in a unified workspace.
+          Interactive tools for logic, probability, finance, matrices, and applications. Visualize concepts, experiment freely, and build deeper intuition in finite mathematics.
         </p>
+
+        <div class="course-filter-bar">
+          <div class="course-search-input-wrap">
+            <Search size={18} strokeWidth={1.8} />
+            <input 
+              type="text" 
+              class="course-search-input" 
+              placeholder="Search workbenches, notations, or skills..." 
+              aria-label="Search workbenches"
+            />
+          </div>
+
+          <div class="course-filter-pills" role="tablist" aria-label="Workbench filters">
+            <button class="apple-filter-pill is-active" type="button">All</button>
+            <button class="apple-filter-pill" type="button">Core Topics</button>
+            <button class="apple-filter-pill" type="button">Applications</button>
+            <button class="apple-filter-pill" type="button">Modeling</button>
+            <button class="apple-filter-pill" type="button">Interactive</button>
+          </div>
+        </div>
       </div>
-      <div class="course-hero__stats" aria-label="Course coverage metrics">
-        <div class="course-stat-chip">
-          <span class="course-stat-chip__val">05</span>
-          <span class="course-stat-chip__label">Workbenches</span>
-        </div>
-        <div class="course-stat-chip">
-          <span class="course-stat-chip__val">26</span>
-          <span class="course-stat-chip__label">Core Skills</span>
-        </div>
-        <div class="course-stat-chip">
-          <span class="course-stat-chip__val">100%</span>
-          <span class="course-stat-chip__label">Offline Ready</span>
-        </div>
+
+      <div class="course-hero__stats sr-only" aria-label="Course coverage metrics">
+        <div class="course-stat-chip"><span class="course-stat-chip__val">05</span><span class="course-stat-chip__label">Workbenches</span></div>
+        <div class="course-stat-chip"><span class="course-stat-chip__val">26</span><span class="course-stat-chip__label">Core Skills</span></div>
+        <div class="course-stat-chip"><span class="course-stat-chip__val">100%</span><span class="course-stat-chip__label">Offline Ready</span></div>
       </div>
     </header>
 
+    {/* Five Workbenches in 5-Column Optical Glass Grid */}
     <section class="course-workbenches" aria-label="Five core course workbenches">
       <ol class="workbench-grid workbench-directory" data-testid="workbench-directory">
         {currentCourseProfile.workbenches.map((workbench, index) => {
@@ -46,39 +59,45 @@ const moduleTopics: Record<string, string[]> = {
           const topics = moduleTopics[workbench.id] || [];
           return (
             <li class={`workbench-grid__item workbench-grid__item--${workbench.id}`}>
-              <a class="workbench-card" href={workbench.href}>
-                <div class="workbench-card__header">
-                  <div class="workbench-card__badge-group">
+              <a class="workbench-card apple-glass-card" href={workbench.href}>
+                <div>
+                  <div class="workbench-card__header">
+                    <div class="apple-icon-squircle" aria-hidden="true">
+                      {workbench.id === 'logic' && (
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M4 7h4"/><path d="M4 17h4"/><path d="M8 4v16c5 0 9-3.5 9-8s-4-8-9-8z"/><path d="M17 12h3"/>
+                        </svg>
+                      )}
+                      {workbench.id === 'probability' && (
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 20h18"/><path d="M4 20c2 0 4-1 6-7 1.5-4.5 2-8 2-8s.5 3.5 2 8c2 6 4 7 6 7"/><line x1="12" y1="5" x2="12" y2="20" stroke-dasharray="2 2"/>
+                        </svg>
+                      )}
+                      {workbench.id === 'finance' && <BarChart3 size={20} strokeWidth={1.8} />}
+                      {workbench.id === 'linear' && <Grid3X3 size={20} strokeWidth={1.8} />}
+                      {workbench.id === 'applications' && <Network size={20} strokeWidth={1.8} />}
+                    </div>
                     <span class="workbench-card__index" aria-hidden="true">0{index + 1}</span>
-                    <span class="workbench-card__module-name">{module.title}</span>
+                    <span class="workbench-card__module-name sr-only">{module.title}</span>
                   </div>
-                  <div class="workbench-card__formula" aria-label={`Formula: ${workbench.notation}`}>
-                    <code>{workbench.notation}</code>
-                  </div>
-                </div>
 
-                <div class="workbench-card__body">
-                  <div class="workbench-card__title-row">
+                  <div class="workbench-card__body">
                     <strong class="workbench-card__title">{workbench.title}</strong>
-                    <span class="workbench-card__arrow" aria-hidden="true">
-                      <ArrowRight size={17} strokeWidth={2} />
-                    </span>
+                    <p class="workbench-card__desc">{workbench.description}</p>
+                    
+                    <div class="workbench-card__topics" aria-label="Topics covered">
+                      {topics.map((topic) => (
+                        <span class="workbench-card__topic-tag">{topic}</span>
+                      ))}
+                    </div>
                   </div>
-                  <p class="workbench-card__desc">{workbench.description}</p>
                 </div>
 
                 <div class="workbench-card__footer">
-                  <div class="workbench-card__topics" aria-label="Topics covered">
-                    {topics.map((topic, i) => (
-                      <span class="workbench-card__topic-tag">
-                        {topic}
-                        {i < topics.length - 1 && <span class="workbench-card__dot" aria-hidden="true">·</span>}
-                      </span>
-                    ))}
+                  <span class="workbench-card__action-text">Open Workbench</span>
+                  <div class="apple-action-circle" aria-hidden="true">
+                    <ArrowRight size={15} strokeWidth={2.2} />
                   </div>
-                  <span class="workbench-card__action-text">
-                    Open workbench
-                  </span>
                 </div>
               </a>
             </li>
@@ -87,6 +106,23 @@ const moduleTopics: Record<string, string[]> = {
       </ol>
     </section>
 
+    {/* Full-Width Companion Bar */}
+    <div class="course-companion-bar apple-glass-card">
+      <div class="course-companion-bar__copy">
+        <div class="apple-icon-squircle" aria-hidden="true">
+          <Infinity size={22} strokeWidth={1.8} />
+        </div>
+        <div class="course-companion-bar__info">
+          <strong>One Connected Course</strong>
+          <p>These workbenches are part of a unified learning experience. Explore freely, or follow the syllabus for guided progression.</p>
+        </div>
+      </div>
+      <a class="apple-btn-black" href="/study">
+        Start Studying <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
+      </a>
+    </div>
+
+    {/* Utilities Companion Section */}
     <section class="course-utilities" aria-labelledby="course-utilities-heading">
       <div class="course-utilities__header">
         <h2 id="course-utilities-heading" class="course-utilities__title">Continue from here</h2>
@@ -94,7 +130,7 @@ const moduleTopics: Record<string, string[]> = {
       </div>
 
       <div class="utility-grid">
-        <a class="utility-card" href="/study">
+        <a class="utility-card apple-glass-card" href="/study">
           <div class="utility-card__icon" aria-hidden="true">
             <GraduationCap size={20} strokeWidth={1.8} />
           </div>
@@ -107,7 +143,7 @@ const moduleTopics: Record<string, string[]> = {
           </div>
         </a>
 
-        <a class="utility-card" href="/exam">
+        <a class="utility-card apple-glass-card" href="/exam">
           <div class="utility-card__icon" aria-hidden="true">
             <ClipboardCheck size={20} strokeWidth={1.8} />
           </div>
@@ -120,7 +156,7 @@ const moduleTopics: Record<string, string[]> = {
           </div>
         </a>
 
-        <a class="utility-card" href="/reference">
+        <a class="utility-card apple-glass-card" href="/reference">
           <div class="utility-card__icon" aria-hidden="true">
             <BookOpen size={20} strokeWidth={1.8} />
           </div>
@@ -133,7 +169,7 @@ const moduleTopics: Record<string, string[]> = {
           </div>
         </a>
 
-        <a class="utility-card" href="/progress">
+        <a class="utility-card apple-glass-card" href="/progress">
           <div class="utility-card__icon" aria-hidden="true">
             <BarChart3 size={20} strokeWidth={1.8} />
           </div>
@@ -148,4 +184,25 @@ const moduleTopics: Record<string, string[]> = {
       </div>
     </section>
   </div>
+
+  <script>
+    function initCourseSpotlight() {
+      const cards = document.querySelectorAll<HTMLElement>('.apple-glass-card');
+      cards.forEach((card) => {
+        card.addEventListener('pointermove', (e: PointerEvent) => {
+          const rect = card.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          card.style.setProperty('--mouse-x', `${x}%`);
+          card.style.setProperty('--mouse-y', `${y}%`);
+          card.style.setProperty('--spotlight-opacity', '1');
+        });
+        card.addEventListener('pointerleave', () => {
+          card.style.setProperty('--spotlight-opacity', '0');
+        });
+      });
+    }
+    initCourseSpotlight();
+    document.addEventListener('astro:page-load', initCourseSpotlight);
+  </script>
 </AppLayout>

@@ -1,6 +1,6 @@
 ---
 import { currentCourseProfile } from '@amat19/course-content';
-import { ArrowRight, GraduationCap, BarChart3, BookOpen } from 'lucide-react';
+import { ArrowRight, GraduationCap, BarChart3, BookOpen, Grid3X3, Network, Search, Boxes, Activity } from 'lucide-react';
 import AppLayout from '../layouts/AppLayout.astro';
 
 const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench) => [workbench.id, workbench]));
@@ -8,30 +8,44 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
 <AppLayout title="Home">
   <section class="page-width home-hero" data-home-hero aria-labelledby="home-title">
     <div class="home-hero__copy">
-      <h1 id="home-title" class="home-hero__title">Finite mathematics, made visible.</h1>
+      <h1 id="home-title" class="home-hero__title" aria-label="Finite mathematics, made visible.">
+        <span class="home-hero__display">
+          <span>Explore.</span>
+          <span>Visualize.</span>
+          <span>Understand.</span>
+        </span>
+        <span class="sr-only">Finite mathematics, made visible.</span>
+      </h1>
       <p class="home-hero__lede">Study AMAT 19 through exact, interactive labs for logic, probability, financial mathematics, matrices, and applied models.</p>
+      
       <div class="home-hero__actions">
-        <a class="primary-button" data-home-primary-action href="/study">Start studying <span aria-hidden="true">→</span></a>
-        <a class="secondary-button" href="/course">Explore the course</a>
+        <a class="apple-btn-black primary-button" data-home-primary-action href="/study">
+          Start studying <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />
+        </a>
+        <a class="apple-btn-glass secondary-button" href="/course">Explore the course</a>
       </div>
+
       <div class="home-hero__specs" aria-label="Course laboratory metrics">
         <div class="home-spec-item">
-          <span class="home-spec-item__val">05</span>
+          <span class="home-spec-item__val">5</span>
           <span class="home-spec-item__label">Workbenches</span>
+          <span class="home-spec-item__sub">Logic, Probability, Finance, Matrices, Applications</span>
         </div>
         <div class="home-spec-item">
-          <span class="home-spec-item__val">26</span>
-          <span class="home-spec-item__label">Core Skills</span>
+          <span class="home-spec-item__val">100+</span>
+          <span class="home-spec-item__label">Interactive Examples</span>
+          <span class="home-spec-item__sub">From concepts to real-world problems</span>
         </div>
         <div class="home-spec-item">
-          <span class="home-spec-item__val">100%</span>
-          <span class="home-spec-item__label">Offline Ready</span>
+          <span class="home-spec-item__val">&infin;</span>
+          <span class="home-spec-item__label">One Connected Course</span>
+          <span class="home-spec-item__sub">A clearer view of finite mathematics</span>
         </div>
       </div>
     </div>
 
     <nav class="home-workbench-ledger" data-home-course-rail aria-labelledby="home-workbench-heading">
-      <div class="home-workbench-ledger__heading">
+      <div class="home-workbench-ledger__heading sr-only">
         <h2 id="home-workbench-heading">Open a workbench.</h2>
         <p>Choose the model your problem needs, then check every step.</p>
       </div>
@@ -40,19 +54,41 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
           const workbench = workbenchesById.get(module.id)!;
           return (
             <li>
-              <a class="home-workbench-link" data-home-module href={workbench.href} aria-label={`Open ${workbench.title}`}>
-                <span class="home-workbench-link__index">{String(module.order).padStart(2, '0')}</span>
-                <span class="home-workbench-link__content">
-                  <span class="home-workbench-link__meta">
+              <a 
+                class="home-workbench-link apple-glass-card" 
+                data-home-module 
+                href={workbench.href} 
+                aria-label={`Open ${workbench.title}`}
+              >
+                <div class="apple-icon-squircle" aria-hidden="true">
+                  {module.id === 'logic' && (
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 7h4"/><path d="M4 17h4"/><path d="M8 4v16c5 0 9-3.5 9-8s-4-8-9-8z"/><path d="M17 12h3"/>
+                    </svg>
+                  )}
+                  {module.id === 'probability' && (
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 20h18"/><path d="M4 20c2 0 4-1 6-7 1.5-4.5 2-8 2-8s.5 3.5 2 8c2 6 4 7 6 7"/><line x1="12" y1="5" x2="12" y2="20" stroke-dasharray="2 2"/>
+                    </svg>
+                  )}
+                  {module.id === 'finance' && <BarChart3 size={20} strokeWidth={1.8} />}
+                  {module.id === 'linear' && <Grid3X3 size={20} strokeWidth={1.8} />}
+                  {module.id === 'applications' && <Network size={20} strokeWidth={1.8} />}
+                </div>
+
+                <div class="home-workbench-link__content">
+                  <div class="home-workbench-link__meta">
                     <span class="home-workbench-link__tag">{module.title}</span>
                     <code data-home-notation>{workbench.notation}</code>
-                  </span>
+                  </div>
                   <strong class="home-workbench-link__title">{workbench.title}</strong>
                   <span class="home-workbench-link__description">{workbench.description}</span>
-                </span>
-                <span class="home-workbench-link__action" data-home-open>
-                  Open <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-                </span>
+                </div>
+
+                <div class="apple-action-circle" data-home-open>
+                  <span class="sr-only">Open</span>
+                  <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />
+                </div>
               </a>
             </li>
           );
@@ -61,13 +97,76 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
     </nav>
   </section>
 
+  <div class="home-scroll-prompt" aria-hidden="true">
+    <div class="home-scroll-pill">
+      <span class="home-scroll-dot"></span>
+    </div>
+    <span class="home-scroll-text">Scroll to explore</span>
+  </div>
+
+  {/* Guided Learning Flow Section (Image 2) */}
+  <section class="page-width home-journey" aria-labelledby="journey-heading">
+    <div class="home-journey__header">
+      <h2 id="journey-heading" class="home-journey__title">From Concepts to Real Understanding.</h2>
+      <p class="home-journey__lede">
+        A guided learning flow that helps you explore ideas, visualize concepts, practice actively, and apply them to real-world problems — all in one connected experience.
+      </p>
+    </div>
+
+    <div class="home-journey__grid">
+      <div class="apple-glass-card home-journey__step">
+        <div class="home-journey__step-header">
+          <div class="apple-icon-squircle" aria-hidden="true">
+            <Search size={20} strokeWidth={1.8} />
+          </div>
+          <span class="home-journey__step-num">01</span>
+        </div>
+        <h3>Explore</h3>
+        <p>Discover ideas through interactive workbenches and guided examples that make abstract logic visible.</p>
+      </div>
+
+      <div class="apple-glass-card home-journey__step">
+        <div class="home-journey__step-header">
+          <div class="apple-icon-squircle" aria-hidden="true">
+            <Boxes size={20} strokeWidth={1.8} />
+          </div>
+          <span class="home-journey__step-num">02</span>
+        </div>
+        <h3>Visualize</h3>
+        <p>See mathematics come to life with dynamic models, truth tables, probability trees, and cashflow timelines.</p>
+      </div>
+
+      <div class="apple-glass-card home-journey__step">
+        <div class="home-journey__step-header">
+          <div class="apple-icon-squircle" aria-hidden="true">
+            <Activity size={20} strokeWidth={1.8} />
+          </div>
+          <span class="home-journey__step-num">03</span>
+        </div>
+        <h3>Practice</h3>
+        <p>Build intuition with active step validation, diagnostic feedback ladders, and immediate proof verification.</p>
+      </div>
+
+      <div class="apple-glass-card home-journey__step">
+        <div class="home-journey__step-header">
+          <div class="apple-icon-squircle" aria-hidden="true">
+            <Network size={20} strokeWidth={1.8} />
+          </div>
+          <span class="home-journey__step-num">04</span>
+        </div>
+        <h3>Apply</h3>
+        <p>Use what you've learned to solve linear programming, game theory matrices, and Markov chain models.</p>
+      </div>
+    </div>
+  </section>
+
   <section class="page-width home-shortcuts" aria-labelledby="shortcuts-heading">
     <div class="home-shortcuts__lead">
       <h2 id="shortcuts-heading">Continue from here.</h2>
       <p>Resume practice, inspect your progress, or check a definition.</p>
     </div>
     <nav class="home-shortcuts__links" aria-label="Study shortcuts">
-      <a href="/study">
+      <a href="/study" class="apple-glass-card">
         <div class="home-shortcuts__icon" aria-hidden="true">
           <GraduationCap size={18} strokeWidth={1.8} />
         </div>
@@ -77,7 +176,7 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
         </div>
         <span class="home-shortcuts__action">Open <ArrowRight size={15} aria-hidden="true" /></span>
       </a>
-      <a href="/progress">
+      <a href="/progress" class="apple-glass-card">
         <div class="home-shortcuts__icon" aria-hidden="true">
           <BarChart3 size={18} strokeWidth={1.8} />
         </div>
@@ -87,7 +186,7 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
         </div>
         <span class="home-shortcuts__action">Open <ArrowRight size={15} aria-hidden="true" /></span>
       </a>
-      <a href="/reference">
+      <a href="/reference" class="apple-glass-card">
         <div class="home-shortcuts__icon" aria-hidden="true">
           <BookOpen size={18} strokeWidth={1.8} />
         </div>
@@ -99,4 +198,25 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
       </a>
     </nav>
   </section>
+
+  <script>
+    function initSpotlight() {
+      const cards = document.querySelectorAll<HTMLElement>('.apple-glass-card');
+      cards.forEach((card) => {
+        card.addEventListener('pointermove', (e: PointerEvent) => {
+          const rect = card.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          card.style.setProperty('--mouse-x', `${x}%`);
+          card.style.setProperty('--mouse-y', `${y}%`);
+          card.style.setProperty('--spotlight-opacity', '1');
+        });
+        card.addEventListener('pointerleave', () => {
+          card.style.setProperty('--spotlight-opacity', '0');
+        });
+      });
+    }
+    initSpotlight();
+    document.addEventListener('astro:page-load', initSpotlight);
+  </script>
 </AppLayout>
