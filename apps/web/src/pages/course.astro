@@ -1,69 +1,151 @@
 ---
 import { currentCourseProfile } from '@amat19/course-content';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, BookOpen, GraduationCap, ClipboardCheck, BarChart3 } from 'lucide-react';
 import AppLayout from '../layouts/AppLayout.astro';
 
 const modulesById = new Map(currentCourseProfile.modules.map((module) => [module.id, module]));
+
+const moduleTopics: Record<string, string[]> = {
+  logic: ['Truth Tables', 'Equivalence', 'Formal Proof'],
+  probability: ['Counting Models', 'Conditioning', 'Bayes Update'],
+  finance: ['Interest Rates', 'Cash Timelines', 'Annuities'],
+  linear: ['Row Operations', 'Matrix Inverse', 'Systems'],
+  applications: ['Graphical LP', 'Simplex Pivot', 'Game Theory'],
+};
 ---
 
 <AppLayout title="Course map">
-  <section class="page-width page-intro course-intro">
-    <h1 class="display-title">Five tools for the hard parts.</h1>
-    <p class="lede">Choose the module you are studying. Each workbench keeps its model, calculation, and feedback in one place.</p>
-  </section>
-
-  <section class="page-width module-section" aria-labelledby="course-workbenches-heading">
-    <div class="section-heading">
-      <div>
-        <h2 id="course-workbenches-heading">Open a workbench.</h2>
-        <p class="section-context">One focused workspace for each course module.</p>
+  <div class="course-page">
+    <header class="course-hero">
+      <div class="course-hero__header">
+        <h1 class="course-hero__title">Five tools for the hard parts.</h1>
+        <p class="course-hero__lede">
+          Choose a course module. Each dedicated workbench combines canonical theory, active calculators, step validation, and retrieval practice in a unified workspace.
+        </p>
       </div>
-    </div>
-    <ol class="workbench-directory" data-testid="workbench-directory">
-      {currentCourseProfile.workbenches.map((workbench, index) => {
-        const module = modulesById.get(workbench.id)!;
-        return (
-          <li>
-            <a href={workbench.href}>
-              <span class="workbench-directory__number" aria-hidden="true">0{index + 1}</span>
-              <span class="workbench-directory__copy">
-                <strong>{workbench.title}</strong>
-                <small>{module.title}</small>
-                <span>{workbench.description}</span>
-              </span>
-              <span class="workbench-directory__notation">{workbench.notation}</span>
-              <ArrowRight size={18} aria-hidden="true" />
-            </a>
-          </li>
-        );
-      })}
-    </ol>
-  </section>
-
-  <section class="page-width module-section" aria-labelledby="course-tools-heading">
-    <div class="section-heading">
-      <div>
-        <h2 id="course-tools-heading">Continue from here.</h2>
-        <p class="section-context">Course-wide support.</p>
+      <div class="course-hero__stats" aria-label="Course coverage metrics">
+        <div class="course-stat-chip">
+          <span class="course-stat-chip__val">05</span>
+          <span class="course-stat-chip__label">Workbenches</span>
+        </div>
+        <div class="course-stat-chip">
+          <span class="course-stat-chip__val">26</span>
+          <span class="course-stat-chip__label">Core Skills</span>
+        </div>
+        <div class="course-stat-chip">
+          <span class="course-stat-chip__val">100%</span>
+          <span class="course-stat-chip__label">Offline Ready</span>
+        </div>
       </div>
-    </div>
-    <div class="route-grid">
-      <a class="route-link" href="/study">
-        <span><strong>Study Queue</strong><small>Resume a module or follow the next repair.</small></span>
-        <span aria-hidden="true">→</span>
-      </a>
-      <a class="route-link" href="/exam">
-        <span><strong>Mixed Course Check</strong><small>Submit once, then review feedback.</small></span>
-        <span aria-hidden="true">→</span>
-      </a>
-      <a class="route-link" href="/reference">
-        <span><strong>Formula &amp; Notation</strong><small>Check symbols, assumptions, and workbench links.</small></span>
-        <span aria-hidden="true">→</span>
-      </a>
-      <a class="route-link" href="/progress">
-        <span><strong>Progress &amp; Local Data</strong><small>Review evidence saved in this browser.</small></span>
-        <span aria-hidden="true">→</span>
-      </a>
-    </div>
-  </section>
+    </header>
+
+    <section class="course-workbenches" aria-label="Five core course workbenches">
+      <ol class="workbench-grid workbench-directory" data-testid="workbench-directory">
+        {currentCourseProfile.workbenches.map((workbench, index) => {
+          const module = modulesById.get(workbench.id)!;
+          const topics = moduleTopics[workbench.id] || [];
+          return (
+            <li class={`workbench-grid__item workbench-grid__item--${workbench.id}`}>
+              <a class="workbench-card" href={workbench.href}>
+                <div class="workbench-card__header">
+                  <div class="workbench-card__badge-group">
+                    <span class="workbench-card__index" aria-hidden="true">0{index + 1}</span>
+                    <span class="workbench-card__module-name">{module.title}</span>
+                  </div>
+                  <div class="workbench-card__formula" aria-label={`Formula: ${workbench.notation}`}>
+                    <code>{workbench.notation}</code>
+                  </div>
+                </div>
+
+                <div class="workbench-card__body">
+                  <div class="workbench-card__title-row">
+                    <strong class="workbench-card__title">{workbench.title}</strong>
+                    <span class="workbench-card__arrow" aria-hidden="true">
+                      <ArrowRight size={17} strokeWidth={2} />
+                    </span>
+                  </div>
+                  <p class="workbench-card__desc">{workbench.description}</p>
+                </div>
+
+                <div class="workbench-card__footer">
+                  <div class="workbench-card__topics" aria-label="Topics covered">
+                    {topics.map((topic, i) => (
+                      <span class="workbench-card__topic-tag">
+                        {topic}
+                        {i < topics.length - 1 && <span class="workbench-card__dot" aria-hidden="true">·</span>}
+                      </span>
+                    ))}
+                  </div>
+                  <span class="workbench-card__action-text">
+                    Open workbench
+                  </span>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+
+    <section class="course-utilities" aria-labelledby="course-utilities-heading">
+      <div class="course-utilities__header">
+        <h2 id="course-utilities-heading" class="course-utilities__title">Continue from here</h2>
+        <p class="course-utilities__subtitle">Course-wide study, practice, and reference tools.</p>
+      </div>
+
+      <div class="utility-grid">
+        <a class="utility-card" href="/study">
+          <div class="utility-card__icon" aria-hidden="true">
+            <GraduationCap size={20} strokeWidth={1.8} />
+          </div>
+          <div class="utility-card__copy">
+            <div class="utility-card__title-row">
+              <strong>Study Queue</strong>
+              <span class="utility-card__arrow" aria-hidden="true">→</span>
+            </div>
+            <small>Resume active modules or practice retrieval</small>
+          </div>
+        </a>
+
+        <a class="utility-card" href="/exam">
+          <div class="utility-card__icon" aria-hidden="true">
+            <ClipboardCheck size={20} strokeWidth={1.8} />
+          </div>
+          <div class="utility-card__copy">
+            <div class="utility-card__title-row">
+              <strong>Mixed Course Check</strong>
+              <span class="utility-card__arrow" aria-hidden="true">→</span>
+            </div>
+            <small>Multi-topic diagnostic assessment with feedback</small>
+          </div>
+        </a>
+
+        <a class="utility-card" href="/reference">
+          <div class="utility-card__icon" aria-hidden="true">
+            <BookOpen size={20} strokeWidth={1.8} />
+          </div>
+          <div class="utility-card__copy">
+            <div class="utility-card__title-row">
+              <strong>Formula &amp; Notation</strong>
+              <span class="utility-card__arrow" aria-hidden="true">→</span>
+            </div>
+            <small>Canonical symbols, rules, and workbench links</small>
+          </div>
+        </a>
+
+        <a class="utility-card" href="/progress">
+          <div class="utility-card__icon" aria-hidden="true">
+            <BarChart3 size={20} strokeWidth={1.8} />
+          </div>
+          <div class="utility-card__copy">
+            <div class="utility-card__title-row">
+              <strong>Progress &amp; Local Data</strong>
+              <span class="utility-card__arrow" aria-hidden="true">→</span>
+            </div>
+            <small>Inspect local mastery evidence and settings</small>
+          </div>
+        </a>
+      </div>
+    </section>
+  </div>
 </AppLayout>
