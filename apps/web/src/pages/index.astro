@@ -1,6 +1,6 @@
 ---
 import { currentCourseProfile } from '@amat19/course-content';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, GraduationCap, BarChart3, BookOpen } from 'lucide-react';
 import AppLayout from '../layouts/AppLayout.astro';
 
 const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench) => [workbench.id, workbench]));
@@ -13,6 +13,20 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
       <div class="home-hero__actions">
         <a class="primary-button" data-home-primary-action href="/study">Start studying <span aria-hidden="true">→</span></a>
         <a class="secondary-button" href="/course">Explore the course</a>
+      </div>
+      <div class="home-hero__specs" aria-label="Course laboratory metrics">
+        <div class="home-spec-item">
+          <span class="home-spec-item__val">05</span>
+          <span class="home-spec-item__label">Workbenches</span>
+        </div>
+        <div class="home-spec-item">
+          <span class="home-spec-item__val">26</span>
+          <span class="home-spec-item__label">Core Skills</span>
+        </div>
+        <div class="home-spec-item">
+          <span class="home-spec-item__val">100%</span>
+          <span class="home-spec-item__label">Offline Ready</span>
+        </div>
       </div>
     </div>
 
@@ -30,10 +44,10 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
                 <span class="home-workbench-link__index">{String(module.order).padStart(2, '0')}</span>
                 <span class="home-workbench-link__content">
                   <span class="home-workbench-link__meta">
-                    <span>{module.title}</span>
+                    <span class="home-workbench-link__tag">{module.title}</span>
                     <code data-home-notation>{workbench.notation}</code>
                   </span>
-                  <strong>{workbench.title}</strong>
+                  <strong class="home-workbench-link__title">{workbench.title}</strong>
                   <span class="home-workbench-link__description">{workbench.description}</span>
                 </span>
                 <span class="home-workbench-link__action" data-home-open>
@@ -48,14 +62,41 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
   </section>
 
   <section class="page-width home-shortcuts" aria-labelledby="shortcuts-heading">
-    <div>
+    <div class="home-shortcuts__lead">
       <h2 id="shortcuts-heading">Continue from here.</h2>
       <p>Resume practice, inspect your progress, or check a definition.</p>
     </div>
     <nav class="home-shortcuts__links" aria-label="Study shortcuts">
-      <a href="/study"><strong>Study queue</strong><span>Continue or repair the next skill</span><span class="home-shortcuts__action">Open <ArrowRight size={15} aria-hidden="true" /></span></a>
-      <a href="/progress"><strong>Progress</strong><span>Find the next repair</span><span class="home-shortcuts__action">Open <ArrowRight size={15} aria-hidden="true" /></span></a>
-      <a href="/reference"><strong>Reference</strong><span>Check a formula or assumption</span><span class="home-shortcuts__action">Open <ArrowRight size={15} aria-hidden="true" /></span></a>
+      <a href="/study">
+        <div class="home-shortcuts__icon" aria-hidden="true">
+          <GraduationCap size={18} strokeWidth={1.8} />
+        </div>
+        <div class="home-shortcuts__body">
+          <strong>Study queue</strong>
+          <span>Continue or repair the next skill</span>
+        </div>
+        <span class="home-shortcuts__action">Open <ArrowRight size={15} aria-hidden="true" /></span>
+      </a>
+      <a href="/progress">
+        <div class="home-shortcuts__icon" aria-hidden="true">
+          <BarChart3 size={18} strokeWidth={1.8} />
+        </div>
+        <div class="home-shortcuts__body">
+          <strong>Progress</strong>
+          <span>Find the next repair</span>
+        </div>
+        <span class="home-shortcuts__action">Open <ArrowRight size={15} aria-hidden="true" /></span>
+      </a>
+      <a href="/reference">
+        <div class="home-shortcuts__icon" aria-hidden="true">
+          <BookOpen size={18} strokeWidth={1.8} />
+        </div>
+        <div class="home-shortcuts__body">
+          <strong>Reference</strong>
+          <span>Check a formula or assumption</span>
+        </div>
+        <span class="home-shortcuts__action">Open <ArrowRight size={15} aria-hidden="true" /></span>
+      </a>
     </nav>
   </section>
 </AppLayout>
