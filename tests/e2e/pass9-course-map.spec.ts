@@ -1,15 +1,15 @@
 import { expect, test } from '@playwright/test';
 
 const homeModules = [
-  { title: 'Logic', href: '/modules/logic', notation: 'P → Q' },
-  { title: 'Probability', href: '/modules/probability', notation: 'P(A | B)' },
-  { title: 'Financial Mathematics', href: '/modules/finance', notation: 'F = P(1 + i)ⁿ' },
-  { title: 'Matrices & Systems', href: '/modules/linear', notation: 'Ax = b' },
-  { title: 'Applications', href: '/modules/applications', notation: 'max min' },
+  { title: 'Logic & Proof', href: '/workbenches/logic', notation: 'P → Q' },
+  { title: 'Probability Model Builder', href: '/workbenches/probability', notation: 'P(A | B)' },
+  { title: 'Money Timeline', href: '/workbenches/finance', notation: 'F = P(1 + i)ⁿ' },
+  { title: 'Row Operations Coach', href: '/workbenches/linear', notation: 'R₂ ← R₂ − 2R₁' },
+  { title: 'Optimization & Strategy', href: '/workbenches/applications', notation: 'max z = cᵀx' },
 ];
 
 test.describe('Pass 9 collapsed More and Compact Course Map', () => {
-  test('homepage uses one full-width course rail instead of duplicate hero surfaces', async ({ page }) => {
+  test('homepage uses one ruled workbench ledger instead of duplicate hero surfaces', async ({ page }) => {
     await page.goto('/');
 
     const hero = page.locator('[data-home-hero]');
@@ -29,27 +29,29 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     }
   });
 
-  test('course rail and gradient headline respond without horizontal overflow', async ({ page }) => {
+  test('workbench ledger and solid headline respond without horizontal overflow', async ({ page }) => {
     for (const viewport of [
-      { width: 1280, height: 720, columns: 5 },
-      { width: 768, height: 1024, columns: 3 },
-      { width: 375, height: 667, columns: 1 },
+      { width: 1280, height: 720, heroColumns: 2 },
+      { width: 768, height: 1024, heroColumns: 1 },
+      { width: 375, height: 667, heroColumns: 1 },
     ]) {
       await page.setViewportSize(viewport);
       await page.goto('/');
 
       const metrics = await page.evaluate(() => {
         const heading = document.querySelector<HTMLElement>('.home-hero__title');
+        const hero = document.querySelector<HTMLElement>('[data-home-hero]');
         const rail = document.querySelector<HTMLElement>('[data-home-course-rail]');
         const primary = document.querySelector<HTMLElement>('[data-home-primary-action]');
-        const railStyle = rail ? getComputedStyle(rail.querySelector('ol') ?? rail) : null;
+        const heroStyle = hero ? getComputedStyle(hero) : null;
         const rect = (element: HTMLElement | null) => {
           if (!element) return null;
           const box = element.getBoundingClientRect();
           return { top: box.top, bottom: box.bottom, height: box.height };
         };
         return {
-          columns: railStyle?.gridTemplateColumns ?? '',
+          heroColumns: heroStyle?.gridTemplateColumns ?? '',
+          ledgerVisible: Boolean(rail && rail.getBoundingClientRect().height > 0),
           heading: rect(heading),
           primary: rect(primary),
           backgroundImage: heading ? getComputedStyle(heading).backgroundImage : '',
@@ -57,17 +59,47 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
         };
       });
 
-      expect(metrics.columns.split(' ').filter(Boolean).length, `${viewport.width}px rail columns`).toBe(viewport.columns);
-      expect(metrics.backgroundImage, `${viewport.width}px H1 should use the ember gradient`).toContain('linear-gradient');
+      expect(metrics.heroColumns.split(' ').filter(Boolean).length, `${viewport.width}px hero columns`).toBe(viewport.heroColumns);
+      expect(metrics.ledgerVisible).toBe(true);
+      expect(metrics.backgroundImage, `${viewport.width}px H1 should use a solid foreground`).toBe('none');
       expect(metrics.overflow, `${viewport.width}x${viewport.height} should not overflow horizontally`).toBe(false);
       expect(metrics.heading?.bottom, `${viewport.width}px heading should render`).toBeLessThanOrEqual(viewport.height);
       expect(metrics.primary?.bottom, `${viewport.width}px CTA should render`).toBeLessThanOrEqual(viewport.height);
     }
   });
 
-  test('gradient headline falls back to solid text in forced colors', async ({ page }) => {
+  test('mobile workbench routes can clear the opaque navigation dock', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
-    await expect.poll(() => page.locator('.home-hero__title').evaluate((heading) => getComputedStyle(heading).backgroundImage)).toContain('linear-gradient');
+    await page.evaluate(() => {
+      const scroller = document.querySelector<HTMLElement>('.workspace-scroll');
+      if (scroller) scroller.scrollTo(0, scroller.scrollHeight);
+    });
+
+    const geometry = await page.evaluate(() => {
+      const lastRoute = Array.from(document.querySelectorAll<HTMLElement>('[data-home-module]')).at(-1) ?? null;
+      const dock = document.querySelector<HTMLElement>('.mobile-nav');
+      if (!lastRoute || !dock) return null;
+      const routeBox = lastRoute.getBoundingClientRect();
+      const dockBox = dock.getBoundingClientRect();
+      const dockStyles = getComputedStyle(dock);
+      return {
+        routeBottom: routeBox.bottom,
+        dockTop: dockBox.top,
+        dockBackground: dockStyles.backgroundColor,
+        dockOpacity: dockStyles.opacity,
+      };
+    });
+
+    expect(geometry).not.toBeNull();
+    expect(geometry?.routeBottom).toBeLessThan(geometry?.dockTop ?? 0);
+    expect(geometry?.dockBackground).not.toBe('rgba(0, 0, 0, 0)');
+    expect(geometry?.dockOpacity).toBe('1');
+  });
+
+  test('solid headline remains legible in forced colors', async ({ page }) => {
+    await page.goto('/');
+    await expect.poll(() => page.locator('.home-hero__title').evaluate((heading) => getComputedStyle(heading).backgroundImage)).toBe('none');
 
     await page.emulateMedia({ forcedColors: 'active' });
     await page.reload();
@@ -84,7 +116,7 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     });
 
     expect(forcedColors?.forced).toBe(true);
-    expect(forcedColors?.backgroundImage).not.toContain('linear-gradient');
+    expect(forcedColors?.backgroundImage).toBe('none');
     expect(forcedColors?.color).not.toBe('rgba(0, 0, 0, 0)');
     expect(forcedColors?.textFill).not.toBe('rgba(0, 0, 0, 0)');
   });
