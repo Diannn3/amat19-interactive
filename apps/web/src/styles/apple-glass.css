@@ -624,7 +624,11 @@ body {
   font-family: var(--font-amat-mono) !important;
   font-size: 0.76rem !important;
   font-weight: 700 !important;
-  color: #a1a1aa !important;
+  color: #71717a !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 6px !important;
+  padding: 0.2rem 0.45rem !important;
 }
 
 .workbench-card__title {
@@ -636,10 +640,15 @@ body {
 }
 
 .workbench-card__desc {
-  font-size: 0.86rem !important;
+  font-size: 0.85rem !important;
   color: #71717a !important;
   line-height: 1.45 !important;
   margin: 0 0 1.25rem !important;
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  min-height: 2.8rem !important;
 }
 
 .workbench-card__topics {
@@ -704,15 +713,8 @@ body {
 
 /* Syllabus & Resources Section (Image 4) */
 .course-syllabus-section {
-  display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
-  gap: 1.5rem;
-}
-
-@media (max-width: 960px) {
-  .course-syllabus-section {
-    grid-template-columns: 1fr;
-  }
+  display: block !important;
+  width: 100% !important;
 }
 
 .course-timeline-deck {
@@ -808,19 +810,39 @@ body {
   max-height: 100dvh !important;
 }
 
-/* Sidebar elevated to macOS / visionOS frosted liquid glass */
+/* Desktop: Decommission sidebar in favor of full-width spatial canvas & topbar */
+@media (min-width: 960px) {
+  .app-frame > .sidebar {
+    display: none !important;
+  }
+  .site-shell.app-frame {
+    grid-template-columns: 100% !important;
+    display: block !important;
+    width: 100% !important;
+  }
+  .workspace {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  .topbar {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
+
 .app-frame > .sidebar {
-  background: rgba(255, 255, 255, 0.78) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
   backdrop-filter: blur(32px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
   border: none !important;
-  border-right: 1px solid rgba(226, 232, 240, 0.85) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
   border-radius: 0 !important;
   top: 0 !important;
   height: 100vh !important;
   height: 100dvh !important;
   box-shadow: none !important;
-  color: #0f172a !important;
+  color: #09090b !important;
 }
 
 .brand-row {
@@ -2679,3 +2701,379 @@ body {
     transform: none !important;
   }
 }
+
+/* ==========================================================================
+   Apple visionOS Comprehensive Neutralization & Browser Polish Overrides
+   ========================================================================== */
+
+/* 1. PWA Update Ready Banner */
+#pwa-update.update-banner {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+  margin: 0.85rem auto 1.25rem !important;
+  max-width: 52rem !important;
+  width: calc(100% - 2rem) !important;
+  padding: 0.65rem 1.4rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+  color: #09090b !important;
+  font-size: 0.88rem !important;
+}
+
+#pwa-update.update-banner span {
+  flex: 1 1 auto !important;
+  color: #52525b !important;
+}
+
+#pwa-update.update-banner span strong {
+  color: #09090b !important;
+}
+
+#pwa-update.update-banner button#pwa-update-button {
+  background: #09090b !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 0.45rem 1.15rem !important;
+  font-weight: 600 !important;
+  font-size: 0.84rem !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+#pwa-update.update-banner button#pwa-update-button:hover {
+  background: #27272a !important;
+  transform: translateY(-1px) !important;
+}
+
+#pwa-update.update-banner button#pwa-update-dismiss {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #52525b !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 0.45rem 0.95rem !important;
+  font-weight: 500 !important;
+  font-size: 0.84rem !important;
+  cursor: pointer !important;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+#pwa-update.update-banner button#pwa-update-dismiss:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: #09090b !important;
+}
+
+/* 2. Homepage Shortcuts & Footer Links */
+.home-shortcuts {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+  overflow: hidden !important;
+}
+
+.home-shortcuts > div,
+.home-shortcuts__lead {
+  background: rgba(0, 0, 0, 0.02) !important;
+  border: none !important;
+}
+
+.home-shortcuts__links {
+  border-inline-start: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.home-shortcuts__links a {
+  border-inline-end: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.home-shortcuts__links a:hover {
+  background: rgba(255, 255, 255, 0.85) !important;
+}
+
+.home-shortcuts__icon {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: #09090b !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 10px !important;
+}
+
+.home-shortcuts__links a:hover .home-shortcuts__body strong {
+  color: #09090b !important;
+}
+
+.home-shortcuts__links a:hover .home-shortcuts__action {
+  color: #09090b !important;
+}
+
+.site-footer a {
+  color: #71717a !important;
+  font-weight: 500 !important;
+  transition: color 150ms ease !important;
+}
+
+.site-footer a:hover {
+  color: #09090b !important;
+}
+
+/* 3. More Menu Flyout Popover */
+.more-flyout[popover] {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12) !important;
+  color: #09090b !important;
+}
+
+.utility-flyout__link,
+.utility-flyout__action {
+  color: #09090b !important;
+  border-radius: 10px !important;
+  transition: all 140ms ease !important;
+}
+
+.utility-flyout__link:hover,
+.utility-flyout__action:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #09090b !important;
+}
+
+/* 4. Reference Sheet (/reference) */
+.reference-browser__field input,
+.reference-browser__field select {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 10px !important;
+  color: #09090b !important;
+  font-size: 0.9rem !important;
+}
+
+.reference-browser__field input:focus-visible,
+.reference-browser__field select:focus-visible {
+  outline: 2px solid #0071e3 !important;
+  border-color: #0071e3 !important;
+}
+
+.reference-browser__summary {
+  color: #71717a !important;
+}
+
+.reference-browser__summary strong {
+  color: #09090b !important;
+  font-weight: 700 !important;
+}
+
+.reference-entry {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02) !important;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.reference-entry:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+.reference-entry summary::after {
+  color: #71717a !important;
+}
+
+.reference-entry__summary code {
+  color: #09090b !important;
+  font-weight: 700 !important;
+}
+
+.reference-entry__summary strong {
+  color: #27272a !important;
+  font-weight: 600 !important;
+}
+
+.reference-entry__module {
+  color: #71717a !important;
+  font-weight: 700 !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.05em !important;
+}
+
+.reference-entry__assumption {
+  border-left: 3px solid #09090b !important;
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-radius: 8px !important;
+}
+
+.reference-entry__assumption span {
+  color: #71717a !important;
+}
+
+.reference-entry__assumption strong {
+  color: #09090b !important;
+}
+
+.app-frame[data-route="/reference"] .reference-entry:nth-child(3n + 1),
+.app-frame[data-route="/reference"] .reference-entry:nth-child(3n + 2),
+.app-frame[data-route="/reference"] .reference-entry:nth-child(3n) {
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* 5. Progress & Local Data (/progress) */
+.progress-module {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02) !important;
+  padding: 1.25rem 1.4rem !important;
+}
+
+.progress-module h3 {
+  color: #09090b !important;
+  font-weight: 700 !important;
+}
+
+.progress-module progress,
+.progress-module [role="progressbar"] {
+  accent-color: #09090b !important;
+}
+
+.progress-module .ui-progress__indicator,
+.progress-overview progress::-webkit-progress-value {
+  background: #09090b !important;
+}
+
+.progress-module progress::-webkit-progress-bar {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border-radius: 999px !important;
+}
+
+.progress-focus,
+.app-frame[data-route="/progress"] .progress-focus {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04) !important;
+  color: #09090b !important;
+}
+
+.app-frame[data-route="/progress"] .progress-focus h2 {
+  color: #09090b !important;
+}
+
+.app-frame[data-route="/progress"] .progress-focus .section-context {
+  color: #71717a !important;
+}
+
+.app-frame[data-route="/progress"] .progress-focus .lede {
+  color: #52525b !important;
+}
+
+.progress-focus__stats > div,
+.app-frame[data-route="/progress"] .progress-focus__stats > div {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 12px !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.progress-focus__stats strong,
+.app-frame[data-route="/progress"] .progress-focus__stats strong {
+  color: #09090b !important;
+}
+
+.progress-focus__stats span,
+.app-frame[data-route="/progress"] .progress-focus__stats span {
+  color: #71717a !important;
+}
+
+.progress-focus .progress-skill,
+.app-frame[data-route="/progress"] .progress-focus .progress-skill {
+  background: rgba(255, 255, 255, 0.75) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 12px !important;
+  padding: 0.85rem 1.15rem !important;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.progress-focus .progress-skill:hover,
+.app-frame[data-route="/progress"] .progress-focus .progress-skill:hover {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+.progress-focus .progress-skill strong,
+.app-frame[data-route="/progress"] .progress-focus .progress-skill strong {
+  color: #09090b !important;
+}
+
+.progress-focus .progress-skill small,
+.app-frame[data-route="/progress"] .progress-focus .progress-skill small {
+  color: #71717a !important;
+}
+
+.progress-skill__status[data-band="developing"] .ui-badge,
+.progress-skill__status[data-band="developing"] span {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: #52525b !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.progress-skill__status[data-band="secure"] .ui-badge,
+.progress-skill__status[data-band="secure"] span {
+  background: rgba(22, 163, 74, 0.08) !important;
+  color: #16a34a !important;
+  border: 1px solid rgba(22, 163, 74, 0.15) !important;
+}
+
+.progress-skill__status[data-band="new"] .ui-badge,
+.progress-skill__status[data-band="new"] span {
+  background: rgba(0, 0, 0, 0.03) !important;
+  color: #71717a !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 6. Interactive Lab Primary Action Buttons */
+.amat-button--primary,
+button.amat-button--primary,
+.button--primary,
+button[type="submit"] {
+  background: #09090b !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.amat-button--primary:hover,
+button.amat-button--primary:hover,
+.button--primary:hover,
+button[type="submit"]:hover {
+  background: #27272a !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 7. Homepage Guided Learning Headline Padding */
+.home-journey {
+  padding-top: 3.5rem !important;
+  scroll-margin-top: 5rem !important;
+}
+
