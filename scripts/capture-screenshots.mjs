@@ -4,7 +4,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 
 const port = process.env.PORT || 6768;
-const outDir = path.resolve('artifacts/round3');
+const outDir = path.resolve('artifacts/audit');
 fs.mkdirSync(outDir, { recursive: true });
 
 async function capture() {
@@ -74,8 +74,38 @@ async function capture() {
     await pageLogicMob.screenshot({ path: path.join(outDir, 'logic-mobile-table.png'), fullPage: false });
   }
 
+  // 8. Probability Workbench
+  const pageProbDesk = await desktop.newPage();
+  await pageProbDesk.goto(`http://127.0.0.1:${port}/workbenches/probability`);
+  await pageProbDesk.waitForLoadState('networkidle');
+  await pageProbDesk.screenshot({ path: path.join(outDir, 'probability-desktop.png'), fullPage: false });
+
+  // 9. Finance Workbench
+  const pageFinDesk = await desktop.newPage();
+  await pageFinDesk.goto(`http://127.0.0.1:${port}/workbenches/finance`);
+  await pageFinDesk.waitForLoadState('networkidle');
+  await pageFinDesk.screenshot({ path: path.join(outDir, 'finance-desktop.png'), fullPage: false });
+
+  // 10. Linear Workbench
+  const pageLinDesk = await desktop.newPage();
+  await pageLinDesk.goto(`http://127.0.0.1:${port}/workbenches/linear`);
+  await pageLinDesk.waitForLoadState('networkidle');
+  await pageLinDesk.screenshot({ path: path.join(outDir, 'linear-desktop.png'), fullPage: false });
+
+  // 11. Applications Workbench
+  const pageAppDesk = await desktop.newPage();
+  await pageAppDesk.goto(`http://127.0.0.1:${port}/workbenches/applications`);
+  await pageAppDesk.waitForLoadState('networkidle');
+  await pageAppDesk.screenshot({ path: path.join(outDir, 'applications-desktop.png'), fullPage: false });
+
+  // 12. Study / Resources Hub
+  const pageStudyDesk = await desktop.newPage();
+  await pageStudyDesk.goto(`http://127.0.0.1:${port}/study`);
+  await pageStudyDesk.waitForLoadState('networkidle');
+  await pageStudyDesk.screenshot({ path: path.join(outDir, 'study-desktop.png'), fullPage: false });
+
   await browser.close();
-  console.log('Screenshots captured successfully in artifacts/round3');
+  console.log(`Screenshots captured successfully in ${outDir}`);
 }
 
 capture().catch((err) => {
