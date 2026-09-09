@@ -103,6 +103,30 @@ export default function ProbabilityModelBuilder() {
   const [simulation, setSimulation] = useState<BernoulliSimulation>();
   const [simulationError, setSimulationError] = useState<string>();
 
+  // Mockup 6 Interactive Venn Model Builder State
+  const [sliderA, setSliderA] = useState(0.40);
+  const [sliderB, setSliderB] = useState(0.50);
+  const [sliderAB, setSliderAB] = useState(0.20);
+  const [activeTab, setActiveTab] = useState<'conditional' | 'distributions' | 'variables' | 'inference'>('conditional');
+
+  const calcPAGivenB = sliderB > 0 ? (sliderAB / sliderB).toFixed(2) : '0.00';
+  const calcPBGivenA = sliderA > 0 ? (sliderAB / sliderA).toFixed(2) : '0.00';
+
+  function handleSliderA(val: number) {
+    setSliderA(val);
+    if (sliderAB > val) setSliderAB(Number(val.toFixed(2)));
+  }
+
+  function handleSliderB(val: number) {
+    setSliderB(val);
+    if (sliderAB > val) setSliderAB(Number(val.toFixed(2)));
+  }
+
+  function handleSliderAB(val: number) {
+    const maxAllowed = Math.min(sliderA, sliderB);
+    setSliderAB(Number(Math.min(val, maxAllowed).toFixed(2)));
+  }
+
   useEffect(() => {
     let active = true;
     const requestedMode = readWorkbenchOption('mode', MODE_VALUES);
@@ -237,6 +261,187 @@ export default function ProbabilityModelBuilder() {
 
   return (
     <section className="probability-builder" data-testid="probability-model-builder" data-hydrated={hydrated ? 'true' : undefined}>
+      {/* Mockup 6: Visual Hero & Interactive Venn Instrument */}
+      <header className="prob-hero">
+        <h2 className="prob-title">Model. Calculate. Understand.</h2>
+        <p className="prob-lede">
+          Explore probability through interactive visuals, formulas, and simulations.
+        </p>
+
+        <div className="prob-mode-bar" role="tablist" aria-label="Probability mode selection">
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeTab === 'conditional' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('conditional')}
+          >
+            Conditional Probability
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeTab === 'distributions' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('distributions')}
+          >
+            Distributions
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeTab === 'variables' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('variables')}
+          >
+            Random Variables
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeTab === 'inference' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('inference')}
+          >
+            Inference
+          </button>
+        </div>
+      </header>
+
+      <div className="prob-instrument-grid" style={{ marginBottom: '2.5rem' }}>
+        <div className="prob-venn-panel apple-glass-card">
+          <svg className="prob-venn-svg" viewBox="0 0 400 280" aria-label="Interactive Venn Diagram">
+            <defs>
+              <linearGradient id="vennGradA" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#2563eb" stopOpacity="0.15" />
+              </linearGradient>
+              <linearGradient id="vennGradB" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.15" />
+              </linearGradient>
+              <linearGradient id="vennGradAB" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#10b981" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="#059669" stopOpacity="0.35" />
+              </linearGradient>
+            </defs>
+
+            {/* Circle A */}
+            <circle 
+              cx={160 - (sliderA - 0.4) * 20} 
+              cy="140" 
+              r={75 + sliderA * 30} 
+              fill="url(#vennGradA)" 
+              stroke="#3b82f6" 
+              strokeWidth="2" 
+            />
+            {/* Circle B */}
+            <circle 
+              cx={240 + (sliderB - 0.4) * 20} 
+              cy="140" 
+              r={75 + sliderB * 30} 
+              fill="url(#vennGradB)" 
+              stroke="#8b5cf6" 
+              strokeWidth="2" 
+            />
+
+            {/* Intersection Highlight */}
+            <path 
+              d={`M 200,${140 - Math.min(sliderA, sliderB) * 60} A ${75 + sliderA * 30} ${75 + sliderA * 30} 0 0 1 200,${140 + Math.min(sliderA, sliderB) * 60} A ${75 + sliderB * 30} ${75 + sliderB * 30} 0 0 1 200,${140 - Math.min(sliderA, sliderB) * 60}`}
+              fill="url(#vennGradAB)"
+              stroke="#10b981"
+              strokeWidth="1.5"
+            />
+
+            {/* Labels */}
+            <text x="120" y="145" textAnchor="middle" fill="#1e40af" fontWeight="700" fontSize="14" fontFamily="sans-serif">
+              Event A
+            </text>
+            <text x="120" y="165" textAnchor="middle" fill="#64748b" fontSize="11" fontFamily="monospace">
+              P(A) = {sliderA.toFixed(2)}
+            </text>
+
+            <text x="280" y="145" textAnchor="middle" fill="#5b21b6" fontWeight="700" fontSize="14" fontFamily="sans-serif">
+              Event B
+            </text>
+            <text x="280" y="165" textAnchor="middle" fill="#64748b" fontSize="11" fontFamily="monospace">
+              P(B) = {sliderB.toFixed(2)}
+            </text>
+
+            <text x="200" y="138" textAnchor="middle" fill="#065f46" fontWeight="700" fontSize="12" fontFamily="sans-serif">
+              A ∩ B
+            </text>
+            <text x="200" y="154" textAnchor="middle" fill="#047857" fontWeight="600" fontSize="11" fontFamily="monospace">
+              {sliderAB.toFixed(2)}
+            </text>
+          </svg>
+        </div>
+
+        <div className="prob-controls-panel apple-glass-card">
+          <div className="prob-formula-card">
+            <div className="prob-formula-math">
+              P(A|B) = P(A ∩ B) / P(B)
+            </div>
+            <p className="prob-formula-caption">
+              The probability of event A occurring given that event B has already occurred.
+            </p>
+          </div>
+
+          <div className="prob-slider-group">
+            <div className="prob-slider-row">
+              <div className="prob-slider-labels">
+                <span>P(A) — Event A</span>
+                <span>{sliderA.toFixed(2)}</span>
+              </div>
+              <input 
+                type="range" 
+                className="prob-slider" 
+                min="0.05" 
+                max="0.95" 
+                step="0.05" 
+                value={sliderA} 
+                onChange={(e) => handleSliderA(Number(e.target.value))} 
+              />
+            </div>
+
+            <div className="prob-slider-row">
+              <div className="prob-slider-labels">
+                <span>P(B) — Event B</span>
+                <span>{sliderB.toFixed(2)}</span>
+              </div>
+              <input 
+                type="range" 
+                className="prob-slider" 
+                min="0.05" 
+                max="0.95" 
+                step="0.05" 
+                value={sliderB} 
+                onChange={(e) => handleSliderB(Number(e.target.value))} 
+              />
+            </div>
+
+            <div className="prob-slider-row">
+              <div className="prob-slider-labels">
+                <span>P(A ∩ B) — Overlap</span>
+                <span>{sliderAB.toFixed(2)}</span>
+              </div>
+              <input 
+                type="range" 
+                className="prob-slider" 
+                min="0.01" 
+                max={Math.min(sliderA, sliderB)} 
+                step="0.01" 
+                value={sliderAB} 
+                onChange={(e) => handleSliderAB(Number(e.target.value))} 
+              />
+            </div>
+          </div>
+
+          <div className="prob-results-row">
+            <div className="prob-result-pill">
+              <span>P(A|B)</span>
+              <strong>{calcPAGivenB}</strong>
+            </div>
+            <div className="prob-result-pill">
+              <span>P(B|A)</span>
+              <strong>{calcPBGivenA}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <WorkbenchTaskPicker
         value={mode}
         options={TASK_OPTIONS}

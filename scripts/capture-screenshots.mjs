@@ -103,6 +103,12 @@ async function capture() {
   await pageStudyDesk.goto(`http://127.0.0.1:${port}/study`);
   await pageStudyDesk.waitForLoadState('networkidle');
   await pageStudyDesk.screenshot({ path: path.join(outDir, 'study-desktop.png'), fullPage: false });
+  await pageStudyDesk.screenshot({ path: path.join(outDir, 'study-desktop-full.png'), fullPage: true });
+
+  const pageStudyMob = await mobile.newPage();
+  await pageStudyMob.goto(`http://127.0.0.1:${port}/study`);
+  await pageStudyMob.waitForLoadState('networkidle');
+  await pageStudyMob.screenshot({ path: path.join(outDir, 'study-mobile.png'), fullPage: false });
 
   await browser.close();
   console.log(`Screenshots captured successfully in ${outDir}`);

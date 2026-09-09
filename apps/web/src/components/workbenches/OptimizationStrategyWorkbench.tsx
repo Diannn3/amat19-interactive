@@ -93,11 +93,117 @@ function pointText(point: Point2D): string {
   return `(${point.x.toString()}, ${point.y.toString()})`;
 }
 
+type NodeId = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H';
+
+interface NodeDef {
+  id: NodeId;
+  x: number;
+  y: number;
+  label: string;
+}
+
+interface EdgeDef {
+  u: NodeId;
+  v: NodeId;
+  weight: number;
+}
+
+const GRAPH_NODES: NodeDef[] = [
+  { id: 'A', x: 80, y: 200, label: 'A' },
+  { id: 'B', x: 200, y: 80, label: 'B' },
+  { id: 'C', x: 220, y: 240, label: 'C' },
+  { id: 'D', x: 380, y: 100, label: 'D' },
+  { id: 'E', x: 120, y: 360, label: 'E' },
+  { id: 'F', x: 240, y: 370, label: 'F' },
+  { id: 'G', x: 440, y: 240, label: 'G' },
+  { id: 'H', x: 420, y: 380, label: 'H' },
+];
+
+const INITIAL_GRAPH_EDGES: EdgeDef[] = [
+  { u: 'A', v: 'B', weight: 4 },
+  { u: 'A', v: 'C', weight: 2 },
+  { u: 'A', v: 'E', weight: 7 },
+  { u: 'B', v: 'C', weight: 1 },
+  { u: 'B', v: 'D', weight: 3 },
+  { u: 'C', v: 'D', weight: 5 },
+  { u: 'C', v: 'G', weight: 4 },
+  { u: 'C', v: 'F', weight: 6 },
+  { u: 'D', v: 'G', weight: 2 },
+  { u: 'E', v: 'F', weight: 3 },
+  { u: 'F', v: 'H', weight: 8 },
+  { u: 'G', v: 'H', weight: 4 },
+];
+
+function dijkstra(start: NodeId, end: NodeId, edges: EdgeDef[]): { path: NodeId[]; cost: number } {
+  const dist: Record<string, number> = {};
+  const prev: Record<string, string | null> = {};
+  const unvisited = new Set<string>();
+
+  GRAPH_NODES.forEach((n) => {
+    dist[n.id] = Infinity;
+    prev[n.id] = null;
+    unvisited.add(n.id);
+  });
+  dist[start] = 0;
+
+  while (unvisited.size > 0) {
+    let curr: string | null = null;
+    let minD = Infinity;
+    unvisited.forEach((node) => {
+      if (dist[node] < minD) {
+        minD = dist[node];
+        curr = node;
+      }
+    });
+
+    if (!curr || minD === Infinity || curr === end) break;
+    unvisited.delete(curr);
+
+    edges.forEach((e) => {
+      let neighbor: string | null = null;
+      if (e.u === curr) neighbor = e.v;
+      if (e.v === curr) neighbor = e.u;
+
+      if (neighbor && unvisited.has(neighbor)) {
+        const alt = dist[curr!] + e.weight;
+        if (alt < dist[neighbor]) {
+          dist[neighbor] = alt;
+          prev[neighbor] = curr;
+        }
+      }
+    });
+  }
+
+  const path: NodeId[] = [];
+  let step: string | null = end;
+  while (step) {
+    path.unshift(step as NodeId);
+    step = prev[step];
+  }
+
+  if (path[0] !== start) return { path: [], cost: Infinity };
+  return { path, cost: dist[end] };
+}
+
+function isEdgeInPath(u: NodeId, v: NodeId, path: NodeId[]): boolean {
+  for (let i = 0; i < path.length - 1; i++) {
+    if ((path[i] === u && path[i + 1] === v) || (path[i] === v && path[i + 1] === u)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export default function OptimizationStrategyWorkbench() {
   const [hydrated, setHydrated] = useState(false);
   const [mode, setMode] = useState<Mode>(INITIAL.mode);
   const [scenario, setScenario] = useState('production');
   const [cx, setCx] = useState(INITIAL.cx);
+  const [activeAppTab, setActiveAppTab] = useState<'network' | 'optimization' | 'decision' | 'scheduling'>('network');
+  const [startNode, setStartNode] = useState<NodeId>('A');
+  const [endNode, setEndNode] = useState<NodeId>('G');
+  const [graphWeights] = useState<EdgeDef[]>(INITIAL_GRAPH_EDGES);
+  const [evaluatedPath, setEvaluatedPath] = useState<{ path: NodeId[]; cost: number }>(() => dijkstra('A', 'G', INITIAL_GRAPH_EDGES));
   const [cy, setCy] = useState(INITIAL.cy);
   const [sense, setSense] = useState<'max' | 'min'>(INITIAL.sense);
   const [constraints, setConstraints] = useState<ConstraintRow[]>(INITIAL.constraints);
@@ -239,13 +345,217 @@ export default function OptimizationStrategyWorkbench() {
     setMarkov((current) => current.map((cell, cellIndex) => cellIndex === index ? value : cell) as [string, string, string, string]);
   }
 
-  return <section className="strategy-workbench" data-testid="optimization-strategy-workbench" data-hydrated={hydrated ? 'true' : undefined}>
-    <WorkbenchTaskPicker
-      value={mode}
-      options={TASK_OPTIONS}
-      disabled={!hydrated}
-      onChange={(value) => { if (isMode(value)) selectMode(value); }}
-    />
+  return (
+    <section className="strategy-workbench" data-testid="optimization-strategy-workbench" data-hydrated={hydrated ? 'true' : undefined}>
+      {/* Mockup 9: Applications & Network Models Flagship Showcase */}
+      <header className="app-hero">
+        <h2 className="app-hero-title">Applications. Real Impact.</h2>
+        <p className="app-hero-lede">
+          Use finite mathematics to solve real-world problems. Model, analyze, and explore solutions for networks, optimization, decision-making, scheduling, and more.
+        </p>
+
+        <div className="prob-mode-bar" role="tablist" aria-label="Applications view selection">
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeAppTab === 'network' ? 'is-active' : ''}`}
+            onClick={() => setActiveAppTab('network')}
+          >
+            Network Models
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeAppTab === 'optimization' ? 'is-active' : ''}`}
+            onClick={() => { setActiveAppTab('optimization'); selectMode('linear'); }}
+          >
+            Optimization
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeAppTab === 'decision' ? 'is-active' : ''}`}
+            onClick={() => { setActiveAppTab('decision'); selectMode('game'); }}
+          >
+            Decision-Making
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeAppTab === 'scheduling' ? 'is-active' : ''}`}
+            onClick={() => { setActiveAppTab('scheduling'); selectMode('advanced'); }}
+          >
+            Scheduling
+          </button>
+        </div>
+      </header>
+
+      {/* Network Models Flagship Interactive Instrument */}
+      <div className="app-layout-grid" style={{ marginBottom: '2.5rem' }}>
+        <div className="apple-glass-card app-graph-panel">
+          <div className="app-graph-header">
+            <div>
+              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Shortest Path</span>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0.15rem 0 0', color: '#09090b', letterSpacing: '-0.02em' }}>Topological Route Network</h2>
+            </div>
+            <div className="app-controls-row">
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: '#52525b', fontWeight: 500 }}>
+                From
+                <select className="app-select" value={startNode} onChange={(e) => { const next = e.target.value as NodeId; setStartNode(next); setEvaluatedPath(dijkstra(next, endNode, graphWeights)); }}>
+                  {GRAPH_NODES.map((n) => <option key={n.id} value={n.id}>Node {n.id}</option>)}
+                </select>
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: '#52525b', fontWeight: 500 }}>
+                To
+                <select className="app-select" value={endNode} onChange={(e) => { const next = e.target.value as NodeId; setEndNode(next); setEvaluatedPath(dijkstra(startNode, next, graphWeights)); }}>
+                  {GRAPH_NODES.map((n) => <option key={n.id} value={n.id}>Node {n.id}</option>)}
+                </select>
+              </label>
+              <button 
+                type="button" 
+                className="apple-btn-black" 
+                style={{ padding: '0.45rem 1rem', fontSize: '0.85rem' }}
+                onClick={() => setEvaluatedPath(dijkstra(startNode, endNode, graphWeights))}
+              >
+                Find Shortest Path →
+              </button>
+            </div>
+          </div>
+
+          <svg className="app-graph-svg" viewBox="0 0 520 440" role="img" aria-label="Interactive 8-node weighted network graph">
+            <defs>
+              <filter id="node-glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            {/* Edges */}
+            {graphWeights.map((edge, index) => {
+              const uNode = GRAPH_NODES.find((n) => n.id === edge.u)!;
+              const vNode = GRAPH_NODES.find((n) => n.id === edge.v)!;
+              const inPath = isEdgeInPath(edge.u, edge.v, evaluatedPath.path);
+              const midX = (uNode.x + vNode.x) / 2;
+              const midY = (uNode.y + vNode.y) / 2;
+              return (
+                <g key={`edge-${index}`}>
+                  <line
+                    x1={uNode.x}
+                    y1={uNode.y}
+                    x2={vNode.x}
+                    y2={vNode.y}
+                    className={inPath ? 'app-glowing-edge' : undefined}
+                    stroke={inPath ? '#2563eb' : 'rgba(0, 0, 0, 0.14)'}
+                    strokeWidth={inPath ? 3.5 : 1.75}
+                    strokeDasharray={inPath ? undefined : '4 4'}
+                  />
+                  <circle cx={midX} cy={midY} r="11" fill="#ffffff" stroke="rgba(0, 0, 0, 0.1)" strokeWidth="1" />
+                  <text
+                    x={midX}
+                    y={midY + 4}
+                    textAnchor="middle"
+                    fontSize="10"
+                    fontWeight="700"
+                    fill="#71717a"
+                    fontFamily="var(--font-amat-mono)"
+                  >
+                    {edge.weight}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Nodes */}
+            {GRAPH_NODES.map((node) => {
+              const inPath = evaluatedPath.path.includes(node.id);
+              return (
+                <g 
+                  key={`node-${node.id}`} 
+                  className="app-node-circle"
+                  onClick={() => {
+                    if (startNode === node.id) return;
+                    if (endNode === node.id) {
+                      setStartNode(node.id);
+                      setEvaluatedPath(dijkstra(node.id, endNode, graphWeights));
+                    } else {
+                      setEndNode(node.id);
+                      setEvaluatedPath(dijkstra(startNode, node.id, graphWeights));
+                    }
+                  }}
+                >
+                  <circle
+                    cx={node.x}
+                    cy={node.y}
+                    r={inPath ? 20 : 18}
+                    fill={inPath ? '#2563eb' : '#ffffff'}
+                    stroke={inPath ? '#1d4ed8' : 'rgba(0, 0, 0, 0.18)'}
+                    strokeWidth={inPath ? 3 : 1.5}
+                    filter={inPath ? 'drop-shadow(0 0 8px rgba(37, 99, 235, 0.5))' : undefined}
+                  />
+                  <text
+                    x={node.x}
+                    y={node.y + 5}
+                    textAnchor="middle"
+                    fontSize="13"
+                    fontWeight="700"
+                    fill={inPath ? '#ffffff' : '#18181b'}
+                    fontFamily="var(--font-amat-mono)"
+                  >
+                    {node.label}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+
+          {/* Result Banner */}
+          <div className="app-path-result-banner">
+            <div>
+              <strong>Shortest path found: {evaluatedPath.path.join(' → ')}</strong>
+            </div>
+            <span>Total cost: {evaluatedPath.cost}</span>
+          </div>
+        </div>
+
+        {/* Right Info Sidebar */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="apple-glass-card app-side-card">
+            <h3>About Network Models</h3>
+            <p>
+              Network graphs represent interconnected systems like transport routes, telecommunications, and project workflows. Finding the shortest path minimizes travel time, distance, or total operational cost.
+            </p>
+            <div className="app-tag-strip">
+              <span className="app-tag">Dijkstra Algorithm</span>
+              <span className="app-tag">Minimum Cost</span>
+              <span className="app-tag">Route Efficiency</span>
+            </div>
+          </div>
+
+          <div className="apple-glass-card app-side-card">
+            <h3>Delivery Route Planning</h3>
+            <p>
+              Courier networks route parcels across distribution centers. Nodes represent transfer hubs while edge weights measure transit latency in hours.
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+              <button
+                type="button"
+                className="apple-btn-glass"
+                style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}
+                onClick={() => {
+                  setStartNode('A');
+                  setEndNode('G');
+                  setEvaluatedPath(dijkstra('A', 'G', INITIAL_GRAPH_EDGES));
+                }}
+              >
+                Reset Route (A → G)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <WorkbenchTaskPicker
+        value={mode}
+        options={TASK_OPTIONS}
+        disabled={!hydrated}
+        onChange={(value) => { if (isMode(value)) selectMode(value); }}
+      />
 
     {mode === 'linear' && <section className="strategy-workbench__stage" aria-labelledby="lp-heading">
       <header className="strategy-workbench__header"><h2 id="lp-heading">See the feasible region before choosing a corner.</h2><p>Each inequality removes part of the plane. Only feasible corners can optimize a bounded linear objective.</p></header>
@@ -285,7 +595,8 @@ export default function OptimizationStrategyWorkbench() {
       <details className="strategy-workbench__advanced"><summary>Simplex trace for current linear program</summary>{lp.simplex ? <div><strong>Simplex {lp.simplex.status === 'optimal' ? 'optimum' : lp.simplex.status}{lp.simplex.objectiveValue ? ` Z = ${lp.simplex.objectiveValue.toString()}` : ''}</strong><ol>{lp.simplex.steps.map((step) => <li key={step.iteration}>{step.label}</li>)}</ol></div> : <p>Simplex is available for maximization models with ≤ constraints.</p>}</details>
       <details className="strategy-workbench__advanced"><summary>Two-state Markov forecast</summary><fieldset disabled={!hydrated}><legend className="sr-only">Two-state transition model</legend><div className="strategy-workbench__markov-grid">{markov.map((value, index) => <label key={index} className="form-field"><span className="form-field__label">P({index < 2 ? 'A' : 'B'} → {index % 2 === 0 ? 'A' : 'B'})</span><input data-primary-control className="text-input" value={value} onChange={(event) => updateMarkov(index, event.target.value)} /></label>)}</div><div className="strategy-workbench__markov-controls"><label className="form-field"><span className="form-field__label">Initial P(A)</span><input data-primary-control className="text-input" value={initialA} onChange={(event) => { setInitialA(event.target.value); setMarkovRun(false); }} /></label><label className="form-field"><span className="form-field__label">Steps</span><input data-primary-control className="text-input" type="number" min="0" max="10000" value={markovSteps} onChange={(event) => { setMarkovSteps(Number(event.target.value)); setMarkovRun(false); }} /></label><button data-primary-control className="button button--primary" type="button" onClick={() => setMarkovRun(true)}>Run forecast</button></div></fieldset>{markovAnalysis.error ? <Feedback tone="error" role="alert">{markovAnalysis.error}</Feedback> : markovRun && markovAnalysis.after && <div className="strategy-workbench__markov-result"><strong>After {markovSteps} steps: ({markovAnalysis.after.map((value) => value.toString()).join(', ')})</strong>{markovAnalysis.stationary?.kind === 'unique' && <span>Stationary: ({markovAnalysis.stationary.vector.map((value) => value.toString()).join(', ')})</span>}</div>}</details>
     </section>}
-  </section>;
+  </section>
+  );
 }
 
 function LpCoach({
@@ -309,25 +620,54 @@ function LpCoach({
   onStatusChange: (value: ModelStatus) => void;
   onCheck: () => void;
 }) {
-  return <form className="strategy-workbench__coach strategy-workbench__coach--linear" onSubmit={(event) => { event.preventDefault(); onCheck(); }}>
-    <div className="strategy-workbench__coach-copy">
-      <strong>{result.status === 'optimal' ? 'Choose the best feasible corner first.' : 'Classify the model before reading its outcome.'}</strong>
-      <p>{result.status === 'optimal' ? 'Use the objective and the plotted feasible region to make one exact corner choice.' : 'Read the constraints and objective direction, then identify what kind of model you have.'}</p>
-    </div>
-    <div className="strategy-workbench__coach-form">
-      {result.status === 'optimal' ? <>
-        <label className="form-field"><span className="form-field__label">Best corner x-coordinate</span><input data-primary-control className="text-input" value={xAnswer} onChange={(event) => onXChange(event.target.value)} placeholder="x" autoComplete="off" /></label>
-        <label className="form-field"><span className="form-field__label">Best corner y-coordinate</span><input data-primary-control className="text-input" value={yAnswer} onChange={(event) => onYChange(event.target.value)} placeholder="y" autoComplete="off" /></label>
-      </> : <label className="form-field"><span className="form-field__label">Model classification</span><select data-primary-control className="select-input" value={statusChoice} onChange={(event) => onStatusChange(event.target.value as ModelStatus)}><option value="optimal">Bounded optimum</option><option value="unbounded">Unbounded</option><option value="infeasible">Infeasible</option></select></label>}
-      <button data-primary-control className="button button--primary" type="submit">Check {result.status === 'optimal' ? 'corner' : 'classification'}</button>
-    </div>
-    <div data-optimization-feedback>{feedback && <Feedback tone={feedback.status === 'correct' ? 'success' : 'error'}>{feedback.message}</Feedback>}</div>
-  </form>;
+  return (
+    <form className="strategy-workbench__coach strategy-workbench__coach--linear" onSubmit={(event) => { event.preventDefault(); onCheck(); }}>
+      <div className="strategy-workbench__coach-copy">
+        <strong>{result.status === 'optimal' ? 'Choose the best feasible corner first.' : 'Classify the model before reading its outcome.'}</strong>
+        <p>{result.status === 'optimal' ? 'Use the objective and the plotted feasible region to make one exact corner choice.' : 'Read the constraints and objective direction, then identify what kind of model you have.'}</p>
+      </div>
+      <div className="strategy-workbench__coach-form">
+        {result.status === 'optimal' ? (
+          <>
+            <label className="form-field">
+              <span className="form-field__label">Best corner x-coordinate</span>
+              <input data-primary-control className="text-input" value={xAnswer} onChange={(event) => onXChange(event.target.value)} placeholder="x" autoComplete="off" />
+            </label>
+            <label className="form-field">
+              <span className="form-field__label">Best corner y-coordinate</span>
+              <input data-primary-control className="text-input" value={yAnswer} onChange={(event) => onYChange(event.target.value)} placeholder="y" autoComplete="off" />
+            </label>
+          </>
+        ) : (
+          <label className="form-field">
+            <span className="form-field__label">Model classification</span>
+            <select data-primary-control className="select-input" value={statusChoice} onChange={(event) => onStatusChange(event.target.value as ModelStatus)}>
+              <option value="optimal">Bounded optimum</option>
+              <option value="unbounded">Unbounded</option>
+              <option value="infeasible">Infeasible</option>
+            </select>
+          </label>
+        )}
+        <button data-primary-control className="button button--primary" type="submit">
+          Check {result.status === 'optimal' ? 'corner' : 'classification'}
+        </button>
+      </div>
+      <div data-optimization-feedback>
+        {feedback && <Feedback tone={feedback.status === 'correct' ? 'success' : 'error'}>{feedback.message}</Feedback>}
+      </div>
+    </form>
+  );
 }
 
 function LpResult({ result }: { result: GraphicalLpResult }) {
   const optimum = result.optima[0];
-  return <div className="strategy-workbench__result" data-optimization-result><span>{result.status}</span><strong>{optimum ? `Z = ${optimum.value.toString()} at ${pointText(optimum.point)}` : result.status === 'unbounded' ? 'The objective improves without bound.' : 'No feasible point exists.'}</strong><small>{result.message}</small></div>;
+  return (
+    <div className="strategy-workbench__result" data-optimization-result>
+      <span>{result.status}</span>
+      <strong>{optimum ? `Z = ${optimum.value.toString()} at ${pointText(optimum.point)}` : result.status === 'unbounded' ? 'The objective improves without bound.' : 'No feasible point exists.'}</strong>
+      <small>{result.message}</small>
+    </div>
+  );
 }
 
 function GameResult({ solution }: { solution: ReturnType<typeof solveZeroSum2x2> }) {

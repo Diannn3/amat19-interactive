@@ -115,6 +115,31 @@ export default function MoneyTimelineWorkbench() {
   const [bondPeriods, setBondPeriods] = useState('10');
   const userInteracted = useRef(false);
 
+  // Mockup 7: Financial Mathematics Laboratory State
+  const [principal, setPrincipal] = useState(10000);
+  const [annualRate, setAnnualRate] = useState(5.0);
+  const [years, setYears] = useState(10);
+  const [compoundingN, setCompoundingN] = useState(1);
+  const [modeTab, setModeTab] = useState<'compound' | 'annuity'>('compound');
+  const [chartHoverIndex, setChartHoverIndex] = useState<number | null>(10);
+
+  const rateDecimal = annualRate / 100;
+  const futureVal = principal * Math.pow(1 + rateDecimal / compoundingN, compoundingN * years);
+  const totalInt = Math.max(0, futureVal - principal);
+  const growthMult = principal > 0 ? (futureVal / principal).toFixed(2) : '1.00';
+
+  const growthCurvePoints = Array.from({ length: 11 }, (_, i) => {
+    const t = (years / 10) * i;
+    const fv = principal * Math.pow(1 + rateDecimal / compoundingN, compoundingN * t);
+    const x = 50 + (i / 10) * 380;
+    const y = 190 - ((fv - principal) / (futureVal - principal || 1)) * 130;
+    return { t: Math.round(t), fv: Math.round(fv), x, y };
+  });
+
+  const curvePathD = growthCurvePoints.reduce((acc, pt, i) => {
+    return i === 0 ? `M ${pt.x},${pt.y}` : `${acc} L ${pt.x},${pt.y}`;
+  }, '');
+
   const draft: Draft = {
     scenario,
     flows,
@@ -299,6 +324,234 @@ export default function MoneyTimelineWorkbench() {
         if (event.target instanceof HTMLElement && event.target.closest('button,input,select')) userInteracted.current = true;
       }}
     >
+      {/* Mockup 7: Financial Mathematics Laboratory */}
+      <header className="fin-hero">
+        <h2 className="fin-title">Model. Calculate. See the future.</h2>
+        <p className="fin-lede">
+          Explore time value of money, compound interest, annuities, and more.
+        </p>
+
+        <div className="prob-mode-bar" role="tablist" aria-label="Finance mode selection">
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${modeTab === 'compound' ? 'is-active' : ''}`}
+            onClick={() => setModeTab('compound')}
+          >
+            Compound Interest
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${modeTab === 'annuity' ? 'is-active' : ''}`}
+            onClick={() => setModeTab('annuity')}
+          >
+            Annuity
+          </button>
+        </div>
+      </header>
+
+      <div className="fin-instrument-grid" style={{ marginBottom: '2.5rem' }}>
+        <div className="fin-form-card apple-glass-card">
+          <div className="fin-input-row">
+            <div className="fin-input-label">
+              <span>Principal (P)</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>${principal.toLocaleString()}</span>
+            </div>
+            <input 
+              type="number" 
+              className="fin-number-input" 
+              value={principal} 
+              step="500" 
+              min="100" 
+              onChange={(e) => setPrincipal(Math.max(0, Number(e.target.value)))} 
+            />
+            <input 
+              type="range" 
+              className="prob-slider" 
+              min="1000" 
+              max="100000" 
+              step="1000" 
+              value={principal} 
+              onChange={(e) => setPrincipal(Number(e.target.value))} 
+            />
+          </div>
+
+          <div className="fin-input-row">
+            <div className="fin-input-label">
+              <span>Annual Interest Rate (r)</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>{annualRate.toFixed(1)}%</span>
+            </div>
+            <input 
+              type="number" 
+              className="fin-number-input" 
+              value={annualRate} 
+              step="0.1" 
+              min="0.1" 
+              max="30" 
+              onChange={(e) => setAnnualRate(Math.max(0.1, Number(e.target.value)))} 
+            />
+            <input 
+              type="range" 
+              className="prob-slider" 
+              min="0.5" 
+              max="20" 
+              step="0.5" 
+              value={annualRate} 
+              onChange={(e) => setAnnualRate(Number(e.target.value))} 
+            />
+          </div>
+
+          <div className="fin-input-row">
+            <div className="fin-input-label">
+              <span>Time in Years (t)</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>{years} yrs</span>
+            </div>
+            <input 
+              type="number" 
+              className="fin-number-input" 
+              value={years} 
+              min="1" 
+              max="50" 
+              onChange={(e) => setYears(Math.max(1, Number(e.target.value)))} 
+            />
+            <input 
+              type="range" 
+              className="prob-slider" 
+              min="1" 
+              max="40" 
+              step="1" 
+              value={years} 
+              onChange={(e) => setYears(Number(e.target.value))} 
+            />
+          </div>
+
+          <div className="fin-input-row">
+            <div className="fin-input-label">
+              <span>Compounding Frequency (n)</span>
+            </div>
+            <select 
+              className="fin-select" 
+              value={compoundingN} 
+              onChange={(e) => setCompoundingN(Number(e.target.value))}
+            >
+              <option value="1">Annually (1 / yr)</option>
+              <option value="2">Semi-Annually (2 / yr)</option>
+              <option value="4">Quarterly (4 / yr)</option>
+              <option value="12">Monthly (12 / yr)</option>
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+            <button type="button" className="apple-btn-black" style={{ flex: 1, padding: '0.65rem 1rem' }}>
+              Calculate →
+            </button>
+            <button 
+              type="button" 
+              className="apple-btn-glass" 
+              style={{ padding: '0.65rem 1rem' }}
+              onClick={() => { setPrincipal(10000); setAnnualRate(5.0); setYears(10); setCompoundingN(1); }}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div className="fin-chart-panel">
+          <div className="fin-chart-card apple-glass-card">
+            <svg viewBox="0 0 460 220" style={{ width: '100%', height: 'auto' }} aria-label="Investment growth curve">
+              {/* Grid lines */}
+              <line x1="50" y1="20" x2="50" y2="190" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
+              <line x1="50" y1="190" x2="430" y2="190" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
+              <line x1="50" y1="105" x2="430" y2="105" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
+              <line x1="50" y1="20" x2="430" y2="20" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
+
+              {/* Shaded Area Under Curve */}
+              <path 
+                d={`${curvePathD} L 430,190 L 50,190 Z`} 
+                fill="rgba(37, 99, 235, 0.08)" 
+              />
+
+              {/* Curve */}
+              <path 
+                d={curvePathD} 
+                fill="none" 
+                stroke="#2563eb" 
+                strokeWidth="3" 
+                strokeLinecap="round" 
+              />
+
+              {/* Data points */}
+              {growthCurvePoints.map((pt, i) => (
+                <circle 
+                  key={i} 
+                  cx={pt.x} 
+                  cy={pt.y} 
+                  r={i === chartHoverIndex ? 6 : 3.5} 
+                  fill={i === chartHoverIndex ? '#111111' : '#2563eb'} 
+                  stroke="#ffffff" 
+                  strokeWidth="2" 
+                  style={{ cursor: 'pointer', transition: 'r 150ms ease' }}
+                  onMouseEnter={() => setChartHoverIndex(i)}
+                />
+              ))}
+
+              {/* Active Hover Tooltip */}
+              {chartHoverIndex !== null && growthCurvePoints[chartHoverIndex] && (
+                <g transform={`translate(${growthCurvePoints[chartHoverIndex].x}, ${growthCurvePoints[chartHoverIndex].y - 32})`}>
+                  <rect 
+                    x="-55" 
+                    y="-18" 
+                    width="110" 
+                    height="24" 
+                    rx="6" 
+                    fill="#111111" 
+                  />
+                  <text 
+                    x="0" 
+                    y="-2" 
+                    textAnchor="middle" 
+                    fill="#ffffff" 
+                    fontSize="10.5" 
+                    fontWeight="600" 
+                    fontFamily="monospace"
+                  >
+                    Year {growthCurvePoints[chartHoverIndex].t}: ${growthCurvePoints[chartHoverIndex].fv.toLocaleString()}
+                  </text>
+                </g>
+              )}
+
+              {/* Axis Labels */}
+              <text x="50" y="206" fill="#71717a" fontSize="10" fontFamily="sans-serif">Yr 0</text>
+              <text x="240" y="206" fill="#71717a" fontSize="10" fontFamily="sans-serif" textAnchor="middle">Yr {Math.round(years / 2)}</text>
+              <text x="430" y="206" fill="#71717a" fontSize="10" fontFamily="sans-serif" textAnchor="end">Yr {years}</text>
+            </svg>
+          </div>
+
+          <div className="fin-metrics-deck">
+            <div className="fin-metric-box apple-glass-card">
+              <span>Future Value (A)</span>
+              <strong>${Math.round(futureVal).toLocaleString()}</strong>
+            </div>
+            <div className="fin-metric-box apple-glass-card">
+              <span>Total Interest</span>
+              <strong style={{ color: '#059669' }}>+${Math.round(totalInt).toLocaleString()}</strong>
+            </div>
+            <div className="fin-metric-box apple-glass-card">
+              <span>Growth Multiple</span>
+              <strong>{growthMult}×</strong>
+            </div>
+          </div>
+
+          <div className="prob-formula-card">
+            <div className="prob-formula-math" style={{ fontSize: '1.15rem' }}>
+              A = P(1 + r/n)^(nt)
+            </div>
+            <p className="prob-formula-caption">
+              P = Principal (${principal.toLocaleString()}) · r = Rate ({annualRate}%) · n = Compounding ({compoundingN}×/yr) · t = Time ({years} yrs)
+            </p>
+          </div>
+        </div>
+      </div>
+
       <header className="money-timeline__header">
         <div>
           <h2>Move one cash flow.</h2>

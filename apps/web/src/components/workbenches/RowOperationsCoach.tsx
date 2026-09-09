@@ -172,6 +172,9 @@ export default function RowOperationsCoach() {
     }
   }, [sourceRaw, goal, arithmeticRightRaw, arithmeticOperation]);
 
+
+
+
   const complete = analysis.kind === 'row' && matricesEqual(current, analysis.target);
   const draft: StoredDraft = {
     goal,
@@ -180,6 +183,45 @@ export default function RowOperationsCoach() {
     history: history.map((entry) => ({ label: entry.label, beforeRaw: serialize(entry.before) })),
     arithmeticRightRaw,
     arithmeticOperation,
+  };
+
+  // Mockup 8: Matrices & Systems Flagship State
+  const [matrixCells, setMatrixCells] = useState<number[][]>([
+    [2, -1, 0],
+    [1, 3, 4],
+    [0, 1, 2],
+  ]);
+  const [matrixDim, setMatrixDim] = useState<2 | 3>(3);
+  const [activeMatrixTab, setActiveMatrixTab] = useState<'ops' | 'solve' | 'det' | 'rref' | 'eigen'>('det');
+  const [activeMatrixOp, setActiveMatrixOp] = useState<string>('det');
+
+  const detValue = useMemo(() => {
+    if (matrixDim === 2) {
+      return matrixCells[0][0] * matrixCells[1][1] - matrixCells[0][1] * matrixCells[1][0];
+    }
+    const a = matrixCells[0][0], b = matrixCells[0][1], c = matrixCells[0][2];
+    const d = matrixCells[1][0], e = matrixCells[1][1], f = matrixCells[1][2];
+    const g = matrixCells[2][0], h = matrixCells[2][1], i = matrixCells[2][2];
+    return a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+  }, [matrixCells, matrixDim]);
+
+  const isoProject = (x: number, y: number, z: number) => {
+    const x0 = 160;
+    const y0 = 135;
+    const s = 18;
+    const cos30 = 0.866;
+    const sin30 = 0.5;
+    const px = x0 + (x * cos30 - y * cos30) * s;
+    const py = y0 - (z - x * sin30 - y * sin30) * s;
+    return { x: px, y: py };
+  };
+
+  const updateMatrixCell = (r: number, c: number, val: number) => {
+    setMatrixCells((prev) => {
+      const next = prev.map((row) => [...row]);
+      next[r][c] = val;
+      return next;
+    });
   };
 
   useEffect(() => {
@@ -383,6 +425,259 @@ export default function RowOperationsCoach() {
         if (event.target instanceof HTMLElement && event.target.closest('button,input,select,textarea,summary')) userInteracted.current = true;
       }}
     >
+      {/* Mockup 8: Matrices & Systems Flagship Instrument */}
+      <header className="matrix-hero">
+        <h2 className="matrix-title">Matrices &amp; Systems.</h2>
+        <p className="matrix-lede">
+          Explore matrix operations, solve systems, and build intuition through interactive examples.
+        </p>
+
+        <div className="prob-mode-bar" role="tablist" aria-label="Matrix view selection">
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeMatrixTab === 'ops' ? 'is-active' : ''}`}
+            onClick={() => setActiveMatrixTab('ops')}
+          >
+            Matrix Operations
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeMatrixTab === 'solve' ? 'is-active' : ''}`}
+            onClick={() => setActiveMatrixTab('solve')}
+          >
+            Solve Systems
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeMatrixTab === 'det' ? 'is-active' : ''}`}
+            onClick={() => setActiveMatrixTab('det')}
+          >
+            Determinant
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeMatrixTab === 'rref' ? 'is-active' : ''}`}
+            onClick={() => setActiveMatrixTab('rref')}
+          >
+            Row Reduction
+          </button>
+          <button 
+            type="button" 
+            className={`prob-mode-pill ${activeMatrixTab === 'eigen' ? 'is-active' : ''}`}
+            onClick={() => setActiveMatrixTab('eigen')}
+          >
+            Eigenvalues
+          </button>
+        </div>
+      </header>
+
+      <div className="matrix-instrument-grid" style={{ marginBottom: '2.5rem' }}>
+        {/* Left Side Navigation & Hints */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="apple-glass-card" style={{ padding: '1.25rem' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Operations</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: '0.75rem' }}>
+              {['Matrix Operations', 'Solve Systems', 'Determinant', 'Row Reduction', 'Eigenvalues'].map((item, idx) => (
+                <button 
+                  key={item} 
+                  type="button" 
+                  style={{
+                    border: 'none',
+                    background: idx === 2 ? '#111111' : 'transparent',
+                    color: idx === 2 ? '#ffffff' : '#3f3f46',
+                    padding: '0.5rem 0.75rem',
+                    borderRadius: '8px',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    textAlign: 'left',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="apple-glass-card" style={{ padding: '1.25rem' }}>
+            <strong style={{ fontSize: '0.85rem', color: '#09090b', display: 'block', marginBottom: '0.35rem' }}>Tip</strong>
+            <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0, lineHeight: 1.45 }}>
+              Elementary row replacement preserves the determinant: det(R_i ← R_i + cR_j) = det(A).
+            </p>
+          </div>
+        </div>
+
+        {/* Center Matrix Workspace */}
+        <div className="apple-glass-card" style={{ padding: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <strong style={{ fontSize: '1.2rem', color: '#09090b' }}>Matrix A</strong>
+              <span style={{ fontSize: '0.82rem', color: '#71717a', display: 'block' }}>{matrixDim}×{matrixDim} Square Matrix</span>
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button 
+                type="button" 
+                className="apple-btn-glass" 
+                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                onClick={() => setMatrixDim(matrixDim === 2 ? 3 : 2)}
+              >
+                {matrixDim === 3 ? '2×2' : '3×3'}
+              </button>
+              <button 
+                type="button" 
+                className="apple-btn-glass" 
+                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                onClick={() => {
+                  setMatrixCells([
+                    [Math.floor(Math.random() * 7) - 2, Math.floor(Math.random() * 7) - 2, Math.floor(Math.random() * 5)],
+                    [Math.floor(Math.random() * 7) - 2, Math.floor(Math.random() * 7) - 2, Math.floor(Math.random() * 5)],
+                    [Math.floor(Math.random() * 5) - 2, Math.floor(Math.random() * 5), Math.floor(Math.random() * 5)]
+                  ]);
+                }}
+              >
+                Random
+              </button>
+            </div>
+          </div>
+
+          {/* Matrix Bracket Display */}
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '1.5rem 0' }}>
+            <div className="matrix-bracket-box">
+              <div 
+                className="matrix-grid-cells" 
+                style={{ gridTemplateColumns: `repeat(${matrixDim}, 46px)` }}
+              >
+                {Array.from({ length: matrixDim }).map((_, r) => (
+                  Array.from({ length: matrixDim }).map((_, c) => (
+                    <input
+                      key={`${r}-${c}`}
+                      type="number"
+                      className="matrix-cell-input"
+                      value={matrixCells[r]?.[c] ?? 0}
+                      onChange={(e) => updateMatrixCell(r, c, Number(e.target.value))}
+                    />
+                  ))
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Operation Pills */}
+          <div className="matrix-operations-strip">
+            {[
+              { id: 'add', label: '+ A + B' },
+              { id: 'sub', label: '− A − B' },
+              { id: 'mult', label: '× A × B' },
+              { id: 'trans', label: '⇄ Aᵀ' },
+              { id: 'det', label: '| | det(A)' },
+              { id: 'rref', label: '≡ Row Reduce' },
+            ].map((op) => (
+              <button 
+                key={op.id} 
+                type="button" 
+                className={`matrix-op-pill ${activeMatrixOp === op.id ? 'is-active' : ''}`}
+                onClick={() => setActiveMatrixOp(op.id)}
+              >
+                {op.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Step-by-Step Arithmetic Expansion */}
+          <div style={{ background: '#f8fafc', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '1.25rem', marginTop: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b' }}>Calculation</span>
+              <button type="button" style={{ border: 'none', background: 'transparent', color: '#2563eb', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}>
+                Copy Calculation
+              </button>
+            </div>
+            <div style={{ fontFamily: 'var(--font-amat-mono)', fontSize: '1.15rem', fontWeight: 700, color: '#09090b', letterSpacing: '-0.02em' }}>
+              det(A) = {detValue}
+            </div>
+            <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0.4rem 0 0 0', fontFamily: 'monospace' }}>
+              Expansion: {matrixCells[0][0]}({matrixCells[1][1]}·{matrixCells[2][2]} − {matrixCells[1][2]}·{matrixCells[2][1]}) − ({matrixCells[0][1]})({matrixCells[1][0]}·{matrixCells[2][2]} − {matrixCells[1][2]}·{matrixCells[2][0]}) + {matrixCells[0][2]}...
+            </p>
+          </div>
+        </div>
+
+        {/* Right 3D Isometric Geometric Projection in R^3 */}
+        <div className="apple-glass-card" style={{ padding: '1.75rem' }}>
+          <strong style={{ fontSize: '1.05rem', color: '#09090b', display: 'block', marginBottom: '0.25rem' }}>3D Geometric View</strong>
+          <span style={{ fontSize: '0.78rem', color: '#71717a', display: 'block', marginBottom: '1rem' }}>Column space projection in ℝ³</span>
+
+          <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', padding: '0.5rem', display: 'flex', justifyContent: 'center' }}>
+            <svg viewBox="0 0 320 270" style={{ width: '100%', height: 'auto' }} aria-label="3D Isometric vector projection in R3">
+              <defs>
+                <marker id="arrowHeadBlue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 8 5 L 0 9 z" fill="#2563eb" />
+                </marker>
+                <marker id="arrowHeadPurple" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 8 5 L 0 9 z" fill="#7c3aed" />
+                </marker>
+                <marker id="arrowHeadGreen" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 8 5 L 0 9 z" fill="#059669" />
+                </marker>
+              </defs>
+
+              {/* Dotted Isometric Axes */}
+              {/* Origin is at (160, 135) */}
+              <line x1="160" y1="135" x2="60" y2="195" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3 3" />
+              <text x="50" y="205" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">X</text>
+
+              <line x1="160" y1="135" x2="260" y2="195" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3 3" />
+              <text x="270" y="205" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">Y</text>
+
+              <line x1="160" y1="135" x2="160" y2="25" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3 3" />
+              <text x="160" y="18" fill="#94a3b8" fontSize="10" fontFamily="sans-serif" textAnchor="middle">Z</text>
+
+              {/* Vector a1 (col 0): (matrixCells[0][0], matrixCells[1][0], matrixCells[2][0]) */}
+              {(() => {
+                const p1 = isoProject(matrixCells[0][0], matrixCells[1][0], matrixCells[2][0]);
+                const p2 = isoProject(matrixCells[0][1], matrixCells[1][1], matrixCells[2][1]);
+                const p3 = isoProject(matrixCells[0][2], matrixCells[1][2], matrixCells[2][2]);
+                const p12 = isoProject(matrixCells[0][0] + matrixCells[0][1], matrixCells[1][0] + matrixCells[1][1], matrixCells[2][0] + matrixCells[2][1]);
+                const p13 = isoProject(matrixCells[0][0] + matrixCells[0][2], matrixCells[1][0] + matrixCells[1][2], matrixCells[2][0] + matrixCells[2][2]);
+                const p23 = isoProject(matrixCells[0][1] + matrixCells[0][2], matrixCells[1][1] + matrixCells[1][2], matrixCells[2][1] + matrixCells[2][2]);
+                const p123 = isoProject(matrixCells[0][0] + matrixCells[0][1] + matrixCells[0][2], matrixCells[1][0] + matrixCells[1][1] + matrixCells[1][2], matrixCells[2][0] + matrixCells[2][1] + matrixCells[2][2]);
+
+                return (
+                  <>
+                    {/* Parallelepiped edges */}
+                    <line x1={p1.x} y1={p1.y} x2={p12.x} y2={p12.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p2.x} y1={p2.y} x2={p12.x} y2={p12.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p1.x} y1={p1.y} x2={p13.x} y2={p13.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p3.x} y1={p3.y} x2={p13.x} y2={p13.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p2.x} y1={p2.y} x2={p23.x} y2={p23.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p3.x} y1={p3.y} x2={p23.x} y2={p23.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p12.x} y1={p12.y} x2={p123.x} y2={p123.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p13.x} y1={p13.y} x2={p123.x} y2={p123.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p23.x} y1={p23.y} x2={p123.x} y2={p123.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
+
+                    {/* Vector a1 */}
+                    <line x1="160" y1="135" x2={p1.x} y2={p1.y} stroke="#2563eb" strokeWidth="2.5" markerEnd="url(#arrowHeadBlue)" />
+                    <text x={p1.x + 5} y={p1.y - 5} fill="#2563eb" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₁</text>
+
+                    {/* Vector a2 */}
+                    <line x1="160" y1="135" x2={p2.x} y2={p2.y} stroke="#7c3aed" strokeWidth="2.5" markerEnd="url(#arrowHeadPurple)" />
+                    <text x={p2.x + 5} y={p2.y - 5} fill="#7c3aed" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₂</text>
+
+                    {/* Vector a3 */}
+                    <line x1="160" y1="135" x2={p3.x} y2={p3.y} stroke="#059669" strokeWidth="2.5" markerEnd="url(#arrowHeadGreen)" />
+                    <text x={p3.x + 5} y={p3.y - 5} fill="#059669" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₃</text>
+                  </>
+                );
+              })()}
+            </svg>
+          </div>
+
+          <div style={{ marginTop: '1rem', padding: '0.85rem', background: '#f8fafc', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.05)' }}>
+            <span style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.45, display: 'block' }}>
+              These three vectors span a parallelepiped with volume <strong>|det(A)| = {Math.abs(detValue)}</strong>.
+            </span>
+          </div>
+        </div>
+      </div>
+
       <header className="row-coach__header">
         <div>
           <h2>Change one row. See what stays equivalent.</h2>

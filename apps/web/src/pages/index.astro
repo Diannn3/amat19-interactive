@@ -77,11 +77,10 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
                 </div>
 
                 <div class="home-workbench-link__content">
-                  <div class="home-workbench-link__meta">
-                    <span class="home-workbench-link__tag">{module.title}</span>
+                  <div class="home-workbench-link__heading-row">
+                    <strong class="home-workbench-link__title">{workbench.title}</strong>
                     <code data-home-notation>{workbench.notation}</code>
                   </div>
-                  <strong class="home-workbench-link__title">{workbench.title}</strong>
                   <span class="home-workbench-link__description">{workbench.description}</span>
                 </div>
 
@@ -106,11 +105,20 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
 
   {/* Guided Learning Flow Section (Image 2) */}
   <section class="page-width home-journey" aria-labelledby="journey-heading">
-    <div class="home-journey__header">
-      <h2 id="journey-heading" class="home-journey__title">From Concepts to Real Understanding.</h2>
-      <p class="home-journey__lede">
-        A guided learning flow that helps you explore ideas, visualize concepts, practice actively, and apply them to real-world problems — all in one connected experience.
-      </p>
+    <div class="home-journey__header-row">
+      <div class="home-journey__header">
+        <h2 id="journey-heading" class="home-journey__title">From Concepts to Real Understanding.</h2>
+        <p class="home-journey__lede">
+          A guided learning flow that helps you explore ideas, visualize concepts, practice actively, and apply them to real-world problems — all in one connected experience.
+        </p>
+      </div>
+      <div class="apple-glass-card home-journey__badge" aria-hidden="true">
+        <span class="home-journey__badge-icon">&infin;</span>
+        <div class="home-journey__badge-copy">
+          <span class="home-journey__badge-title">SAME MATHEMATICS.</span>
+          <span class="home-journey__badge-sub">A CLEARER VIEW.</span>
+        </div>
+      </div>
     </div>
 
     <div class="home-journey__grid">

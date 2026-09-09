@@ -1,4 +1,389 @@
 ---
-import AppLayout from '../layouts/AppLayout.astro';import StudyDashboard from '../components/study/StudyDashboard';
+import AppLayout from '../layouts/AppLayout.astro';
+import StudyDashboard from '../components/study/StudyDashboard';
 ---
-<AppLayout title="Study"><section class="page-width page-intro"><h1 class="display-title">Do the next useful thing.</h1><p class="page-context">Local study queue</p><p class="lede">Unfinished work, recent misses, and weak evidence shape your next step.</p></section><section class="page-width section-shell"><StudyDashboard client:load /></section></AppLayout>
+
+<AppLayout title="Practice & Resources">
+  <div class="study-page">
+    <!-- Hero Section -->
+    <section class="study-hero">
+      <div class="study-hero__content">
+        <h1 class="study-hero__title">
+          Practice.<br />
+          Deepen.<br />
+          <span class="text-muted">Go Further.</span>
+        </h1>
+        <p class="study-hero__lede">
+          Browse practice problems, reviewers, formula sheets, and saved examples — everything you need to build mastery in one place.
+        </p>
+      </div>
+      <div class="study-hero__ambient" aria-hidden="true">
+        <div class="study-hero__tagline">
+          <span>SAME MATHEMATICS.</span>
+          <span>A CLEARER VIEW.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter Pills & Search Bar -->
+    <div class="study-toolbar">
+      <div class="study-toolbar__filters" role="tablist" aria-label="Resource filter">
+        <button type="button" class="apple-filter-pill is-active" role="tab" aria-selected="true">All Resources</button>
+        <button type="button" class="apple-filter-pill" role="tab" aria-selected="false">Practice Problems</button>
+        <button type="button" class="apple-filter-pill" role="tab" aria-selected="false">Reviewers</button>
+        <button type="button" class="apple-filter-pill" role="tab" aria-selected="false">Formula Sheets</button>
+        <button type="button" class="apple-filter-pill" role="tab" aria-selected="false">Saved Examples</button>
+      </div>
+      <div class="study-toolbar__search-wrap">
+        <div class="study-search-input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="search" placeholder="Search topics, keywords, or tags..." aria-label="Search resources" />
+        </div>
+        <button type="button" class="apple-filter-pill" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          <span>Filter</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Hub Layout: 8-Card Bento Grid + Sidebar -->
+    <div class="study-hub-grid">
+      <!-- Left: Bento Grid (2 rows of 4 cards) -->
+      <div class="study-bento-grid">
+        <!-- Row 1: Core Formats -->
+        <!-- Card 1: Practice Problems -->
+        <a href="#active-queue" class="apple-glass-card study-bento-card">
+          <div>
+            <div class="study-bento-card-top">
+              <div class="apple-icon-squircle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <line x1="10" y1="9" x2="8" y2="9"></line>
+                </svg>
+              </div>
+            </div>
+            <strong>Practice Problems</strong>
+            <span>Build your skills with curated problem sets.</span>
+          </div>
+          <div class="study-bento-card-bottom">
+            <span class="study-bento-meta">120+ problems</span>
+            <div class="apple-action-circle" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 2: Reviewers -->
+        <a href="#active-queue" class="apple-glass-card study-bento-card">
+          <div>
+            <div class="study-bento-card-top">
+              <div class="apple-icon-squircle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+              </div>
+            </div>
+            <strong>Reviewers</strong>
+            <span>Concise reviewers for every topic.</span>
+          </div>
+          <div class="study-bento-card-bottom">
+            <span class="study-bento-meta">12 reviewers</span>
+            <div class="apple-action-circle" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 3: Formula Sheets -->
+        <a href="#active-queue" class="apple-glass-card study-bento-card">
+          <div>
+            <div class="study-bento-card-top">
+              <div class="apple-icon-squircle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="18 4 6 4 12 12 6 20 18 20"></polyline>
+                </svg>
+              </div>
+            </div>
+            <strong>Formula Sheets</strong>
+            <span>Key formulas and quick references.</span>
+          </div>
+          <div class="study-bento-card-bottom">
+            <span class="study-bento-meta">8 sheets</span>
+            <div class="apple-action-circle" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 4: Saved Examples -->
+        <a href="#active-queue" class="apple-glass-card study-bento-card">
+          <div>
+            <div class="study-bento-card-top">
+              <div class="apple-icon-squircle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+            </div>
+            <strong>Saved Examples</strong>
+            <span>Your bookmarked problems and solutions.</span>
+          </div>
+          <div class="study-bento-card-bottom">
+            <span class="study-bento-meta">24 saved</span>
+            <div class="apple-action-circle" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Row 2: Subject Domains -->
+        <!-- Card 5: Logic -->
+        <a href="/workbench/logic-proof" class="apple-glass-card study-bento-card">
+          <div>
+            <div class="study-bento-card-top">
+              <div class="apple-icon-squircle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 6h6a6 6 0 0 1 6 6 6 6 0 0 1-6 6H4z"></path>
+                  <line x1="16" y1="12" x2="21" y2="12"></line>
+                </svg>
+              </div>
+            </div>
+            <strong>Logic</strong>
+            <span>Practice problems in propositions and reasoning.</span>
+          </div>
+          <div class="study-bento-card-bottom">
+            <span class="study-bento-meta">28 problems</span>
+            <div class="apple-action-circle" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 6: Probability -->
+        <a href="/workbench/probability-models" class="apple-glass-card study-bento-card">
+          <div>
+            <div class="study-bento-card-top">
+              <div class="apple-icon-squircle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 19c4 0 5-14 9-14s5 14 9 14"></path>
+                  <line x1="3" y1="19" x2="21" y2="19"></line>
+                </svg>
+              </div>
+            </div>
+            <strong>Probability</strong>
+            <span>Distributions, expected value, and inference.</span>
+          </div>
+          <div class="study-bento-card-bottom">
+            <span class="study-bento-meta">36 problems</span>
+            <div class="apple-action-circle" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 7: Finance -->
+        <a href="/workbench/money-timeline" class="apple-glass-card study-bento-card">
+          <div>
+            <div class="study-bento-card-top">
+              <div class="apple-icon-squircle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10"></line>
+                  <line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+              </div>
+            </div>
+            <strong>Finance</strong>
+            <span>Interest, annuities, and financial modeling.</span>
+          </div>
+          <div class="study-bento-card-bottom">
+            <span class="study-bento-meta">25 problems</span>
+            <div class="apple-action-circle" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 8: Matrices -->
+        <a href="/workbench/row-operations" class="apple-glass-card study-bento-card">
+          <div>
+            <div class="study-bento-card-top">
+              <div class="apple-icon-squircle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </div>
+            </div>
+            <strong>Matrices</strong>
+            <span>Systems, transformations, and applications.</span>
+          </div>
+          <div class="study-bento-card-bottom">
+            <span class="study-bento-meta">31 problems</span>
+            <div class="apple-action-circle" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Right: Master Sidebar -->
+      <aside class="study-sidebar">
+        <!-- Sidebar Card 1: Continue Learning -->
+        <div class="apple-glass-card study-sidebar-card">
+          <div class="study-sidebar-header">
+            <h3>Continue Learning</h3>
+            <a href="#active-queue" class="study-card-link">View All &rarr;</a>
+          </div>
+          <div class="study-inner-card">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+              <div class="apple-icon-squircle" style="width: 36px; height: 36px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+              </div>
+              <div>
+                <strong style="display: block; font-size: 0.95rem; color: #09090b;">Practice Set 3</strong>
+                <span style="font-size: 0.78rem; color: #71717a;">Matrices · Systems of Equations</span>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem;">
+              <div class="study-progress-bar" style="flex: 1;">
+                <div class="study-progress-bar-fill" style="width: 60%;"></div>
+              </div>
+              <span style="font-family: var(--font-amat-mono); font-size: 0.75rem; font-weight: 700; color: #71717a;">6 / 10</span>
+            </div>
+          </div>
+          <a href="/workbench/row-operations" class="apple-btn-black" style="width: 100%; margin-top: 1rem; justify-content: center; text-decoration: none;">
+            Continue Practice &rarr;
+          </a>
+        </div>
+
+        <!-- Sidebar Card 2: Your Progress -->
+        <div class="apple-glass-card study-sidebar-card">
+          <div class="study-sidebar-header">
+            <h3>Your Progress</h3>
+            <a href="#active-queue" class="study-card-link">View Stats &rarr;</a>
+          </div>
+          <div class="study-donut-wrap">
+            <div style="position: relative; width: 72px; height: 72px; flex-shrink: 0;">
+              <svg width="72" height="72" viewBox="0 0 72 72">
+                <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="6"></circle>
+                <circle cx="36" cy="36" r="30" fill="none" stroke="#18181b" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="60.3" stroke-linecap="round" transform="rotate(-90 36 36)"></circle>
+              </svg>
+              <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-amat-mono); font-weight: 800; font-size: 0.95rem; color: #09090b;">
+                68%
+              </div>
+            </div>
+            <div>
+              <strong style="display: block; font-size: 0.95rem; color: #09090b;">Overall Progress</strong>
+              <p style="font-size: 0.8rem; color: #71717a; margin: 0.15rem 0 0; line-height: 1.4;">
+                Keep going! You're making great progress.
+              </p>
+            </div>
+          </div>
+          <div class="study-stat-grid">
+            <div class="study-stat-item">
+              <div class="apple-icon-squircle" style="width: 28px; height: 28px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                </svg>
+              </div>
+              <div>
+                <strong>18 / 30</strong>
+                <span>Practice Sets</span>
+              </div>
+            </div>
+            <div class="study-stat-item">
+              <div class="apple-icon-squircle" style="width: 28px; height: 28px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+              </div>
+              <div>
+                <strong>8 / 12</strong>
+                <span>Reviewers</span>
+              </div>
+            </div>
+            <div class="study-stat-item">
+              <div class="apple-icon-squircle" style="width: 28px; height: 28px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <polyline points="18 4 6 4 12 12 6 20 18 20"></polyline>
+                </svg>
+              </div>
+              <div>
+                <strong>5 / 8</strong>
+                <span>Formula Sheets</span>
+              </div>
+            </div>
+            <div class="study-stat-item">
+              <div class="apple-icon-squircle" style="width: 28px; height: 28px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <div>
+                <strong>24</strong>
+                <span>Saved Examples</span>
+              </div>
+            </div>
+          </div>
+          <blockquote class="study-quote">
+            “Practice turns understanding into intuition.”
+            <cite>— AMAT 19</cite>
+          </blockquote>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Active Local Queue & Assessments (Preserving student evidence contracts) -->
+    <section id="active-queue" class="study-queue-section" style="margin-top: 3.5rem;">
+      <div style="margin-bottom: 1.5rem; display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 0.75rem;">
+        <div>
+          <h2 style="font-size: 1.4rem; font-weight: 700; color: #09090b; letter-spacing: -0.02em; margin: 0;">Active Study Queue</h2>
+          <p style="font-size: 0.88rem; color: #71717a; margin: 0.25rem 0 0;">Unfinished work, recent misses, and weak evidence shape your next step.</p>
+        </div>
+      </div>
+      <StudyDashboard client:load />
+    </section>
+  </div>
+</AppLayout>

@@ -1,6 +1,6 @@
 ---
 import { currentCourseProfile } from '@amat19/course-content';
-import { ArrowRight, BookOpen, GraduationCap, ClipboardCheck, BarChart3, Search, Grid3X3, Network, Infinity } from 'lucide-react';
+import { ArrowRight, BookOpen, GraduationCap, ClipboardCheck, BarChart3, Search, Grid3X3, Network, Infinity, FileText, Sparkles, Layers } from 'lucide-react';
 import AppLayout from '../layouts/AppLayout.astro';
 
 const modulesById = new Map(currentCourseProfile.modules.map((module) => [module.id, module]));
@@ -104,6 +104,218 @@ const moduleTopics: Record<string, string[]> = {
           );
         })}
       </ol>
+    </section>
+
+    {/* Course Syllabus Timeline (Mockup 4) */}
+    <section class="course-syllabus-section" aria-labelledby="course-syllabus-heading">
+      <div class="course-syllabus-header">
+        <div class="course-syllabus-header__copy">
+          <h2 id="course-syllabus-heading" class="course-syllabus-title">Course Syllabus.</h2>
+          <p class="course-syllabus-lede">
+            A 10-week journey through finite mathematics. Follow the recommended roadmap or jump directly to any topic.
+          </p>
+        </div>
+
+        <div class="course-syllabus-toggle" role="tablist" aria-label="Syllabus view mode">
+          <button class="is-active" type="button">Roadmap</button>
+          <button type="button">List View</button>
+        </div>
+      </div>
+
+      <div class="course-syllabus-layout">
+        <div class="syllabus-timeline">
+          <div class="syllabus-module-card apple-glass-card">
+            <div class="syllabus-module-badge">
+              <span class="syllabus-module-week">Wk 1–2</span>
+              <div class="apple-icon-squircle" aria-hidden="true">
+                <Layers size={18} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div class="syllabus-module-body">
+              <strong class="syllabus-module-title">Module 1: Logic &amp; Proof</strong>
+              <p class="syllabus-module-desc">Propositions, truth tables, conditional statements, logical equivalence, and deductive reasoning.</p>
+              <div class="syllabus-module-links">
+                <a href="/workbenches/logic">Workbench →</a>
+                <a href="/modules/logic">Examples</a>
+                <a href="/study">Practice</a>
+              </div>
+            </div>
+            <div class="syllabus-module-arrow">
+              <a href="/workbenches/logic" class="apple-action-circle" aria-label="Open Logic & Proof">
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+            </div>
+          </div>
+
+          <div class="syllabus-module-card apple-glass-card">
+            <div class="syllabus-module-badge">
+              <span class="syllabus-module-week">Wk 3–4</span>
+              <div class="apple-icon-squircle" aria-hidden="true">
+                <Sparkles size={18} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div class="syllabus-module-body">
+              <strong class="syllabus-module-title">Module 2: Probability &amp; Counting</strong>
+              <p class="syllabus-module-desc">Sets, combinations, permutations, conditional probability, Bayes' Theorem, and random variables.</p>
+              <div class="syllabus-module-links">
+                <a href="/workbenches/probability">Workbench →</a>
+                <a href="/modules/probability">Examples</a>
+                <a href="/study">Practice</a>
+              </div>
+            </div>
+            <div class="syllabus-module-arrow">
+              <a href="/workbenches/probability" class="apple-action-circle" aria-label="Open Probability & Counting">
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+            </div>
+          </div>
+
+          <div class="syllabus-module-card apple-glass-card">
+            <div class="syllabus-module-badge">
+              <span class="syllabus-module-week">Wk 5–6</span>
+              <div class="apple-icon-squircle" aria-hidden="true">
+                <BarChart3 size={18} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div class="syllabus-module-body">
+              <strong class="syllabus-module-title">Module 3: Financial Mathematics</strong>
+              <p class="syllabus-module-desc">Simple &amp; compound interest, time value of money, ordinary annuities, annuities due, and amortization.</p>
+              <div class="syllabus-module-links">
+                <a href="/workbenches/finance">Workbench →</a>
+                <a href="/modules/finance">Examples</a>
+                <a href="/study">Practice</a>
+              </div>
+            </div>
+            <div class="syllabus-module-arrow">
+              <a href="/workbenches/finance" class="apple-action-circle" aria-label="Open Financial Mathematics">
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+            </div>
+          </div>
+
+          <div class="syllabus-module-card apple-glass-card">
+            <div class="syllabus-module-badge">
+              <span class="syllabus-module-week">Wk 7–8</span>
+              <div class="apple-icon-squircle" aria-hidden="true">
+                <Grid3X3 size={18} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div class="syllabus-module-body">
+              <strong class="syllabus-module-title">Module 4: Matrices &amp; Systems</strong>
+              <p class="syllabus-module-desc">Systems of linear equations, Gauss-Jordan elimination, matrix algebra, matrix inverses, and input-output analysis.</p>
+              <div class="syllabus-module-links">
+                <a href="/workbenches/linear">Workbench →</a>
+                <a href="/modules/linear">Examples</a>
+                <a href="/study">Practice</a>
+              </div>
+            </div>
+            <div class="syllabus-module-arrow">
+              <a href="/workbenches/linear" class="apple-action-circle" aria-label="Open Matrices & Systems">
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+            </div>
+          </div>
+
+          <div class="syllabus-module-card apple-glass-card">
+            <div class="syllabus-module-badge">
+              <span class="syllabus-module-week">Wk 9–10</span>
+              <div class="apple-icon-squircle" aria-hidden="true">
+                <Network size={18} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div class="syllabus-module-body">
+              <strong class="syllabus-module-title">Module 5: Applied Models &amp; Optimization</strong>
+              <p class="syllabus-module-desc">Graphical linear programming, Simplex algorithm, zero-sum matrix games, and Markov transition chains.</p>
+              <div class="syllabus-module-links">
+                <a href="/workbenches/applications">Workbench →</a>
+                <a href="/modules/applications">Examples</a>
+                <a href="/study">Practice</a>
+              </div>
+            </div>
+            <div class="syllabus-module-arrow">
+              <a href="/workbenches/applications" class="apple-action-circle" aria-label="Open Applied Models">
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <aside class="syllabus-sidebar">
+          <div class="syllabus-progress-card apple-glass-card">
+            <h3>Your Progress</h3>
+            <div class="syllabus-donut-container">
+              <svg class="syllabus-donut-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#e4e4e7" stroke-width="8" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#111111" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" />
+              </svg>
+              <div class="syllabus-donut-center">
+                <span class="syllabus-donut-pct">0%</span>
+                <span class="syllabus-donut-sub">Not Started</span>
+              </div>
+            </div>
+            <p class="syllabus-progress-text">0 of 5 modules completed. Start with Module 1 to begin tracking your study progress.</p>
+          </div>
+
+          <div class="syllabus-resources-card apple-glass-card">
+            <h3>Course Resources</h3>
+            <div class="syllabus-resource-list">
+              <a class="syllabus-resource-item" href="/reference">
+                <div class="syllabus-resource-item-left">
+                  <FileText size={16} strokeWidth={1.8} />
+                  <div>
+                    <strong>Lecture Notes</strong>
+                    <span>Summaries for all 5 modules</span>
+                  </div>
+                </div>
+                <ArrowRight size={13} strokeWidth={2} />
+              </a>
+
+              <a class="syllabus-resource-item" href="/course">
+                <div class="syllabus-resource-item-left">
+                  <Sparkles size={16} strokeWidth={1.8} />
+                  <div>
+                    <strong>Interactive Examples</strong>
+                    <span>100+ visual models &amp; sandboxes</span>
+                  </div>
+                </div>
+                <ArrowRight size={13} strokeWidth={2} />
+              </a>
+
+              <a class="syllabus-resource-item" href="/study">
+                <div class="syllabus-resource-item-left">
+                  <GraduationCap size={16} strokeWidth={1.8} />
+                  <div>
+                    <strong>Problem Sets</strong>
+                    <span>Graded practice with step feedback</span>
+                  </div>
+                </div>
+                <ArrowRight size={13} strokeWidth={2} />
+              </a>
+
+              <a class="syllabus-resource-item" href="/workbenches/applications">
+                <div class="syllabus-resource-item-left">
+                  <Network size={16} strokeWidth={1.8} />
+                  <div>
+                    <strong>Real-World Applications</strong>
+                    <span>Case studies across networks &amp; finance</span>
+                  </div>
+                </div>
+                <ArrowRight size={13} strokeWidth={2} />
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="syllabus-banner-cta apple-glass-card">
+        <div class="syllabus-banner-copy">
+          <strong>Ready to begin?</strong>
+          <p>Start with Propositional Logic and explore how statements and truth tables work together.</p>
+        </div>
+        <a class="apple-btn-black" href="/workbenches/logic">
+          Start Module 1 <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
+        </a>
+      </div>
     </section>
 
     {/* Full-Width Companion Bar */}
