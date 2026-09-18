@@ -1801,7 +1801,7 @@ body {
   border-radius: 999px;
   font-size: 0.88rem;
   font-weight: 600;
-  color: #71717a;
+  color: #52525b;
   cursor: pointer;
   transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }

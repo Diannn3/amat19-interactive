@@ -13,7 +13,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | T00 | COMMITTED | e81947a | blocked by baseline browser debt | Neutral glass mobile nav + matching More sheet + regression contract |
 | B01 | COMMITTED | 8475a39 | pending | Align cross-browser tests with responsive/region semantics uncovered by T00 CI |
 | B02 | COMMITTED | c147485 | pending | Use real toggle-group semantics for workbench mode selectors |
-| B03 | COMMITTED | this commit | pending | Restore 44px topbar search touch target after visual redesign |
+| B03 | COMMITTED | a1de286 | pending | Restore 44px topbar search touch target after visual redesign |
+| B04 | COMMITTED | this commit | pending | Raise inactive workbench mode contrast above WCAG AA threshold |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
