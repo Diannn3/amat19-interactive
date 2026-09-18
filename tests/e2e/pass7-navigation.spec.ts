@@ -173,10 +173,46 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
 
 test('mobile navigation keeps the four core destinations and More visible', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
-  await page.goto('/');
+  await page.goto('/study');
   const mobile = page.getByRole('navigation', { name: 'Mobile navigation' });
   await expect(mobile.locator('.mobile-nav-link')).toHaveCount(4);
   for (const label of ['Study', 'Course', 'Progress', 'More']) {
     await expect(mobile.getByText(label, { exact: true })).toBeVisible();
   }
+
+  await expect(mobile.getByRole('link', { name: 'Study', exact: true })).toHaveAttribute('aria-current', 'page');
+
+  const metrics = await mobile.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const links = Array.from(element.querySelectorAll<HTMLElement>('.mobile-nav-link'));
+    const boxes = links.map((link) => link.getBoundingClientRect());
+    const viewportWidth = document.documentElement.clientWidth;
+    const rect = element.getBoundingClientRect();
+
+    return {
+      backgroundColor: style.backgroundColor,
+      backdropFilter: style.backdropFilter || style.webkitBackdropFilter,
+      height: rect.height,
+      left: rect.left,
+      right: rect.right,
+      viewportWidth,
+      allTargetsAtLeast44: boxes.every((box) => box.width >= 44 && box.height >= 44),
+      labelsFit: links.every((link) => link.scrollWidth <= link.clientWidth + 1),
+    };
+  });
+
+  expect(metrics.backgroundColor).not.toBe('rgb(36, 5, 9)');
+  expect(metrics.backgroundColor).not.toBe('rgba(36, 5, 9, 1)');
+  expect(metrics.backdropFilter).not.toBe('none');
+  expect(metrics.height).toBeLessThanOrEqual(72);
+  expect(metrics.left).toBeGreaterThanOrEqual(0);
+  expect(metrics.right).toBeLessThanOrEqual(metrics.viewportWidth);
+  expect(metrics.allTargetsAtLeast44).toBe(true);
+  expect(metrics.labelsFit).toBe(true);
+
+  await mobile.locator('.mobile-more-menu > summary').click();
+  const panel = mobile.locator('.mobile-more-menu__panel');
+  await expect(panel).toBeVisible();
+  const panelBackground = await panel.evaluate((element) => getComputedStyle(element).backgroundColor);
+  expect(panelBackground).not.toBe('rgb(46, 8, 13)');
 });

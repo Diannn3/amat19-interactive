@@ -3077,3 +3077,159 @@ button[type="submit"]:hover {
   scroll-margin-top: 5rem !important;
 }
 
+
+
+/* ==========================================================================
+   T00 — Mobile navigation visual integration
+   Neutral optical glass that belongs to the current monochrome interface.
+   ========================================================================== */
+@media (max-width: 900px) {
+  .mobile-nav {
+    inset: auto 0.75rem calc(0.625rem + env(safe-area-inset-bottom)) 0.75rem !important;
+    height: 4rem !important;
+    gap: 0.125rem !important;
+    padding: 0.3rem 0.35rem !important;
+    border: 1px solid rgba(9, 9, 11, 0.08) !important;
+    border-radius: 1.35rem !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    box-shadow:
+      0 12px 36px rgba(15, 23, 42, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+  }
+
+  .mobile-nav-link {
+    min-height: 44px !important;
+    border: 1px solid transparent !important;
+    border-radius: 1rem !important;
+    color: #71717a !important;
+    font-size: 0.62rem !important;
+    font-weight: 650 !important;
+    letter-spacing: -0.01em !important;
+    transition:
+      background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 180ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .mobile-nav-link:hover {
+    background: rgba(9, 9, 11, 0.035) !important;
+    color: #27272a !important;
+  }
+
+  .mobile-nav-link.is-active {
+    border-color: rgba(9, 9, 11, 0.06) !important;
+    background: rgba(9, 9, 11, 0.055) !important;
+    color: #09090b !important;
+  }
+
+  .mobile-nav-link.is-active::after {
+    right: calc(50% - 0.8rem) !important;
+    bottom: 0.2rem !important;
+    left: calc(50% - 0.8rem) !important;
+    height: 2px !important;
+    background: #09090b !important;
+  }
+
+  .mobile-nav-link .nav-icon {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+
+  .mobile-nav-link .nav-icon svg {
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+    stroke-width: 1.8;
+  }
+
+  .mobile-nav-link:focus-visible,
+  .mobile-more-menu__link:focus-visible,
+  .mobile-more-menu__action:focus-visible {
+    outline: 2px solid #09090b !important;
+    outline-offset: 2px !important;
+  }
+
+  .mobile-more-menu__panel {
+    bottom: calc(100% + 0.7rem) !important;
+    border: 1px solid rgba(9, 9, 11, 0.09) !important;
+    border-radius: 1.15rem !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(180%) !important;
+    backdrop-filter: blur(26px) saturate(180%) !important;
+    box-shadow:
+      0 20px 50px rgba(15, 23, 42, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
+  }
+
+  .mobile-more-menu__link,
+  .mobile-more-menu__action {
+    min-height: 44px !important;
+    border: 1px solid transparent !important;
+    border-radius: 0.85rem !important;
+    color: #52525b !important;
+    background: transparent !important;
+  }
+
+  .mobile-more-menu__link:hover,
+  .mobile-more-menu__link[aria-current="page"],
+  .mobile-more-menu__action:hover,
+  .mobile-more-menu__action:focus-visible {
+    border-color: rgba(9, 9, 11, 0.06) !important;
+    background: rgba(9, 9, 11, 0.045) !important;
+    color: #09090b !important;
+    box-shadow: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .mobile-nav {
+    inset-inline: 0.5rem !important;
+    padding-inline: 0.25rem !important;
+  }
+
+  .mobile-nav-link {
+    font-size: 0.59rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-link {
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) and (max-width: 900px) {
+  .mobile-nav,
+  .mobile-more-menu__panel {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-nav-link,
+  .mobile-more-menu__link,
+  .mobile-more-menu__action {
+    color: CanvasText !important;
+  }
+
+  .mobile-nav-link.is-active,
+  .mobile-more-menu__link[aria-current="page"] {
+    border-color: Highlight !important;
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+
+  .mobile-nav-link.is-active::after {
+    background: HighlightText !important;
+  }
+
+  .mobile-nav-link:focus-visible,
+  .mobile-more-menu__link:focus-visible,
+  .mobile-more-menu__action:focus-visible {
+    outline-color: Highlight !important;
+  }
+}

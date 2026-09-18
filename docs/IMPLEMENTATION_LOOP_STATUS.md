@@ -1,6 +1,6 @@
 # AMAT 19 Implementation Loop Status
 
-Branch: `loop/00-guardrails`
+Active branch: `loop/01-truthful-surfaces`
 Base: `928d445ab84fd752a6e1523fc9fc0ef2888a3f36`
 Started: 2026-09-19
 
@@ -10,7 +10,7 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 |---|---|---|---|---|
 | G00a | COMMITTED | be37a427 | pending | Atomic execution plan committed |
 | G00b | COMMITTED | pending | pending | Status ledger finalized after dependency-security refresh |
-| T00 | PLANNED | — | — | Rebuild mobile bottom navigation first |
+| T00 | COMMITTED | this commit | pending | Neutral glass mobile nav + matching More sheet + regression contract |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
@@ -39,3 +39,7 @@ Do not move a task to `VERIFIED` until its pushed code has passed the applicable
 ## Phase 00 CI note
 
 The initial loop branch exposed dependency-audit failures before learner-visible work began. Narrow dependency-security commits were applied on this branch. This ledger commit intentionally follows those changes so the normal user-authored push CI can verify the patched branch tip before T00 begins.
+
+## T00 implementation note
+
+The existing semantic mobile navigation and route logic were preserved. T00 changes only the visual-system integration and its regression contract: neutral glass surface, neutral active/inactive states, matching More sheet, 44px minimum targets, safe viewport fit, forced-colors fallback, and reduced-motion behavior.
