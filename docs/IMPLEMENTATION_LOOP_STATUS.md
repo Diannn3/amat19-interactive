@@ -11,8 +11,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | G00a | COMMITTED | be37a427 | pending | Atomic execution plan committed |
 | G00b | COMMITTED | pending | pending | Status ledger finalized after dependency-security refresh |
 | T00 | COMMITTED | e81947a | blocked by baseline browser debt | Neutral glass mobile nav + matching More sheet + regression contract |
-| B01 | COMMITTED | this commit | pending | Align cross-browser tests with responsive/region semantics uncovered by T00 CI |
-| B02 | IN_PROGRESS | — | — | Repair shared workbench tab semantics and contrast uncovered by Axe |
+| B01 | COMMITTED | 8475a39 | pending | Align cross-browser tests with responsive/region semantics uncovered by T00 CI |
+| B02 | COMMITTED | this commit | pending | Use real toggle-group semantics and accessible inactive contrast for workbench mode selectors |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
@@ -45,3 +45,7 @@ The initial loop branch exposed dependency-audit failures before learner-visible
 ## T00 implementation note
 
 The existing semantic mobile navigation and route logic were preserved. T00 changes only the visual-system integration and its regression contract: neutral glass surface, neutral active/inactive states, matching More sheet, 44px minimum targets, safe viewport fit, forced-colors fallback, and reduced-motion behavior.
+
+## Baseline compatibility repair note
+
+B02 keeps the existing mode selectors as button groups rather than pretending they implement the full ARIA tab interaction model. Each button now exposes its selected state with `aria-pressed`, and inactive mode labels use a darker neutral that clears the WCAG contrast failure reported by Axe.

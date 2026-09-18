@@ -331,10 +331,11 @@ export default function MoneyTimelineWorkbench() {
           Explore time value of money, compound interest, annuities, and more.
         </p>
 
-        <div className="prob-mode-bar" role="tablist" aria-label="Finance mode selection">
+        <div className="prob-mode-bar" role="group" aria-label="Finance mode selection">
           <button 
             type="button" 
             className={`prob-mode-pill ${modeTab === 'compound' ? 'is-active' : ''}`}
+            aria-pressed={modeTab === 'compound'}
             onClick={() => setModeTab('compound')}
           >
             Compound Interest
@@ -342,6 +343,7 @@ export default function MoneyTimelineWorkbench() {
           <button 
             type="button" 
             className={`prob-mode-pill ${modeTab === 'annuity' ? 'is-active' : ''}`}
+            aria-pressed={modeTab === 'annuity'}
             onClick={() => setModeTab('annuity')}
           >
             Annuity
