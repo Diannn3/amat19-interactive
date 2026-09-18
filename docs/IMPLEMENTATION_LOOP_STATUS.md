@@ -14,7 +14,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B01 | COMMITTED | 8475a39 | pending | Align cross-browser tests with responsive/region semantics uncovered by T00 CI |
 | B02 | COMMITTED | c147485 | pending | Use real toggle-group semantics for workbench mode selectors |
 | B03 | COMMITTED | a1de286 | pending | Restore 44px topbar search touch target after visual redesign |
-| B04 | COMMITTED | this commit | pending | Raise inactive workbench mode contrast above WCAG AA threshold |
+| B04 | COMMITTED | fda6b4c | pending | Raise inactive workbench mode contrast above WCAG AA threshold |
+| B05 | COMMITTED | this commit | pending | Keep truth-table core test aligned with intentionally compact mobile presentation |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |

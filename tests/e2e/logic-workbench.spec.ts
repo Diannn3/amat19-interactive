@@ -37,7 +37,9 @@ test('@core Logic & Proof opens on a complete exact truth table', async ({ page 
   await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('table');
   await expect(workbench.getByRole('region', { name: 'See every truth value.' })).toBeVisible();
   await expect(workbench.getByLabel('Logic expression')).toHaveValue('P -> Q');
-  await expect(workbench.getByRole('status')).toContainText('contingent');
+  if ((page.viewportSize()?.width ?? 1280) > 640) {
+    await expect(workbench.getByRole('status')).toContainText('contingent');
+  }
   await expect(workbench.getByRole('table', { name: 'Truth table for P → Q' }).locator('tbody tr')).toHaveCount(4);
 
   const visiblePrimaryControls = workbench.locator('[data-primary-control]:visible');
