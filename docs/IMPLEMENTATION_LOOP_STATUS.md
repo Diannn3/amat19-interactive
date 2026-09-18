@@ -1,0 +1,37 @@
+# AMAT 19 Implementation Loop Status
+
+Branch: `loop/00-guardrails`
+Base: `928d445ab84fd752a6e1523fc9fc0ef2888a3f36`
+Started: 2026-09-19
+
+Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VERIFIED` · `SUPERSEDED`
+
+| ID | Status | Commit | CI | Notes |
+|---|---|---|---|---|
+| G00a | COMMITTED | be37a427 | pending | Atomic execution plan committed |
+| G00b | IN_PROGRESS | — | — | Status ledger |
+| T00 | PLANNED | — | — | Rebuild mobile bottom navigation first |
+| G01 | PLANNED | — | — | Reject noncanonical workbench links |
+| G02 | PLANNED | — | — | Production internal-link crawl |
+| G03 | PLANNED | — | — | Hard-coded learner-state guard |
+| G04 | PLANNED | — | — | Canonical route helpers |
+| G05 | PLANNED | — | — | UI/behavior baseline |
+| T01 | PLANNED | — | — | Fix Study subject routes |
+| T02 | PLANNED | — | — | Remove fabricated Study progress |
+| T03 | PLANNED | — | — | Remove fake resume session |
+| T04 | PLANNED | — | — | Promote adaptive Study queue |
+| T05 | PLANNED | — | — | Remove inactive Study resource toolbar |
+| T06 | PLANNED | — | — | Derive Study resource metadata |
+| T07 | PLANNED | — | — | Remove static Course progress |
+| T08 | PLANNED | — | — | Suggested Study Path wording |
+| T09 | PLANNED | — | — | Remove unsourced week numbers |
+| T10 | PLANNED | — | — | Remove inactive Course view toggle |
+| T11 | PLANNED | — | — | Workbench directory model |
+| T12 | PLANNED | — | — | Course search |
+| T13 | PLANNED | — | — | Course filters |
+| T14 | PLANNED | — | — | Navigation IA alignment |
+| T15 | PLANNED | — | — | Truthful-surfaces close |
+
+## Rule
+
+Do not move a task to `VERIFIED` until its pushed code has passed the applicable repository verification and GitHub CI checks. If a task's CI fails, keep that task active and fix it before beginning another learner-visible feature.
