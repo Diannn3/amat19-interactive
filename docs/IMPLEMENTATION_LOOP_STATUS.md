@@ -12,7 +12,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | G00b | COMMITTED | pending | pending | Status ledger finalized after dependency-security refresh |
 | T00 | COMMITTED | e81947a | blocked by baseline browser debt | Neutral glass mobile nav + matching More sheet + regression contract |
 | B01 | COMMITTED | 8475a39 | pending | Align cross-browser tests with responsive/region semantics uncovered by T00 CI |
-| B02 | COMMITTED | this commit | pending | Use real toggle-group semantics and accessible inactive contrast for workbench mode selectors |
+| B02 | COMMITTED | c147485 | pending | Use real toggle-group semantics for workbench mode selectors |
+| B03 | COMMITTED | this commit | pending | Restore 44px topbar search touch target after visual redesign |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
