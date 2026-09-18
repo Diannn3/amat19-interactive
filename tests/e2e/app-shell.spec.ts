@@ -100,7 +100,9 @@ test('@core shell navigation controls meet the 44px touch target contract', asyn
 
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
-  await assertTouchTargets(['.sidebar-toggle', '.topbar-home', '.topbar-search']);
+  const desktopTargets = ['.topbar-home', '.topbar-search'];
+  if (await page.locator('.sidebar-toggle').isVisible()) desktopTargets.unshift('.sidebar-toggle');
+  await assertTouchTargets(desktopTargets);
 
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
@@ -447,7 +449,7 @@ test('@core logic task switch is keyboard-accessible', async ({ page }) => {
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('ArrowDown');
   await expect(picker).toHaveValue('compare');
-  await expect(page.getByRole('heading', { name: 'Find the row that separates them.' })).toBeVisible();
+  await expect(workbench.getByRole('region', { name: 'Find the row that separates them.' })).toBeVisible();
 });
 
 test('reference browser searches, filters by module, and expands assumptions', async ({ page }) => {

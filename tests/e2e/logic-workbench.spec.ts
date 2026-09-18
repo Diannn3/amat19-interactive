@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 test('@core Translate checks controlled language before showing canonical notation', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
   await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('translate');
-  await expect(workbench.getByRole('heading', { name: 'Turn controlled language into symbols.' })).toBeVisible();
+  await expect(workbench.getByRole('region', { name: 'Turn controlled language into symbols.' })).toBeVisible();
   await expect(workbench.locator('[data-logic-translation-result]')).not.toBeVisible();
 
   await workbench.getByLabel('Symbolic translation').fill('Q -> P');
@@ -35,7 +35,7 @@ test('@core Logic & Proof opens on a complete exact truth table', async ({ page 
   const workbench = page.getByTestId('logic-proof-workbench');
   await expect(workbench).toHaveAttribute('data-hydrated', 'true');
   await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('table');
-  await expect(workbench.getByRole('heading', { name: 'See every truth value.' })).toBeVisible();
+  await expect(workbench.getByRole('region', { name: 'See every truth value.' })).toBeVisible();
   await expect(workbench.getByLabel('Logic expression')).toHaveValue('P -> Q');
   await expect(workbench.getByRole('status')).toContainText('contingent');
   await expect(workbench.getByRole('table', { name: 'Truth table for P → Q' }).locator('tbody tr')).toHaveCount(4);

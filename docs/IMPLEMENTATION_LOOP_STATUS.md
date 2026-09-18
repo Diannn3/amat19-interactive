@@ -10,7 +10,9 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 |---|---|---|---|---|
 | G00a | COMMITTED | be37a427 | pending | Atomic execution plan committed |
 | G00b | COMMITTED | pending | pending | Status ledger finalized after dependency-security refresh |
-| T00 | COMMITTED | this commit | pending | Neutral glass mobile nav + matching More sheet + regression contract |
+| T00 | COMMITTED | e81947a | blocked by baseline browser debt | Neutral glass mobile nav + matching More sheet + regression contract |
+| B01 | COMMITTED | this commit | pending | Align cross-browser tests with responsive/region semantics uncovered by T00 CI |
+| B02 | IN_PROGRESS | — | — | Repair shared workbench tab semantics and contrast uncovered by Axe |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
