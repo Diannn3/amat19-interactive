@@ -34,7 +34,7 @@ jobs:
 
       - name: Refresh patched Astro dependency graph
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
           pnpm --filter @amat19/web update astro@7.2.8
 
       - name: Verify patched dependency graph
@@ -47,7 +47,7 @@ jobs:
           rm .github/workflows/refresh-security-lock.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps/web/package.json pnpm-lock.yaml .github/workflows/refresh-security-lock.yml
+          git add package.json apps/web/package.json pnpm-lock.yaml .github/workflows/refresh-security-lock.yml
           git diff --cached --quiet && exit 1
-          git commit -m "chore(deps): patch Astro security advisories"
+          git commit -m "chore(deps): patch framework security advisories"
           git push origin HEAD:loop/00-guardrails
