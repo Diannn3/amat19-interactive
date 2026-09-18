@@ -9,7 +9,7 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | ID | Status | Commit | CI | Notes |
 |---|---|---|---|---|
 | G00a | COMMITTED | be37a427 | pending | Atomic execution plan committed |
-| G00b | IN_PROGRESS | — | — | Status ledger |
+| G00b | COMMITTED | pending | pending | Status ledger finalized after dependency-security refresh |
 | T00 | PLANNED | — | — | Rebuild mobile bottom navigation first |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
@@ -35,3 +35,7 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 ## Rule
 
 Do not move a task to `VERIFIED` until its pushed code has passed the applicable repository verification and GitHub CI checks. If a task's CI fails, keep that task active and fix it before beginning another learner-visible feature.
+
+## Phase 00 CI note
+
+The initial loop branch exposed dependency-audit failures before learner-visible work began. Narrow dependency-security commits were applied on this branch. This ledger commit intentionally follows those changes so the normal user-authored push CI can verify the patched branch tip before T00 begins.
