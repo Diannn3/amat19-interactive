@@ -65,7 +65,7 @@ test('Money Timeline keeps its primary object and controls reachable on a 375px 
     workbench.getByRole('combobox', { name: 'Choose a task' }),
     workbench.getByRole('button', { name: 'Check step', exact: true }),
   ]) {
-    await control.scrollIntoViewIfNeeded();
+    await control.evaluate((element) => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
     const box = await control.boundingBox();
     const dock = await page.locator('.mobile-nav').boundingBox();
     expect(box).not.toBeNull();

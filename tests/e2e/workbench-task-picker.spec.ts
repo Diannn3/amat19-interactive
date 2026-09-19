@@ -120,7 +120,7 @@ test.describe('Focused workbench task picker', () => {
     await page.getByRole('combobox', { name: 'Choose a task' }).selectOption('translate');
 
     await expect(page.locator('.logic-workbench__table-scroll')).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: 'Turn controlled language into symbols.' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Turn controlled language into symbols.' })).toBeVisible();
   });
 
   test('switching tasks clears stale feedback and result disclosure', async ({ page }) => {

@@ -91,7 +91,7 @@ test('Row Operations Coach keeps the matrix and row check reachable above the mo
   expect(matrixBox!.x + matrixBox!.width).toBeLessThanOrEqual(376);
 
   const check = coach.getByRole('button', { name: 'Check row', exact: true });
-  await check.scrollIntoViewIfNeeded();
+  await check.evaluate((element) => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
   const checkBox = await check.boundingBox();
   const dockBox = await page.locator('.mobile-nav').boundingBox();
   expect(checkBox).not.toBeNull();

@@ -22,7 +22,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B09 | COMMITTED | 5bd666c | pending | Keep production-only PWA tests out of the Astro dev browser matrix |
 | B10 | COMMITTED | afc82eb | pending | Replace obsolete above-fold geometry with reachability, dock-occlusion, and overflow contracts |
 | B11 | COMMITTED | 9741462 | chromium residuals | Align Money Timeline model-switch tests with the canonical task picker |
-| B12 | COMMITTED | this commit | pending | Repair final contrast misses, fixed-dock scroll clearance, and topbar More dismissal |
+| B12 | COMMITTED | 1aa1ff5 | pending | Repair final contrast misses, fixed-dock scroll clearance, and topbar More dismissal |
+| B13 | COMMITTED | this commit | pending | Align semantic and fixed-dock reachability assertions with current accessible surfaces |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
@@ -87,3 +88,7 @@ The Apple instrument redesign intentionally makes several workbenches vertically
 ## B12 Chromium product repair
 
 The converged Chromium run reduced the baseline to six root causes. B12 fixes the product-side ones: the topbar shortcut, command-search hint, and page-intro lede now clear the reported WCAG AA contrast misses; mobile scroll containers advertise clearance for the fixed navigation dock; and the desktop topbar More menu now dismisses on Escape or outside pointer interaction while restoring focus on keyboard dismissal.
+
+## B13 final test-contract cleanup
+
+Two residual assertions were semantically stale after the visual/accessibility refactor: the Home heading contains decorative visual words but exposes the intended accessible name, and the Logic translation surface is a labelled region rather than a nested heading. Mobile dock checks now center the target control before measuring occlusion, which verifies intentional reachability while preserving the 44px and no-overflow requirements.
