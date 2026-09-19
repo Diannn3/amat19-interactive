@@ -38,8 +38,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | T06 | VERIFIED | 42bf96e | green on 35418782252 | Replace mock resource counts with registry-derived current-skill metadata |
 | T07 | VERIFIED | 7e11fce | green on 35419174705 | Remove fabricated Course progress card and add regression guard |
 | T08 | VERIFIED | f8741f8 | green on 35419585600 | Label the five-module route as an app-organized Suggested Study Path |
-| T09 | COMMITTED | this commit | pending | Replace unsourced week ranges with neutral Step 1–5 labels |
-| T10 | PLANNED | — | — | Remove inactive Course view toggle |
+| T09 | VERIFIED | 894f73c | green on 35420843619 | Replace unsourced week ranges with neutral Step 1–5 labels |
+| T10 | COMMITTED | this commit | pending | Remove inactive Roadmap/List View toggle and dead styles |
 | T11 | PLANNED | — | — | Workbench directory model |
 | T12 | PLANNED | — | — | Course search |
 | T13 | PLANNED | — | — | Course filters |
@@ -133,3 +133,7 @@ The Course page no longer presents the app-authored sequence as `Course Syllabus
 ## T09 neutral sequence labels
 
 The Suggested Study Path keeps a visible sequence, but the five badges now read `Step 1` through `Step 5` instead of claiming `Wk 1–2` through `Wk 9–10`. The architecture audit rejects `Wk ` labels in the Course source, and Playwright verifies the neutral sequence.
+
+## T10 inactive Course view switch removal
+
+The Suggested Study Path no longer exposes a Roadmap/List View switch that has no implementation behind it. The markup and dedicated toggle CSS were removed together. Architecture and browser regressions reject the retired inert control contract.

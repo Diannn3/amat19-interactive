@@ -1505,33 +1505,6 @@ body {
   margin: 0;
 }
 
-.course-syllabus-toggle {
-  display: inline-flex;
-  padding: 0.25rem;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  gap: 0.25rem;
-}
-
-.course-syllabus-toggle button {
-  border: none;
-  background: transparent;
-  padding: 0.45rem 1.15rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #52525b;
-  cursor: pointer;
-  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.course-syllabus-toggle button.is-active {
-  background: #ffffff;
-  color: #09090b;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
 .course-syllabus-layout {
   display: grid;
   grid-template-columns: 1fr 340px;

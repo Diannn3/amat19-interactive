@@ -49,6 +49,7 @@ const INERT_STUDY_CONTROLS = ['study-toolbar', 'Search resources', 'Resource fil
 const UNSOURCED_STUDY_CATALOG = ['120+ problems', '12 reviewers', '8 sheets', '24 saved', '28 problems', '36 problems', '25 problems', '31 problems'];
 const FABRICATED_COURSE_STATE = ['<span class="syllabus-donut-pct">0%</span>', '<span class="syllabus-donut-sub">Not Started</span>', '0 of 5 modules completed'];
 const UNSOURCED_COURSE_FRAMING = ['Course Syllabus.', 'A 10-week journey', 'follow the syllabus', 'Wk '];
+const INERT_COURSE_CONTROLS = ['course-syllabus-toggle', 'Syllabus view mode', 'List View'];
 const webSourceFiles = await filesUnder('apps/web/src');
 for (const file of webSourceFiles) {
   const source = await readFile(path.join(ROOT, file), 'utf8');
@@ -73,6 +74,9 @@ for (const file of webSourceFiles) {
     }
     for (const framing of UNSOURCED_COURSE_FRAMING) {
       if (source.includes(framing)) violations.push(`${file}: unsourced Course pacing/framing found: ${framing}`);
+    }
+    for (const inert of INERT_COURSE_CONTROLS) {
+      if (source.includes(inert)) violations.push(`${file}: inactive Course control found: ${inert}`);
     }
   }
 }
@@ -123,4 +127,5 @@ console.log('- Study source contains no known inert catalog controls');
 console.log('- Study browse metadata is free of the known unsourced catalog counts');
 console.log('- Course source contains no known fabricated learner-progress state');
 console.log('- Course path is not presented as an official syllabus, fixed 10-week schedule, or week-assigned sequence');
+console.log('- Course source contains no known inert syllabus view controls');
 console.log('- no dynamic JS evaluation, unsafe raw HTML rendering, or overlapping monolithic UI suites detected');

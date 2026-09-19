@@ -290,3 +290,11 @@ test('Course suggested path uses neutral sequence labels instead of week claims'
   }
   await expect(page.locator('main')).not.toContainText(/Wk\s+\d/);
 });
+
+
+test('Course suggested path does not expose an inactive view switch', async ({ page }) => {
+  await page.goto('/course');
+  await expect(page.locator('.course-syllabus-toggle')).toHaveCount(0);
+  await expect(page.getByRole('tablist', { name: 'Syllabus view mode' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'List View', exact: true })).toHaveCount(0);
+});
