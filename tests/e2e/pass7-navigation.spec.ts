@@ -262,3 +262,11 @@ test('Study browse catalog is registry-backed and exposes truthful skill counts'
   const body = await page.locator('body').innerText();
   expect(body).not.toMatch(/120\+ problems|12 reviewers|8 sheets|24 saved|28 problems|36 problems|25 problems|31 problems/);
 });
+
+
+test('Course page does not fabricate learner progress', async ({ page }) => {
+  await page.goto('/course');
+  await expect(page.locator('.syllabus-progress-card')).toHaveCount(0);
+  await expect(page.getByText('0 of 5 modules completed.', { exact: false })).toHaveCount(0);
+  await expect(page.getByText('Not Started', { exact: true })).toHaveCount(0);
+});

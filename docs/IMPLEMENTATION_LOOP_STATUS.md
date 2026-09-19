@@ -27,7 +27,7 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B14 | COMMITTED | this commit | pending | Preserve Developer-dialog trigger focus while topbar More is open |
 | G01 | VERIFIED | 7bdf84f | green on 35411830032 | Reject noncanonical singular /workbench/ links in learner-facing source |
 | G02 | PLANNED | — | — | Production internal-link crawl |
-| G03 | IN_PROGRESS | this commit | pending | Guard fabricated Study learner state, inert controls, and unsourced catalog counts |
+| G03 | IN_PROGRESS | this commit | pending | Guard fabricated Study and Course learner state plus inert/unsourced Study catalog UI |
 | G04 | PLANNED | — | — | Canonical route helpers |
 | G05 | PLANNED | — | — | UI/behavior baseline |
 | T01 | VERIFIED | 7bdf84f | green on 35411830032 | Derive Study subject routes from the canonical workbench registry |
@@ -35,8 +35,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | T03 | VERIFIED | 04042f5 | green on 35414698817 | Remove fake Study resume session and empty sidebar column |
 | T04 | VERIFIED | 5a431d0 | green on 35415107210 | Promote evidence-backed adaptive Study queue above browse content |
 | T05 | VERIFIED | de9fc27 | green on 35415495972 | Remove inactive Study resource tabs, search, and filter controls |
-| T06 | COMMITTED | this commit | pending | Replace mock resource counts with registry-derived current-skill metadata |
-| T07 | PLANNED | — | — | Remove static Course progress |
+| T06 | VERIFIED | 42bf96e | green on 35418782252 | Replace mock resource counts with registry-derived current-skill metadata |
+| T07 | COMMITTED | this commit | pending | Remove fabricated Course progress card and add regression guard |
 | T08 | PLANNED | — | — | Suggested Study Path wording |
 | T09 | PLANNED | — | — | Remove unsourced week numbers |
 | T10 | PLANNED | — | — | Remove inactive Course view toggle |
@@ -121,3 +121,7 @@ The Study page no longer presents tabs, a search field, or a Filter button that 
 ## T06 registry-backed Study browse catalog
 
 The Study browse area now renders directly from `currentCourseProfile.workbenches` and `skillGraph`. It contains all five canonical workbenches, including Applications, and reports only derived counts of current leaf skills. The previous unsourced problem/reviewer/formula/saved counts and resource-type cards are gone. Static and browser regressions now reject the known mock catalog claims.
+
+## T07 fabricated Course progress removal
+
+The Course map no longer displays a hard-coded `0%`, `Not Started`, or `0 of 5 modules completed` state. Until Course progress is backed by real local evidence, the syllabus sidebar contains only factual navigation/resources. Static and browser guards now reject the known fabricated Course progress contract.
