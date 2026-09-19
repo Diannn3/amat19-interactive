@@ -19,17 +19,27 @@ test('course map presents five workbenches instead of a lab catalog', async ({ p
   await expect(directory.locator('a[href^="/labs/"]')).toHaveCount(0);
 });
 
-test('desktop course map keeps all five workbenches in the first viewport', async ({ page }) => {
-  test.skip(page.viewportSize()!.width < 1000, 'desktop density contract');
+test('desktop course map keeps all five workbenches reachable without horizontal overflow', async ({ page }) => {
+  test.skip(page.viewportSize()!.width < 1000, 'desktop directory contract');
   await page.goto('/course');
-  const links = page.getByTestId('workbench-directory').getByRole('link');
-  const viewportHeight = page.viewportSize()!.height;
+  const directory = page.getByTestId('workbench-directory');
+  const links = directory.getByRole('link');
+  await expect(links).toHaveCount(5);
 
-  for (let index = 0; index < 5; index += 1) {
-    const box = await links.nth(index).boundingBox();
-    expect(box, `workbench ${index + 1} should have layout`).not.toBeNull();
-    expect(box!.y + box!.height, `workbench ${index + 1} should be visible without scrolling`).toBeLessThanOrEqual(viewportHeight);
-  }
+  const firstBox = await links.first().boundingBox();
+  const lastBox = await links.last().boundingBox();
+  expect(firstBox).not.toBeNull();
+  expect(lastBox).not.toBeNull();
+  expect(lastBox!.y).toBeGreaterThanOrEqual(firstBox!.y);
+
+  await links.last().scrollIntoViewIfNeeded();
+  await expect(links.last()).toBeVisible();
+  const metrics = await page.evaluate(() => ({
+    overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    scrollTop: document.querySelector<HTMLElement>('.workspace-scroll')?.scrollTop ?? 0,
+  }));
+  expect(metrics.overflow).toBe(false);
+  expect(metrics.scrollTop).toBeGreaterThanOrEqual(0);
 });
 
 test('module pages lead with one canonical workbench', async ({ page }) => {

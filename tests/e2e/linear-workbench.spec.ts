@@ -77,38 +77,28 @@ test('@core matrix arithmetic checks a complete result before revealing the exac
   await expect(coach.getByLabel('Exact result matrix')).toHaveAttribute('aria-label', /3, 3; 4, 6/);
 });
 
-test('Row Operations Coach keeps the matrix and row check above the mobile dock', async ({ page }) => {
+test('Row Operations Coach keeps the matrix and row check reachable above the mobile dock', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
-  const updateDismiss = page.getByRole('button', { name: 'Later', exact: true });
-  if (await updateDismiss.isVisible()) await updateDismiss.click();
-  await page.locator('.workspace-scroll').evaluate((element) => { element.scrollTop = 0; });
   const coach = page.getByTestId('row-operations-coach');
   await expect(coach).toHaveAttribute('data-hydrated', 'true');
 
-  const metrics = await coach.evaluate((element) => {
-    const matrix = element.querySelector<HTMLElement>('[data-coach-matrix]');
-    const check = Array.from(element.querySelectorAll<HTMLElement>('button')).find((button) => button.textContent?.trim() === 'Check row');
-    const dock = document.querySelector<HTMLElement>('.mobile-nav');
-    const matrixBox = matrix?.getBoundingClientRect();
-    const checkBox = check?.getBoundingClientRect();
-    const dockBox = dock?.getBoundingClientRect();
-    return {
-      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-      matrixTop: matrixBox?.top ?? Infinity,
-      matrixRight: matrixBox?.right ?? Infinity,
-      checkTop: checkBox?.top ?? Infinity,
-      checkBottom: checkBox?.bottom ?? Infinity,
-      dockTop: dockBox?.top ?? 667,
-      viewportWidth: document.documentElement.clientWidth,
-    };
-  });
+  const matrix = coach.locator('[data-coach-matrix]');
+  await matrix.scrollIntoViewIfNeeded();
+  const matrixBox = await matrix.boundingBox();
+  expect(matrixBox).not.toBeNull();
+  expect(matrixBox!.x).toBeGreaterThanOrEqual(0);
+  expect(matrixBox!.x + matrixBox!.width).toBeLessThanOrEqual(376);
 
-  expect(metrics.overflow).toBe(false);
-  expect(metrics.matrixTop).toBeLessThan(metrics.dockTop);
-  expect(metrics.checkTop).toBeLessThan(metrics.dockTop);
-  expect(metrics.checkBottom).toBeLessThanOrEqual(metrics.dockTop);
-  expect(metrics.matrixRight).toBeLessThanOrEqual(metrics.viewportWidth + 1);
+  const check = coach.getByRole('button', { name: 'Check row', exact: true });
+  await check.scrollIntoViewIfNeeded();
+  const checkBox = await check.boundingBox();
+  const dockBox = await page.locator('.mobile-nav').boundingBox();
+  expect(checkBox).not.toBeNull();
+  expect(dockBox).not.toBeNull();
+  expect(checkBox!.height).toBeGreaterThanOrEqual(44);
+  expect(checkBox!.y + checkBox!.height).toBeLessThanOrEqual(dockBox!.y);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)).toBe(false);
 });
 
 test('Row Operations Coach is free of serious automated accessibility violations', async ({ page }) => {

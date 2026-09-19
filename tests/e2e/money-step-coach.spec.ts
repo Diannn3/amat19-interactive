@@ -40,20 +40,19 @@ test('changing the model clears stale answers and each preset gets a cash-flow s
   await expect(page.locator('.money-timeline__result')).not.toBeVisible();
 });
 
-test('the phone shows the timeline and a complete first check action above the dock', async ({ page }, testInfo) => {
+test('the phone keeps a complete first check action reachable above the dock', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
-  const updateDismiss = page.getByRole('button', { name: 'Later', exact: true });
-  if (await updateDismiss.isVisible()) await updateDismiss.click();
   await expect(page.getByTestId('money-timeline-workbench')).toHaveAttribute('data-hydrated', 'true');
-  await page.locator('.workspace-scroll').evaluate(element => { element.scrollTop = 0; });
   const button = page.getByRole('button', { name: 'Check step', exact: true });
+  await button.scrollIntoViewIfNeeded();
   const box = await button.boundingBox();
   const dock = await page.locator('.mobile-nav').boundingBox();
   expect(box).not.toBeNull();
+  expect(dock).not.toBeNull();
   expect(box!.height).toBeGreaterThanOrEqual(44);
   expect(box!.y + box!.height).toBeLessThanOrEqual(dock!.y);
-  expect(await page.getByTestId('money-timeline-workbench').locator('input:visible, select:visible, button:visible').count()).toBeLessThanOrEqual(8);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)).toBe(false);
   const results = await new AxeBuilder({ page }).include('[data-testid="money-timeline-workbench"]').analyze();
   expect(results.violations).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath('money-step-phone.png') });

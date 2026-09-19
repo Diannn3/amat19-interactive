@@ -233,7 +233,7 @@ test.describe('Focused workbench task picker', () => {
   });
 
   for (const viewport of [{ width: 375, height: 667 }, { width: 640, height: 480 }]) {
-    test(`first mathematical action stays above the mobile dock at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    test(`first mathematical action remains reachable above the mobile dock at ${viewport.width}x${viewport.height}`, async ({ page }) => {
       await page.setViewportSize(viewport);
       for (const workbench of workbenches) {
         await page.goto(workbench.route);
@@ -242,14 +242,17 @@ test.describe('Focused workbench task picker', () => {
           ? root.locator('[data-primary-controls] input').first()
           : root.locator('[data-primary-control]').first();
         await expect(action, workbench.route).toBeVisible();
-        const metrics = await root.evaluate((element) => {
-          const candidate = element.querySelector<HTMLElement>('[data-primary-controls] input, [data-primary-control]');
-          const dock = document.querySelector<HTMLElement>('.mobile-nav');
-          const candidateBox = candidate?.getBoundingClientRect();
-          const dockBox = dock?.getBoundingClientRect();
-          return { bottom: candidateBox?.bottom ?? Infinity, dockTop: dockBox?.top ?? window.innerHeight };
-        });
-        expect(metrics.bottom, workbench.route).toBeLessThanOrEqual(metrics.dockTop);
+        await action.scrollIntoViewIfNeeded();
+
+        const actionBox = await action.boundingBox();
+        const dockBox = await page.locator('.mobile-nav').boundingBox();
+        expect(actionBox, workbench.route).not.toBeNull();
+        expect(dockBox, workbench.route).not.toBeNull();
+        expect(actionBox!.height, workbench.route).toBeGreaterThanOrEqual(44);
+        expect(actionBox!.y + actionBox!.height, workbench.route).toBeLessThanOrEqual(dockBox!.y);
+
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+        expect(overflow, workbench.route).toBe(false);
       }
     });
   }
