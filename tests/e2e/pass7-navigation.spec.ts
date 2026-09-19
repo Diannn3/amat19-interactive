@@ -270,3 +270,12 @@ test('Course page does not fabricate learner progress', async ({ page }) => {
   await expect(page.getByText('0 of 5 modules completed.', { exact: false })).toHaveCount(0);
   await expect(page.getByText('Not Started', { exact: true })).toHaveCount(0);
 });
+
+
+test('Course presents the roadmap as an app-organized suggested path', async ({ page }) => {
+  await page.goto('/course');
+  await expect(page.getByRole('heading', { name: 'Suggested Study Path.' })).toBeVisible();
+  await expect(page.getByText('This is not an official weekly schedule.', { exact: false })).toBeVisible();
+  await expect(page.getByText('Course Syllabus.', { exact: true })).toHaveCount(0);
+  await expect(page.locator('main')).not.toContainText('10-week journey');
+});

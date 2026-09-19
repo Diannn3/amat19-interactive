@@ -36,8 +36,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | T04 | VERIFIED | 5a431d0 | green on 35415107210 | Promote evidence-backed adaptive Study queue above browse content |
 | T05 | VERIFIED | de9fc27 | green on 35415495972 | Remove inactive Study resource tabs, search, and filter controls |
 | T06 | VERIFIED | 42bf96e | green on 35418782252 | Replace mock resource counts with registry-derived current-skill metadata |
-| T07 | COMMITTED | this commit | pending | Remove fabricated Course progress card and add regression guard |
-| T08 | PLANNED | — | — | Suggested Study Path wording |
+| T07 | VERIFIED | 7e11fce | green on 35419174705 | Remove fabricated Course progress card and add regression guard |
+| T08 | COMMITTED | this commit | pending | Label the five-module route as an app-organized Suggested Study Path |
 | T09 | PLANNED | — | — | Remove unsourced week numbers |
 | T10 | PLANNED | — | — | Remove inactive Course view toggle |
 | T11 | PLANNED | — | — | Workbench directory model |
@@ -125,3 +125,7 @@ The Study browse area now renders directly from `currentCourseProfile.workbenche
 ## T07 fabricated Course progress removal
 
 The Course map no longer displays a hard-coded `0%`, `Not Started`, or `0 of 5 modules completed` state. Until Course progress is backed by real local evidence, the syllabus sidebar contains only factual navigation/resources. Static and browser guards now reject the known fabricated Course progress contract.
+
+## T08 Suggested Study Path wording
+
+The Course page no longer presents the app-authored sequence as `Course Syllabus` or as a fixed `10-week journey`. It is now explicitly a Suggested Study Path: an app-organized five-module route that students can follow or leave, with copy stating that it is not an official weekly schedule. A static guard and browser regression protect that distinction.
