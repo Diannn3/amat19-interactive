@@ -33,9 +33,9 @@ test('changing the model clears stale answers and each preset gets a cash-flow s
   await page.getByLabel('Focal date', { exact: true }).fill('1');
   await expect(page.locator('.money-timeline__result')).not.toBeVisible();
   await expect(page.getByTestId('money-step-coach').getByLabel('Exponent')).toHaveValue('');
-  await page.getByRole('combobox', { name: 'Scenario', exact: true }).selectOption('annuity');
+  await page.getByRole('combobox', { name: 'Choose a task' }).selectOption('annuity');
   await expect(page.getByTestId('money-step-coach')).toContainText('Payment');
-  await page.getByRole('combobox', { name: 'Scenario', exact: true }).selectOption('bond');
+  await page.getByRole('combobox', { name: 'Choose a task' }).selectOption('bond');
   await expect(page.getByTestId('money-step-coach')).toContainText('Redemption');
   await expect(page.locator('.money-timeline__result')).not.toBeVisible();
 });

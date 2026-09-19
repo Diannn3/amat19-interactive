@@ -20,7 +20,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B07 | COMMITTED | 79030fb | pending | Restore desktop utility navigation in the sidebar-free topbar |
 | B08 | COMMITTED | 9bf0331 | pending | Migrate retired sidebar browser contracts to topbar/mobile navigation |
 | B09 | COMMITTED | 5bd666c | pending | Keep production-only PWA tests out of the Astro dev browser matrix |
-| B10 | COMMITTED | this commit | pending | Replace obsolete above-fold geometry with reachability, dock-occlusion, and overflow contracts |
+| B10 | COMMITTED | afc82eb | pending | Replace obsolete above-fold geometry with reachability, dock-occlusion, and overflow contracts |
+| B11 | COMMITTED | this commit | pending | Align Money Timeline model-switch tests with the canonical task picker |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
