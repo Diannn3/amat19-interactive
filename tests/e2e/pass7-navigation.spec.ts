@@ -279,3 +279,14 @@ test('Course presents the roadmap as an app-organized suggested path', async ({ 
   await expect(page.getByText('Course Syllabus.', { exact: true })).toHaveCount(0);
   await expect(page.locator('main')).not.toContainText('10-week journey');
 });
+
+
+test('Course suggested path uses neutral sequence labels instead of week claims', async ({ page }) => {
+  await page.goto('/course');
+  const labels = page.locator('.syllabus-module-week');
+  await expect(labels).toHaveCount(5);
+  for (let index = 0; index < 5; index += 1) {
+    await expect(labels.nth(index)).toHaveText(`Step ${index + 1}`);
+  }
+  await expect(page.locator('main')).not.toContainText(/Wk\s+\d/);
+});

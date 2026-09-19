@@ -37,8 +37,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | T05 | VERIFIED | de9fc27 | green on 35415495972 | Remove inactive Study resource tabs, search, and filter controls |
 | T06 | VERIFIED | 42bf96e | green on 35418782252 | Replace mock resource counts with registry-derived current-skill metadata |
 | T07 | VERIFIED | 7e11fce | green on 35419174705 | Remove fabricated Course progress card and add regression guard |
-| T08 | COMMITTED | this commit | pending | Label the five-module route as an app-organized Suggested Study Path |
-| T09 | PLANNED | — | — | Remove unsourced week numbers |
+| T08 | VERIFIED | f8741f8 | green on 35419585600 | Label the five-module route as an app-organized Suggested Study Path |
+| T09 | COMMITTED | this commit | pending | Replace unsourced week ranges with neutral Step 1–5 labels |
 | T10 | PLANNED | — | — | Remove inactive Course view toggle |
 | T11 | PLANNED | — | — | Workbench directory model |
 | T12 | PLANNED | — | — | Course search |
@@ -129,3 +129,7 @@ The Course map no longer displays a hard-coded `0%`, `Not Started`, or `0 of 5 m
 ## T08 Suggested Study Path wording
 
 The Course page no longer presents the app-authored sequence as `Course Syllabus` or as a fixed `10-week journey`. It is now explicitly a Suggested Study Path: an app-organized five-module route that students can follow or leave, with copy stating that it is not an official weekly schedule. A static guard and browser regression protect that distinction.
+
+## T09 neutral sequence labels
+
+The Suggested Study Path keeps a visible sequence, but the five badges now read `Step 1` through `Step 5` instead of claiming `Wk 1–2` through `Wk 9–10`. The architecture audit rejects `Wk ` labels in the Course source, and Playwright verifies the neutral sequence.
