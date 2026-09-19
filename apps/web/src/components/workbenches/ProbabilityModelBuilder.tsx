@@ -395,7 +395,8 @@ export default function ProbabilityModelBuilder() {
                 min="0.05" 
                 max="0.95" 
                 step="0.05" 
-                value={sliderA} 
+                value={sliderA}
+                aria-label="Probability of event A"
                 onChange={(e) => handleSliderA(Number(e.target.value))} 
               />
             </div>
@@ -411,7 +412,8 @@ export default function ProbabilityModelBuilder() {
                 min="0.05" 
                 max="0.95" 
                 step="0.05" 
-                value={sliderB} 
+                value={sliderB}
+                aria-label="Probability of event B"
                 onChange={(e) => handleSliderB(Number(e.target.value))} 
               />
             </div>
@@ -427,7 +429,8 @@ export default function ProbabilityModelBuilder() {
                 min="0.01" 
                 max={Math.min(sliderA, sliderB)} 
                 step="0.01" 
-                value={sliderAB} 
+                value={sliderAB}
+                aria-label="Probability of A intersection B"
                 onChange={(e) => handleSliderAB(Number(e.target.value))} 
               />
             </div>

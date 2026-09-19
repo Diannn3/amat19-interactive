@@ -15,7 +15,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B02 | COMMITTED | c147485 | pending | Use real toggle-group semantics for workbench mode selectors |
 | B03 | COMMITTED | a1de286 | pending | Restore 44px topbar search touch target after visual redesign |
 | B04 | COMMITTED | fda6b4c | pending | Raise inactive workbench mode contrast above WCAG AA threshold |
-| B05 | COMMITTED | this commit | pending | Keep truth-table core test aligned with intentionally compact mobile presentation |
+| B05 | COMMITTED | 78351fd | pending | Keep truth-table core test aligned with intentionally compact mobile presentation |
+| B06 | COMMITTED | this commit | pending | Name visual instrument controls and repair low-contrast context labels |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
@@ -52,3 +53,7 @@ The existing semantic mobile navigation and route logic were preserved. T00 chan
 ## Baseline compatibility repair note
 
 B02 keeps the existing mode selectors as button groups rather than pretending they implement the full ARIA tab interaction model. Each button now exposes its selected state with `aria-pressed`, and inactive mode labels use a darker neutral that clears the WCAG contrast failure reported by Axe.
+
+## B06 accessibility repair
+
+The September visual pass introduced several visually labelled controls whose labels were not programmatically associated with the inputs. B06 adds accessible names to the Probability sliders, Finance number/range/select controls, and Linear matrix cells, and raises low-contrast command/page context labels without changing mathematical behavior.

@@ -360,7 +360,8 @@ export default function MoneyTimelineWorkbench() {
             </div>
             <input 
               type="number" 
-              className="fin-number-input" 
+              className="fin-number-input"
+              aria-label="Principal amount"
               value={principal} 
               step="500" 
               min="100" 
@@ -368,7 +369,8 @@ export default function MoneyTimelineWorkbench() {
             />
             <input 
               type="range" 
-              className="prob-slider" 
+              className="prob-slider"
+              aria-label="Principal amount slider"
               min="1000" 
               max="100000" 
               step="1000" 
@@ -384,7 +386,8 @@ export default function MoneyTimelineWorkbench() {
             </div>
             <input 
               type="number" 
-              className="fin-number-input" 
+              className="fin-number-input"
+              aria-label="Annual interest rate"
               value={annualRate} 
               step="0.1" 
               min="0.1" 
@@ -393,7 +396,8 @@ export default function MoneyTimelineWorkbench() {
             />
             <input 
               type="range" 
-              className="prob-slider" 
+              className="prob-slider"
+              aria-label="Annual interest rate slider"
               min="0.5" 
               max="20" 
               step="0.5" 
@@ -409,7 +413,8 @@ export default function MoneyTimelineWorkbench() {
             </div>
             <input 
               type="number" 
-              className="fin-number-input" 
+              className="fin-number-input"
+              aria-label="Time in years"
               value={years} 
               min="1" 
               max="50" 
@@ -417,8 +422,9 @@ export default function MoneyTimelineWorkbench() {
             />
             <input 
               type="range" 
-              className="prob-slider" 
-              min="1" 
+              className="prob-slider"
+              aria-label="Time in years slider"
+              min="1"
               max="40" 
               step="1" 
               value={years} 
@@ -431,7 +437,8 @@ export default function MoneyTimelineWorkbench() {
               <span>Compounding Frequency (n)</span>
             </div>
             <select 
-              className="fin-select" 
+              className="fin-select"
+              aria-label="Compounding frequency"
               value={compoundingN} 
               onChange={(e) => setCompoundingN(Number(e.target.value))}
             >

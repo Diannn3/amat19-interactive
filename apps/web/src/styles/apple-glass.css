@@ -3233,3 +3233,12 @@ button[type="submit"]:hover {
     outline-color: Highlight !important;
   }
 }
+
+
+/* ==========================================================================
+   B06 — accessibility baseline after the Apple visual pass
+   ========================================================================== */
+.command-group__title,
+.page-context {
+  color: #52525b !important;
+}

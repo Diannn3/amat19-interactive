@@ -558,6 +558,7 @@ export default function RowOperationsCoach() {
                       key={`${r}-${c}`}
                       type="number"
                       className="matrix-cell-input"
+                      aria-label={`Matrix row ${r + 1}, column ${c + 1}`}
                       value={matrixCells[r]?.[c] ?? 0}
                       onChange={(e) => updateMatrixCell(r, c, Number(e.target.value))}
                     />
