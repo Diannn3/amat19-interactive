@@ -1,6 +1,14 @@
 ---
 import AppLayout from '../layouts/AppLayout.astro';
 import StudyDashboard from '../components/study/StudyDashboard';
+import { currentCourseProfile } from '@amat19/course-content';
+
+type WorkbenchId = (typeof currentCourseProfile.workbenches)[number]['id'];
+const workbenchHref = (id: WorkbenchId) => {
+  const workbench = currentCourseProfile.workbenches.find((item) => item.id === id);
+  if (!workbench) throw new Error(`Missing canonical workbench definition for ${id}`);
+  return workbench.href;
+};
 ---
 
 <AppLayout title="Practice & Resources">
@@ -159,7 +167,7 @@ import StudyDashboard from '../components/study/StudyDashboard';
 
         <!-- Row 2: Subject Domains -->
         <!-- Card 5: Logic -->
-        <a href="/workbench/logic-proof" class="apple-glass-card study-bento-card">
+        <a href={workbenchHref('logic')} class="apple-glass-card study-bento-card">
           <div>
             <div class="study-bento-card-top">
               <div class="apple-icon-squircle">
@@ -184,7 +192,7 @@ import StudyDashboard from '../components/study/StudyDashboard';
         </a>
 
         <!-- Card 6: Probability -->
-        <a href="/workbench/probability-models" class="apple-glass-card study-bento-card">
+        <a href={workbenchHref('probability')} class="apple-glass-card study-bento-card">
           <div>
             <div class="study-bento-card-top">
               <div class="apple-icon-squircle">
@@ -209,7 +217,7 @@ import StudyDashboard from '../components/study/StudyDashboard';
         </a>
 
         <!-- Card 7: Finance -->
-        <a href="/workbench/money-timeline" class="apple-glass-card study-bento-card">
+        <a href={workbenchHref('finance')} class="apple-glass-card study-bento-card">
           <div>
             <div class="study-bento-card-top">
               <div class="apple-icon-squircle">
@@ -235,7 +243,7 @@ import StudyDashboard from '../components/study/StudyDashboard';
         </a>
 
         <!-- Card 8: Matrices -->
-        <a href="/workbench/row-operations" class="apple-glass-card study-bento-card">
+        <a href={workbenchHref('linear')} class="apple-glass-card study-bento-card">
           <div>
             <div class="study-bento-card-top">
               <div class="apple-icon-squircle">
@@ -292,7 +300,7 @@ import StudyDashboard from '../components/study/StudyDashboard';
               <span style="font-family: var(--font-amat-mono); font-size: 0.75rem; font-weight: 700; color: #71717a;">6 / 10</span>
             </div>
           </div>
-          <a href="/workbench/row-operations" class="apple-btn-black" style="width: 100%; margin-top: 1rem; justify-content: center; text-decoration: none;">
+          <a href={workbenchHref('linear')} class="apple-btn-black" style="width: 100%; margin-top: 1rem; justify-content: center; text-decoration: none;">
             Continue Practice &rarr;
           </a>
         </div>

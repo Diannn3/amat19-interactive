@@ -44,9 +44,13 @@ for (const directory of PURE_PACKAGES) {
   }
 }
 
-for (const file of await filesUnder('apps/web/src')) {
+const webSourceFiles = await filesUnder('apps/web/src');
+for (const file of webSourceFiles) {
   const source = await readFile(path.join(ROOT, file), 'utf8');
   for (const rule of DANGEROUS) if (rule.test(source)) violations.push(`${file}: unsafe execution/render path matched ${rule}`);
+  if (source.includes('/workbench/')) {
+    violations.push(`${file}: noncanonical singular /workbench/ route found; use the canonical /workbenches/ registry`);
+  }
 }
 
 const labPages = (await filesUnder('apps/web/src/pages/labs')).filter((file) => file.endsWith('.astro'));
@@ -89,4 +93,5 @@ console.log('Architecture audit PASS');
 console.log(`- ${PURE_PACKAGES.length} domain/content packages remain DOM/framework independent`);
 console.log(`- ${workbenchPages.length} workbench routes each hydrate exactly one client:load root`);
 console.log('- legacy lab URLs resolve through one non-hydrated compatibility route');
+console.log('- learner-facing web source contains no singular /workbench/ routes');
 console.log('- no dynamic JS evaluation, unsafe raw HTML rendering, or overlapping monolithic UI suites detected');

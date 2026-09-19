@@ -10,7 +10,7 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 |---|---|---|---|---|
 | G00a | COMMITTED | be37a427 | pending | Atomic execution plan committed |
 | G00b | COMMITTED | pending | pending | Status ledger finalized after dependency-security refresh |
-| T00 | COMMITTED | e81947a | blocked by baseline browser debt | Neutral glass mobile nav + matching More sheet + regression contract |
+| T00 | VERIFIED | e81947a | green on 35411400394 | Neutral glass mobile nav + matching More sheet + regression contract |
 | B01 | COMMITTED | 8475a39 | pending | Align cross-browser tests with responsive/region semantics uncovered by T00 CI |
 | B02 | COMMITTED | c147485 | pending | Use real toggle-group semantics for workbench mode selectors |
 | B03 | COMMITTED | a1de286 | pending | Restore 44px topbar search touch target after visual redesign |
@@ -25,12 +25,12 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B12 | COMMITTED | 1aa1ff5 | pending | Repair final contrast misses, fixed-dock scroll clearance, and topbar More dismissal |
 | B13 | COMMITTED | 326e2b9 | 218 pass / 2 chromium focus failures | Align semantic and fixed-dock reachability assertions with current accessible surfaces |
 | B14 | COMMITTED | this commit | pending | Preserve Developer-dialog trigger focus while topbar More is open |
-| G01 | PLANNED | — | — | Reject noncanonical workbench links |
+| G01 | COMMITTED | this commit | pending | Reject noncanonical singular /workbench/ links in learner-facing source |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
 | G04 | PLANNED | — | — | Canonical route helpers |
 | G05 | PLANNED | — | — | UI/behavior baseline |
-| T01 | PLANNED | — | — | Fix Study subject routes |
+| T01 | COMMITTED | this commit | pending | Derive Study subject routes from the canonical workbench registry |
 | T02 | PLANNED | — | — | Remove fabricated Study progress |
 | T03 | PLANNED | — | — | Remove fake resume session |
 | T04 | PLANNED | — | — | Promote adaptive Study queue |
@@ -97,3 +97,7 @@ Two residual assertions were semantically stale after the visual/accessibility r
 ## B14 modal focus handoff
 
 The converged Chromium run reached 218 passes with only the Developer focus-handoff test failing in both configured Chromium projects. The topbar More outside-pointer handler now defers dismissal while the Developer modal is open, allowing the dialog to restore focus to its connected trigger before normal outside-click dismissal resumes.
+
+## T01 + G01 canonical Study routes
+
+Study subject shortcuts now resolve through `currentCourseProfile.workbenches` instead of hand-written route aliases. The architecture audit rejects singular `/workbench/` strings anywhere under `apps/web/src`, so the broken-link class found in the audit becomes a permanent CI failure rather than a rediscovered runtime bug.
