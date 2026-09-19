@@ -18,7 +18,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B05 | COMMITTED | 78351fd | pending | Keep truth-table core test aligned with intentionally compact mobile presentation |
 | B06 | COMMITTED | cefaa8d | pending | Name visual instrument controls and repair low-contrast context labels |
 | B07 | COMMITTED | 79030fb | pending | Restore desktop utility navigation in the sidebar-free topbar |
-| B08 | COMMITTED | this commit | pending | Migrate retired sidebar browser contracts to topbar/mobile navigation |
+| B08 | COMMITTED | 9bf0331 | pending | Migrate retired sidebar browser contracts to topbar/mobile navigation |
+| B09 | COMMITTED | this commit | pending | Keep production-only PWA tests out of the Astro dev browser matrix |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
@@ -71,3 +72,7 @@ Desktop and mobile now share the same student-job taxonomy: Study, Course, and P
 ## B08 shell test migration
 
 The September Apple shell explicitly decommissioned the desktop sidebar. B08 removes browser assertions for the retired collapse rail and replaces them with current contracts: topbar route state, topbar More containment and utility access, dialog focus restoration, and the four-item mobile dock.
+
+## B09 PWA test boundary
+
+The regular Playwright matrix runs the Astro development server, where the app intentionally disables and unregisters service workers. Production PWA behavior remains verified by `playwright.production.config.ts` against `astro preview`; B09 prevents that production-only spec from being duplicated under the incompatible dev-server environment.
