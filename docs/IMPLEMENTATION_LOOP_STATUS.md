@@ -18,6 +18,7 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B05 | COMMITTED | 78351fd | pending | Keep truth-table core test aligned with intentionally compact mobile presentation |
 | B06 | COMMITTED | cefaa8d | pending | Name visual instrument controls and repair low-contrast context labels |
 | B07 | COMMITTED | 79030fb | pending | Restore desktop utility navigation in the sidebar-free topbar |
+| B08 | COMMITTED | this commit | pending | Migrate retired sidebar browser contracts to topbar/mobile navigation |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
@@ -66,3 +67,7 @@ The Apple topbar intentionally replaced the desktop sidebar, but the sidebar's u
 ## T14 navigation IA alignment
 
 Desktop and mobile now share the same student-job taxonomy: Study, Course, and Progress are primary destinations; Reference, Saved, Settings, and Developer are utilities under More. Home remains visible in the desktop topbar and topbar wordmark while the mobile dock stays intentionally four-item.
+
+## B08 shell test migration
+
+The September Apple shell explicitly decommissioned the desktop sidebar. B08 removes browser assertions for the retired collapse rail and replaces them with current contracts: topbar route state, topbar More containment and utility access, dialog focus restoration, and the four-item mobile dock.
