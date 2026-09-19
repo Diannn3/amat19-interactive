@@ -240,3 +240,25 @@ test('Study page does not expose inactive resource controls', async ({ page }) =
   await expect(page.getByRole('searchbox', { name: 'Search resources' })).toHaveCount(0);
   await expect(page.getByRole('tablist', { name: 'Resource filter' })).toHaveCount(0);
 });
+
+
+test('Study browse catalog is registry-backed and exposes truthful skill counts', async ({ page }) => {
+  await page.goto('/study');
+  const topics = page.locator('[data-study-topic]');
+  await expect(topics).toHaveCount(5);
+
+  for (const title of ['Logic & Proof', 'Probability Model Builder', 'Money Timeline', 'Row Operations Coach', 'Optimization & Strategy']) {
+    await expect(topics.filter({ hasText: title })).toHaveCount(1);
+  }
+
+  await expect(topics.filter({ hasText: 'Optimization & Strategy' })).toHaveAttribute('href', '/workbenches/applications');
+
+  const metadata = await topics.evaluateAll((cards) => cards.map((card) => ({
+    count: Number(card.getAttribute('data-current-skill-count')),
+    text: card.textContent ?? '',
+  })));
+  expect(metadata.every(({ count, text }) => Number.isInteger(count) && count > 0 && text.includes(`${count} current skill`))).toBe(true);
+
+  const body = await page.locator('body').innerText();
+  expect(body).not.toMatch(/120\+ problems|12 reviewers|8 sheets|24 saved|28 problems|36 problems|25 problems|31 problems/);
+});

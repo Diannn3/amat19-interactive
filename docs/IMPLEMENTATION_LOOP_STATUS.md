@@ -27,15 +27,15 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B14 | COMMITTED | this commit | pending | Preserve Developer-dialog trigger focus while topbar More is open |
 | G01 | VERIFIED | 7bdf84f | green on 35411830032 | Reject noncanonical singular /workbench/ links in learner-facing source |
 | G02 | PLANNED | — | — | Production internal-link crawl |
-| G03 | IN_PROGRESS | this commit | pending | Guard known fabricated Study learner progress and resume literals |
+| G03 | IN_PROGRESS | this commit | pending | Guard fabricated Study learner state, inert controls, and unsourced catalog counts |
 | G04 | PLANNED | — | — | Canonical route helpers |
 | G05 | PLANNED | — | — | UI/behavior baseline |
 | T01 | VERIFIED | 7bdf84f | green on 35411830032 | Derive Study subject routes from the canonical workbench registry |
 | T02 | VERIFIED | 93fe682 | green on 35414302611 | Remove fabricated Study progress card and percentages |
 | T03 | VERIFIED | 04042f5 | green on 35414698817 | Remove fake Study resume session and empty sidebar column |
 | T04 | VERIFIED | 5a431d0 | green on 35415107210 | Promote evidence-backed adaptive Study queue above browse content |
-| T05 | COMMITTED | this commit | pending | Remove inactive Study resource tabs, search, and filter controls |
-| T06 | PLANNED | — | — | Derive Study resource metadata |
+| T05 | VERIFIED | de9fc27 | green on 35415495972 | Remove inactive Study resource tabs, search, and filter controls |
+| T06 | COMMITTED | this commit | pending | Replace mock resource counts with registry-derived current-skill metadata |
 | T07 | PLANNED | — | — | Remove static Course progress |
 | T08 | PLANNED | — | — | Suggested Study Path wording |
 | T09 | PLANNED | — | — | Remove unsourced week numbers |
@@ -117,3 +117,7 @@ The static Study shell no longer invents a resumable `Practice Set 3`, matrix to
 ## T05 inert Study controls removal
 
 The Study page no longer presents tabs, a search field, or a Filter button that have no behavior or resource model behind them. The adaptive dashboard remains first, followed by browse content. A static architecture guard and browser regression now reject the known inert toolbar controls if they reappear.
+
+## T06 registry-backed Study browse catalog
+
+The Study browse area now renders directly from `currentCourseProfile.workbenches` and `skillGraph`. It contains all five canonical workbenches, including Applications, and reports only derived counts of current leaf skills. The previous unsourced problem/reviewer/formula/saved counts and resource-type cards are gone. Static and browser regressions now reject the known mock catalog claims.

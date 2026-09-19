@@ -46,6 +46,7 @@ for (const directory of PURE_PACKAGES) {
 
 const FABRICATED_STUDY_STATE = ['68%', '18 / 30', '8 / 12', '5 / 8', 'Overall Progress', 'Practice Set 3', 'Matrices · Systems of Equations', '6 / 10'];
 const INERT_STUDY_CONTROLS = ['study-toolbar', 'Search resources', 'Resource filter'];
+const UNSOURCED_STUDY_CATALOG = ['120+ problems', '12 reviewers', '8 sheets', '24 saved', '28 problems', '36 problems', '25 problems', '31 problems'];
 const webSourceFiles = await filesUnder('apps/web/src');
 for (const file of webSourceFiles) {
   const source = await readFile(path.join(ROOT, file), 'utf8');
@@ -59,6 +60,9 @@ for (const file of webSourceFiles) {
     }
     for (const inert of INERT_STUDY_CONTROLS) {
       if (source.includes(inert)) violations.push(`${file}: inactive Study control found: ${inert}`);
+    }
+    for (const claim of UNSOURCED_STUDY_CATALOG) {
+      if (source.includes(claim)) violations.push(`${file}: unsourced Study catalog count found: ${claim}`);
     }
   }
 }
@@ -106,4 +110,5 @@ console.log('- legacy lab URLs resolve through one non-hydrated compatibility ro
 console.log('- learner-facing web source contains no singular /workbench/ routes');
 console.log('- Study source contains no known fabricated learner-state literals');
 console.log('- Study source contains no known inert catalog controls');
+console.log('- Study browse metadata is free of the known unsourced catalog counts');
 console.log('- no dynamic JS evaluation, unsafe raw HTML rendering, or overlapping monolithic UI suites detected');
