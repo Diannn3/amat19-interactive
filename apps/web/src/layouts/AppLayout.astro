@@ -325,6 +325,8 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         });
         document.addEventListener('pointerdown', (event) => {
           if (!(topbarMore instanceof HTMLDetailsElement) || !topbarMore.open) return;
+          const developerDialog = document.querySelector('[data-developer-contact-dialog]');
+          if (developerDialog instanceof HTMLDialogElement && developerDialog.open) return;
           const target = event.target;
           if (target instanceof Node && !topbarMore.contains(target)) closeTopbarMore(false);
         });

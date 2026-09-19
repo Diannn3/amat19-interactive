@@ -23,7 +23,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B10 | COMMITTED | afc82eb | pending | Replace obsolete above-fold geometry with reachability, dock-occlusion, and overflow contracts |
 | B11 | COMMITTED | 9741462 | chromium residuals | Align Money Timeline model-switch tests with the canonical task picker |
 | B12 | COMMITTED | 1aa1ff5 | pending | Repair final contrast misses, fixed-dock scroll clearance, and topbar More dismissal |
-| B13 | COMMITTED | this commit | pending | Align semantic and fixed-dock reachability assertions with current accessible surfaces |
+| B13 | COMMITTED | 326e2b9 | 218 pass / 2 chromium focus failures | Align semantic and fixed-dock reachability assertions with current accessible surfaces |
+| B14 | COMMITTED | this commit | pending | Preserve Developer-dialog trigger focus while topbar More is open |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
@@ -92,3 +93,7 @@ The converged Chromium run reduced the baseline to six root causes. B12 fixes th
 ## B13 final test-contract cleanup
 
 Two residual assertions were semantically stale after the visual/accessibility refactor: the Home heading contains decorative visual words but exposes the intended accessible name, and the Logic translation surface is a labelled region rather than a nested heading. Mobile dock checks now center the target control before measuring occlusion, which verifies intentional reachability while preserving the 44px and no-overflow requirements.
+
+## B14 modal focus handoff
+
+The converged Chromium run reached 218 passes with only the Developer focus-handoff test failing in both configured Chromium projects. The topbar More outside-pointer handler now defers dismissal while the Developer modal is open, allowing the dialog to restore focus to its connected trigger before normal outside-click dismissal resumes.
