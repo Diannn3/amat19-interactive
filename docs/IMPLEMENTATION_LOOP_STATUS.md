@@ -21,7 +21,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B08 | COMMITTED | 9bf0331 | pending | Migrate retired sidebar browser contracts to topbar/mobile navigation |
 | B09 | COMMITTED | 5bd666c | pending | Keep production-only PWA tests out of the Astro dev browser matrix |
 | B10 | COMMITTED | afc82eb | pending | Replace obsolete above-fold geometry with reachability, dock-occlusion, and overflow contracts |
-| B11 | COMMITTED | this commit | pending | Align Money Timeline model-switch tests with the canonical task picker |
+| B11 | COMMITTED | 9741462 | chromium residuals | Align Money Timeline model-switch tests with the canonical task picker |
+| B12 | COMMITTED | this commit | pending | Repair final contrast misses, fixed-dock scroll clearance, and topbar More dismissal |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
@@ -82,3 +83,7 @@ The regular Playwright matrix runs the Astro development server, where the app i
 ## B10 responsive test contract
 
 The Apple instrument redesign intentionally makes several workbenches vertically richer. B10 no longer requires every mathematical control or directory card to fit in the initial viewport. Instead it verifies that canonical tools remain reachable in document order, important controls retain 44px targets when scrolled into view, the fixed mobile dock does not occlude them, and pages do not introduce horizontal overflow.
+
+## B12 Chromium product repair
+
+The converged Chromium run reduced the baseline to six root causes. B12 fixes the product-side ones: the topbar shortcut, command-search hint, and page-intro lede now clear the reported WCAG AA contrast misses; mobile scroll containers advertise clearance for the fixed navigation dock; and the desktop topbar More menu now dismisses on Escape or outside pointer interaction while restoring focus on keyboard dismissal.

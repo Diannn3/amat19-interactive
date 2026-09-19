@@ -3361,3 +3361,28 @@ button[type="submit"]:hover {
     color: HighlightText;
   }
 }
+
+
+/* ==========================================================================
+   B12 — final Chromium baseline accessibility and fixed-dock scroll clearance
+   ========================================================================== */
+.topbar-search kbd,
+.command-dialog__hint,
+.page-intro > .lede {
+  color: #52525b !important;
+}
+
+@media (max-width: 900px) {
+  .workspace-scroll {
+    scroll-padding-bottom: calc(5.75rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  [data-primary-control],
+  [data-primary-controls] input,
+  [data-primary-controls] select,
+  [data-primary-controls] button,
+  [data-testid="money-step-coach"] button,
+  [data-testid="row-operations-coach"] button {
+    scroll-margin-block: 1rem calc(5.75rem + env(safe-area-inset-bottom));
+  }
+}

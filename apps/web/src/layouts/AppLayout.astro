@@ -238,6 +238,8 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         const moreFlyout = document.querySelector('[data-more-flyout]');
         const inlineMore = document.querySelector('.sidebar [data-more-menu]');
         const inlineMoreSummary = inlineMore?.querySelector('summary');
+        const topbarMore = document.querySelector('[data-topbar-more]');
+        const topbarMoreSummary = topbarMore?.querySelector('summary');
         const sidebarNav = document.querySelector('.sidebar .nav-stack');
         const sidebar = document.querySelector('.sidebar');
         const sidebarStorageKey = 'amat19.sidebar.collapsed';
@@ -310,6 +312,22 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         window.addEventListener('resize', repositionMoreFlyout);
         sidebarNav?.addEventListener('scroll', repositionMoreFlyout, { passive: true });
         document.querySelector('.sidebar')?.addEventListener('scroll', repositionMoreFlyout, { passive: true });
+
+        const closeTopbarMore = (restoreFocus = false) => {
+          if (!(topbarMore instanceof HTMLDetailsElement) || !topbarMore.open) return;
+          topbarMore.open = false;
+          if (restoreFocus && topbarMoreSummary instanceof HTMLElement) topbarMoreSummary.focus();
+        };
+        topbarMore?.addEventListener('keydown', (event) => {
+          if (event.key !== 'Escape') return;
+          event.preventDefault();
+          closeTopbarMore(true);
+        });
+        document.addEventListener('pointerdown', (event) => {
+          if (!(topbarMore instanceof HTMLDetailsElement) || !topbarMore.open) return;
+          const target = event.target;
+          if (target instanceof Node && !topbarMore.contains(target)) closeTopbarMore(false);
+        });
 
         document.querySelectorAll('[data-command-button]').forEach((button) => {
           button.addEventListener('click', () => { window.dispatchEvent(new CustomEvent('amat:command', { detail: { trigger: button } })); });
