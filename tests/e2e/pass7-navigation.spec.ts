@@ -6,7 +6,7 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     await page.goto('/');
 
     const primary = page.getByRole('navigation', { name: 'Primary destinations' });
-    for (const label of ['Home', 'Workbenches', 'Course', 'Resources']) {
+    for (const label of ['Home', 'Study', 'Course', 'Progress']) {
       await expect(primary.getByRole('link', { name: label, exact: true })).toBeVisible();
     }
 

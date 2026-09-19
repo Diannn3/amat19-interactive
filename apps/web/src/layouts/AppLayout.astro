@@ -145,22 +145,12 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
           </div>
 
           <nav class="topbar-nav" aria-label="Primary destinations">
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath === '/' }]} href="/">
-              Home
-              {currentPath === '/' && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath.startsWith('/workbenches') }]} href="/course">
-              Workbenches
-              {currentPath.startsWith('/workbenches') && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath === '/course' || currentPath.startsWith('/modules') }]} href="/course">
-              Course
-              {(currentPath === '/course' || currentPath.startsWith('/modules')) && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath.startsWith('/reference') }]} href="/reference">
-              Resources
-              {currentPath.startsWith('/reference') && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
+            {primaryNavigation.map((item) => (
+              <a class:list={['topbar-nav-link', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+                {isCurrent(item.href) && <span class="topbar-nav-dot" aria-hidden="true"></span>}
+              </a>
+            ))}
           </nav>
 
           <div class="topbar-actions">

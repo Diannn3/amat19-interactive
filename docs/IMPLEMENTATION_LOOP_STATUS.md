@@ -17,7 +17,7 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B04 | COMMITTED | fda6b4c | pending | Raise inactive workbench mode contrast above WCAG AA threshold |
 | B05 | COMMITTED | 78351fd | pending | Keep truth-table core test aligned with intentionally compact mobile presentation |
 | B06 | COMMITTED | cefaa8d | pending | Name visual instrument controls and repair low-contrast context labels |
-| B07 | COMMITTED | this commit | pending | Restore desktop utility navigation in the sidebar-free topbar |
+| B07 | COMMITTED | 79030fb | pending | Restore desktop utility navigation in the sidebar-free topbar |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
@@ -36,7 +36,7 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | T11 | PLANNED | — | — | Workbench directory model |
 | T12 | PLANNED | — | — | Course search |
 | T13 | PLANNED | — | — | Course filters |
-| T14 | PLANNED | — | — | Navigation IA alignment |
+| T14 | COMMITTED | this commit | pending | Align desktop primary navigation with Study/Course/Progress and move utilities under More |
 | T15 | PLANNED | — | — | Truthful-surfaces close |
 
 ## Rule
@@ -62,3 +62,7 @@ The September visual pass introduced several visually labelled controls whose la
 ## B07 navigation repair
 
 The Apple topbar intentionally replaced the desktop sidebar, but the sidebar's utility destinations were not replaced. B07 restores Reference, Saved, Settings, and Developer through a compact topbar More menu while keeping the full-width topbar architecture and the mobile dock unchanged.
+
+## T14 navigation IA alignment
+
+Desktop and mobile now share the same student-job taxonomy: Study, Course, and Progress are primary destinations; Reference, Saved, Settings, and Developer are utilities under More. Home remains visible in the desktop topbar and topbar wordmark while the mobile dock stays intentionally four-item.
