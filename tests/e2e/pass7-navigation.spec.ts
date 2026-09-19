@@ -215,3 +215,20 @@ test('mobile navigation keeps the four core destinations and More visible', asyn
   const panelBackground = await panel.evaluate((element) => getComputedStyle(element).backgroundColor);
   expect(panelBackground).not.toBe('rgb(46, 8, 13)');
 });
+
+
+test('adaptive Study queue appears before the browse catalog', async ({ page }) => {
+  await page.goto('/study');
+  const dashboard = page.getByTestId('study-dashboard');
+  await expect(dashboard).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'What should I study now?' })).toBeVisible();
+  await expect(page.getByText('Your unfinished sessions, recent misses, saved items, and skill evidence shape the queue below.', { exact: true })).toBeVisible();
+
+  const order = await page.evaluate(() => {
+    const dashboard = document.querySelector('[data-testid="study-dashboard"]');
+    const toolbar = document.querySelector('.study-toolbar');
+    if (!dashboard || !toolbar) return null;
+    return Boolean(dashboard.compareDocumentPosition(toolbar) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  expect(order).toBe(true);
+});

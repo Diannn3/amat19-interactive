@@ -22,7 +22,7 @@ const workbenchHref = (id: WorkbenchId) => {
           <span class="text-muted">Go Further.</span>
         </h1>
         <p class="study-hero__lede">
-          Browse practice problems, reviewers, formula sheets, and saved examples — everything you need to build mastery in one place.
+          Your local practice evidence shapes a recommended next step. Resume unfinished work, repair recent misses, or choose a topic yourself.
         </p>
       </div>
       <div class="study-hero__ambient" aria-hidden="true">
@@ -31,6 +31,17 @@ const workbenchHref = (id: WorkbenchId) => {
           <span>A CLEARER VIEW.</span>
         </div>
       </div>
+    </section>
+
+    <section id="active-queue" class="study-queue-section study-queue-section--primary" aria-labelledby="study-next-heading">
+      <div class="study-queue-section__intro">
+        <div>
+          <p class="section-context">Based on your local evidence</p>
+          <h2 id="study-next-heading">What should I study now?</h2>
+          <p>Your unfinished sessions, recent misses, saved items, and skill evidence shape the queue below.</p>
+        </div>
+      </div>
+      <StudyDashboard client:load />
     </section>
 
     <!-- Filter Pills & Search Bar -->
@@ -273,15 +284,6 @@ const workbenchHref = (id: WorkbenchId) => {
 
     </div>
 
-    <!-- Active Local Queue & Assessments (Preserving student evidence contracts) -->
-    <section id="active-queue" class="study-queue-section" style="margin-top: 3.5rem;">
-      <div style="margin-bottom: 1.5rem; display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 0.75rem;">
-        <div>
-          <h2 style="font-size: 1.4rem; font-weight: 700; color: #09090b; letter-spacing: -0.02em; margin: 0;">Active Study Queue</h2>
-          <p style="font-size: 0.88rem; color: #71717a; margin: 0.25rem 0 0;">Unfinished work, recent misses, and weak evidence shape your next step.</p>
-        </div>
-      </div>
-      <StudyDashboard client:load />
-    </section>
+
   </div>
 </AppLayout>

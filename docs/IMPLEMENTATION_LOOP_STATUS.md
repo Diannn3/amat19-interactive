@@ -32,8 +32,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | G05 | PLANNED | — | — | UI/behavior baseline |
 | T01 | VERIFIED | 7bdf84f | green on 35411830032 | Derive Study subject routes from the canonical workbench registry |
 | T02 | VERIFIED | 93fe682 | green on 35414302611 | Remove fabricated Study progress card and percentages |
-| T03 | COMMITTED | this commit | pending | Remove fake Study resume session and empty sidebar column |
-| T04 | PLANNED | — | — | Promote adaptive Study queue |
+| T03 | VERIFIED | 04042f5 | green on 35414698817 | Remove fake Study resume session and empty sidebar column |
+| T04 | COMMITTED | this commit | pending | Promote evidence-backed adaptive Study queue above browse content |
 | T05 | PLANNED | — | — | Remove inactive Study resource toolbar |
 | T06 | PLANNED | — | — | Derive Study resource metadata |
 | T07 | PLANNED | — | — | Remove static Course progress |
@@ -109,3 +109,7 @@ The Study page no longer displays invented learner percentages or completion cou
 ## T03 fabricated resume removal
 
 The static Study shell no longer invents a resumable `Practice Set 3`, matrix topic, or `6 / 10` completion state. Resume behavior is now reserved for the Dexie-backed `StudyDashboard`, which only renders sessions actually stored for the learner. The page also stops reserving a desktop column for the removed mock sidebar.
+
+## T04 adaptive queue promotion
+
+`/study` now answers the student's primary question first: what to study next. The existing Dexie-backed `StudyDashboard` is rendered immediately after the hero, ahead of catalog-style browsing. No queue scoring or persistence logic changed in this commit; only hierarchy and truthful explanatory copy changed, with a browser regression asserting that the real dashboard precedes the browse UI.
