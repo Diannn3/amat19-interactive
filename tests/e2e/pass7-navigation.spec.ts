@@ -226,9 +226,17 @@ test('adaptive Study queue appears before the browse catalog', async ({ page }) 
 
   const order = await page.evaluate(() => {
     const dashboard = document.querySelector('[data-testid="study-dashboard"]');
-    const toolbar = document.querySelector('.study-toolbar');
-    if (!dashboard || !toolbar) return null;
-    return Boolean(dashboard.compareDocumentPosition(toolbar) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const catalog = document.querySelector('.study-hub-grid');
+    if (!dashboard || !catalog) return null;
+    return Boolean(dashboard.compareDocumentPosition(catalog) & Node.DOCUMENT_POSITION_FOLLOWING);
   });
   expect(order).toBe(true);
+});
+
+
+test('Study page does not expose inactive resource controls', async ({ page }) => {
+  await page.goto('/study');
+  await expect(page.locator('.study-toolbar')).toHaveCount(0);
+  await expect(page.getByRole('searchbox', { name: 'Search resources' })).toHaveCount(0);
+  await expect(page.getByRole('tablist', { name: 'Resource filter' })).toHaveCount(0);
 });

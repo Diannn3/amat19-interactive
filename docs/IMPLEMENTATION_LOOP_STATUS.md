@@ -33,8 +33,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | T01 | VERIFIED | 7bdf84f | green on 35411830032 | Derive Study subject routes from the canonical workbench registry |
 | T02 | VERIFIED | 93fe682 | green on 35414302611 | Remove fabricated Study progress card and percentages |
 | T03 | VERIFIED | 04042f5 | green on 35414698817 | Remove fake Study resume session and empty sidebar column |
-| T04 | COMMITTED | this commit | pending | Promote evidence-backed adaptive Study queue above browse content |
-| T05 | PLANNED | — | — | Remove inactive Study resource toolbar |
+| T04 | VERIFIED | 5a431d0 | green on 35415107210 | Promote evidence-backed adaptive Study queue above browse content |
+| T05 | COMMITTED | this commit | pending | Remove inactive Study resource tabs, search, and filter controls |
 | T06 | PLANNED | — | — | Derive Study resource metadata |
 | T07 | PLANNED | — | — | Remove static Course progress |
 | T08 | PLANNED | — | — | Suggested Study Path wording |
@@ -113,3 +113,7 @@ The static Study shell no longer invents a resumable `Practice Set 3`, matrix to
 ## T04 adaptive queue promotion
 
 `/study` now answers the student's primary question first: what to study next. The existing Dexie-backed `StudyDashboard` is rendered immediately after the hero, ahead of catalog-style browsing. No queue scoring or persistence logic changed in this commit; only hierarchy and truthful explanatory copy changed, with a browser regression asserting that the real dashboard precedes the browse UI.
+
+## T05 inert Study controls removal
+
+The Study page no longer presents tabs, a search field, or a Filter button that have no behavior or resource model behind them. The adaptive dashboard remains first, followed by browse content. A static architecture guard and browser regression now reject the known inert toolbar controls if they reappear.

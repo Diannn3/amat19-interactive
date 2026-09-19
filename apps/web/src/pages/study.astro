@@ -44,32 +44,6 @@ const workbenchHref = (id: WorkbenchId) => {
       <StudyDashboard client:load />
     </section>
 
-    <!-- Filter Pills & Search Bar -->
-    <div class="study-toolbar">
-      <div class="study-toolbar__filters" role="tablist" aria-label="Resource filter">
-        <button type="button" class="apple-filter-pill is-active" role="tab" aria-selected="true">All Resources</button>
-        <button type="button" class="apple-filter-pill" role="tab" aria-selected="false">Practice Problems</button>
-        <button type="button" class="apple-filter-pill" role="tab" aria-selected="false">Reviewers</button>
-        <button type="button" class="apple-filter-pill" role="tab" aria-selected="false">Formula Sheets</button>
-        <button type="button" class="apple-filter-pill" role="tab" aria-selected="false">Saved Examples</button>
-      </div>
-      <div class="study-toolbar__search-wrap">
-        <div class="study-search-input">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input type="search" placeholder="Search topics, keywords, or tags..." aria-label="Search resources" />
-        </div>
-        <button type="button" class="apple-filter-pill" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-          </svg>
-          <span>Filter</span>
-        </button>
-      </div>
-    </div>
-
     <!-- Main Hub Layout: 8-Card Bento Grid + Sidebar -->
     <div class="study-hub-grid study-hub-grid--single">
       <!-- Left: Bento Grid (2 rows of 4 cards) -->

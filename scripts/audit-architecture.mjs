@@ -45,6 +45,7 @@ for (const directory of PURE_PACKAGES) {
 }
 
 const FABRICATED_STUDY_STATE = ['68%', '18 / 30', '8 / 12', '5 / 8', 'Overall Progress', 'Practice Set 3', 'Matrices · Systems of Equations', '6 / 10'];
+const INERT_STUDY_CONTROLS = ['study-toolbar', 'Search resources', 'Resource filter'];
 const webSourceFiles = await filesUnder('apps/web/src');
 for (const file of webSourceFiles) {
   const source = await readFile(path.join(ROOT, file), 'utf8');
@@ -55,6 +56,9 @@ for (const file of webSourceFiles) {
   if (file.endsWith('pages/study.astro')) {
     for (const fabricated of FABRICATED_STUDY_STATE) {
       if (source.includes(fabricated)) violations.push(`${file}: fabricated learner-state literal found: ${fabricated}`);
+    }
+    for (const inert of INERT_STUDY_CONTROLS) {
+      if (source.includes(inert)) violations.push(`${file}: inactive Study control found: ${inert}`);
     }
   }
 }
@@ -101,4 +105,5 @@ console.log(`- ${workbenchPages.length} workbench routes each hydrate exactly on
 console.log('- legacy lab URLs resolve through one non-hydrated compatibility route');
 console.log('- learner-facing web source contains no singular /workbench/ routes');
 console.log('- Study source contains no known fabricated learner-state literals');
+console.log('- Study source contains no known inert catalog controls');
 console.log('- no dynamic JS evaluation, unsafe raw HTML rendering, or overlapping monolithic UI suites detected');
