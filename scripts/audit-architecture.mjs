@@ -44,12 +44,18 @@ for (const directory of PURE_PACKAGES) {
   }
 }
 
+const FABRICATED_STUDY_PROGRESS = ['68%', '18 / 30', '8 / 12', '5 / 8', 'Overall Progress'];
 const webSourceFiles = await filesUnder('apps/web/src');
 for (const file of webSourceFiles) {
   const source = await readFile(path.join(ROOT, file), 'utf8');
   for (const rule of DANGEROUS) if (rule.test(source)) violations.push(`${file}: unsafe execution/render path matched ${rule}`);
   if (source.includes('/workbench/')) {
     violations.push(`${file}: noncanonical singular /workbench/ route found; use the canonical /workbenches/ registry`);
+  }
+  if (file.endsWith('pages/study.astro')) {
+    for (const fabricated of FABRICATED_STUDY_PROGRESS) {
+      if (source.includes(fabricated)) violations.push(`${file}: fabricated learner progress literal found: ${fabricated}`);
+    }
   }
 }
 
@@ -94,4 +100,5 @@ console.log(`- ${PURE_PACKAGES.length} domain/content packages remain DOM/framew
 console.log(`- ${workbenchPages.length} workbench routes each hydrate exactly one client:load root`);
 console.log('- legacy lab URLs resolve through one non-hydrated compatibility route');
 console.log('- learner-facing web source contains no singular /workbench/ routes');
+console.log('- Study source contains no known fabricated learner-progress literals');
 console.log('- no dynamic JS evaluation, unsafe raw HTML rendering, or overlapping monolithic UI suites detected');

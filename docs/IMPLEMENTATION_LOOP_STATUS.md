@@ -25,13 +25,13 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B12 | COMMITTED | 1aa1ff5 | pending | Repair final contrast misses, fixed-dock scroll clearance, and topbar More dismissal |
 | B13 | COMMITTED | 326e2b9 | 218 pass / 2 chromium focus failures | Align semantic and fixed-dock reachability assertions with current accessible surfaces |
 | B14 | COMMITTED | this commit | pending | Preserve Developer-dialog trigger focus while topbar More is open |
-| G01 | COMMITTED | this commit | pending | Reject noncanonical singular /workbench/ links in learner-facing source |
+| G01 | VERIFIED | 7bdf84f | green on 35411830032 | Reject noncanonical singular /workbench/ links in learner-facing source |
 | G02 | PLANNED | — | — | Production internal-link crawl |
-| G03 | PLANNED | — | — | Hard-coded learner-state guard |
+| G03 | IN_PROGRESS | this commit | pending | Guard known fabricated Study learner-progress literals |
 | G04 | PLANNED | — | — | Canonical route helpers |
 | G05 | PLANNED | — | — | UI/behavior baseline |
-| T01 | COMMITTED | this commit | pending | Derive Study subject routes from the canonical workbench registry |
-| T02 | PLANNED | — | — | Remove fabricated Study progress |
+| T01 | VERIFIED | 7bdf84f | green on 35411830032 | Derive Study subject routes from the canonical workbench registry |
+| T02 | COMMITTED | this commit | pending | Remove fabricated Study progress card and percentages |
 | T03 | PLANNED | — | — | Remove fake resume session |
 | T04 | PLANNED | — | — | Promote adaptive Study queue |
 | T05 | PLANNED | — | — | Remove inactive Study resource toolbar |
@@ -101,3 +101,7 @@ The converged Chromium run reached 218 passes with only the Developer focus-hand
 ## T01 + G01 canonical Study routes
 
 Study subject shortcuts now resolve through `currentCourseProfile.workbenches` instead of hand-written route aliases. The architecture audit rejects singular `/workbench/` strings anywhere under `apps/web/src`, so the broken-link class found in the audit becomes a permanent CI failure rather than a rediscovered runtime bug.
+
+## T02 fabricated progress removal
+
+The Study page no longer displays invented learner percentages or completion counts. The repository architecture audit now rejects the exact fabricated progress literals previously present on `/study`, preventing a visual redesign from silently reintroducing made-up learner state.
