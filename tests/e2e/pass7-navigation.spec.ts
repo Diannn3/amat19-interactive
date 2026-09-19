@@ -1,18 +1,17 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Pass 7 navigation and workspace clarity', () => {
-  test('desktop shell exposes four primary destinations and a More utility menu', async ({ page }) => {
+  test('desktop shell exposes the topbar destinations and a More utility menu', async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 901, 'Desktop navigation is replaced by the mobile dock below 901px.');
     await page.goto('/');
 
-    const primary = page.getByRole('navigation', { name: 'Primary navigation' });
-    await expect(primary.locator('.nav-link')).toHaveCount(4);
-    for (const label of ['Home', 'Study', 'Course', 'Progress']) {
+    const primary = page.getByRole('navigation', { name: 'Primary destinations' });
+    for (const label of ['Home', 'Workbenches', 'Course', 'Resources']) {
       await expect(primary.getByRole('link', { name: label, exact: true })).toBeVisible();
     }
 
-    const more = primary.locator('[data-more-menu]');
-    await expect(more).toBeVisible();
+    const more = page.locator('[data-topbar-more]');
+    await expect(more.locator('summary')).toBeVisible();
     await more.locator('summary').click();
     for (const label of ['Reference', 'Saved', 'Settings']) {
       await expect(more.getByRole('link', { name: label, exact: true })).toBeVisible();

@@ -16,7 +16,8 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B03 | COMMITTED | a1de286 | pending | Restore 44px topbar search touch target after visual redesign |
 | B04 | COMMITTED | fda6b4c | pending | Raise inactive workbench mode contrast above WCAG AA threshold |
 | B05 | COMMITTED | 78351fd | pending | Keep truth-table core test aligned with intentionally compact mobile presentation |
-| B06 | COMMITTED | this commit | pending | Name visual instrument controls and repair low-contrast context labels |
+| B06 | COMMITTED | cefaa8d | pending | Name visual instrument controls and repair low-contrast context labels |
+| B07 | COMMITTED | this commit | pending | Restore desktop utility navigation in the sidebar-free topbar |
 | G01 | PLANNED | — | — | Reject noncanonical workbench links |
 | G02 | PLANNED | — | — | Production internal-link crawl |
 | G03 | PLANNED | — | — | Hard-coded learner-state guard |
@@ -57,3 +58,7 @@ B02 keeps the existing mode selectors as button groups rather than pretending th
 ## B06 accessibility repair
 
 The September visual pass introduced several visually labelled controls whose labels were not programmatically associated with the inputs. B06 adds accessible names to the Probability sliders, Finance number/range/select controls, and Linear matrix cells, and raises low-contrast command/page context labels without changing mathematical behavior.
+
+## B07 navigation repair
+
+The Apple topbar intentionally replaced the desktop sidebar, but the sidebar's utility destinations were not replaced. B07 restores Reference, Saved, Settings, and Developer through a compact topbar More menu while keeping the full-width topbar architecture and the mobile dock unchanged.

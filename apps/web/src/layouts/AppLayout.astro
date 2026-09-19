@@ -164,6 +164,25 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
           </nav>
 
           <div class="topbar-actions">
+            <details class:list={['topbar-more-menu', { 'is-active': utilityIsCurrent }]} data-topbar-more>
+              <summary class="topbar-more-menu__summary" aria-label="More destinations">
+                <span class="nav-icon"><NavGlyph name="more" /></span>
+                <span>More</span>
+              </summary>
+              <div class="topbar-more-menu__panel">
+                {utilityNavigation.map((item) => item.kind === 'link' ? (
+                  <a class:list={['topbar-more-menu__item', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+                    <span>{item.label}</span>
+                  </a>
+                ) : (
+                  <button class="topbar-more-menu__item topbar-more-menu__action" type="button" data-developer-contact-trigger aria-haspopup="dialog" aria-controls="developer-contact-dialog" aria-label="Developer contact">
+                    <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </details>
             <button class="topbar-search" type="button" data-command-button aria-haspopup="dialog" aria-label="Search AMAT 19">
               <Search aria-hidden="true" size={17} strokeWidth={1.7} />
               <span>Search study tools</span>
