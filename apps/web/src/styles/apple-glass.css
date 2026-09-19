@@ -3386,3 +3386,9 @@ button[type="submit"]:hover {
     scroll-margin-block: 1rem calc(5.75rem + env(safe-area-inset-bottom));
   }
 }
+
+
+/* T03 — Study no longer reserves space for fabricated sidebar state. */
+.study-hub-grid--single {
+  grid-template-columns: minmax(0, 1fr) !important;
+}

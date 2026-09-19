@@ -27,12 +27,12 @@ Status vocabulary: `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `COMMITTED` · `VE
 | B14 | COMMITTED | this commit | pending | Preserve Developer-dialog trigger focus while topbar More is open |
 | G01 | VERIFIED | 7bdf84f | green on 35411830032 | Reject noncanonical singular /workbench/ links in learner-facing source |
 | G02 | PLANNED | — | — | Production internal-link crawl |
-| G03 | IN_PROGRESS | this commit | pending | Guard known fabricated Study learner-progress literals |
+| G03 | IN_PROGRESS | this commit | pending | Guard known fabricated Study learner progress and resume literals |
 | G04 | PLANNED | — | — | Canonical route helpers |
 | G05 | PLANNED | — | — | UI/behavior baseline |
 | T01 | VERIFIED | 7bdf84f | green on 35411830032 | Derive Study subject routes from the canonical workbench registry |
-| T02 | COMMITTED | this commit | pending | Remove fabricated Study progress card and percentages |
-| T03 | PLANNED | — | — | Remove fake resume session |
+| T02 | VERIFIED | 93fe682 | green on 35414302611 | Remove fabricated Study progress card and percentages |
+| T03 | COMMITTED | this commit | pending | Remove fake Study resume session and empty sidebar column |
 | T04 | PLANNED | — | — | Promote adaptive Study queue |
 | T05 | PLANNED | — | — | Remove inactive Study resource toolbar |
 | T06 | PLANNED | — | — | Derive Study resource metadata |
@@ -105,3 +105,7 @@ Study subject shortcuts now resolve through `currentCourseProfile.workbenches` i
 ## T02 fabricated progress removal
 
 The Study page no longer displays invented learner percentages or completion counts. The repository architecture audit now rejects the exact fabricated progress literals previously present on `/study`, preventing a visual redesign from silently reintroducing made-up learner state.
+
+## T03 fabricated resume removal
+
+The static Study shell no longer invents a resumable `Practice Set 3`, matrix topic, or `6 / 10` completion state. Resume behavior is now reserved for the Dexie-backed `StudyDashboard`, which only renders sessions actually stored for the learner. The page also stops reserving a desktop column for the removed mock sidebar.
