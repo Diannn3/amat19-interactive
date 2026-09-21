@@ -145,25 +145,34 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
           </div>
 
           <nav class="topbar-nav" aria-label="Primary destinations">
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath === '/' }]} href="/">
-              Home
-              {currentPath === '/' && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath.startsWith('/workbenches') }]} href="/course">
-              Workbenches
-              {currentPath.startsWith('/workbenches') && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath === '/course' || currentPath.startsWith('/modules') }]} href="/course">
-              Course
-              {(currentPath === '/course' || currentPath.startsWith('/modules')) && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath.startsWith('/reference') }]} href="/reference">
-              Resources
-              {currentPath.startsWith('/reference') && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
+            {primaryNavigation.map((item) => (
+              <a class:list={['topbar-nav-link', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+                {isCurrent(item.href) && <span class="topbar-nav-dot" aria-hidden="true"></span>}
+              </a>
+            ))}
           </nav>
 
           <div class="topbar-actions">
+            <details class:list={['topbar-more-menu', { 'is-active': utilityIsCurrent }]} data-topbar-more>
+              <summary class="topbar-more-menu__summary" aria-label="More destinations">
+                <span class="nav-icon"><NavGlyph name="more" /></span>
+                <span>More</span>
+              </summary>
+              <div class="topbar-more-menu__panel">
+                {utilityNavigation.map((item) => item.kind === 'link' ? (
+                  <a class:list={['topbar-more-menu__item', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+                    <span>{item.label}</span>
+                  </a>
+                ) : (
+                  <button class="topbar-more-menu__item topbar-more-menu__action" type="button" data-developer-contact-trigger aria-haspopup="dialog" aria-controls="developer-contact-dialog" aria-label="Developer contact">
+                    <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </details>
             <button class="topbar-search" type="button" data-command-button aria-haspopup="dialog" aria-label="Search AMAT 19">
               <Search aria-hidden="true" size={17} strokeWidth={1.7} />
               <span>Search study tools</span>
@@ -229,6 +238,8 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         const moreFlyout = document.querySelector('[data-more-flyout]');
         const inlineMore = document.querySelector('.sidebar [data-more-menu]');
         const inlineMoreSummary = inlineMore?.querySelector('summary');
+        const topbarMore = document.querySelector('[data-topbar-more]');
+        const topbarMoreSummary = topbarMore?.querySelector('summary');
         const sidebarNav = document.querySelector('.sidebar .nav-stack');
         const sidebar = document.querySelector('.sidebar');
         const sidebarStorageKey = 'amat19.sidebar.collapsed';
@@ -301,6 +312,24 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         window.addEventListener('resize', repositionMoreFlyout);
         sidebarNav?.addEventListener('scroll', repositionMoreFlyout, { passive: true });
         document.querySelector('.sidebar')?.addEventListener('scroll', repositionMoreFlyout, { passive: true });
+
+        const closeTopbarMore = (restoreFocus = false) => {
+          if (!(topbarMore instanceof HTMLDetailsElement) || !topbarMore.open) return;
+          topbarMore.open = false;
+          if (restoreFocus && topbarMoreSummary instanceof HTMLElement) topbarMoreSummary.focus();
+        };
+        topbarMore?.addEventListener('keydown', (event) => {
+          if (event.key !== 'Escape') return;
+          event.preventDefault();
+          closeTopbarMore(true);
+        });
+        document.addEventListener('pointerdown', (event) => {
+          if (!(topbarMore instanceof HTMLDetailsElement) || !topbarMore.open) return;
+          const developerDialog = document.querySelector('[data-developer-contact-dialog]');
+          if (developerDialog instanceof HTMLDialogElement && developerDialog.open) return;
+          const target = event.target;
+          if (target instanceof Node && !topbarMore.contains(target)) closeTopbarMore(false);
+        });
 
         document.querySelectorAll('[data-command-button]').forEach((button) => {
           button.addEventListener('click', () => { window.dispatchEvent(new CustomEvent('amat:command', { detail: { trigger: button } })); });

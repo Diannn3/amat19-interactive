@@ -354,10 +354,11 @@ export default function OptimizationStrategyWorkbench() {
           Use finite mathematics to solve real-world problems. Model, analyze, and explore solutions for networks, optimization, decision-making, scheduling, and more.
         </p>
 
-        <div className="prob-mode-bar" role="tablist" aria-label="Applications view selection">
+        <div className="prob-mode-bar" role="group" aria-label="Applications view selection">
           <button 
             type="button" 
             className={`prob-mode-pill ${activeAppTab === 'network' ? 'is-active' : ''}`}
+            aria-pressed={activeAppTab === 'network'}
             onClick={() => setActiveAppTab('network')}
           >
             Network Models
@@ -365,6 +366,7 @@ export default function OptimizationStrategyWorkbench() {
           <button 
             type="button" 
             className={`prob-mode-pill ${activeAppTab === 'optimization' ? 'is-active' : ''}`}
+            aria-pressed={activeAppTab === 'optimization'}
             onClick={() => { setActiveAppTab('optimization'); selectMode('linear'); }}
           >
             Optimization
@@ -372,6 +374,7 @@ export default function OptimizationStrategyWorkbench() {
           <button 
             type="button" 
             className={`prob-mode-pill ${activeAppTab === 'decision' ? 'is-active' : ''}`}
+            aria-pressed={activeAppTab === 'decision'}
             onClick={() => { setActiveAppTab('decision'); selectMode('game'); }}
           >
             Decision-Making
@@ -379,6 +382,7 @@ export default function OptimizationStrategyWorkbench() {
           <button 
             type="button" 
             className={`prob-mode-pill ${activeAppTab === 'scheduling' ? 'is-active' : ''}`}
+            aria-pressed={activeAppTab === 'scheduling'}
             onClick={() => { setActiveAppTab('scheduling'); selectMode('advanced'); }}
           >
             Scheduling

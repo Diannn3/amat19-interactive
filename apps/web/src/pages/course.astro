@@ -110,23 +110,19 @@ const moduleTopics: Record<string, string[]> = {
     <section class="course-syllabus-section" aria-labelledby="course-syllabus-heading">
       <div class="course-syllabus-header">
         <div class="course-syllabus-header__copy">
-          <h2 id="course-syllabus-heading" class="course-syllabus-title">Course Syllabus.</h2>
+          <h2 id="course-syllabus-heading" class="course-syllabus-title">Suggested Study Path.</h2>
           <p class="course-syllabus-lede">
-            A 10-week journey through finite mathematics. Follow the recommended roadmap or jump directly to any topic.
+            An app-organized route through five connected modules. Follow it in order or jump directly to the topic you need. This is not an official weekly schedule.
           </p>
         </div>
 
-        <div class="course-syllabus-toggle" role="tablist" aria-label="Syllabus view mode">
-          <button class="is-active" type="button">Roadmap</button>
-          <button type="button">List View</button>
-        </div>
       </div>
 
       <div class="course-syllabus-layout">
         <div class="syllabus-timeline">
           <div class="syllabus-module-card apple-glass-card">
             <div class="syllabus-module-badge">
-              <span class="syllabus-module-week">Wk 1–2</span>
+              <span class="syllabus-module-week">Step 1</span>
               <div class="apple-icon-squircle" aria-hidden="true">
                 <Layers size={18} strokeWidth={1.8} />
               </div>
@@ -149,7 +145,7 @@ const moduleTopics: Record<string, string[]> = {
 
           <div class="syllabus-module-card apple-glass-card">
             <div class="syllabus-module-badge">
-              <span class="syllabus-module-week">Wk 3–4</span>
+              <span class="syllabus-module-week">Step 2</span>
               <div class="apple-icon-squircle" aria-hidden="true">
                 <Sparkles size={18} strokeWidth={1.8} />
               </div>
@@ -172,7 +168,7 @@ const moduleTopics: Record<string, string[]> = {
 
           <div class="syllabus-module-card apple-glass-card">
             <div class="syllabus-module-badge">
-              <span class="syllabus-module-week">Wk 5–6</span>
+              <span class="syllabus-module-week">Step 3</span>
               <div class="apple-icon-squircle" aria-hidden="true">
                 <BarChart3 size={18} strokeWidth={1.8} />
               </div>
@@ -195,7 +191,7 @@ const moduleTopics: Record<string, string[]> = {
 
           <div class="syllabus-module-card apple-glass-card">
             <div class="syllabus-module-badge">
-              <span class="syllabus-module-week">Wk 7–8</span>
+              <span class="syllabus-module-week">Step 4</span>
               <div class="apple-icon-squircle" aria-hidden="true">
                 <Grid3X3 size={18} strokeWidth={1.8} />
               </div>
@@ -218,7 +214,7 @@ const moduleTopics: Record<string, string[]> = {
 
           <div class="syllabus-module-card apple-glass-card">
             <div class="syllabus-module-badge">
-              <span class="syllabus-module-week">Wk 9–10</span>
+              <span class="syllabus-module-week">Step 5</span>
               <div class="apple-icon-squircle" aria-hidden="true">
                 <Network size={18} strokeWidth={1.8} />
               </div>
@@ -241,21 +237,6 @@ const moduleTopics: Record<string, string[]> = {
         </div>
 
         <aside class="syllabus-sidebar">
-          <div class="syllabus-progress-card apple-glass-card">
-            <h3>Your Progress</h3>
-            <div class="syllabus-donut-container">
-              <svg class="syllabus-donut-svg" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#e4e4e7" stroke-width="8" />
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#111111" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" />
-              </svg>
-              <div class="syllabus-donut-center">
-                <span class="syllabus-donut-pct">0%</span>
-                <span class="syllabus-donut-sub">Not Started</span>
-              </div>
-            </div>
-            <p class="syllabus-progress-text">0 of 5 modules completed. Start with Module 1 to begin tracking your study progress.</p>
-          </div>
-
           <div class="syllabus-resources-card apple-glass-card">
             <h3>Course Resources</h3>
             <div class="syllabus-resource-list">
@@ -326,7 +307,7 @@ const moduleTopics: Record<string, string[]> = {
         </div>
         <div class="course-companion-bar__info">
           <strong>One Connected Course</strong>
-          <p>These workbenches are part of a unified learning experience. Explore freely, or follow the syllabus for guided progression.</p>
+          <p>These workbenches are part of a unified learning experience. Explore freely, or follow the suggested path for guided progression.</p>
         </div>
       </div>
       <a class="apple-btn-black" href="/study">

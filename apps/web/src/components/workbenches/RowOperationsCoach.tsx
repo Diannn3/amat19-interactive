@@ -432,10 +432,11 @@ export default function RowOperationsCoach() {
           Explore matrix operations, solve systems, and build intuition through interactive examples.
         </p>
 
-        <div className="prob-mode-bar" role="tablist" aria-label="Matrix view selection">
+        <div className="prob-mode-bar" role="group" aria-label="Matrix view selection">
           <button 
             type="button" 
             className={`prob-mode-pill ${activeMatrixTab === 'ops' ? 'is-active' : ''}`}
+            aria-pressed={activeMatrixTab === 'ops'}
             onClick={() => setActiveMatrixTab('ops')}
           >
             Matrix Operations
@@ -443,6 +444,7 @@ export default function RowOperationsCoach() {
           <button 
             type="button" 
             className={`prob-mode-pill ${activeMatrixTab === 'solve' ? 'is-active' : ''}`}
+            aria-pressed={activeMatrixTab === 'solve'}
             onClick={() => setActiveMatrixTab('solve')}
           >
             Solve Systems
@@ -450,6 +452,7 @@ export default function RowOperationsCoach() {
           <button 
             type="button" 
             className={`prob-mode-pill ${activeMatrixTab === 'det' ? 'is-active' : ''}`}
+            aria-pressed={activeMatrixTab === 'det'}
             onClick={() => setActiveMatrixTab('det')}
           >
             Determinant
@@ -457,6 +460,7 @@ export default function RowOperationsCoach() {
           <button 
             type="button" 
             className={`prob-mode-pill ${activeMatrixTab === 'rref' ? 'is-active' : ''}`}
+            aria-pressed={activeMatrixTab === 'rref'}
             onClick={() => setActiveMatrixTab('rref')}
           >
             Row Reduction
@@ -464,6 +468,7 @@ export default function RowOperationsCoach() {
           <button 
             type="button" 
             className={`prob-mode-pill ${activeMatrixTab === 'eigen' ? 'is-active' : ''}`}
+            aria-pressed={activeMatrixTab === 'eigen'}
             onClick={() => setActiveMatrixTab('eigen')}
           >
             Eigenvalues
@@ -553,6 +558,7 @@ export default function RowOperationsCoach() {
                       key={`${r}-${c}`}
                       type="number"
                       className="matrix-cell-input"
+                      aria-label={`Matrix row ${r + 1}, column ${c + 1}`}
                       value={matrixCells[r]?.[c] ?? 0}
                       onChange={(e) => updateMatrixCell(r, c, Number(e.target.value))}
                     />

@@ -26,47 +26,37 @@ test('home and module journeys lead with a brand index instead of a snapshot pan
 });
 
 test('primary navigation marks the current route and mobile navigation stays docked', async ({ page }) => {
-  await page.goto('/progress');
   await page.setViewportSize({ width: 1280, height: 800 });
-  const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
-  await expect(primaryNavigation.getByRole('link', { name: 'Home' })).toBeVisible();
-  await expect(primaryNavigation.getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
-  await expect(primaryNavigation.locator('.nav-link').filter({ hasText: 'Practice' })).toHaveCount(0);
+  await page.goto('/progress');
+  const primaryNavigation = page.getByRole('navigation', { name: 'Primary destinations' });
+  await expect(primaryNavigation.getByRole('link', { name: 'Home', exact: true })).toBeVisible();
+  await expect(primaryNavigation.getByRole('link', { name: 'Progress', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(primaryNavigation.getByRole('link', { name: 'Study', exact: true })).toBeVisible();
 
   await page.setViewportSize({ width: 375, height: 667 });
   const mobileNavigation = page.getByRole('navigation', { name: 'Mobile navigation' });
   await expect(mobileNavigation).toBeVisible();
-  await expect(mobileNavigation.getByText('Progress', { exact: true })).toBeVisible();
+  await expect(mobileNavigation.getByRole('link', { name: 'Progress', exact: true })).toHaveAttribute('aria-current', 'page');
   await expect(mobileNavigation.locator('.mobile-nav-link')).toHaveCount(4);
 });
 
-test('Elbi workspace shell exposes desktop navigation, collapse state, and mobile dock', async ({ page }) => {
+test('workspace shell exposes topbar navigation on desktop and the mobile dock on phones', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
 
-  const frame = page.locator('.app-frame');
-  const sidebar = page.locator('.sidebar');
-  const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
-  const toggle = page.getByRole('button', { name: /Collapse navigation/i });
-
-  await expect(frame).toBeVisible();
+  await expect(page.locator('.app-frame')).toBeVisible();
   await expect(page.locator('.workspace')).toBeVisible();
+  await expect(page.locator('.sidebar')).toBeHidden();
+  await expect(page.getByRole('navigation', { name: 'Primary destinations' })).toBeVisible();
+  await expect(page.locator('[data-topbar-more] > summary')).toBeVisible();
   await expect(page.locator('.topbar-search')).toBeVisible();
-  await expect(page.locator('.sidebar-footer')).toHaveCount(0);
 
-  if (await sidebar.isVisible()) {
-    await expect(primaryNavigation.getByRole('link', { name: 'Home', exact: true })).toHaveAttribute('href', '/');
-    await expect(primaryNavigation.getByRole('link', { name: 'Study' })).toBeVisible();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await toggle.click();
-    await expect(frame).toHaveClass(/nav-collapsed/);
-    await expect(page.getByRole('button', { name: /Expand navigation/i })).toHaveAttribute('aria-expanded', 'false');
-    await page.setViewportSize({ width: 375, height: 667 });
-  }
-
-  await expect(sidebar).toBeHidden();
-  await expect(page.locator('.mobile-nav')).toBeVisible();
-  await expect(page.locator('.mobile-nav').getByRole('link', { name: 'Study' })).toBeVisible();
-  await expect(page.locator('.mobile-nav').getByText('More', { exact: true })).toBeVisible();
+  await page.setViewportSize({ width: 375, height: 667 });
+  await expect(page.getByRole('navigation', { name: 'Primary destinations' })).toBeHidden();
+  const mobile = page.getByRole('navigation', { name: 'Mobile navigation' });
+  await expect(mobile).toBeVisible();
+  await expect(mobile.getByRole('link', { name: 'Study', exact: true })).toBeVisible();
+  await expect(mobile.getByText('More', { exact: true })).toBeVisible();
 });
 
 test('Home stays reachable in the compact shell and utility navigation opens on request', async ({ page }) => {
@@ -100,7 +90,9 @@ test('@core shell navigation controls meet the 44px touch target contract', asyn
 
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
-  await assertTouchTargets(['.sidebar-toggle', '.topbar-home', '.topbar-search']);
+  const desktopTargets = ['.topbar-home', '.topbar-search'];
+  if (await page.locator('.sidebar-toggle').isVisible()) desktopTargets.unshift('.sidebar-toggle');
+  await assertTouchTargets(desktopTargets);
 
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
@@ -447,7 +439,7 @@ test('@core logic task switch is keyboard-accessible', async ({ page }) => {
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('ArrowDown');
   await expect(picker).toHaveValue('compare');
-  await expect(page.getByRole('heading', { name: 'Find the row that separates them.' })).toBeVisible();
+  await expect(workbench.getByRole('region', { name: 'Find the row that separates them.' })).toBeVisible();
 });
 
 test('reference browser searches, filters by module, and expands assumptions', async ({ page }) => {
