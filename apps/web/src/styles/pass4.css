@@ -850,7 +850,7 @@ html[data-motion='reduced'] *::after {
 .amat-button--secondary,
 .amat-button--answer { background: var(--surface); }
 .amat-button--ghost { border-color: transparent; background: transparent; }
-.amat-button:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+.amat-button:disabled { opacity: .68; cursor: not-allowed; transform: none; }
 
 .mixed-practice__progress {
   display: flex;
