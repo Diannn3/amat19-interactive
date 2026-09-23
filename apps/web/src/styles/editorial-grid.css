@@ -18,7 +18,9 @@
   /* Supporting surfaces derived from the approved five-color relationship. */
   --editorial-paper-pure: #fffdf8;
   --editorial-paper-muted: #f1ede2;
+  --editorial-paper-warm: #fff3c7;
   --editorial-ink-muted: #466073;
+  --editorial-on-signal: #102A43;
   --editorial-field-soft: #1b4a6d;
   --editorial-secondary-soft: #d8eeea;
   --editorial-signal-soft: #ffe1d5;
@@ -6884,5 +6886,161 @@ main .apple-glass-card:active .apple-action-circle {
   .developer-dialog__profile strong,
   .developer-dialog__profile span {
     color: CanvasText !important;
+  }
+}
+
+
+/* ==========================================================================
+   Binary appearance integration
+   Main owns the light/dark preference contract. Blueprint Orange adapts its
+   semantic tokens to that binary state without introducing a system mode.
+   ========================================================================== */
+
+html[data-theme='dark'] {
+  --editorial-field: #0c2f48;
+  --editorial-paper: #0e171d;
+  --editorial-ink: #f8f3e8;
+  --editorial-signal: #f26430;
+  --editorial-signal-ink: #ffad8b;
+  --editorial-secondary: #2e6c66;
+
+  --editorial-paper-pure: #142129;
+  --editorial-paper-muted: #1b2b34;
+  --editorial-paper-warm: #352d1b;
+  --editorial-ink-muted: #bcc9ce;
+  --editorial-field-soft: #174a68;
+  --editorial-secondary-soft: #193936;
+  --editorial-signal-soft: #40271f;
+  --editorial-on-signal: #102a43;
+
+  --editorial-grid-light: rgb(248 243 232 / 0.065);
+  --editorial-grid-light-major: rgb(248 243 232 / 0.11);
+  --editorial-grid-dark: rgb(248 243 232 / 0.075);
+  --editorial-grid-dark-major: rgb(248 243 232 / 0.13);
+  --editorial-rule: rgb(248 243 232 / 0.25);
+  --editorial-rule-strong: var(--editorial-ink);
+
+  --editorial-shadow-xs: 2px 2px 0 #06131c;
+  --editorial-shadow-sm: 4px 4px 0 #06131c;
+  --editorial-shadow-md: 6px 6px 0 #06131c;
+  --editorial-shadow-signal: 4px 4px 0 #7e2d12;
+}
+
+/* Orange fills always use dark navy foreground for contrast in both modes. */
+.editorial-action--primary,
+.editorial-sticker--signal,
+.update-banner button:first-of-type,
+.home-hero__actions .apple-btn-black,
+.home-workbench-link .apple-action-circle,
+.workbench-card .apple-action-circle,
+.syllabus-module-week,
+.syllabus-module-arrow .apple-action-circle,
+.syllabus-banner-cta .apple-btn-black,
+.study-panel .hero-action--primary,
+.study-bento-card .apple-action-circle,
+.workbench-route__canvas .amat-button--primary,
+.workbench-route__canvas .button--primary,
+.workbench-route__canvas .apple-btn-black,
+[data-route^="/modules/"] .hero-action--primary,
+.course-companion-bar .apple-btn-black,
+[data-route^="/lessons/"] .lesson-header .hero-action--primary,
+.study-panel--primary::after {
+  color: var(--editorial-on-signal) !important;
+}
+
+/* Binary appearance controls join the same tactile shell grammar. */
+.topbar-theme-toggle {
+  width: 45px !important;
+  height: 45px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  flex: 0 0 45px;
+  padding: 0 !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+  cursor: pointer;
+  transition:
+    transform var(--editorial-duration-press) var(--editorial-ease),
+    box-shadow var(--editorial-duration-press) var(--editorial-ease),
+    background-color var(--editorial-duration-ui) ease !important;
+}
+
+.topbar-theme-toggle:hover {
+  background: var(--editorial-secondary-soft) !important;
+}
+
+.topbar-theme-toggle:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--editorial-ink) !important;
+}
+
+.topbar-theme-toggle:focus-visible,
+.theme-menu-toggle:focus-visible {
+  outline: 3px solid var(--focus) !important;
+  outline-offset: 3px !important;
+}
+
+.theme-menu-toggle__state {
+  margin-left: auto;
+  padding: .24rem .38rem;
+  border: 1.5px solid var(--editorial-ink);
+  border-radius: var(--editorial-radius-xs);
+  background: var(--editorial-paper);
+  color: var(--editorial-ink);
+  font-family: var(--font-amat-mono);
+  font-size: .62rem;
+  font-weight: 760;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+html[data-theme='dark'] .feedback-region[data-tone='success'] {
+  background: #173327 !important;
+}
+
+html[data-theme='dark'] .feedback-region[data-tone='error'] {
+  background: #3b211d !important;
+}
+
+html[data-theme='dark'] .feedback-region[data-tone='warning'] {
+  background: #3c321a !important;
+}
+
+html[data-theme='dark'] .form-field__error {
+  color: #ff9c94 !important;
+}
+
+html[data-theme='dark'] .editorial-sticker--warm {
+  background: #5c4a13;
+  color: var(--editorial-ink);
+}
+
+html[data-theme='dark'] .editorial-status--supplemental {
+  color: #f6d66b;
+  background: #3a321c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topbar-theme-toggle {
+    transition: background-color var(--editorial-duration-ui) ease !important;
+    transform: none !important;
+  }
+}
+
+html[data-motion='reduced'] .topbar-theme-toggle {
+  transition: background-color var(--editorial-duration-ui) ease !important;
+  transform: none !important;
+}
+
+@media (forced-colors: active) {
+  .topbar-theme-toggle,
+  .theme-menu-toggle__state {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
   }
 }
