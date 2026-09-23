@@ -488,3 +488,190 @@ html[data-motion="reduced"] .editorial-sticker--decorative {
     box-shadow: none;
   }
 }
+
+
+/* ==========================================================================
+   Phase 2 — Blueprint Orange shell
+   ========================================================================== */
+
+/* Desktop/editorial frame. Navigation semantics remain owned by AppLayout. */
+html {
+  background: var(--editorial-paper) !important;
+}
+
+body {
+  background-color: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.app-frame {
+  background: var(--editorial-paper) !important;
+}
+
+.workspace {
+  background: var(--editorial-paper) !important;
+}
+
+.workspace-scroll {
+  background-color: var(--editorial-paper) !important;
+  background-image:
+    linear-gradient(to right, var(--editorial-grid-light) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--editorial-grid-light) 1px, transparent 1px) !important;
+  background-size: 52px 52px !important;
+  background-attachment: local !important;
+}
+
+.topbar {
+  min-height: 72px;
+  background: color-mix(in srgb, var(--editorial-paper) 96%, white) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: 2px solid var(--editorial-ink) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 0 3px 0 var(--editorial-secondary) !important;
+}
+
+.topbar-home-label {
+  color: var(--editorial-ink) !important;
+  font-weight: 820 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.topbar-nav {
+  gap: clamp(1.25rem, 2.4vw, 2.35rem) !important;
+}
+
+.topbar-nav-link {
+  color: var(--editorial-ink-muted) !important;
+  font-weight: 680 !important;
+  letter-spacing: -0.015em;
+  transition:
+    color var(--editorial-duration-ui) ease,
+    transform var(--editorial-duration-press) var(--editorial-ease) !important;
+}
+
+.topbar-nav-link:hover {
+  color: var(--editorial-ink) !important;
+  transform: translateY(-1px);
+}
+
+.topbar-nav-link.is-active {
+  color: var(--editorial-ink) !important;
+  font-weight: 800 !important;
+}
+
+.topbar-nav-dot {
+  bottom: -0.4rem !important;
+  width: 100% !important;
+  height: 3px !important;
+  border-radius: 0 !important;
+  background: var(--editorial-signal) !important;
+}
+
+.topbar-status {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary-soft) !important;
+  color: var(--editorial-ink) !important;
+  padding: 0.38rem 0.62rem !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: 0.66rem !important;
+  font-weight: 760 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase;
+}
+
+.workspace-scroll .page-width {
+  width: min(calc(100% - 4rem), 92rem) !important;
+}
+
+.site-footer {
+  border-top: 2px solid var(--editorial-ink) !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink-muted) !important;
+}
+
+.site-footer__inner {
+  width: min(calc(100% - 4rem), 92rem) !important;
+}
+
+.site-footer a {
+  color: var(--editorial-ink) !important;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--editorial-signal);
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    min-height: 3.875rem;
+    box-shadow: 0 2px 0 var(--editorial-secondary) !important;
+  }
+
+  .workspace-scroll {
+    background-size: 36px 36px !important;
+  }
+
+  .workspace-scroll .page-width,
+  .workspace-scroll .site-footer__inner {
+    width: min(calc(100% - 2rem), 92rem) !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .workspace-scroll .page-width,
+  .workspace-scroll .site-footer__inner {
+    width: min(calc(100% - 1.5rem), 92rem) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topbar-nav-link {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+html[data-motion="reduced"] .topbar-nav-link {
+  transition: none !important;
+  transform: none !important;
+}
+
+@media (forced-colors: active) {
+  html,
+  body,
+  .app-frame,
+  .workspace,
+  .workspace-scroll,
+  .topbar,
+  .site-footer {
+    background: Canvas !important;
+    color: CanvasText !important;
+  }
+
+  .workspace-scroll {
+    background-image: none !important;
+  }
+
+  .topbar,
+  .site-footer,
+  .topbar-status {
+    border-color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .topbar-nav-link,
+  .topbar-nav-link.is-active,
+  .topbar-home-label,
+  .topbar-status,
+  .site-footer a {
+    color: CanvasText !important;
+  }
+
+  .topbar-nav-link.is-active {
+    text-decoration: underline;
+  }
+
+  .topbar-nav-dot {
+    display: none;
+  }
+}
