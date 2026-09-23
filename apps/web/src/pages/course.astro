@@ -380,24 +380,4 @@ const moduleTopics: Record<string, string[]> = {
     </section>
   </div>
 
-  <script>
-    function initCourseSpotlight() {
-      const cards = document.querySelectorAll<HTMLElement>('.apple-glass-card');
-      cards.forEach((card) => {
-        card.addEventListener('pointermove', (e: PointerEvent) => {
-          const rect = card.getBoundingClientRect();
-          const x = ((e.clientX - rect.left) / rect.width) * 100;
-          const y = ((e.clientY - rect.top) / rect.height) * 100;
-          card.style.setProperty('--mouse-x', `${x}%`);
-          card.style.setProperty('--mouse-y', `${y}%`);
-          card.style.setProperty('--spotlight-opacity', '1');
-        });
-        card.addEventListener('pointerleave', () => {
-          card.style.setProperty('--spotlight-opacity', '0');
-        });
-      });
-    }
-    initCourseSpotlight();
-    document.addEventListener('astro:page-load', initCourseSpotlight);
-  </script>
 </AppLayout>
