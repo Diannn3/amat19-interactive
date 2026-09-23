@@ -420,6 +420,29 @@ test('mobile routes do not create page-level horizontal overflow', async ({ page
   }
 });
 
+test('editorial redesign stays overflow-free at 320px', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 320, height: 700 });
+
+  for (const route of [
+    '/',
+    '/course',
+    '/study',
+    '/settings',
+    '/modules/logic',
+    '/workbenches/probability',
+    '/workbenches/linear',
+  ]) {
+    await page.goto(route);
+    const metrics = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      width: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+    }));
+    expect(metrics.overflow, `${route} should fit 320px (client ${metrics.width}, scroll ${metrics.scrollWidth})`).toBe(false);
+  }
+});
+
 test('@core contextual retrieval, mixed check, and reference surfaces render', async ({ page }) => {
   await page.goto('/modules/logic?view=practice&preset=logic-drill');
   await expect(page.getByTestId('mixed-practice')).toBeVisible();
