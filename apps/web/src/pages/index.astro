@@ -1,10 +1,12 @@
 ---
-import { currentCourseProfile } from '@amat19/course-content';
+import { currentCourseProfile, skillGraph } from '@amat19/course-content';
 import { ArrowRight, GraduationCap, BarChart3, BookOpen, Grid3X3, Network, Search, Boxes, Activity } from 'lucide-react';
 import AppLayout from '../layouts/AppLayout.astro';
 import HomeMathPoster from '../components/home/HomeMathPoster.astro';
 
 const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench) => [workbench.id, workbench]));
+const workbenchCount = currentCourseProfile.workbenches.length;
+const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current').length;
 ---
 <AppLayout title="Home">
   <section class="page-width home-hero" data-home-hero aria-labelledby="home-title">
@@ -26,21 +28,21 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
         <a class="apple-btn-glass secondary-button" href="/course">Explore the course</a>
       </div>
 
-      <div class="home-hero__specs" aria-label="Course laboratory metrics">
+      <div class="home-hero__specs" aria-label="Course laboratory facts">
         <div class="home-spec-item">
-          <span class="home-spec-item__val">5</span>
+          <span class="home-spec-item__val">{workbenchCount}</span>
           <span class="home-spec-item__label">Workbenches</span>
           <span class="home-spec-item__sub">Logic, Probability, Finance, Matrices, Applications</span>
         </div>
         <div class="home-spec-item">
-          <span class="home-spec-item__val">100+</span>
-          <span class="home-spec-item__label">Interactive Examples</span>
-          <span class="home-spec-item__sub">From concepts to real-world problems</span>
+          <span class="home-spec-item__val">{currentSkillCount}</span>
+          <span class="home-spec-item__label">Core skills</span>
+          <span class="home-spec-item__sub">Derived from the current course skill graph</span>
         </div>
         <div class="home-spec-item">
-          <span class="home-spec-item__val">&infin;</span>
-          <span class="home-spec-item__label">One Connected Course</span>
-          <span class="home-spec-item__sub">A clearer view of finite mathematics</span>
+          <span class="home-spec-item__val">Local</span>
+          <span class="home-spec-item__label">Study data</span>
+          <span class="home-spec-item__sub">Progress and preferences stay in this browser</span>
         </div>
       </div>
     </div>
