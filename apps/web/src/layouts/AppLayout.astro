@@ -45,14 +45,25 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#2e080d" />
-    <meta name="color-scheme" content="light" />
+    <meta id="amat-theme-color" name="theme-color" content="#fbfbfd" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <script is:inline>
-      try {
-        if (window.localStorage.getItem('amat19-motion') === 'reduced') document.documentElement.dataset.motion = 'reduced';
-      } catch {}
+      (() => {
+        const root = document.documentElement;
+        let theme = 'light';
+        try {
+          if (window.localStorage.getItem('amat19-theme') === 'dark') theme = 'dark';
+          if (window.localStorage.getItem('amat19-motion') === 'reduced') root.dataset.motion = 'reduced';
+        } catch {
+          // Preferences are optional. Light remains the deterministic fallback.
+        }
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+        const themeColor = document.querySelector('meta[name="theme-color"]');
+        if (themeColor instanceof HTMLMetaElement) themeColor.content = theme === 'dark' ? '#09090b' : '#fbfbfd';
+      })();
     </script>
     <title>{title} &middot; AMAT 19 Study Lab</title>
   </head>
