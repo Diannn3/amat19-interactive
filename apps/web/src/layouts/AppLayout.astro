@@ -408,7 +408,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         }
         const banner = document.getElementById('pwa-update'); const updateMessage = document.getElementById('pwa-update-message'); const updateButton = document.getElementById('pwa-update-button'); const dismissButton = document.getElementById('pwa-update-dismiss'); let waitingWorker; let reloadForUpdate = false; let updateInFlight = false;
         const showUpdate = (worker) => { waitingWorker = worker; updateInFlight = false; if (updateButton) { updateButton.disabled = false; updateButton.textContent = 'Save & update'; } if (banner) banner.hidden = false; };
-        navigator.serviceWorker.register('/sw.js').then((registration) => {
+        navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then((registration) => {
           if (registration.waiting) showUpdate(registration.waiting);
           if (typeof registration.update === 'function') registration.update().catch(() => {});
           registration.addEventListener('updatefound', () => { const installing = registration.installing; if (!installing) return; installing.addEventListener('statechange', () => { if (installing.state === 'installed' && navigator.serviceWorker.controller) showUpdate(installing); }); });
