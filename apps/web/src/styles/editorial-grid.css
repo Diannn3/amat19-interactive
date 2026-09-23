@@ -316,3 +316,97 @@ html[data-motion="reduced"] .editorial-action[data-pressed="true"] {
     forced-color-adjust: auto;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Truthful labels / stamps
+   -------------------------------------------------------------------------- */
+
+.editorial-sticker,
+.editorial-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 1.9rem;
+  padding: 0.38rem 0.58rem;
+  border: 2px solid var(--editorial-ink);
+  border-radius: var(--editorial-radius-xs);
+  background: var(--editorial-paper-pure);
+  color: var(--editorial-ink);
+  font-family: var(--font-amat-mono);
+  font-size: 0.69rem;
+  font-weight: 760;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.editorial-sticker {
+  background: var(--editorial-secondary);
+  box-shadow: var(--editorial-shadow-xs);
+}
+
+.editorial-sticker--signal {
+  background: var(--editorial-signal);
+  color: var(--editorial-paper-pure);
+}
+
+.editorial-sticker--warm {
+  background: #ffd978;
+}
+
+.editorial-status {
+  gap: 0.38rem;
+  border-width: 1.5px;
+  background: var(--editorial-paper);
+  letter-spacing: 0.045em;
+}
+
+.editorial-status::before {
+  content: "";
+  width: 0.48rem;
+  height: 0.48rem;
+  flex: 0 0 0.48rem;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.editorial-status--current {
+  color: var(--editorial-field);
+  background: var(--editorial-secondary-soft);
+}
+
+.editorial-status--supplemental {
+  color: #6b4f12;
+  background: #fff1bd;
+}
+
+.editorial-status--local {
+  color: var(--editorial-ink);
+  background: var(--editorial-paper-muted);
+}
+
+.editorial-sticker--decorative {
+  transform: rotate(-1.25deg);
+}
+
+html[data-motion="reduced"] .editorial-sticker--decorative {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editorial-sticker--decorative {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .editorial-sticker,
+  .editorial-status {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+  }
+}
