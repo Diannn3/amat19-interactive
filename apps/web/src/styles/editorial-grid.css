@@ -410,3 +410,81 @@ html[data-motion="reduced"] .editorial-sticker--decorative {
     box-shadow: none;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Editorial panels
+   -------------------------------------------------------------------------- */
+
+.editorial-panel {
+  position: relative;
+  border: 2px solid var(--editorial-ink);
+  border-radius: var(--editorial-radius-md);
+  background: var(--editorial-paper-pure);
+  color: var(--editorial-ink);
+}
+
+.editorial-panel--outline {
+  box-shadow: none;
+}
+
+.editorial-panel--hard {
+  box-shadow: var(--editorial-shadow-md);
+}
+
+.editorial-panel--soft {
+  border-color: color-mix(in srgb, var(--editorial-ink) 32%, transparent);
+  border-radius: var(--editorial-radius-lg);
+  box-shadow: 0 16px 40px rgb(16 42 67 / 0.10);
+}
+
+.editorial-panel--flat {
+  border-color: var(--editorial-rule);
+  border-radius: 0;
+}
+
+.editorial-panel--dark {
+  border-color: var(--editorial-paper);
+  background: var(--editorial-field);
+  color: var(--editorial-paper);
+  box-shadow: 5px 5px 0 var(--editorial-secondary);
+}
+
+.editorial-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3rem;
+  padding: 0.65rem 0.8rem;
+  border-bottom: 2px solid currentColor;
+}
+
+.editorial-panel__body {
+  padding: clamp(1rem, 2.4vw, 1.5rem);
+}
+
+.editorial-panel__footer {
+  padding: 0.75rem 0.8rem;
+  border-top: 1.5px solid color-mix(in srgb, currentColor 40%, transparent);
+}
+
+@media (max-width: 480px) {
+  .editorial-panel--hard {
+    box-shadow: 3px 3px 0 var(--editorial-ink);
+  }
+
+  .editorial-panel--dark {
+    box-shadow: 3px 3px 0 var(--editorial-secondary);
+  }
+}
+
+@media (forced-colors: active) {
+  .editorial-panel,
+  .editorial-panel--dark {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+  }
+}
