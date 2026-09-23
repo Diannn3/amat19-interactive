@@ -395,11 +395,11 @@ export default function OptimizationStrategyWorkbench() {
         <div className="apple-glass-card app-graph-panel">
           <div className="app-graph-header">
             <div>
-              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Shortest Path</span>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0.15rem 0 0', color: '#09090b', letterSpacing: '-0.02em' }}>Topological Route Network</h2>
+              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--foreground-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Shortest Path</span>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0.15rem 0 0', color: 'var(--foreground)', letterSpacing: '-0.02em' }}>Topological Route Network</h2>
             </div>
             <div className="app-controls-row">
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: '#52525b', fontWeight: 500 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--foreground-muted)', fontWeight: 500 }}>
                 From
                 <select className="app-select" value={startNode} onChange={(e) => { const next = e.target.value as NodeId; setStartNode(next); setEvaluatedPath(dijkstra(next, endNode, graphWeights)); }}>
                   {GRAPH_NODES.map((n) => <option key={n.id} value={n.id}>Node {n.id}</option>)}
@@ -445,18 +445,18 @@ export default function OptimizationStrategyWorkbench() {
                     x2={vNode.x}
                     y2={vNode.y}
                     className={inPath ? 'app-glowing-edge' : undefined}
-                    stroke={inPath ? '#2563eb' : 'rgba(0, 0, 0, 0.14)'}
+                    stroke={inPath ? '#2563eb' : 'var(--border-strong)'}
                     strokeWidth={inPath ? 3.5 : 1.75}
                     strokeDasharray={inPath ? undefined : '4 4'}
                   />
-                  <circle cx={midX} cy={midY} r="11" fill="#ffffff" stroke="rgba(0, 0, 0, 0.1)" strokeWidth="1" />
+                  <circle cx={midX} cy={midY} r="11" fill="var(--surface)" stroke="var(--border)" strokeWidth="1" />
                   <text
                     x={midX}
                     y={midY + 4}
                     textAnchor="middle"
                     fontSize="10"
                     fontWeight="700"
-                    fill="#71717a"
+                    fill="var(--foreground-muted)"
                     fontFamily="var(--font-amat-mono)"
                   >
                     {edge.weight}
@@ -487,8 +487,8 @@ export default function OptimizationStrategyWorkbench() {
                     cx={node.x}
                     cy={node.y}
                     r={inPath ? 20 : 18}
-                    fill={inPath ? '#2563eb' : '#ffffff'}
-                    stroke={inPath ? '#1d4ed8' : 'rgba(0, 0, 0, 0.18)'}
+                    fill={inPath ? '#2563eb' : 'var(--surface)'}
+                    stroke={inPath ? '#1d4ed8' : 'var(--border-strong)'}
                     strokeWidth={inPath ? 3 : 1.5}
                     filter={inPath ? 'drop-shadow(0 0 8px rgba(37, 99, 235, 0.5))' : undefined}
                   />
@@ -498,7 +498,7 @@ export default function OptimizationStrategyWorkbench() {
                     textAnchor="middle"
                     fontSize="13"
                     fontWeight="700"
-                    fill={inPath ? '#ffffff' : '#18181b'}
+                    fill={inPath ? '#ffffff' : 'var(--foreground)'}
                     fontFamily="var(--font-amat-mono)"
                   >
                     {node.label}
