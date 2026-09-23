@@ -24,7 +24,7 @@ body {
   background: color-mix(in srgb, var(--surface) 76%, transparent) !important;
   backdrop-filter: blur(28px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid var(--glass-border) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 12px 32px -4px rgba(0, 0, 0, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.98) !important;
   border-radius: 22px !important;
   transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1), border-color 220ms ease !important;
@@ -34,7 +34,7 @@ body {
 .apple-glass-card:hover {
   transform: translateY(-2px) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 20px 48px -8px rgba(0, 0, 0, 0.09), inset 0 1px 1px 0 rgba(255, 255, 255, 1) !important;
-  border-color: rgba(255, 255, 255, 1) !important;
+  border-color: var(--glass-border) !important;
 }
 
 .apple-glass-card:active {
@@ -75,7 +75,7 @@ body {
   align-items: center;
   justify-content: center;
   background: color-mix(in srgb, var(--surface) 88%, transparent);
-  border: 1px solid rgba(255, 255, 255, 1);
+  border: 1px solid var(--glass-border);
   border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), inset 0 1px 1.5px rgba(255, 255, 255, 1);
   flex-shrink: 0;
@@ -91,7 +91,7 @@ body {
   align-items: center;
   justify-content: center;
   background: color-mix(in srgb, var(--surface) 85%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.07);
+  border: 1px solid var(--border);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
   color: var(--foreground-muted);
   transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -99,9 +99,9 @@ body {
 }
 
 .apple-glass-card:hover .apple-action-circle {
-  background: #111111;
+  background: var(--foreground);
   color: var(--surface);
-  border-color: #111111;
+  border-color: var(--foreground);
   transform: scale(1.06);
 }
 
@@ -113,7 +113,7 @@ body {
   gap: 0.5rem;
   padding: 0.8rem 1.65rem;
   border-radius: 999px;
-  background: #111111 !important;
+  background: var(--foreground) !important;
   color: var(--surface) !important;
   font-weight: 600;
   font-size: 0.95rem;
@@ -144,7 +144,7 @@ body {
   background: color-mix(in srgb, var(--surface) 78%, transparent) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.09) !important;
+  border: 1px solid var(--border) !important;
   color: var(--foreground) !important;
   font-weight: 600;
   font-size: 0.95rem;
@@ -156,7 +156,7 @@ body {
 
 .apple-btn-glass:hover {
   background: color-mix(in srgb, var(--surface) 95%, transparent) !important;
-  border-color: rgba(0, 0, 0, 0.15) !important;
+  border-color: var(--border-strong) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 }
@@ -331,7 +331,7 @@ body {
   padding: 0.12rem 0.45rem !important;
   border-radius: 6px !important;
   background: color-mix(in srgb, var(--surface) 95%, transparent) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid var(--border) !important;
   font-family: var(--font-amat-mono) !important;
   font-size: 0.72rem !important;
   font-weight: 600 !important;
@@ -345,7 +345,7 @@ body {
   padding: 0.25rem 0.6rem;
   border-radius: 8px;
   background: color-mix(in srgb, var(--surface) 90%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border);
   font-family: var(--font-amat-mono);
   font-size: 0.78rem;
   font-weight: 600;
@@ -357,7 +357,7 @@ body {
 .home-journey {
   margin-top: clamp(3rem, 6vw, 5rem);
   padding-block: clamp(2rem, 4vw, 3.5rem);
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid var(--border);
 }
 
 .home-journey__header-row {
@@ -381,7 +381,7 @@ body {
   padding: 0.75rem 1.25rem !important;
   border-radius: 16px !important;
   background: color-mix(in srgb, var(--surface) 85%, transparent) !important;
-  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid var(--glass-border) !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255, 255, 255, 1) !important;
   flex-shrink: 0 !important;
 }
@@ -451,7 +451,7 @@ body {
 .home-journey__step-num {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #a1a1aa;
+  color: var(--foreground-soft);
   font-family: var(--font-amat-mono);
 }
 
@@ -489,7 +489,7 @@ body {
   font-size: 0.82rem;
   font-weight: 600;
   background: color-mix(in srgb, var(--surface) 65%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
   color: var(--foreground-muted);
   transition: all 160ms ease;
   cursor: pointer;
@@ -498,9 +498,9 @@ body {
 
 .apple-filter-pill:hover,
 .apple-filter-pill.is-active {
-  background: #111111;
+  background: var(--foreground);
   color: var(--surface);
-  border-color: #111111;
+  border-color: var(--foreground);
 }
 
 /* ==========================================================================
@@ -557,7 +557,7 @@ body {
   background: color-mix(in srgb, var(--surface) 78%, transparent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
   font-size: 0.92rem;
   color: var(--foreground);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02), inset 0 1px 1px rgba(255, 255, 255, 0.9);
@@ -626,7 +626,7 @@ body {
   font-weight: 700 !important;
   color: var(--foreground-muted) !important;
   background: color-mix(in srgb, var(--foreground) 4%, transparent) !important;
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 6px !important;
   padding: 0.2rem 0.45rem !important;
 }
@@ -663,7 +663,7 @@ body {
   padding: 0.2rem 0.55rem !important;
   border-radius: 999px !important;
   background: color-mix(in srgb, var(--surface) 85%, transparent) !important;
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid var(--border) !important;
   color: var(--foreground-muted) !important;
 }
 
@@ -673,7 +673,7 @@ body {
   justify-content: space-between !important;
   margin-top: auto !important;
   padding-top: 1rem !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-top: 1px solid var(--border) !important;
 }
 
 .workbench-card__action-text {
@@ -752,7 +752,7 @@ body {
   padding: 0.85rem 1rem;
   border-radius: 14px;
   background: color-mix(in srgb, var(--surface) 70%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
   text-decoration: none;
   color: inherit;
   transition: all 180ms ease;
@@ -760,7 +760,7 @@ body {
 
 .course-resource-item:hover {
   background: var(--surface);
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: var(--border);
   transform: translateX(2px);
 }
 
@@ -781,7 +781,6 @@ body {
 
 html {
   background: var(--background) !important;
-  color-scheme: light !important;
 }
 
 body {
@@ -836,7 +835,7 @@ body {
   backdrop-filter: blur(32px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
   border: none !important;
-  border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-right: 1px solid var(--border) !important;
   border-radius: 0 !important;
   top: 0 !important;
   height: 100vh !important;
@@ -1072,7 +1071,7 @@ body {
   background: color-mix(in srgb, var(--surface) 78%, transparent);
   backdrop-filter: blur(28px) saturate(190%);
   -webkit-backdrop-filter: blur(28px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--glass-border);
   border-radius: 24px;
   padding: 2rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 16px 36px -6px rgba(15, 23, 42, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.95);
@@ -1685,7 +1684,7 @@ body {
   justify-content: space-between;
   padding: 0.75rem 0.9rem;
   background: color-mix(in srgb, var(--surface) 65%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
   border-radius: 12px;
   text-decoration: none;
   transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -1693,7 +1692,7 @@ body {
 
 .syllabus-resource-item:hover {
   background: var(--surface);
-  border-color: rgba(0, 0, 0, 0.12);
+  border-color: var(--border-strong);
   transform: translateX(2px);
 }
 
@@ -1823,7 +1822,7 @@ body {
 .prob-formula-card {
   padding: 1.25rem 1.5rem;
   background: color-mix(in srgb, var(--surface) 85%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border);
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
@@ -1886,7 +1885,7 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #111111;
+  background: var(--foreground);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   transition: transform 120ms ease;
@@ -1905,7 +1904,7 @@ body {
 .prob-result-pill {
   padding: 0.85rem 1rem;
   background: color-mix(in srgb, var(--surface) 70%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
   border-radius: 14px;
   text-align: center;
 }
@@ -1988,7 +1987,7 @@ body {
   width: 100%;
   padding: 0.65rem 0.9rem;
   background: color-mix(in srgb, var(--surface) 90%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
   border-radius: 12px;
   font-family: var(--font-amat-mono);
   font-size: 0.95rem;
@@ -1999,7 +1998,7 @@ body {
 }
 
 .fin-number-input:focus {
-  border-color: #111111;
+  border-color: var(--foreground);
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
 }
 
@@ -2007,7 +2006,7 @@ body {
   width: 100%;
   padding: 0.65rem 0.9rem;
   background: color-mix(in srgb, var(--surface) 90%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
   border-radius: 12px;
   font-size: 0.9rem;
   font-weight: 600;
@@ -2121,14 +2120,14 @@ body {
   font-size: 1.05rem;
   font-weight: 700;
   background: color-mix(in srgb, var(--surface) 95%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   outline: none;
   transition: all 150ms ease;
 }
 
 .matrix-cell-input:focus {
-  border-color: #111111;
+  border-color: var(--foreground);
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
 }
 
@@ -2140,7 +2139,7 @@ body {
 }
 
 .matrix-op-pill {
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
   background: color-mix(in srgb, var(--surface) 80%, transparent);
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
@@ -2154,9 +2153,9 @@ body {
 
 .matrix-op-pill:hover,
 .matrix-op-pill.is-active {
-  background: #111111;
+  background: var(--foreground);
   color: var(--surface);
-  border-color: #111111;
+  border-color: var(--foreground);
 }
 
 /* ==========================================================================
@@ -2250,7 +2249,7 @@ body {
   padding: 0.45rem 0.85rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--surface) 90%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--border-strong);
   font-family: var(--font-amat-mono);
   font-size: 0.85rem;
   font-weight: 600;
@@ -2261,7 +2260,7 @@ body {
 }
 
 .app-select:focus {
-  border-color: #111111;
+  border-color: var(--foreground);
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
 }
 
@@ -2446,7 +2445,7 @@ body {
   font-size: 0.72rem;
   letter-spacing: 0.16em;
   font-weight: 700;
-  color: #a1a1aa;
+  color: var(--foreground-soft);
   text-align: right;
   line-height: 1.6;
   display: flex;
@@ -2486,7 +2485,7 @@ body {
   left: 0.85rem;
   width: 14px;
   height: 14px;
-  color: #a1a1aa;
+  color: var(--foreground-soft);
   pointer-events: none;
 }
 
@@ -2494,7 +2493,7 @@ body {
   padding: 0.48rem 1rem 0.48rem 2.25rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--surface) 75%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
   font-size: 0.85rem;
   color: var(--foreground);
   width: 250px;
@@ -2504,7 +2503,7 @@ body {
 
 .study-search-input input:focus {
   background: var(--surface);
-  border-color: #111111;
+  border-color: var(--foreground);
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -2520,7 +2519,7 @@ body {
   justify-content: space-between;
   margin-top: 1.5rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  border-top: 1px solid var(--border);
 }
 
 .study-bento-meta {
@@ -2571,7 +2570,7 @@ body {
   padding: 1rem;
   border-radius: 16px;
   background: color-mix(in srgb, var(--surface) 55%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -2612,7 +2611,7 @@ body {
   padding: 0.65rem 0.75rem;
   border-radius: 14px;
   background: color-mix(in srgb, var(--surface) 55%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
 }
 
 .study-stat-item strong {
@@ -2631,7 +2630,7 @@ body {
 }
 
 .study-quote {
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid var(--border);
   padding-top: 1rem;
   margin: 0;
   font-style: italic;
@@ -2647,21 +2646,21 @@ body {
   font-size: 0.75rem;
   font-style: normal;
   font-weight: 600;
-  color: #a1a1aa;
+  color: var(--foreground-soft);
 }
 
 /* High Contrast & Reduced Motion */
 @media (prefers-contrast: more) {
   .apple-glass-card {
     background: var(--surface) !important;
-    border: 1.5px solid #111111 !important;
+    border: 1.5px solid var(--foreground) !important;
     backdrop-filter: none !important;
   }
   .apple-icon-squircle {
-    border: 1.5px solid #111111 !important;
+    border: 1.5px solid var(--foreground) !important;
   }
   .apple-action-circle {
-    border: 1.5px solid #111111 !important;
+    border: 1.5px solid var(--foreground) !important;
   }
 }
 
@@ -2684,7 +2683,7 @@ body {
   background: color-mix(in srgb, var(--surface) 92%, transparent) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 999px !important;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
   margin: 0.85rem auto 1.25rem !important;
@@ -2747,7 +2746,7 @@ body {
   background: color-mix(in srgb, var(--surface) 75%, transparent) !important;
   backdrop-filter: blur(28px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 20px !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
   overflow: hidden !important;
@@ -2774,7 +2773,7 @@ body {
 .home-shortcuts__icon {
   background: color-mix(in srgb, var(--foreground) 4%, transparent) !important;
   color: var(--foreground) !important;
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 10px !important;
 }
 
@@ -2801,7 +2800,7 @@ body {
   background: color-mix(in srgb, var(--surface) 92%, transparent) !important;
   backdrop-filter: blur(28px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 16px !important;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12) !important;
   color: var(--foreground) !important;
@@ -2824,7 +2823,7 @@ body {
 .reference-browser__field input,
 .reference-browser__field select {
   background: color-mix(in srgb, var(--surface) 85%, transparent) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 10px !important;
   color: var(--foreground) !important;
   font-size: 0.9rem !important;
@@ -2849,7 +2848,7 @@ body {
   background: color-mix(in srgb, var(--surface) 75%, transparent) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 16px !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02) !important;
   transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -2857,7 +2856,7 @@ body {
 
 .reference-entry:hover {
   background: color-mix(in srgb, var(--surface) 90%, transparent) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  border-color: var(--border-strong) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
 }
 
@@ -2899,7 +2898,7 @@ body {
 .app-frame[data-route="/reference"] .reference-entry:nth-child(3n + 1),
 .app-frame[data-route="/reference"] .reference-entry:nth-child(3n + 2),
 .app-frame[data-route="/reference"] .reference-entry:nth-child(3n) {
-  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-top: 1px solid var(--border) !important;
 }
 
 /* 5. Progress & Local Data (/progress) */
@@ -2907,7 +2906,7 @@ body {
   background: color-mix(in srgb, var(--surface) 75%, transparent) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 16px !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02) !important;
   padding: 1.25rem 1.4rem !important;
@@ -2938,7 +2937,7 @@ body {
   background: color-mix(in srgb, var(--surface) 80%, transparent) !important;
   backdrop-filter: blur(28px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 20px !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04) !important;
   color: var(--foreground) !important;
@@ -2959,7 +2958,7 @@ body {
 .progress-focus__stats > div,
 .app-frame[data-route="/progress"] .progress-focus__stats > div {
   background: color-mix(in srgb, var(--foreground) 3%, transparent) !important;
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 12px !important;
   padding: 0.75rem 1rem !important;
 }
@@ -2977,7 +2976,7 @@ body {
 .progress-focus .progress-skill,
 .app-frame[data-route="/progress"] .progress-focus .progress-skill {
   background: color-mix(in srgb, var(--surface) 75%, transparent) !important;
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 12px !important;
   padding: 0.85rem 1.15rem !important;
   transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -2986,7 +2985,7 @@ body {
 .progress-focus .progress-skill:hover,
 .app-frame[data-route="/progress"] .progress-focus .progress-skill:hover {
   background: var(--surface) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  border-color: var(--border-strong) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
 }
@@ -3005,7 +3004,7 @@ body {
 .progress-skill__status[data-band="developing"] span {
   background: color-mix(in srgb, var(--foreground) 4%, transparent) !important;
   color: var(--foreground-muted) !important;
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid var(--border) !important;
 }
 
 .progress-skill__status[data-band="secure"] .ui-badge,
@@ -3019,7 +3018,7 @@ body {
 .progress-skill__status[data-band="new"] span {
   background: color-mix(in srgb, var(--foreground) 3%, transparent) !important;
   color: var(--foreground-muted) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid var(--border) !important;
 }
 
 /* 6. Interactive Lab Primary Action Buttons */
@@ -3513,5 +3512,69 @@ html[data-theme='dark'] .theme-toggle__icon--sun {
     background: ButtonFace !important;
     color: ButtonText !important;
     box-shadow: none;
+  }
+}
+
+
+/* ==========================================================================
+   T06 — dark optical materials and engineering canvas
+   ========================================================================== */
+html[data-theme='dark'] body,
+html[data-theme='dark'] .workspace-scroll {
+  background-color: var(--background) !important;
+  background-image:
+    radial-gradient(ellipse 78% 58% at 72% 24%, rgba(255, 255, 255, 0.035) 0%, transparent 66%),
+    radial-gradient(ellipse 58% 38% at 16% 14%, rgba(255, 255, 255, 0.018) 0%, transparent 58%),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px !important;
+}
+
+html[data-theme='dark'] .apple-glass-card,
+html[data-theme='dark'] .logic-workbench__stage,
+html[data-theme='dark'] .workbench-task-picker {
+  border-color: var(--glass-border) !important;
+  box-shadow: var(--apple-shadow-card) !important;
+}
+
+html[data-theme='dark'] .apple-glass-card:hover {
+  border-color: var(--border-strong) !important;
+  box-shadow: var(--apple-shadow-hover) !important;
+}
+
+html[data-theme='dark'] .apple-glass-card::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 20%,
+    rgba(255, 255, 255, 0.08) 80%,
+    transparent 100%
+  );
+}
+
+html[data-theme='dark'] .apple-glass-card::after {
+  background: radial-gradient(
+    450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.08),
+    transparent 70%
+  );
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .mobile-nav,
+  .mobile-more-menu__panel,
+  .topbar,
+  .topbar-theme-toggle {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .mobile-nav {
+    background: var(--nav-surface-solid) !important;
+  }
+
+  .mobile-more-menu__panel,
+  .topbar {
+    background: var(--surface) !important;
   }
 }
