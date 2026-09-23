@@ -284,7 +284,15 @@
   outline-offset: 4px;
 }
 
-html[data-motion="reduced"] .editorial-action,
+html[data-motion="reduced"] .editorial-action {
+  transition: background-color var(--editorial-duration-ui) ease, color var(--editorial-duration-ui) ease;
+}
+
+html[data-motion="reduced"] .editorial-action:active,
+html[data-motion="reduced"] .editorial-action[data-pressed="true"] {
+  transform: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .editorial-action {
     transition: background-color var(--editorial-duration-ui) ease, color var(--editorial-duration-ui) ease;
