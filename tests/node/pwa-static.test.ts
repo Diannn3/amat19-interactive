@@ -18,8 +18,8 @@ test('navigation fallback ignores query strings and uses a bounded network wait'
 
 test('service worker cache namespace is bumped for the Blueprint production migration',async()=>{
  const source=await readFile(new URL('../../apps/web/public/sw.js',import.meta.url),'utf8');
- assert.match(source,/VERSION\s*=\s*['"]amat19-blueprint-v3['"]/);
- assert.match(source,/FORCE_ACTIVATE_RELEASE\s*=\s*VERSION\s*===\s*['"]amat19-blueprint-v3['"]/);
+ assert.match(source,/VERSION\s*=\s*['"]amat19-blueprint-v4['"]/);
+ assert.match(source,/FORCE_ACTIVATE_RELEASE\s*=\s*VERSION\s*===\s*['"]amat19-blueprint-v4['"]/);
  assert.doesNotMatch(source,/['"]\/labs\//);
  assert.doesNotMatch(source,/amat19-v13-audited-backend/);
 });
@@ -49,14 +49,35 @@ test('installation caches the built workbench scripts before reporting offline r
  await installation;
  assert.equal(manifestRequested, true);
  assert.equal(skipWaitingCalled, true);
- assert.deepEqual(cached.get('amat19-blueprint-v3-static'), ['/_astro/workbench.js', '/_astro/styles.css']);
+ assert.deepEqual(cached.get('amat19-blueprint-v4-static'), ['/_astro/workbench.js', '/_astro/styles.css']);
 });
 
 
-test('Blueprint migration claims and reloads existing window clients once activated', async () => {
+test('hard-reset worker still activates when production precache warmup fails', async () => {
+ const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
+ const handlers = new Map();
+ let skipWaitingCalled = false;
+ runInNewContext(source, {
+  console: { warn: () => {} },
+  self: {
+   addEventListener: (type: string, handler: unknown) => handlers.set(type, handler),
+   skipWaiting: async () => { skipWaitingCalled = true; },
+  },
+  caches: { open: async () => ({ addAll: async () => { throw new Error('route unavailable'); } }) },
+  fetch: async () => { throw new Error('manifest unavailable'); },
+ });
+ let installation: Promise<unknown> | undefined;
+ handlers.get('install')({ waitUntil: (promise: Promise<unknown>) => { installation = promise; } });
+ await assert.doesNotReject(installation);
+ assert.equal(skipWaitingCalled, true);
+});
+
+
+test('Blueprint migration claims clients, clears legacy caches, and cache-busts the reload', async () => {
  const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
  const handlers = new Map();
  const navigated: string[] = [];
+ const deleted: string[] = [];
  let claimed = false;
  runInNewContext(source, {
   URL,
@@ -67,13 +88,19 @@ test('Blueprint migration claims and reloads existing window clients once activa
    clients: {
     claim: async () => { claimed = true; },
     matchAll: async () => [
-     { url: 'https://amat.test/course', navigate: async (url: string) => { navigated.push(url); } },
+     { url: 'https://amat.test/course?keep=1', navigate: async (url: string) => { navigated.push(url); } },
     ],
    },
   },
   caches: {
-   keys: async () => ['amat19-workbenches-v2-pages', 'amat19-blueprint-v3-static', 'amat19-blueprint-v3-pages'],
-   delete: async () => true,
+   keys: async () => [
+    'amat19-workbenches-v2-pages',
+    'amat19-blueprint-v3-pages',
+    'amat19-blueprint-v4-static',
+    'amat19-blueprint-v4-pages',
+    'unrelated-cache',
+   ],
+   delete: async (key: string) => { deleted.push(key); return true; },
    open: async () => ({ addAll: async () => {} }),
    match: async () => undefined,
   },
@@ -86,7 +113,13 @@ test('Blueprint migration claims and reloads existing window clients once activa
  handlers.get('activate')({ waitUntil: (promise: Promise<unknown>) => { activation = promise; } });
  await activation;
  assert.equal(claimed, true);
- assert.deepEqual(navigated, ['https://amat.test/course']);
+ assert.deepEqual(deleted.sort(), ['amat19-blueprint-v3-pages', 'amat19-workbenches-v2-pages']);
+ assert.equal(navigated.length, 1);
+ const resetUrl = new URL(navigated[0]);
+ assert.equal(resetUrl.pathname, '/course');
+ assert.equal(resetUrl.searchParams.get('keep'), '1');
+ assert.equal(resetUrl.searchParams.get('__amat19_release'), 'amat19-blueprint-v4');
+ assert.ok(resetUrl.searchParams.get('__amat19_reload'));
 });
 
 test('service-worker navigations bypass the browser HTTP cache', async () => {
@@ -98,6 +131,14 @@ test('application asks the browser to bypass HTTP cache when checking sw.js', as
  const source = await readFile(new URL('../../apps/web/src/layouts/AppLayout.astro', import.meta.url), 'utf8');
  assert.match(source, /serviceWorker\.register\(['"]\/sw\.js['"],\s*\{\s*updateViaCache:\s*['"]none['"]\s*\}\)/);
 });
+
+test('application removes the v4 migration query marker after the fresh document loads', async () => {
+ const source = await readFile(new URL('../../apps/web/src/layouts/AppLayout.astro', import.meta.url), 'utf8');
+ assert.match(source, /__amat19_release/);
+ assert.match(source, /amat19-blueprint-v4/);
+ assert.match(source, /history\.replaceState/);
+});
+
 
 test('offline immutable chunks match module requests despite preview Vary Origin headers', async () => {
  const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
@@ -128,4 +169,17 @@ test('offline and manifest surfaces no longer expose the legacy maroon theme', a
  assert.match(offline, /#09090b/);
  assert.doesNotMatch(offline, /#7b1113|#fff9f1/i);
  assert.doesNotMatch(manifest, /#2e080d|#fff9f1/i);
+});
+
+
+test('Vercel serves the migration worker without browser or CDN caching', async () => {
+ const config = JSON.parse(await readFile(new URL('../../vercel.json', import.meta.url), 'utf8'));
+ const swRule = config.headers.find((rule: { source?: string }) => rule.source === '/sw.js');
+ assert.ok(swRule);
+ const headers = Object.fromEntries(swRule.headers.map((header: { key: string; value: string }) => [header.key, header.value]));
+ assert.match(headers['Cache-Control'], /no-store/);
+ assert.equal(headers['CDN-Cache-Control'], 'no-store');
+ assert.equal(headers['Vercel-CDN-Cache-Control'], 'no-store');
+ assert.equal(headers['Clear-Site-Data'], '"cache"');
+ assert.equal(headers['Service-Worker-Allowed'], '/');
 });
