@@ -46,8 +46,9 @@ test('settings and local-data copy stays truthful and learner-facing', async () 
     readFile(new URL('../../apps/web/src/components/DataManager.tsx', import.meta.url), 'utf8'),
   ]);
 
-  assert.match(settingsPage, /Choose whether optional motion appears while you study/i);
+  assert.match(settingsPage, /Choose the appearance and motion settings that work best while you study/i);
   assert.doesNotMatch(settingsPage, /IndexedDB/i);
+  assert.match(settingsPanel, /Dark mode/i);
   assert.match(settingsPanel, /Reduce interface motion/i);
   assert.doesNotMatch(settingsPanel, /Truth-value notation|Finance display decimals|Default practice length|Supplemental topics/i);
   assert.doesNotMatch(settingsPanel, /future shared formatters|internal precision|adaptive practice presets/i);

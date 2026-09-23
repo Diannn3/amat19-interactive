@@ -265,11 +265,11 @@ export default function LogicProofWorkbench() {
                 <p className="logic-aside-card__desc">Explore set relationships for logical statements.</p>
                 <div className="logic-venn-diagram" aria-label="Venn diagram showing intersection of sets A and B">
                   <svg viewBox="0 0 220 120" className="venn-svg" aria-hidden="true">
-                    <circle cx="85" cy="60" r="44" fill="rgba(241, 245, 249, 0.7)" stroke="#94a3b8" strokeWidth="1.5" />
-                    <circle cx="135" cy="60" r="44" fill="rgba(241, 245, 249, 0.7)" stroke="#94a3b8" strokeWidth="1.5" />
-                    <path d="M 110,26 A 44,44 0 0,1 110,94 A 44,44 0 0,1 110,26" fill="rgba(148, 163, 184, 0.35)" stroke="#64748b" strokeWidth="1.5" />
-                    <text x="68" y="65" fill="#475569" fontSize="13" fontWeight="600">A</text>
-                    <text x="146" y="65" fill="#475569" fontSize="13" fontWeight="600">B</text>
+                    <circle cx="85" cy="60" r="44" fill="var(--surface-muted)" stroke="var(--foreground-soft)" strokeWidth="1.5" />
+                    <circle cx="135" cy="60" r="44" fill="var(--surface-muted)" stroke="var(--foreground-soft)" strokeWidth="1.5" />
+                    <path d="M 110,26 A 44,44 0 0,1 110,94 A 44,44 0 0,1 110,26" fill="var(--surface-strong)" stroke="var(--foreground-muted)" strokeWidth="1.5" />
+                    <text x="68" y="65" fill="var(--foreground-muted)" fontSize="13" fontWeight="600">A</text>
+                    <text x="146" y="65" fill="var(--foreground-muted)" fontSize="13" fontWeight="600">B</text>
                   </svg>
                   <div className="venn-caption">
                     <strong>A &cap; B</strong>

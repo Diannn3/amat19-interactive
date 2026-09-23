@@ -480,7 +480,7 @@ export default function RowOperationsCoach() {
         {/* Left Side Navigation & Hints */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div className="apple-glass-card" style={{ padding: '1.25rem' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Operations</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--foreground-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Operations</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: '0.75rem' }}>
               {['Matrix Operations', 'Solve Systems', 'Determinant', 'Row Reduction', 'Eigenvalues'].map((item, idx) => (
                 <button 
@@ -488,8 +488,8 @@ export default function RowOperationsCoach() {
                   type="button" 
                   style={{
                     border: 'none',
-                    background: idx === 2 ? '#111111' : 'transparent',
-                    color: idx === 2 ? '#ffffff' : '#3f3f46',
+                    background: idx === 2 ? 'var(--foreground)' : 'transparent',
+                    color: idx === 2 ? 'var(--surface)' : 'var(--foreground-muted)',
                     padding: '0.5rem 0.75rem',
                     borderRadius: '8px',
                     fontSize: '0.82rem',
@@ -505,8 +505,8 @@ export default function RowOperationsCoach() {
           </div>
 
           <div className="apple-glass-card" style={{ padding: '1.25rem' }}>
-            <strong style={{ fontSize: '0.85rem', color: '#09090b', display: 'block', marginBottom: '0.35rem' }}>Tip</strong>
-            <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0, lineHeight: 1.45 }}>
+            <strong style={{ fontSize: '0.85rem', color: 'var(--foreground)', display: 'block', marginBottom: '0.35rem' }}>Tip</strong>
+            <p style={{ fontSize: '0.78rem', color: 'var(--foreground-muted)', margin: 0, lineHeight: 1.45 }}>
               Elementary row replacement preserves the determinant: det(R_i ← R_i + cR_j) = det(A).
             </p>
           </div>
@@ -516,8 +516,8 @@ export default function RowOperationsCoach() {
         <div className="apple-glass-card" style={{ padding: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <strong style={{ fontSize: '1.2rem', color: '#09090b' }}>Matrix A</strong>
-              <span style={{ fontSize: '0.82rem', color: '#71717a', display: 'block' }}>{matrixDim}×{matrixDim} Square Matrix</span>
+              <strong style={{ fontSize: '1.2rem', color: 'var(--foreground)' }}>Matrix A</strong>
+              <span style={{ fontSize: '0.82rem', color: 'var(--foreground-muted)', display: 'block' }}>{matrixDim}×{matrixDim} Square Matrix</span>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
@@ -590,17 +590,17 @@ export default function RowOperationsCoach() {
           </div>
 
           {/* Step-by-Step Arithmetic Expansion */}
-          <div style={{ background: '#f8fafc', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '1.25rem', marginTop: '1.25rem' }}>
+          <div style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)', borderRadius: '14px', padding: '1.25rem', marginTop: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b' }}>Calculation</span>
+              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--foreground-muted)' }}>Calculation</span>
               <button type="button" style={{ border: 'none', background: 'transparent', color: '#2563eb', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}>
                 Copy Calculation
               </button>
             </div>
-            <div style={{ fontFamily: 'var(--font-amat-mono)', fontSize: '1.15rem', fontWeight: 700, color: '#09090b', letterSpacing: '-0.02em' }}>
+            <div style={{ fontFamily: 'var(--font-amat-mono)', fontSize: '1.15rem', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.02em' }}>
               det(A) = {detValue}
             </div>
-            <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0.4rem 0 0 0', fontFamily: 'monospace' }}>
+            <p style={{ fontSize: '0.82rem', color: 'var(--foreground-muted)', margin: '0.4rem 0 0 0', fontFamily: 'monospace' }}>
               Expansion: {matrixCells[0][0]}({matrixCells[1][1]}·{matrixCells[2][2]} − {matrixCells[1][2]}·{matrixCells[2][1]}) − ({matrixCells[0][1]})({matrixCells[1][0]}·{matrixCells[2][2]} − {matrixCells[1][2]}·{matrixCells[2][0]}) + {matrixCells[0][2]}...
             </p>
           </div>
@@ -608,10 +608,10 @@ export default function RowOperationsCoach() {
 
         {/* Right 3D Isometric Geometric Projection in R^3 */}
         <div className="apple-glass-card" style={{ padding: '1.75rem' }}>
-          <strong style={{ fontSize: '1.05rem', color: '#09090b', display: 'block', marginBottom: '0.25rem' }}>3D Geometric View</strong>
-          <span style={{ fontSize: '0.78rem', color: '#71717a', display: 'block', marginBottom: '1rem' }}>Column space projection in ℝ³</span>
+          <strong style={{ fontSize: '1.05rem', color: 'var(--foreground)', display: 'block', marginBottom: '0.25rem' }}>3D Geometric View</strong>
+          <span style={{ fontSize: '0.78rem', color: 'var(--foreground-muted)', display: 'block', marginBottom: '1rem' }}>Column space projection in ℝ³</span>
 
-          <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', padding: '0.5rem', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '0.5rem', display: 'flex', justifyContent: 'center' }}>
             <svg viewBox="0 0 320 270" style={{ width: '100%', height: 'auto' }} aria-label="3D Isometric vector projection in R3">
               <defs>
                 <marker id="arrowHeadBlue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -627,14 +627,14 @@ export default function RowOperationsCoach() {
 
               {/* Dotted Isometric Axes */}
               {/* Origin is at (160, 135) */}
-              <line x1="160" y1="135" x2="60" y2="195" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3 3" />
-              <text x="50" y="205" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">X</text>
+              <line x1="160" y1="135" x2="60" y2="195" stroke="var(--border-strong)" strokeWidth="1.5" strokeDasharray="3 3" />
+              <text x="50" y="205" fill="var(--foreground-soft)" fontSize="10" fontFamily="sans-serif">X</text>
 
-              <line x1="160" y1="135" x2="260" y2="195" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3 3" />
-              <text x="270" y="205" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">Y</text>
+              <line x1="160" y1="135" x2="260" y2="195" stroke="var(--border-strong)" strokeWidth="1.5" strokeDasharray="3 3" />
+              <text x="270" y="205" fill="var(--foreground-soft)" fontSize="10" fontFamily="sans-serif">Y</text>
 
-              <line x1="160" y1="135" x2="160" y2="25" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3 3" />
-              <text x="160" y="18" fill="#94a3b8" fontSize="10" fontFamily="sans-serif" textAnchor="middle">Z</text>
+              <line x1="160" y1="135" x2="160" y2="25" stroke="var(--border-strong)" strokeWidth="1.5" strokeDasharray="3 3" />
+              <text x="160" y="18" fill="var(--foreground-soft)" fontSize="10" fontFamily="sans-serif" textAnchor="middle">Z</text>
 
               {/* Vector a1 (col 0): (matrixCells[0][0], matrixCells[1][0], matrixCells[2][0]) */}
               {(() => {
@@ -649,15 +649,15 @@ export default function RowOperationsCoach() {
                 return (
                   <>
                     {/* Parallelepiped edges */}
-                    <line x1={p1.x} y1={p1.y} x2={p12.x} y2={p12.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p2.x} y1={p2.y} x2={p12.x} y2={p12.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p1.x} y1={p1.y} x2={p13.x} y2={p13.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p3.x} y1={p3.y} x2={p13.x} y2={p13.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p2.x} y1={p2.y} x2={p23.x} y2={p23.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p3.x} y1={p3.y} x2={p23.x} y2={p23.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p12.x} y1={p12.y} x2={p123.x} y2={p123.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p13.x} y1={p13.y} x2={p123.x} y2={p123.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p23.x} y1={p23.y} x2={p123.x} y2={p123.y} stroke="rgba(0,0,0,0.12)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p1.x} y1={p1.y} x2={p12.x} y2={p12.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p2.x} y1={p2.y} x2={p12.x} y2={p12.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p1.x} y1={p1.y} x2={p13.x} y2={p13.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p3.x} y1={p3.y} x2={p13.x} y2={p13.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p2.x} y1={p2.y} x2={p23.x} y2={p23.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p3.x} y1={p3.y} x2={p23.x} y2={p23.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p12.x} y1={p12.y} x2={p123.x} y2={p123.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p13.x} y1={p13.y} x2={p123.x} y2={p123.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
+                    <line x1={p23.x} y1={p23.y} x2={p123.x} y2={p123.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
 
                     {/* Vector a1 */}
                     <line x1="160" y1="135" x2={p1.x} y2={p1.y} stroke="#2563eb" strokeWidth="2.5" markerEnd="url(#arrowHeadBlue)" />
@@ -676,8 +676,8 @@ export default function RowOperationsCoach() {
             </svg>
           </div>
 
-          <div style={{ marginTop: '1rem', padding: '0.85rem', background: '#f8fafc', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.05)' }}>
-            <span style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.45, display: 'block' }}>
+          <div style={{ marginTop: '1rem', padding: '0.85rem', background: 'var(--surface-muted)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--foreground-muted)', lineHeight: 1.45, display: 'block' }}>
               These three vectors span a parallelepiped with volume <strong>|det(A)| = {Math.abs(detValue)}</strong>.
             </span>
           </div>

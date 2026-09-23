@@ -468,10 +468,10 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-chart-card apple-glass-card">
             <svg viewBox="0 0 460 220" style={{ width: '100%', height: 'auto' }} aria-label="Investment growth curve">
               {/* Grid lines */}
-              <line x1="50" y1="20" x2="50" y2="190" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
-              <line x1="50" y1="190" x2="430" y2="190" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
-              <line x1="50" y1="105" x2="430" y2="105" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
-              <line x1="50" y1="20" x2="430" y2="20" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
+              <line x1="50" y1="20" x2="50" y2="190" stroke="var(--border)" strokeWidth="1" />
+              <line x1="50" y1="190" x2="430" y2="190" stroke="var(--border)" strokeWidth="1" />
+              <line x1="50" y1="105" x2="430" y2="105" stroke="var(--border)" strokeDasharray="4 4" />
+              <line x1="50" y1="20" x2="430" y2="20" stroke="var(--border)" strokeDasharray="4 4" />
 
               {/* Shaded Area Under Curve */}
               <path 
@@ -495,8 +495,8 @@ export default function MoneyTimelineWorkbench() {
                   cx={pt.x} 
                   cy={pt.y} 
                   r={i === chartHoverIndex ? 6 : 3.5} 
-                  fill={i === chartHoverIndex ? '#111111' : '#2563eb'} 
-                  stroke="#ffffff" 
+                  fill={i === chartHoverIndex ? 'var(--foreground)' : '#2563eb'} 
+                  stroke="var(--surface)" 
                   strokeWidth="2" 
                   style={{ cursor: 'pointer', transition: 'r 150ms ease' }}
                   onMouseEnter={() => setChartHoverIndex(i)}
@@ -512,13 +512,13 @@ export default function MoneyTimelineWorkbench() {
                     width="110" 
                     height="24" 
                     rx="6" 
-                    fill="#111111" 
+                    fill="var(--foreground)" 
                   />
                   <text 
                     x="0" 
                     y="-2" 
                     textAnchor="middle" 
-                    fill="#ffffff" 
+                    fill="var(--surface)" 
                     fontSize="10.5" 
                     fontWeight="600" 
                     fontFamily="monospace"
@@ -529,9 +529,9 @@ export default function MoneyTimelineWorkbench() {
               )}
 
               {/* Axis Labels */}
-              <text x="50" y="206" fill="#71717a" fontSize="10" fontFamily="sans-serif">Yr 0</text>
-              <text x="240" y="206" fill="#71717a" fontSize="10" fontFamily="sans-serif" textAnchor="middle">Yr {Math.round(years / 2)}</text>
-              <text x="430" y="206" fill="#71717a" fontSize="10" fontFamily="sans-serif" textAnchor="end">Yr {years}</text>
+              <text x="50" y="206" fill="var(--foreground-muted)" fontSize="10" fontFamily="sans-serif">Yr 0</text>
+              <text x="240" y="206" fill="var(--foreground-muted)" fontSize="10" fontFamily="sans-serif" textAnchor="middle">Yr {Math.round(years / 2)}</text>
+              <text x="430" y="206" fill="var(--foreground-muted)" fontSize="10" fontFamily="sans-serif" textAnchor="end">Yr {years}</text>
             </svg>
           </div>
 

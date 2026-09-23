@@ -120,7 +120,7 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     await expect(settings.locator('select')).toHaveCount(0);
     await expect(settings.getByText(/future shared formatters|internal precision|adaptive practice presets/i)).toHaveCount(0);
 
-    const motion = settings.getByRole('checkbox');
+    const motion = settings.getByRole('switch', { name: 'Reduce interface motion' });
     await expect(motion).toBeVisible();
     await motion.check();
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.motion)).toBe('reduced');

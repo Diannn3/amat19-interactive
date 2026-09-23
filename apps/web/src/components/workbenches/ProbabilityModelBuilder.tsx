@@ -353,14 +353,14 @@ export default function ProbabilityModelBuilder() {
             <text x="120" y="145" textAnchor="middle" fill="#1e40af" fontWeight="700" fontSize="14" fontFamily="sans-serif">
               Event A
             </text>
-            <text x="120" y="165" textAnchor="middle" fill="#64748b" fontSize="11" fontFamily="monospace">
+            <text x="120" y="165" textAnchor="middle" fill="var(--foreground-muted)" fontSize="11" fontFamily="monospace">
               P(A) = {sliderA.toFixed(2)}
             </text>
 
             <text x="280" y="145" textAnchor="middle" fill="#5b21b6" fontWeight="700" fontSize="14" fontFamily="sans-serif">
               Event B
             </text>
-            <text x="280" y="165" textAnchor="middle" fill="#64748b" fontSize="11" fontFamily="monospace">
+            <text x="280" y="165" textAnchor="middle" fill="var(--foreground-muted)" fontSize="11" fontFamily="monospace">
               P(B) = {sliderB.toFixed(2)}
             </text>
 
