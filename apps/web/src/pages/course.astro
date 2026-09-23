@@ -1,9 +1,11 @@
 ---
-import { currentCourseProfile } from '@amat19/course-content';
+import { currentCourseProfile, skillGraph } from '@amat19/course-content';
 import { ArrowRight, BookOpen, GraduationCap, ClipboardCheck, BarChart3, Search, Grid3X3, Network, Infinity, FileText, Sparkles, Layers } from 'lucide-react';
 import AppLayout from '../layouts/AppLayout.astro';
 
 const modulesById = new Map(currentCourseProfile.modules.map((module) => [module.id, module]));
+const workbenchCount = currentCourseProfile.workbenches.length;
+const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current').length;
 
 const moduleTopics: Record<string, string[]> = {
   logic: ['Propositions', 'Truth Tables', 'Logical Equivalence'],
@@ -44,10 +46,10 @@ const moduleTopics: Record<string, string[]> = {
         </div>
       </div>
 
-      <div class="course-hero__stats sr-only" aria-label="Course coverage metrics">
-        <div class="course-stat-chip"><span class="course-stat-chip__val">05</span><span class="course-stat-chip__label">Workbenches</span></div>
-        <div class="course-stat-chip"><span class="course-stat-chip__val">26</span><span class="course-stat-chip__label">Core Skills</span></div>
-        <div class="course-stat-chip"><span class="course-stat-chip__val">100%</span><span class="course-stat-chip__label">Offline Ready</span></div>
+      <div class="course-hero__stats sr-only" aria-label="Course coverage facts">
+        <div class="course-stat-chip"><span class="course-stat-chip__val">{workbenchCount}</span><span class="course-stat-chip__label">Workbenches</span></div>
+        <div class="course-stat-chip"><span class="course-stat-chip__val">{currentSkillCount}</span><span class="course-stat-chip__label">Core skills</span></div>
+        <div class="course-stat-chip"><span class="course-stat-chip__val">Local</span><span class="course-stat-chip__label">Study data</span></div>
       </div>
     </header>
 
@@ -152,7 +154,7 @@ const moduleTopics: Record<string, string[]> = {
             </div>
             <div class="syllabus-module-body">
               <strong class="syllabus-module-title">Module 2: Probability &amp; Counting</strong>
-              <p class="syllabus-module-desc">Sets, combinations, permutations, conditional probability, Bayes' Theorem, and random variables.</p>
+              <p class="syllabus-module-desc">Counting, exact probability, conditioning, and independence, with optional Bayes and distribution depth.</p>
               <div class="syllabus-module-links">
                 <a href="/workbenches/probability">Workbench →</a>
                 <a href="/modules/probability">Examples</a>
@@ -175,7 +177,7 @@ const moduleTopics: Record<string, string[]> = {
             </div>
             <div class="syllabus-module-body">
               <strong class="syllabus-module-title">Module 3: Financial Mathematics</strong>
-              <p class="syllabus-module-desc">Simple &amp; compound interest, time value of money, ordinary annuities, annuities due, and amortization.</p>
+              <p class="syllabus-module-desc">Interest measurement, simple and compound interest, rate equivalence, time value of money, and annuities.</p>
               <div class="syllabus-module-links">
                 <a href="/workbenches/finance">Workbench →</a>
                 <a href="/modules/finance">Examples</a>
@@ -198,7 +200,7 @@ const moduleTopics: Record<string, string[]> = {
             </div>
             <div class="syllabus-module-body">
               <strong class="syllabus-module-title">Module 4: Matrices &amp; Systems</strong>
-              <p class="syllabus-module-desc">Systems of linear equations, Gauss-Jordan elimination, matrix algebra, matrix inverses, and input-output analysis.</p>
+              <p class="syllabus-module-desc">Matrix operations, multiplication, inverse, row reduction, and systems of linear equations.</p>
               <div class="syllabus-module-links">
                 <a href="/workbenches/linear">Workbench →</a>
                 <a href="/modules/linear">Examples</a>
@@ -221,7 +223,7 @@ const moduleTopics: Record<string, string[]> = {
             </div>
             <div class="syllabus-module-body">
               <strong class="syllabus-module-title">Module 5: Applied Models &amp; Optimization</strong>
-              <p class="syllabus-module-desc">Graphical linear programming, Simplex algorithm, zero-sum matrix games, and Markov transition chains.</p>
+              <p class="syllabus-module-desc">Graphical linear programming and zero-sum games, with optional simplex and Markov extensions.</p>
               <div class="syllabus-module-links">
                 <a href="/workbenches/applications">Workbench →</a>
                 <a href="/modules/applications">Examples</a>
@@ -244,8 +246,8 @@ const moduleTopics: Record<string, string[]> = {
                 <div class="syllabus-resource-item-left">
                   <FileText size={16} strokeWidth={1.8} />
                   <div>
-                    <strong>Lecture Notes</strong>
-                    <span>Summaries for all 5 modules</span>
+                    <strong>Concept notes</strong>
+                    <span>Course-aligned notes across all five modules</span>
                   </div>
                 </div>
                 <ArrowRight size={13} strokeWidth={2} />
@@ -255,8 +257,8 @@ const moduleTopics: Record<string, string[]> = {
                 <div class="syllabus-resource-item-left">
                   <Sparkles size={16} strokeWidth={1.8} />
                   <div>
-                    <strong>Interactive Examples</strong>
-                    <span>100+ visual models &amp; sandboxes</span>
+                    <strong>Interactive workbenches</strong>
+                    <span>{workbenchCount} focused mathematical workspaces</span>
                   </div>
                 </div>
                 <ArrowRight size={13} strokeWidth={2} />
@@ -266,8 +268,8 @@ const moduleTopics: Record<string, string[]> = {
                 <div class="syllabus-resource-item-left">
                   <GraduationCap size={16} strokeWidth={1.8} />
                   <div>
-                    <strong>Problem Sets</strong>
-                    <span>Graded practice with step feedback</span>
+                    <strong>Practice</strong>
+                    <span>Original practice with step feedback</span>
                   </div>
                 </div>
                 <ArrowRight size={13} strokeWidth={2} />
@@ -277,8 +279,8 @@ const moduleTopics: Record<string, string[]> = {
                 <div class="syllabus-resource-item-left">
                   <Network size={16} strokeWidth={1.8} />
                   <div>
-                    <strong>Real-World Applications</strong>
-                    <span>Case studies across networks &amp; finance</span>
+                    <strong>Applied models</strong>
+                    <span>Optimization, strategy, and financial modeling tools</span>
                   </div>
                 </div>
                 <ArrowRight size={13} strokeWidth={2} />
