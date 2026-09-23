@@ -1,17 +1,21 @@
 ---
-import { currentCourseProfile } from '@amat19/course-content';
+import { currentCourseProfile, skillGraph } from '@amat19/course-content';
 import { ArrowRight, BookOpen, GraduationCap, ClipboardCheck, BarChart3, Search, Grid3X3, Network, Infinity, FileText, Sparkles, Layers } from 'lucide-react';
 import AppLayout from '../layouts/AppLayout.astro';
 
 const modulesById = new Map(currentCourseProfile.modules.map((module) => [module.id, module]));
+const workbenchCount = currentCourseProfile.workbenches.length;
+const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current').length;
 
-const moduleTopics: Record<string, string[]> = {
-  logic: ['Propositions', 'Truth Tables', 'Logical Equivalence'],
-  probability: ['Counting Models', 'Conditioning', 'Bayes Update'],
-  finance: ['Interest Rates', 'Cash Timelines', 'Annuities'],
-  linear: ['Row Operations', 'Matrix Inverse', 'Systems'],
-  applications: ['Graphical LP', 'Simplex Pivot', 'Game Theory'],
-};
+const currentTopicsByModule = new Map(
+  currentCourseProfile.modules.map((module) => [
+    module.id,
+    skillGraph
+      .filter((skill) => skill.module === module.id && skill.scope === 'current')
+      .slice(0, 3)
+      .map((skill) => skill.title),
+  ]),
+);
 ---
 
 <AppLayout title="Course map">
@@ -34,21 +38,23 @@ const moduleTopics: Record<string, string[]> = {
             />
           </div>
 
-          <div class="course-filter-pills" role="tablist" aria-label="Workbench filters">
-            <button class="apple-filter-pill is-active" type="button">All</button>
-            <button class="apple-filter-pill" type="button">Core Topics</button>
-            <button class="apple-filter-pill" type="button">Applications</button>
-            <button class="apple-filter-pill" type="button">Modeling</button>
-            <button class="apple-filter-pill" type="button">Interactive</button>
+          <div class="course-filter-pills" role="group" aria-label="Workbench filters">
+            <button class="apple-filter-pill is-active" type="button" data-course-filter="all" aria-pressed="true">All</button>
+            {currentCourseProfile.modules.map((module) => (
+              <button class="apple-filter-pill" type="button" data-course-filter={module.id} aria-pressed="false">{module.title}</button>
+            ))}
           </div>
         </div>
       </div>
 
-      <div class="course-hero__stats sr-only" aria-label="Course coverage metrics">
-        <div class="course-stat-chip"><span class="course-stat-chip__val">05</span><span class="course-stat-chip__label">Workbenches</span></div>
-        <div class="course-stat-chip"><span class="course-stat-chip__val">26</span><span class="course-stat-chip__label">Core Skills</span></div>
-        <div class="course-stat-chip"><span class="course-stat-chip__val">100%</span><span class="course-stat-chip__label">Offline Ready</span></div>
+      <div class="course-hero__stats sr-only" aria-label="Course coverage facts">
+        <div class="course-stat-chip"><span class="course-stat-chip__val">{workbenchCount}</span><span class="course-stat-chip__label">Workbenches</span></div>
+        <div class="course-stat-chip"><span class="course-stat-chip__val">{currentSkillCount}</span><span class="course-stat-chip__label">Core skills</span></div>
+        <div class="course-stat-chip"><span class="course-stat-chip__val">Local</span><span class="course-stat-chip__label">Study data</span></div>
       </div>
+      <p class="course-filter-status" role="status" aria-live="polite">
+        <span data-course-filter-count>{workbenchCount}</span> workbenches shown
+      </p>
     </header>
 
     {/* Five Workbenches in 5-Column Optical Glass Grid */}
@@ -56,9 +62,14 @@ const moduleTopics: Record<string, string[]> = {
       <ol class="workbench-grid workbench-directory" data-testid="workbench-directory">
         {currentCourseProfile.workbenches.map((workbench, index) => {
           const module = modulesById.get(workbench.id)!;
-          const topics = moduleTopics[workbench.id] || [];
+          const topics = currentTopicsByModule.get(workbench.id) ?? [];
           return (
-            <li class={`workbench-grid__item workbench-grid__item--${workbench.id}`}>
+            <li
+              class={`workbench-grid__item workbench-grid__item--${workbench.id}`}
+              data-course-workbench
+              data-module={workbench.id}
+              data-search={[module.title, workbench.title, workbench.description, workbench.notation, ...topics].join(' ').toLowerCase()}
+            >
               <a class="workbench-card apple-glass-card" href={workbench.href}>
                 <div>
                   <div class="workbench-card__header">
@@ -104,6 +115,7 @@ const moduleTopics: Record<string, string[]> = {
           );
         })}
       </ol>
+      <p class="course-filter-empty" data-course-filter-empty hidden>No workbench matches that search and filter.</p>
     </section>
 
     {/* Course Syllabus Timeline (Mockup 4) */}
@@ -152,7 +164,7 @@ const moduleTopics: Record<string, string[]> = {
             </div>
             <div class="syllabus-module-body">
               <strong class="syllabus-module-title">Module 2: Probability &amp; Counting</strong>
-              <p class="syllabus-module-desc">Sets, combinations, permutations, conditional probability, Bayes' Theorem, and random variables.</p>
+              <p class="syllabus-module-desc">Counting, exact probability, conditioning, and independence, with optional Bayes and distribution depth.</p>
               <div class="syllabus-module-links">
                 <a href="/workbenches/probability">Workbench →</a>
                 <a href="/modules/probability">Examples</a>
@@ -175,7 +187,7 @@ const moduleTopics: Record<string, string[]> = {
             </div>
             <div class="syllabus-module-body">
               <strong class="syllabus-module-title">Module 3: Financial Mathematics</strong>
-              <p class="syllabus-module-desc">Simple &amp; compound interest, time value of money, ordinary annuities, annuities due, and amortization.</p>
+              <p class="syllabus-module-desc">Interest measurement, simple and compound interest, rate equivalence, time value of money, and annuities.</p>
               <div class="syllabus-module-links">
                 <a href="/workbenches/finance">Workbench →</a>
                 <a href="/modules/finance">Examples</a>
@@ -198,7 +210,7 @@ const moduleTopics: Record<string, string[]> = {
             </div>
             <div class="syllabus-module-body">
               <strong class="syllabus-module-title">Module 4: Matrices &amp; Systems</strong>
-              <p class="syllabus-module-desc">Systems of linear equations, Gauss-Jordan elimination, matrix algebra, matrix inverses, and input-output analysis.</p>
+              <p class="syllabus-module-desc">Matrix operations, multiplication, inverse, row reduction, and systems of linear equations.</p>
               <div class="syllabus-module-links">
                 <a href="/workbenches/linear">Workbench →</a>
                 <a href="/modules/linear">Examples</a>
@@ -221,7 +233,7 @@ const moduleTopics: Record<string, string[]> = {
             </div>
             <div class="syllabus-module-body">
               <strong class="syllabus-module-title">Module 5: Applied Models &amp; Optimization</strong>
-              <p class="syllabus-module-desc">Graphical linear programming, Simplex algorithm, zero-sum matrix games, and Markov transition chains.</p>
+              <p class="syllabus-module-desc">Graphical linear programming and zero-sum games, with optional simplex and Markov extensions.</p>
               <div class="syllabus-module-links">
                 <a href="/workbenches/applications">Workbench →</a>
                 <a href="/modules/applications">Examples</a>
@@ -244,8 +256,8 @@ const moduleTopics: Record<string, string[]> = {
                 <div class="syllabus-resource-item-left">
                   <FileText size={16} strokeWidth={1.8} />
                   <div>
-                    <strong>Lecture Notes</strong>
-                    <span>Summaries for all 5 modules</span>
+                    <strong>Concept notes</strong>
+                    <span>Course-aligned notes across all five modules</span>
                   </div>
                 </div>
                 <ArrowRight size={13} strokeWidth={2} />
@@ -255,8 +267,8 @@ const moduleTopics: Record<string, string[]> = {
                 <div class="syllabus-resource-item-left">
                   <Sparkles size={16} strokeWidth={1.8} />
                   <div>
-                    <strong>Interactive Examples</strong>
-                    <span>100+ visual models &amp; sandboxes</span>
+                    <strong>Interactive workbenches</strong>
+                    <span>{workbenchCount} focused mathematical workspaces</span>
                   </div>
                 </div>
                 <ArrowRight size={13} strokeWidth={2} />
@@ -266,8 +278,8 @@ const moduleTopics: Record<string, string[]> = {
                 <div class="syllabus-resource-item-left">
                   <GraduationCap size={16} strokeWidth={1.8} />
                   <div>
-                    <strong>Problem Sets</strong>
-                    <span>Graded practice with step feedback</span>
+                    <strong>Practice</strong>
+                    <span>Original practice with step feedback</span>
                   </div>
                 </div>
                 <ArrowRight size={13} strokeWidth={2} />
@@ -277,8 +289,8 @@ const moduleTopics: Record<string, string[]> = {
                 <div class="syllabus-resource-item-left">
                   <Network size={16} strokeWidth={1.8} />
                   <div>
-                    <strong>Real-World Applications</strong>
-                    <span>Case studies across networks &amp; finance</span>
+                    <strong>Applied models</strong>
+                    <span>Optimization, strategy, and financial modeling tools</span>
                   </div>
                 </div>
                 <ArrowRight size={13} strokeWidth={2} />
@@ -378,24 +390,54 @@ const moduleTopics: Record<string, string[]> = {
     </section>
   </div>
 
-  <script>
-    function initCourseSpotlight() {
-      const cards = document.querySelectorAll<HTMLElement>('.apple-glass-card');
-      cards.forEach((card) => {
-        card.addEventListener('pointermove', (e: PointerEvent) => {
-          const rect = card.getBoundingClientRect();
-          const x = ((e.clientX - rect.left) / rect.width) * 100;
-          const y = ((e.clientY - rect.top) / rect.height) * 100;
-          card.style.setProperty('--mouse-x', `${x}%`);
-          card.style.setProperty('--mouse-y', `${y}%`);
-          card.style.setProperty('--spotlight-opacity', '1');
-        });
-        card.addEventListener('pointerleave', () => {
-          card.style.setProperty('--spotlight-opacity', '0');
-        });
+
+<script>
+  function initCourseFilters() {
+    const root = document.querySelector<HTMLElement>('.course-page');
+    if (!root || root.dataset.filtersReady === 'true') return;
+    root.dataset.filtersReady = 'true';
+
+    const input = root.querySelector<HTMLInputElement>('.course-search-input');
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-course-filter]'));
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-course-workbench]'));
+    const count = root.querySelector<HTMLElement>('[data-course-filter-count]');
+    const empty = root.querySelector<HTMLElement>('[data-course-filter-empty]');
+    let activeFilter = 'all';
+
+    const apply = () => {
+      const query = input?.value.trim().toLowerCase() ?? '';
+      let visible = 0;
+
+      for (const item of items) {
+        const matchesFilter = activeFilter === 'all' || item.dataset.module === activeFilter;
+        const matchesQuery = !query || (item.dataset.search ?? '').includes(query);
+        const show = matchesFilter && matchesQuery;
+        item.hidden = !show;
+        if (show) visible += 1;
+      }
+
+      if (count) count.textContent = String(visible);
+      if (empty) empty.hidden = visible !== 0;
+    };
+
+    input?.addEventListener('input', apply);
+
+    for (const button of buttons) {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.courseFilter ?? 'all';
+        for (const candidate of buttons) {
+          const selected = candidate === button;
+          candidate.classList.toggle('is-active', selected);
+          candidate.setAttribute('aria-pressed', String(selected));
+        }
+        apply();
       });
     }
-    initCourseSpotlight();
-    document.addEventListener('astro:page-load', initCourseSpotlight);
-  </script>
+
+    apply();
+  }
+
+  initCourseFilters();
+  document.addEventListener('astro:page-load', initCourseFilters);
+</script>
 </AppLayout>

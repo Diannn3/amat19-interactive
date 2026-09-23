@@ -29,6 +29,42 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     }
   });
 
+
+  test('workbench directory keeps supplemental topics out of current-scope chips', async ({ page }) => {
+    await page.goto('/course');
+
+    const probability = page.locator('.workbench-grid__item--probability');
+    const applications = page.locator('.workbench-grid__item--applications');
+
+    await expect(probability).not.toContainText(/Bayes|distribution|simulation/i);
+    await expect(applications).not.toContainText(/Simplex|Markov/i);
+    await expect(page.getByText('optional simplex and Markov extensions', { exact: false })).toBeVisible();
+  });
+
+  test('course workbench filters are real controls rather than decorative pills', async ({ page }) => {
+    await page.goto('/course');
+
+    const search = page.getByRole('textbox', { name: 'Search workbenches' });
+    const items = page.locator('[data-course-workbench]');
+    const count = page.locator('[data-course-filter-count]');
+
+    await expect(items).toHaveCount(5);
+    await expect(count).toHaveText('5');
+
+    await search.fill('cash');
+    await expect(page.locator('[data-course-workbench]:visible')).toHaveCount(1);
+    await expect(page.getByRole('link', { name: /Money Timeline/i })).toBeVisible();
+    await expect(count).toHaveText('1');
+
+    await search.fill('');
+    const applications = page.getByRole('button', { name: 'Applications', exact: true });
+    await applications.click();
+    await expect(applications).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('[data-course-workbench]:visible')).toHaveCount(1);
+    await expect(page.getByRole('link', { name: /Optimization & Strategy/i })).toBeVisible();
+    await expect(count).toHaveText('1');
+  });
+
   test('workbench ledger and solid headline respond without horizontal overflow', async ({ page }) => {
     for (const viewport of [
       { width: 1280, height: 720, heroColumns: 2 },

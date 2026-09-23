@@ -309,16 +309,16 @@ export default function ProbabilityModelBuilder() {
           <svg className="prob-venn-svg" viewBox="0 0 400 280" aria-label="Interactive Venn Diagram">
             <defs>
               <linearGradient id="vennGradA" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#2563eb" stopOpacity="0.15" />
+                <stop offset="0%" stopColor="var(--editorial-data-blue)" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="var(--editorial-data-blue)" stopOpacity="0.15" />
               </linearGradient>
               <linearGradient id="vennGradB" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.15" />
+                <stop offset="0%" stopColor="var(--editorial-data-purple)" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="var(--editorial-data-purple)" stopOpacity="0.15" />
               </linearGradient>
               <linearGradient id="vennGradAB" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#10b981" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#059669" stopOpacity="0.35" />
+                <stop offset="0%" stopColor="var(--editorial-data-green)" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="var(--editorial-data-green)" stopOpacity="0.35" />
               </linearGradient>
             </defs>
 
@@ -328,7 +328,7 @@ export default function ProbabilityModelBuilder() {
               cy="140" 
               r={75 + sliderA * 30} 
               fill="url(#vennGradA)" 
-              stroke="#3b82f6" 
+              stroke="var(--editorial-data-blue)" 
               strokeWidth="2" 
             />
             {/* Circle B */}
@@ -337,7 +337,7 @@ export default function ProbabilityModelBuilder() {
               cy="140" 
               r={75 + sliderB * 30} 
               fill="url(#vennGradB)" 
-              stroke="#8b5cf6" 
+              stroke="var(--editorial-data-purple)" 
               strokeWidth="2" 
             />
 
@@ -345,29 +345,29 @@ export default function ProbabilityModelBuilder() {
             <path 
               d={`M 200,${140 - Math.min(sliderA, sliderB) * 60} A ${75 + sliderA * 30} ${75 + sliderA * 30} 0 0 1 200,${140 + Math.min(sliderA, sliderB) * 60} A ${75 + sliderB * 30} ${75 + sliderB * 30} 0 0 1 200,${140 - Math.min(sliderA, sliderB) * 60}`}
               fill="url(#vennGradAB)"
-              stroke="#10b981"
+              stroke="var(--editorial-data-green)"
               strokeWidth="1.5"
             />
 
             {/* Labels */}
-            <text x="120" y="145" textAnchor="middle" fill="#1e40af" fontWeight="700" fontSize="14" fontFamily="sans-serif">
+            <text x="120" y="145" textAnchor="middle" fill="var(--editorial-data-blue)" fontWeight="700" fontSize="14" fontFamily="sans-serif">
               Event A
             </text>
             <text x="120" y="165" textAnchor="middle" fill="var(--foreground-muted)" fontSize="11" fontFamily="monospace">
               P(A) = {sliderA.toFixed(2)}
             </text>
 
-            <text x="280" y="145" textAnchor="middle" fill="#5b21b6" fontWeight="700" fontSize="14" fontFamily="sans-serif">
+            <text x="280" y="145" textAnchor="middle" fill="var(--editorial-data-purple)" fontWeight="700" fontSize="14" fontFamily="sans-serif">
               Event B
             </text>
             <text x="280" y="165" textAnchor="middle" fill="var(--foreground-muted)" fontSize="11" fontFamily="monospace">
               P(B) = {sliderB.toFixed(2)}
             </text>
 
-            <text x="200" y="138" textAnchor="middle" fill="#065f46" fontWeight="700" fontSize="12" fontFamily="sans-serif">
+            <text x="200" y="138" textAnchor="middle" fill="var(--editorial-data-green)" fontWeight="700" fontSize="12" fontFamily="sans-serif">
               A ∩ B
             </text>
-            <text x="200" y="154" textAnchor="middle" fill="#047857" fontWeight="600" fontSize="11" fontFamily="monospace">
+            <text x="200" y="154" textAnchor="middle" fill="var(--editorial-data-green)" fontWeight="600" fontSize="11" fontFamily="monospace">
               {sliderAB.toFixed(2)}
             </text>
           </svg>

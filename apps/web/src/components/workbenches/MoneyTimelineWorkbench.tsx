@@ -356,7 +356,7 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-input-row">
             <div className="fin-input-label">
               <span>Principal (P)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>${principal.toLocaleString()}</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>${principal.toLocaleString()}</span>
             </div>
             <input 
               type="number" 
@@ -382,7 +382,7 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-input-row">
             <div className="fin-input-label">
               <span>Annual Interest Rate (r)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>{annualRate.toFixed(1)}%</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>{annualRate.toFixed(1)}%</span>
             </div>
             <input 
               type="number" 
@@ -409,7 +409,7 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-input-row">
             <div className="fin-input-label">
               <span>Time in Years (t)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>{years} yrs</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>{years} yrs</span>
             </div>
             <input 
               type="number" 
@@ -483,7 +483,7 @@ export default function MoneyTimelineWorkbench() {
               <path 
                 d={curvePathD} 
                 fill="none" 
-                stroke="#2563eb" 
+                stroke="var(--editorial-data-blue)" 
                 strokeWidth="3" 
                 strokeLinecap="round" 
               />
@@ -495,7 +495,7 @@ export default function MoneyTimelineWorkbench() {
                   cx={pt.x} 
                   cy={pt.y} 
                   r={i === chartHoverIndex ? 6 : 3.5} 
-                  fill={i === chartHoverIndex ? 'var(--foreground)' : '#2563eb'} 
+                  fill={i === chartHoverIndex ? 'var(--foreground)' : 'var(--editorial-data-blue)'} 
                   stroke="var(--surface)" 
                   strokeWidth="2" 
                   style={{ cursor: 'pointer', transition: 'r 150ms ease' }}
@@ -542,7 +542,7 @@ export default function MoneyTimelineWorkbench() {
             </div>
             <div className="fin-metric-box apple-glass-card">
               <span>Total Interest</span>
-              <strong style={{ color: '#059669' }}>+${Math.round(totalInt).toLocaleString()}</strong>
+              <strong style={{ color: 'var(--editorial-data-green)' }}>+${Math.round(totalInt).toLocaleString()}</strong>
             </div>
             <div className="fin-metric-box apple-glass-card">
               <span>Growth Multiple</span>

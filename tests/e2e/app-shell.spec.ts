@@ -413,10 +413,33 @@ test('progress leads with needs attention and can reveal full core evidence', as
 test('mobile routes do not create page-level horizontal overflow', async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 375, height: 812 });
-  for (const route of ['/', '/modules/logic', '/modules/logic?view=practice', '/workbenches/logic', '/workbenches/probability', '/workbenches/finance', '/workbenches/linear', '/workbenches/applications', '/exam', '/reference', '/progress']) {
+  for (const route of ['/', '/course', '/study', '/progress', '/reference', '/saved', '/settings', '/exam', '/modules/logic', '/modules/logic?view=practice', '/lessons/logic/truth-tables', '/workbenches/logic', '/workbenches/probability', '/workbenches/finance', '/workbenches/linear', '/workbenches/applications']) {
     await page.goto(route);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow, route).toBe(false);
+  }
+});
+
+test('editorial redesign stays overflow-free at 320px', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 320, height: 700 });
+
+  for (const route of [
+    '/',
+    '/course',
+    '/study',
+    '/settings',
+    '/modules/logic',
+    '/workbenches/probability',
+    '/workbenches/linear',
+  ]) {
+    await page.goto(route);
+    const metrics = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      width: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+    }));
+    expect(metrics.overflow, `${route} should fit 320px (client ${metrics.width}, scroll ${metrics.scrollWidth})`).toBe(false);
   }
 });
 

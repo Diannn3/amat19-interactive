@@ -593,7 +593,7 @@ export default function RowOperationsCoach() {
           <div style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)', borderRadius: '14px', padding: '1.25rem', marginTop: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
               <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--foreground-muted)' }}>Calculation</span>
-              <button type="button" style={{ border: 'none', background: 'transparent', color: '#2563eb', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}>
+              <button type="button" style={{ border: 'none', background: 'transparent', color: 'var(--editorial-data-blue)', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}>
                 Copy Calculation
               </button>
             </div>
@@ -615,13 +615,13 @@ export default function RowOperationsCoach() {
             <svg viewBox="0 0 320 270" style={{ width: '100%', height: 'auto' }} aria-label="3D Isometric vector projection in R3">
               <defs>
                 <marker id="arrowHeadBlue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 8 5 L 0 9 z" fill="#2563eb" />
+                  <path d="M 0 1 L 8 5 L 0 9 z" fill="var(--editorial-data-blue)" />
                 </marker>
                 <marker id="arrowHeadPurple" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 8 5 L 0 9 z" fill="#7c3aed" />
+                  <path d="M 0 1 L 8 5 L 0 9 z" fill="var(--editorial-data-purple)" />
                 </marker>
                 <marker id="arrowHeadGreen" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 8 5 L 0 9 z" fill="#059669" />
+                  <path d="M 0 1 L 8 5 L 0 9 z" fill="var(--editorial-data-green)" />
                 </marker>
               </defs>
 
@@ -660,16 +660,16 @@ export default function RowOperationsCoach() {
                     <line x1={p23.x} y1={p23.y} x2={p123.x} y2={p123.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
 
                     {/* Vector a1 */}
-                    <line x1="160" y1="135" x2={p1.x} y2={p1.y} stroke="#2563eb" strokeWidth="2.5" markerEnd="url(#arrowHeadBlue)" />
-                    <text x={p1.x + 5} y={p1.y - 5} fill="#2563eb" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₁</text>
+                    <line x1="160" y1="135" x2={p1.x} y2={p1.y} stroke="var(--editorial-data-blue)" strokeWidth="2.5" markerEnd="url(#arrowHeadBlue)" />
+                    <text x={p1.x + 5} y={p1.y - 5} fill="var(--editorial-data-blue)" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₁</text>
 
                     {/* Vector a2 */}
-                    <line x1="160" y1="135" x2={p2.x} y2={p2.y} stroke="#7c3aed" strokeWidth="2.5" markerEnd="url(#arrowHeadPurple)" />
-                    <text x={p2.x + 5} y={p2.y - 5} fill="#7c3aed" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₂</text>
+                    <line x1="160" y1="135" x2={p2.x} y2={p2.y} stroke="var(--editorial-data-purple)" strokeWidth="2.5" markerEnd="url(#arrowHeadPurple)" />
+                    <text x={p2.x + 5} y={p2.y - 5} fill="var(--editorial-data-purple)" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₂</text>
 
                     {/* Vector a3 */}
-                    <line x1="160" y1="135" x2={p3.x} y2={p3.y} stroke="#059669" strokeWidth="2.5" markerEnd="url(#arrowHeadGreen)" />
-                    <text x={p3.x + 5} y={p3.y - 5} fill="#059669" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₃</text>
+                    <line x1="160" y1="135" x2={p3.x} y2={p3.y} stroke="var(--editorial-data-green)" strokeWidth="2.5" markerEnd="url(#arrowHeadGreen)" />
+                    <text x={p3.x + 5} y={p3.y - 5} fill="var(--editorial-data-green)" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₃</text>
                   </>
                 );
               })()}
