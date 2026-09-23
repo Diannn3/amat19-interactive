@@ -188,3 +188,35 @@ Post-reconciliation requirements:
 - Blueprint Orange adapts through semantic tokens under `html[data-theme='dark']`;
 - new dark-mode/mobile-navigation tests from PR #4 must remain green;
 - the redesign must pass quality, production PWA, Chromium, Firefox, and WebKit CI before handoff.
+
+
+## Verified handoff state — 2026-09-23
+
+Repository state at verification:
+
+- base branch: `main@043a882355dbf092c1c8e3f9476a98fb8a7e7639`;
+- redesign branch: `redesign/editorial-grid-neobrutalism@f1987bf5948554c17e53f877b76543e0da4a41e3`;
+- compare result: `ahead_by: 85`, `behind_by: 0`;
+- no pull request had been opened for this redesign branch at verification time.
+
+The final verified implementation includes:
+
+- Blueprint Orange foundations, shell, homepage, course, study, supporting routes, and workbench framing;
+- binary light/dark integration after reconciling PR #4 from `main`;
+- theme-aware workbench data accents without changing mathematical algorithms;
+- authentic math-first homepage artwork rather than copied reference-brand assets;
+- current-scope course topic chips derived from the skill graph;
+- explicit separation of optional/supplemental topics such as Bayes, Simplex, and Markov extensions;
+- 320px overflow regression coverage in addition to the established 375x667 mobile gate;
+- anti-reference-brand-leakage regression coverage;
+- reduced-motion, forced-colors, touch-target, keyboard, axe, PWA/offline, and browser-compatibility coverage retained.
+
+Authoritative remote verification:
+
+- GitHub Actions run `35840328342` on `f1987bf5948554c17e53f877b76543e0da4a41e3` completed successfully;
+- `quality`: success;
+- `production-pwa`: success;
+- `browser-chromium`: success;
+- `browser-compat` (Firefox + WebKit): success.
+
+Deployment is a separate gate from repository correctness. A green branch must not be described as deployed unless the hosting provider reports a successful deployment for the same commit.
