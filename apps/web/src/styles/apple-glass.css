@@ -3062,21 +3062,19 @@ button[type="submit"]:hover {
     height: 4rem !important;
     gap: 0.125rem !important;
     padding: 0.3rem 0.35rem !important;
-    border: 1px solid rgba(9, 9, 11, 0.08) !important;
+    border: 1px solid var(--nav-border) !important;
     border-radius: 1.35rem !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-    backdrop-filter: blur(24px) saturate(180%) !important;
-    box-shadow:
-      0 12px 36px rgba(15, 23, 42, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+    background: var(--nav-surface) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+    backdrop-filter: blur(24px) saturate(160%) !important;
+    box-shadow: var(--nav-shadow) !important;
   }
 
   .mobile-nav-link {
     min-height: 44px !important;
     border: 1px solid transparent !important;
     border-radius: 1rem !important;
-    color: #71717a !important;
+    color: var(--nav-text) !important;
     font-size: 0.62rem !important;
     font-weight: 650 !important;
     letter-spacing: -0.01em !important;
@@ -3087,14 +3085,14 @@ button[type="submit"]:hover {
   }
 
   .mobile-nav-link:hover {
-    background: rgba(9, 9, 11, 0.035) !important;
-    color: #27272a !important;
+    background: var(--nav-item-hover) !important;
+    color: var(--nav-text-active) !important;
   }
 
   .mobile-nav-link.is-active {
-    border-color: rgba(9, 9, 11, 0.06) !important;
-    background: rgba(9, 9, 11, 0.055) !important;
-    color: #09090b !important;
+    border-color: var(--nav-border) !important;
+    background: var(--nav-item-active) !important;
+    color: var(--nav-text-active) !important;
   }
 
   .mobile-nav-link.is-active::after {
@@ -3102,7 +3100,7 @@ button[type="submit"]:hover {
     bottom: 0.2rem !important;
     left: calc(50% - 0.8rem) !important;
     height: 2px !important;
-    background: #09090b !important;
+    background: var(--nav-active-marker) !important;
   }
 
   .mobile-nav-link .nav-icon {
@@ -3119,20 +3117,18 @@ button[type="submit"]:hover {
   .mobile-nav-link:focus-visible,
   .mobile-more-menu__link:focus-visible,
   .mobile-more-menu__action:focus-visible {
-    outline: 2px solid #09090b !important;
+    outline: 2px solid var(--focus) !important;
     outline-offset: 2px !important;
   }
 
   .mobile-more-menu__panel {
     bottom: calc(100% + 0.7rem) !important;
-    border: 1px solid rgba(9, 9, 11, 0.09) !important;
+    border: 1px solid var(--nav-border) !important;
     border-radius: 1.15rem !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-    -webkit-backdrop-filter: blur(26px) saturate(180%) !important;
-    backdrop-filter: blur(26px) saturate(180%) !important;
-    box-shadow:
-      0 20px 50px rgba(15, 23, 42, 0.14),
-      inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
+    background: var(--menu-surface) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(160%) !important;
+    backdrop-filter: blur(26px) saturate(160%) !important;
+    box-shadow: var(--nav-shadow) !important;
   }
 
   .mobile-more-menu__link,
@@ -3140,7 +3136,7 @@ button[type="submit"]:hover {
     min-height: 44px !important;
     border: 1px solid transparent !important;
     border-radius: 0.85rem !important;
-    color: #52525b !important;
+    color: var(--nav-text) !important;
     background: transparent !important;
   }
 
@@ -3148,9 +3144,9 @@ button[type="submit"]:hover {
   .mobile-more-menu__link[aria-current="page"],
   .mobile-more-menu__action:hover,
   .mobile-more-menu__action:focus-visible {
-    border-color: rgba(9, 9, 11, 0.06) !important;
-    background: rgba(9, 9, 11, 0.045) !important;
-    color: #09090b !important;
+    border-color: var(--nav-border) !important;
+    background: var(--nav-item-hover) !important;
+    color: var(--nav-text-active) !important;
     box-shadow: none !important;
   }
 }
