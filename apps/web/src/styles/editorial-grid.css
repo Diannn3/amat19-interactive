@@ -12,6 +12,7 @@
   --editorial-paper: #F8F3E8;
   --editorial-ink: #102A43;
   --editorial-signal: #F26430;
+  --editorial-signal-ink: #B6390B;
   --editorial-secondary: #8FD3C7;
 
   /* Supporting surfaces derived from the approved five-color relationship. */
@@ -6570,6 +6571,103 @@ main .apple-glass-card:active .apple-action-circle {
 
 @media (forced-colors: active) {
   .course-filter-status,
+  .course-filter-status [data-course-filter-count] {
+    color: CanvasText !important;
+  }
+}
+
+
+/* ==========================================================================
+   Contrast hardening
+   Bright Blueprint Orange remains the signal fill. Dark signal ink is used
+   for small foreground text and meaningful strokes on paper surfaces.
+   ========================================================================== */
+
+.editorial-accent,
+.home-journey__step-num,
+.home-shortcuts__action,
+.workbench-card__index,
+.study-queue-section__intro .section-context,
+.study-panel .section-context,
+.study-catalog__intro .section-context,
+[data-route="/progress"] .page-intro .page-context,
+[data-route="/progress"] .section-heading .section-context,
+[data-route="/reference"] .page-context,
+[data-route="/saved"] .page-context,
+[data-route="/settings"] .page-context,
+[data-route="/exam"] .mixed-practice__toolbar .section-context,
+[data-route="/exam"] .mixed-question__counter,
+[data-route="/exam"] .section-label,
+.logic-example-card__label,
+.logic-summary-meta,
+.venn-caption,
+.row-coach__arithmetic-symbol,
+[data-route^="/modules/"] .module-overview__context,
+.utility-card__arrow,
+[data-route^="/lessons/"] .lesson-header__context,
+[data-route^="/lessons/"] .feature-band .section-context,
+.lab-rail-label,
+.course-filter-status [data-course-filter-count] {
+  color: var(--editorial-signal-ink) !important;
+}
+
+.editorial-action--primary,
+.editorial-sticker--signal,
+.update-banner button:first-of-type,
+.home-hero__actions .apple-btn-black,
+.home-workbench-link .apple-action-circle,
+.workbench-card .apple-action-circle,
+.syllabus-module-week,
+.syllabus-module-arrow .apple-action-circle,
+.syllabus-banner-cta .apple-btn-black,
+.study-panel .hero-action--primary,
+.study-bento-card .apple-action-circle,
+.workbench-route__canvas .amat-button--primary,
+.workbench-route__canvas .button--primary,
+.workbench-route__canvas .apple-btn-black,
+[data-route^="/modules/"] .hero-action--primary,
+.course-companion-bar .apple-btn-black,
+[data-route^="/lessons/"] .lesson-header .hero-action--primary {
+  color: var(--editorial-ink) !important;
+}
+
+.study-panel--primary::after {
+  color: var(--editorial-ink) !important;
+}
+
+.prob-slider {
+  accent-color: var(--editorial-signal-ink) !important;
+}
+
+.strategy-workbench__boundary {
+  stroke: var(--editorial-signal-ink) !important;
+}
+
+@media (forced-colors: active) {
+  .editorial-accent,
+  .home-journey__step-num,
+  .home-shortcuts__action,
+  .workbench-card__index,
+  .study-queue-section__intro .section-context,
+  .study-panel .section-context,
+  .study-catalog__intro .section-context,
+  [data-route="/progress"] .page-intro .page-context,
+  [data-route="/progress"] .section-heading .section-context,
+  [data-route="/reference"] .page-context,
+  [data-route="/saved"] .page-context,
+  [data-route="/settings"] .page-context,
+  [data-route="/exam"] .mixed-practice__toolbar .section-context,
+  [data-route="/exam"] .mixed-question__counter,
+  [data-route="/exam"] .section-label,
+  .logic-example-card__label,
+  .logic-summary-meta,
+  .venn-caption,
+  .row-coach__arithmetic-symbol,
+  [data-route^="/modules/"] .module-overview__context,
+  .utility-card__arrow,
+  [data-route^="/lessons/"] .lesson-header__context,
+  [data-route^="/lessons/"] .feature-band .section-context,
+  .lab-rail-label,
   .course-filter-status [data-course-filter-count] {
     color: CanvasText !important;
   }
