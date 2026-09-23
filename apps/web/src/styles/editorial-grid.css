@@ -1452,7 +1452,13 @@ html[data-motion="reduced"] .home-workbench-link.apple-glass-card {
   }
 
   .home-workbench-link__description {
-    display: none !important;
+    display: -webkit-box !important;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    font-size: 0.68rem !important;
+    line-height: 1.35 !important;
   }
 
   .home-workbench-link__heading-row {
