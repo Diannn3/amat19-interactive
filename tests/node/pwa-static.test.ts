@@ -183,3 +183,17 @@ test('Vercel serves the migration worker without browser or CDN caching', async 
  assert.equal(headers['Clear-Site-Data'], '"cache"');
  assert.equal(headers['Service-Worker-Allowed'], '/');
 });
+
+
+test('application proactively rechecks the worker throughout long-lived sessions', async () => {
+ const source = await readFile(new URL('../../apps/web/src/layouts/AppLayout.astro', import.meta.url), 'utf8');
+ assert.match(source, /WORKER_UPDATE_INTERVAL_MS\s*=\s*30\s*\*\s*60\s*\*\s*1000/);
+ assert.match(source, /__amat19_probe/);
+ assert.match(source, /cache:\s*['"]no-store['"]/);
+ assert.match(source, /setInterval\(requestWorkerUpdate,\s*WORKER_UPDATE_INTERVAL_MS\)/);
+ assert.match(source, /visibilitychange/);
+ assert.match(source, /addEventListener\(['"]focus['"],\s*requestWorkerUpdate\)/);
+ assert.match(source, /addEventListener\(['"]online['"],\s*requestWorkerUpdate\)/);
+ assert.match(source, /addEventListener\(['"]pageshow['"]/);
+ assert.match(source, /event\.persisted/);
+});
