@@ -56,3 +56,62 @@
   --editorial-duration-reveal: 220ms;
   --editorial-ease: cubic-bezier(.2, .8, .2, 1);
 }
+
+
+/* --------------------------------------------------------------------------
+   Grid surfaces
+   -------------------------------------------------------------------------- */
+
+.editorial-grid-surface {
+  --editorial-grid-size: 52px;
+  background-color: var(--editorial-paper);
+  background-image:
+    linear-gradient(to right, var(--editorial-grid-light) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--editorial-grid-light) 1px, transparent 1px);
+  background-size: var(--editorial-grid-size) var(--editorial-grid-size);
+  color: var(--editorial-ink);
+}
+
+.editorial-grid-surface--major {
+  background-image:
+    linear-gradient(to right, var(--editorial-grid-light-major) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--editorial-grid-light-major) 1px, transparent 1px),
+    linear-gradient(to right, var(--editorial-grid-light) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--editorial-grid-light) 1px, transparent 1px);
+  background-size:
+    calc(var(--editorial-grid-size) * 4) calc(var(--editorial-grid-size) * 4),
+    calc(var(--editorial-grid-size) * 4) calc(var(--editorial-grid-size) * 4),
+    var(--editorial-grid-size) var(--editorial-grid-size),
+    var(--editorial-grid-size) var(--editorial-grid-size);
+}
+
+.editorial-grid-surface--dark {
+  background-color: var(--editorial-field);
+  background-image:
+    linear-gradient(to right, var(--editorial-grid-dark) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--editorial-grid-dark) 1px, transparent 1px);
+  color: var(--editorial-paper);
+}
+
+.editorial-grid-surface--dark.editorial-grid-surface--major {
+  background-image:
+    linear-gradient(to right, var(--editorial-grid-dark-major) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--editorial-grid-dark-major) 1px, transparent 1px),
+    linear-gradient(to right, var(--editorial-grid-dark) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--editorial-grid-dark) 1px, transparent 1px);
+}
+
+@media (max-width: 640px) {
+  .editorial-grid-surface {
+    --editorial-grid-size: 36px;
+  }
+}
+
+@media (forced-colors: active) {
+  .editorial-grid-surface,
+  .editorial-grid-surface--dark {
+    background-image: none;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+}
