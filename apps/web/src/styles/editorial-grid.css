@@ -5763,3 +5763,234 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
     color: CanvasText !important;
   }
 }
+
+
+/* ==========================================================================
+   Lesson pages — calm editorial reading surface
+   ========================================================================== */
+
+[data-route^="/lessons/"] .lesson-page {
+  width: min(calc(100% - 4rem), 78rem) !important;
+  padding-block: clamp(1.5rem, 3vw, 2.5rem) 4rem !important;
+}
+
+[data-route^="/lessons/"] .lab-breadcrumbs {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: .45rem !important;
+  margin-bottom: 1rem !important;
+  color: var(--editorial-ink-muted) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: .68rem !important;
+}
+
+[data-route^="/lessons/"] .lab-breadcrumbs a {
+  color: var(--editorial-ink) !important;
+  text-decoration-color: var(--editorial-signal) !important;
+}
+
+[data-route^="/lessons/"] .lesson-header {
+  padding: clamp(1.25rem, 3vw, 2rem) 0 clamp(1.5rem, 3vw, 2.25rem) !important;
+  border-bottom: 2px solid var(--editorial-ink) !important;
+}
+
+[data-route^="/lessons/"] .lesson-header h1 {
+  max-width: 15ch;
+  margin: 0 !important;
+  color: var(--editorial-ink) !important;
+  font: 820 clamp(2.7rem, 6vw, 6rem)/.92 var(--font-amat-display) !important;
+  letter-spacing: -.06em !important;
+  text-wrap: balance;
+}
+
+[data-route^="/lessons/"] .lesson-header__context {
+  margin: 1rem 0 .35rem !important;
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: .68rem !important;
+  font-weight: 780 !important;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+[data-route^="/lessons/"] .lesson-header > p:not(.lesson-header__context) {
+  max-width: 66ch;
+  color: var(--editorial-ink-muted) !important;
+  line-height: 1.55 !important;
+}
+
+[data-route^="/lessons/"] .lesson-header .hero-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: .6rem !important;
+  margin-top: 1rem !important;
+}
+
+[data-route^="/lessons/"] .lesson-header .hero-action,
+[data-route^="/lessons/"] .lesson-header button {
+  min-height: 44px !important;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+}
+
+[data-route^="/lessons/"] .lesson-header .hero-action--primary {
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-paper-pure) !important;
+}
+
+[data-route^="/lessons/"] .prose {
+  max-width: 72ch !important;
+  margin: clamp(2rem, 4vw, 3.5rem) auto 0 !important;
+  color: var(--editorial-ink) !important;
+  font-size: clamp(1rem, .25vw + .95rem, 1.08rem) !important;
+  line-height: 1.78 !important;
+}
+
+[data-route^="/lessons/"] .prose h2,
+[data-route^="/lessons/"] .prose h3 {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-display) !important;
+  letter-spacing: -.035em !important;
+}
+
+[data-route^="/lessons/"] .prose h2 {
+  margin-top: 2.4em !important;
+  padding-top: .75rem;
+  border-top: 2px solid var(--editorial-ink);
+  font-size: clamp(1.55rem, 3vw, 2.5rem) !important;
+}
+
+[data-route^="/lessons/"] .prose h3 {
+  font-size: 1.25rem !important;
+}
+
+[data-route^="/lessons/"] .prose code {
+  border: 1px solid var(--editorial-rule);
+  border-radius: var(--editorial-radius-xs);
+  background: var(--editorial-paper-muted);
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-mono);
+}
+
+[data-route^="/lessons/"] .prose pre {
+  overflow-x: auto;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-field) !important;
+  color: var(--editorial-paper) !important;
+  box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+}
+
+[data-route^="/lessons/"] .prose blockquote {
+  margin-inline: 0 !important;
+  padding: .9rem 1rem !important;
+  border-left: 5px solid var(--editorial-signal) !important;
+  background: var(--editorial-paper-warm, #fff3c7) !important;
+  color: var(--editorial-ink) !important;
+}
+
+[data-route^="/lessons/"] .feature-band {
+  max-width: 72ch;
+  margin: 3rem auto 0 !important;
+  padding: 1.2rem 0 !important;
+  border-top: 2px solid var(--editorial-ink) !important;
+  border-bottom: 2px solid var(--editorial-ink) !important;
+}
+
+[data-route^="/lessons/"] .feature-band h2 {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-display) !important;
+}
+
+[data-route^="/lessons/"] .feature-band .section-context {
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+[data-route^="/lessons/"] .feature-band__grid p {
+  color: var(--editorial-ink-muted) !important;
+}
+
+[data-route^="/lessons/"] .feature-band__grid strong {
+  color: var(--editorial-ink) !important;
+}
+
+[data-route^="/lessons/"] .lesson-pager {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: .75rem !important;
+  max-width: 72ch;
+  margin: 2.5rem auto 0 !important;
+  padding-top: 1.25rem;
+  border-top: 2px solid var(--editorial-ink);
+}
+
+[data-route^="/lessons/"] .lesson-pager a {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding: .7rem .8rem !important;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  text-decoration: none !important;
+}
+
+[data-route^="/lessons/"] .lesson-pager a:last-child {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+[data-route^="/lessons/"] .lesson-pager a:hover {
+  background: var(--editorial-secondary-soft) !important;
+}
+
+@media (max-width: 700px) {
+  [data-route^="/lessons/"] .lesson-page {
+    width: min(calc(100% - 1.5rem), 78rem) !important;
+  }
+
+  [data-route^="/lessons/"] .lesson-pager {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-route^="/lessons/"] .lesson-pager a:last-child {
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-route^="/lessons/"] .lesson-header,
+  [data-route^="/lessons/"] .lesson-header .hero-action,
+  [data-route^="/lessons/"] .lesson-header button,
+  [data-route^="/lessons/"] .prose h2,
+  [data-route^="/lessons/"] .prose code,
+  [data-route^="/lessons/"] .prose pre,
+  [data-route^="/lessons/"] .prose blockquote,
+  [data-route^="/lessons/"] .feature-band,
+  [data-route^="/lessons/"] .lesson-pager,
+  [data-route^="/lessons/"] .lesson-pager a {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  [data-route^="/lessons/"] .lesson-header h1,
+  [data-route^="/lessons/"] .lesson-header__context,
+  [data-route^="/lessons/"] .lesson-header > p,
+  [data-route^="/lessons/"] .prose,
+  [data-route^="/lessons/"] .feature-band h2,
+  [data-route^="/lessons/"] .feature-band .section-context,
+  [data-route^="/lessons/"] .feature-band__grid p,
+  [data-route^="/lessons/"] .feature-band__grid strong {
+    color: CanvasText !important;
+  }
+}
