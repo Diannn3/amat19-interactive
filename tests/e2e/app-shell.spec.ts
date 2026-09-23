@@ -566,7 +566,6 @@ test('mobile More exposes the dark-mode trigger and the dock never falls back to
   const root = page.locator('html');
   const mobile = page.getByRole('navigation', { name: 'Mobile navigation' });
   const more = mobile.locator('.mobile-more-menu');
-  const dock = mobile.locator('.mobile-nav').or(mobile);
 
   await more.locator('summary').click();
   const themeToggle = more.getByRole('button', { name: 'Turn dark mode on' });
