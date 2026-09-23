@@ -1353,3 +1353,128 @@ html[data-motion="reduced"] .home-workbench-link.apple-glass-card {
   .home-math-poster { grid-area: poster; }
   .home-workbench-ledger { grid-area: ledger; }
 }
+
+
+/* --------------------------------------------------------------------------
+   Home workbench index — ruled editorial rows
+   -------------------------------------------------------------------------- */
+
+.home-workbench-ledger {
+  border-top: 2px solid var(--editorial-paper) !important;
+  border-bottom: 2px solid var(--editorial-paper) !important;
+}
+
+.home-workbench-ledger ol {
+  counter-reset: home-workbench !important;
+  gap: 0 !important;
+}
+
+.home-workbench-ledger li {
+  counter-increment: home-workbench;
+}
+
+.home-workbench-ledger li + li {
+  border-top: 1px solid rgb(248 243 232 / 0.42) !important;
+}
+
+.home-workbench-link.apple-glass-card {
+  grid-template-columns: 2.1rem 2.25rem minmax(0, 1fr) auto !important;
+  min-height: 3.5rem !important;
+  gap: 0.65rem !important;
+  padding: 0.55rem 0.35rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--editorial-paper) !important;
+}
+
+.home-workbench-link.apple-glass-card::before {
+  position: static !important;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  background: none !important;
+  color: var(--editorial-secondary) !important;
+  content: counter(home-workbench, decimal-leading-zero) !important;
+  font: 700 0.68rem/1 var(--font-amat-mono) !important;
+  letter-spacing: 0.06em;
+}
+
+.home-workbench-link.apple-glass-card::after {
+  display: none !important;
+}
+
+.home-workbench-link.apple-glass-card:hover {
+  background: rgb(248 243 232 / 0.08) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.home-workbench-link .apple-icon-squircle {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-color: var(--editorial-paper) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.home-workbench-link__title {
+  color: var(--editorial-paper) !important;
+  font-size: 0.9rem !important;
+}
+
+.home-workbench-link__description {
+  color: rgb(248 243 232 / 0.68) !important;
+  font-size: 0.72rem !important;
+}
+
+.home-workbench-link code[data-home-notation] {
+  border-color: rgb(248 243 232 / 0.6) !important;
+  background: rgb(248 243 232 / 0.08) !important;
+  color: var(--editorial-paper) !important;
+}
+
+.home-workbench-link .apple-action-circle {
+  width: 2rem !important;
+  height: 2rem !important;
+  border-color: var(--editorial-paper) !important;
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-paper-pure) !important;
+}
+
+@media (max-width: 560px) {
+  .home-workbench-link.apple-glass-card {
+    grid-template-columns: 1.8rem 2.15rem minmax(0, 1fr) auto !important;
+    padding-inline: 0.15rem !important;
+  }
+
+  .home-workbench-link__description {
+    display: none !important;
+  }
+
+  .home-workbench-link__heading-row {
+    gap: 0.4rem !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .home-workbench-ledger,
+  .home-workbench-ledger li + li {
+    border-color: CanvasText !important;
+  }
+
+  .home-workbench-link.apple-glass-card,
+  .home-workbench-link.apple-glass-card:hover {
+    background: Canvas !important;
+    color: CanvasText !important;
+  }
+
+  .home-workbench-link__title,
+  .home-workbench-link__description,
+  .home-workbench-link code[data-home-notation],
+  .home-workbench-link.apple-glass-card::before {
+    color: CanvasText !important;
+  }
+}
