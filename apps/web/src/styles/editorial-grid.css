@@ -6479,3 +6479,32 @@ html[data-motion="reduced"] .reference-entry-grid {
     outline-color: Highlight !important;
   }
 }
+
+
+/* ==========================================================================
+   Legacy glass neutralization
+   The class remains temporarily for markup compatibility, but the redesign
+   removes its blur, specular highlight, pointer spotlight, and floating-card
+   transforms everywhere inside the main learning surface.
+   ========================================================================== */
+
+main .apple-glass-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+main .apple-glass-card::before,
+main .apple-glass-card::after {
+  display: none !important;
+  content: none !important;
+}
+
+main .apple-glass-card:hover,
+main .apple-glass-card:active {
+  transform: none !important;
+}
+
+main .apple-glass-card:hover .apple-action-circle,
+main .apple-glass-card:active .apple-action-circle {
+  transform: none !important;
+}
