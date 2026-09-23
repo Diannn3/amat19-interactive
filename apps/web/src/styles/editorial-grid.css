@@ -846,3 +846,130 @@ html[data-motion="reduced"] .topbar-search {
     background: Canvas !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Mobile navigation — compact Blueprint Orange dock
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .mobile-nav {
+    inset: auto 0.5rem calc(0.5rem + env(safe-area-inset-bottom)) 0.5rem !important;
+    height: 4rem !important;
+    padding: 0.25rem !important;
+    gap: 0.12rem !important;
+    border: 2px solid var(--editorial-ink) !important;
+    border-radius: var(--editorial-radius-lg) !important;
+    background: var(--editorial-paper-pure) !important;
+    color: var(--editorial-ink) !important;
+    box-shadow: 5px 5px 0 var(--editorial-ink) !important;
+  }
+
+  .mobile-nav-link {
+    min-height: 44px;
+    border: 1.5px solid transparent;
+    border-radius: var(--editorial-radius-sm) !important;
+    background: transparent !important;
+    color: var(--editorial-ink-muted) !important;
+    font-size: 0.6rem !important;
+    font-weight: 720 !important;
+    transition:
+      background-color var(--editorial-duration-ui) ease,
+      color var(--editorial-duration-ui) ease,
+      transform var(--editorial-duration-press) var(--editorial-ease) !important;
+  }
+
+  .mobile-nav-link:hover {
+    border-color: var(--editorial-rule);
+    background: var(--editorial-secondary-soft) !important;
+    color: var(--editorial-ink) !important;
+  }
+
+  .mobile-nav-link.is-active {
+    border-color: var(--editorial-ink);
+    background: var(--editorial-secondary) !important;
+    color: var(--editorial-ink) !important;
+  }
+
+  .mobile-nav-link.is-active::after {
+    right: 30% !important;
+    bottom: 0.14rem !important;
+    left: 30% !important;
+    height: 3px !important;
+    border-radius: 0 !important;
+    background: var(--editorial-signal) !important;
+  }
+
+  .mobile-more-menu__panel {
+    right: 0 !important;
+    bottom: calc(100% + 0.7rem) !important;
+    left: auto !important;
+    min-width: min(18rem, calc(100vw - 1rem));
+    border: 2px solid var(--editorial-ink) !important;
+    border-radius: var(--editorial-radius-md) !important;
+    background: var(--editorial-paper-pure) !important;
+    color: var(--editorial-ink) !important;
+    box-shadow: 5px 5px 0 var(--editorial-ink) !important;
+  }
+
+  .mobile-more-menu__link {
+    min-height: 45px !important;
+    border-radius: var(--editorial-radius-xs) !important;
+    color: var(--editorial-ink) !important;
+    font-weight: 700 !important;
+  }
+
+  .mobile-more-menu__link:hover,
+  .mobile-more-menu__link[aria-current="page"] {
+    background: var(--editorial-secondary-soft) !important;
+    color: var(--editorial-ink) !important;
+  }
+
+  .workspace-scroll {
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .mobile-nav {
+    inset-inline: 0.35rem !important;
+    box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+  }
+
+  .mobile-nav-link {
+    font-size: 0.55rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-link {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+html[data-motion="reduced"] .mobile-nav-link {
+  transition: none !important;
+  transform: none !important;
+}
+
+@media (forced-colors: active) {
+  .mobile-nav,
+  .mobile-more-menu__panel,
+  .mobile-nav-link,
+  .mobile-more-menu__link {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-nav-link.is-active {
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+
+  .mobile-nav-link.is-active::after {
+    background: HighlightText !important;
+  }
+}
