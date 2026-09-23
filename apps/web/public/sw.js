@@ -1,4 +1,7 @@
-const VERSION = 'amat19-workbenches-v2';
+const VERSION = 'amat19-blueprint-v3';
+// One-time production migration: this release must take over from stale v2 app shells.
+// Bumping VERSION again automatically restores the normal user-approved update flow.
+const FORCE_ACTIVATE_RELEASE = VERSION === 'amat19-blueprint-v3';
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
 const NAVIGATION_TIMEOUT_MS = 4000;
@@ -39,9 +42,9 @@ self.addEventListener('install', (event) => {
       const [pages, assets] = await Promise.all([caches.open(PAGE_CACHE), caches.open(STATIC_CACHE)]);
       // A partial installation must not replace a working offline version.
       await Promise.all([pages.addAll(CORE_ROUTES), assets.addAll(manifest.assets)]);
+      if (FORCE_ACTIVATE_RELEASE) await self.skipWaiting();
     })()
   );
-  // Deliberately do not skipWaiting(): an active study session chooses when updates apply.
 });
 
 self.addEventListener('message', (event) => {
@@ -49,11 +52,16 @@ self.addEventListener('message', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((key) => ![STATIC_CACHE, PAGE_CACHE].includes(key)).map((key) => caches.delete(key))))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter((key) => ![STATIC_CACHE, PAGE_CACHE].includes(key)).map((key) => caches.delete(key)));
+    await self.clients.claim();
+    if (!FORCE_ACTIVATE_RELEASE) return;
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    await Promise.all(windows.map((client) => (
+      typeof client.navigate === 'function' ? client.navigate(client.url).catch(() => undefined) : undefined
+    )));
+  })());
 });
 
 function navigationCacheKey(request) {
@@ -71,7 +79,7 @@ async function fetchWithTimeout(request, timeoutMs = NAVIGATION_TIMEOUT_MS) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    return await fetch(request, { signal: controller.signal });
+    return await fetch(request, { signal: controller.signal, cache: 'no-store' });
   } finally {
     clearTimeout(timeout);
   }

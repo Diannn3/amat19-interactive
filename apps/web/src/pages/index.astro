@@ -1,9 +1,12 @@
 ---
-import { currentCourseProfile } from '@amat19/course-content';
+import { currentCourseProfile, skillGraph } from '@amat19/course-content';
 import { ArrowRight, GraduationCap, BarChart3, BookOpen, Grid3X3, Network, Search, Boxes, Activity } from 'lucide-react';
 import AppLayout from '../layouts/AppLayout.astro';
+import HomeMathPoster from '../components/home/HomeMathPoster.astro';
 
 const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench) => [workbench.id, workbench]));
+const workbenchCount = currentCourseProfile.workbenches.length;
+const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current').length;
 ---
 <AppLayout title="Home">
   <section class="page-width home-hero" data-home-hero aria-labelledby="home-title">
@@ -25,24 +28,26 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
         <a class="apple-btn-glass secondary-button" href="/course">Explore the course</a>
       </div>
 
-      <div class="home-hero__specs" aria-label="Course laboratory metrics">
+      <div class="home-hero__specs" aria-label="Course laboratory facts">
         <div class="home-spec-item">
-          <span class="home-spec-item__val">5</span>
+          <span class="home-spec-item__val">{workbenchCount}</span>
           <span class="home-spec-item__label">Workbenches</span>
           <span class="home-spec-item__sub">Logic, Probability, Finance, Matrices, Applications</span>
         </div>
         <div class="home-spec-item">
-          <span class="home-spec-item__val">100+</span>
-          <span class="home-spec-item__label">Interactive Examples</span>
-          <span class="home-spec-item__sub">From concepts to real-world problems</span>
+          <span class="home-spec-item__val">{currentSkillCount}</span>
+          <span class="home-spec-item__label">Core skills</span>
+          <span class="home-spec-item__sub">Derived from the current course skill graph</span>
         </div>
         <div class="home-spec-item">
-          <span class="home-spec-item__val">&infin;</span>
-          <span class="home-spec-item__label">One Connected Course</span>
-          <span class="home-spec-item__sub">A clearer view of finite mathematics</span>
+          <span class="home-spec-item__val">Local</span>
+          <span class="home-spec-item__label">Study data</span>
+          <span class="home-spec-item__sub">Progress and preferences stay in this browser</span>
         </div>
       </div>
     </div>
+
+    <HomeMathPoster />
 
     <nav class="home-workbench-ledger" data-home-course-rail aria-labelledby="home-workbench-heading">
       <div class="home-workbench-ledger__heading sr-only">
@@ -77,11 +82,10 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
                 </div>
 
                 <div class="home-workbench-link__content">
-                  <div class="home-workbench-link__meta">
-                    <span class="home-workbench-link__tag">{module.title}</span>
+                  <div class="home-workbench-link__heading-row">
+                    <strong class="home-workbench-link__title">{workbench.title}</strong>
                     <code data-home-notation>{workbench.notation}</code>
                   </div>
-                  <strong class="home-workbench-link__title">{workbench.title}</strong>
                   <span class="home-workbench-link__description">{workbench.description}</span>
                 </div>
 
@@ -106,11 +110,20 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
 
   {/* Guided Learning Flow Section (Image 2) */}
   <section class="page-width home-journey" aria-labelledby="journey-heading">
-    <div class="home-journey__header">
-      <h2 id="journey-heading" class="home-journey__title">From Concepts to Real Understanding.</h2>
-      <p class="home-journey__lede">
-        A guided learning flow that helps you explore ideas, visualize concepts, practice actively, and apply them to real-world problems — all in one connected experience.
-      </p>
+    <div class="home-journey__header-row">
+      <div class="home-journey__header">
+        <h2 id="journey-heading" class="home-journey__title">From Concepts to Real Understanding.</h2>
+        <p class="home-journey__lede">
+          A guided learning flow that helps you explore ideas, visualize concepts, practice actively, and apply them to real-world problems — all in one connected experience.
+        </p>
+      </div>
+      <div class="apple-glass-card home-journey__badge" aria-hidden="true">
+        <span class="home-journey__badge-icon">&infin;</span>
+        <div class="home-journey__badge-copy">
+          <span class="home-journey__badge-title">SAME MATHEMATICS.</span>
+          <span class="home-journey__badge-sub">A CLEARER VIEW.</span>
+        </div>
+      </div>
     </div>
 
     <div class="home-journey__grid">
@@ -155,7 +168,7 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
           <span class="home-journey__step-num">04</span>
         </div>
         <h3>Apply</h3>
-        <p>Use what you've learned to solve linear programming, game theory matrices, and Markov chain models.</p>
+        <p>Use what you've learned to solve linear programming and game-theory models, with optional Markov extensions clearly separated.</p>
       </div>
     </div>
   </section>
@@ -199,24 +212,4 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
     </nav>
   </section>
 
-  <script>
-    function initSpotlight() {
-      const cards = document.querySelectorAll<HTMLElement>('.apple-glass-card');
-      cards.forEach((card) => {
-        card.addEventListener('pointermove', (e: PointerEvent) => {
-          const rect = card.getBoundingClientRect();
-          const x = ((e.clientX - rect.left) / rect.width) * 100;
-          const y = ((e.clientY - rect.top) / rect.height) * 100;
-          card.style.setProperty('--mouse-x', `${x}%`);
-          card.style.setProperty('--mouse-y', `${y}%`);
-          card.style.setProperty('--spotlight-opacity', '1');
-        });
-        card.addEventListener('pointerleave', () => {
-          card.style.setProperty('--spotlight-opacity', '0');
-        });
-      });
-    }
-    initSpotlight();
-    document.addEventListener('astro:page-load', initSpotlight);
-  </script>
 </AppLayout>

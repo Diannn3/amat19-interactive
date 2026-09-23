@@ -16,9 +16,10 @@ test('navigation fallback ignores query strings and uses a bounded network wait'
 });
 
 
-test('service worker cache namespace is bumped for the focused workbench release',async()=>{
+test('service worker cache namespace is bumped for the Blueprint production migration',async()=>{
  const source=await readFile(new URL('../../apps/web/public/sw.js',import.meta.url),'utf8');
- assert.match(source,/VERSION\s*=\s*['"]amat19-workbenches-v2['"]/);
+ assert.match(source,/VERSION\s*=\s*['"]amat19-blueprint-v3['"]/);
+ assert.match(source,/FORCE_ACTIVATE_RELEASE\s*=\s*VERSION\s*===\s*['"]amat19-blueprint-v3['"]/);
  assert.doesNotMatch(source,/['"]\/labs\//);
  assert.doesNotMatch(source,/amat19-v13-audited-backend/);
 });
@@ -28,8 +29,12 @@ test('installation caches the built workbench scripts before reporting offline r
  const handlers = new Map();
  const cached = new Map<string, string[]>();
  let manifestRequested = false;
+ let skipWaitingCalled = false;
  runInNewContext(source, {
-  self: { addEventListener: (type: string, handler: unknown) => handlers.set(type, handler) },
+  self: {
+   addEventListener: (type: string, handler: unknown) => handlers.set(type, handler),
+   skipWaiting: async () => { skipWaitingCalled = true; },
+  },
   caches: { open: async (name: string) => ({
    add: async (url: string) => cached.set(name, [...(cached.get(name) ?? []), url]),
    addAll: async (urls: string[]) => cached.set(name, [...(cached.get(name) ?? []), ...urls]),
@@ -43,7 +48,55 @@ test('installation caches the built workbench scripts before reporting offline r
  handlers.get('install')({ waitUntil: (promise: Promise<unknown>) => { installation = promise; } });
  await installation;
  assert.equal(manifestRequested, true);
- assert.deepEqual(cached.get('amat19-workbenches-v2-static'), ['/_astro/workbench.js', '/_astro/styles.css']);
+ assert.equal(skipWaitingCalled, true);
+ assert.deepEqual(cached.get('amat19-blueprint-v3-static'), ['/_astro/workbench.js', '/_astro/styles.css']);
+});
+
+
+test('Blueprint migration claims and reloads existing window clients once activated', async () => {
+ const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
+ const handlers = new Map();
+ const navigated: string[] = [];
+ let claimed = false;
+ runInNewContext(source, {
+  URL,
+  self: {
+   location: { origin: 'https://amat.test' },
+   skipWaiting: async () => {},
+   addEventListener: (type: string, handler: unknown) => handlers.set(type, handler),
+   clients: {
+    claim: async () => { claimed = true; },
+    matchAll: async () => [
+     { url: 'https://amat.test/course', navigate: async (url: string) => { navigated.push(url); } },
+    ],
+   },
+  },
+  caches: {
+   keys: async () => ['amat19-workbenches-v2-pages', 'amat19-blueprint-v3-static', 'amat19-blueprint-v3-pages'],
+   delete: async () => true,
+   open: async () => ({ addAll: async () => {} }),
+   match: async () => undefined,
+  },
+  fetch: async () => ({ ok: true }),
+  AbortController,
+  Request,
+  Promise,
+ });
+ let activation: Promise<unknown> | undefined;
+ handlers.get('activate')({ waitUntil: (promise: Promise<unknown>) => { activation = promise; } });
+ await activation;
+ assert.equal(claimed, true);
+ assert.deepEqual(navigated, ['https://amat.test/course']);
+});
+
+test('service-worker navigations bypass the browser HTTP cache', async () => {
+ const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
+ assert.match(source, /fetch\(request,\s*\{\s*signal:\s*controller\.signal,\s*cache:\s*['"]no-store['"]\s*\}\)/);
+});
+
+test('application asks the browser to bypass HTTP cache when checking sw.js', async () => {
+ const source = await readFile(new URL('../../apps/web/src/layouts/AppLayout.astro', import.meta.url), 'utf8');
+ assert.match(source, /serviceWorker\.register\(['"]\/sw\.js['"],\s*\{\s*updateViaCache:\s*['"]none['"]\s*\}\)/);
 });
 
 test('offline immutable chunks match module requests despite preview Vary Origin headers', async () => {
@@ -62,4 +115,17 @@ test('offline immutable chunks match module requests despite preview Vary Origin
   respondWith: (promise: Promise<unknown>) => { resolved = promise; },
  });
  assert.equal(await resolved, response);
+});
+
+
+test('offline and manifest surfaces no longer expose the legacy maroon theme', async () => {
+ const [offline, manifest] = await Promise.all([
+  readFile(new URL('../../apps/web/public/offline.html', import.meta.url), 'utf8'),
+  readFile(new URL('../../apps/web/public/manifest.webmanifest', import.meta.url), 'utf8'),
+ ]);
+ assert.match(offline, /amat19-theme/);
+ assert.match(offline, /data-theme=["']light["']/);
+ assert.match(offline, /#09090b/);
+ assert.doesNotMatch(offline, /#7b1113|#fff9f1/i);
+ assert.doesNotMatch(manifest, /#2e080d|#fff9f1/i);
 });

@@ -44,9 +44,41 @@ for (const directory of PURE_PACKAGES) {
   }
 }
 
-for (const file of await filesUnder('apps/web/src')) {
+const FABRICATED_STUDY_STATE = ['68%', '18 / 30', '8 / 12', '5 / 8', 'Overall Progress', 'Practice Set 3', 'Matrices · Systems of Equations', '6 / 10'];
+const INERT_STUDY_CONTROLS = ['study-toolbar', 'Search resources', 'Resource filter'];
+const UNSOURCED_STUDY_CATALOG = ['120+ problems', '12 reviewers', '8 sheets', '24 saved', '28 problems', '36 problems', '25 problems', '31 problems'];
+const FABRICATED_COURSE_STATE = ['<span class="syllabus-donut-pct">0%</span>', '<span class="syllabus-donut-sub">Not Started</span>', '0 of 5 modules completed'];
+const UNSOURCED_COURSE_FRAMING = ['Course Syllabus.', 'A 10-week journey', 'follow the syllabus', 'Wk '];
+const INERT_COURSE_CONTROLS = ['course-syllabus-toggle', 'Syllabus view mode', 'List View'];
+const webSourceFiles = await filesUnder('apps/web/src');
+for (const file of webSourceFiles) {
   const source = await readFile(path.join(ROOT, file), 'utf8');
   for (const rule of DANGEROUS) if (rule.test(source)) violations.push(`${file}: unsafe execution/render path matched ${rule}`);
+  if (source.includes('/workbench/')) {
+    violations.push(`${file}: noncanonical singular /workbench/ route found; use the canonical /workbenches/ registry`);
+  }
+  if (file.endsWith('pages/study.astro')) {
+    for (const fabricated of FABRICATED_STUDY_STATE) {
+      if (source.includes(fabricated)) violations.push(`${file}: fabricated learner-state literal found: ${fabricated}`);
+    }
+    for (const inert of INERT_STUDY_CONTROLS) {
+      if (source.includes(inert)) violations.push(`${file}: inactive Study control found: ${inert}`);
+    }
+    for (const claim of UNSOURCED_STUDY_CATALOG) {
+      if (source.includes(claim)) violations.push(`${file}: unsourced Study catalog count found: ${claim}`);
+    }
+  }
+  if (file.endsWith('pages/course.astro')) {
+    for (const fabricated of FABRICATED_COURSE_STATE) {
+      if (source.includes(fabricated)) violations.push(`${file}: fabricated Course learner-state literal found: ${fabricated}`);
+    }
+    for (const framing of UNSOURCED_COURSE_FRAMING) {
+      if (source.includes(framing)) violations.push(`${file}: unsourced Course pacing/framing found: ${framing}`);
+    }
+    for (const inert of INERT_COURSE_CONTROLS) {
+      if (source.includes(inert)) violations.push(`${file}: inactive Course control found: ${inert}`);
+    }
+  }
 }
 
 const labPages = (await filesUnder('apps/web/src/pages/labs')).filter((file) => file.endsWith('.astro'));
@@ -89,4 +121,11 @@ console.log('Architecture audit PASS');
 console.log(`- ${PURE_PACKAGES.length} domain/content packages remain DOM/framework independent`);
 console.log(`- ${workbenchPages.length} workbench routes each hydrate exactly one client:load root`);
 console.log('- legacy lab URLs resolve through one non-hydrated compatibility route');
+console.log('- learner-facing web source contains no singular /workbench/ routes');
+console.log('- Study source contains no known fabricated learner-state literals');
+console.log('- Study source contains no known inert catalog controls');
+console.log('- Study browse metadata is free of the known unsourced catalog counts');
+console.log('- Course source contains no known fabricated learner-progress state');
+console.log('- Course path is not presented as an official syllabus, fixed 10-week schedule, or week-assigned sequence');
+console.log('- Course source contains no known inert syllabus view controls');
 console.log('- no dynamic JS evaluation, unsafe raw HTML rendering, or overlapping monolithic UI suites detected');

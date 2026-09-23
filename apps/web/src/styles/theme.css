@@ -1,18 +1,18 @@
 :root {
   color-scheme: light;
-  /* Pass 6 shell tokens follow the Elbi AI workspace relationship while keeping
-     the AMAT surface names semantic and independent from that product's copy. */
-  --shell-maroon-950: #2e080d;
-  --shell-maroon-900: #451016;
-  --shell-maroon-800: #5c1016;
-  --shell-maroon-700: #74131b;
-  --shell-maroon-600: #9b111e;
-  --shell-orange: #e66a19;
-  --shell-orange-soft: #f4a15f;
-  --shell-cream: #fff9f1;
-  --shell-sand: #f2e8dc;
-  --shell-paper: #fbf4ea;
-  --shell-line: #e2d5c6;
+  /* Pass 6 shell tokens follow the current neutral AMAT workspace relationship
+     while keeping surface names semantic and theme-aware. */
+  --shell-maroon-950: #09090b;
+  --shell-maroon-900: rgba(255, 255, 255, 0.9);
+  --shell-maroon-800: #27272a;
+  --shell-maroon-700: #3f3f46;
+  --shell-maroon-600: #52525b;
+  --shell-orange: #09090b;
+  --shell-orange-soft: #71717a;
+  --shell-cream: #fbfbfd;
+  --shell-sand: #f4f4f5;
+  --shell-paper: #fafafa;
+  --shell-line: #e4e4e7;
   --sidebar-width: 288px;
   --sidebar-width-collapsed: 86px;
   --topbar-height: 72px;
@@ -21,49 +21,65 @@
   --font-amat-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-amat-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-amat-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
-  --background: #fff9f1;
-  --background-deep: #f8ede2;
-  --surface: #fffdf9;
-  --surface-muted: #f6ebe0;
-  --surface-strong: #ecddd0;
-  --surface-maroon: #f6e6e4;
-  --foreground: #2e2523;
-  --foreground-muted: #6e5b54;
-  --foreground-soft: #735c53;
-  --border: #dfcec0;
-  --border-strong: #b99b87;
-  --primary: #7b1113;
-  --primary-foreground: #fff9f1;
-  --primary-hover: #651013;
-  --primary-soft: #f1d8d7;
-  --accent: #e66a19;
-  --accent-strong: #994719;
-  --accent-soft: #f7dfcb;
-  --olive: #617040;
-  --olive-soft: #e8eddc;
-  --success: #276245;
-  --success-soft: #e0f0e7;
-  --warning: #8a5418;
-  --warning-soft: #f7e8cf;
-  --destructive: #a32929;
-  --destructive-soft: #f7dddd;
-  --focus: #1f5d85;
-  --spotlight: rgb(199 106 42 / 0.16);
-  --shadow-soft: 0 1px 2px rgb(75 41 30 / 0.04), 0 12px 34px rgb(75 41 30 / 0.07);
-  --shadow-raised: 0 20px 60px rgb(72 31 24 / 0.12);
+
+  --background: #fbfbfd;
+  --background-deep: #f4f4f6;
+  --surface: #ffffff;
+  --surface-muted: #f4f4f5;
+  --surface-strong: #e4e4e7;
+  --surface-maroon: rgba(0, 0, 0, 0.03);
+  --foreground: #09090b;
+  --foreground-muted: #6b6b74;
+  --foreground-soft: #a1a1aa;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.14);
+  --primary: #09090b;
+  --primary-foreground: #ffffff;
+  --primary-hover: #27272a;
+  --primary-soft: rgba(0, 0, 0, 0.04);
+  --accent: #09090b;
+  --accent-strong: #18181b;
+  --accent-soft: rgba(0, 0, 0, 0.03);
+  --olive: #27272a;
+  --olive-soft: rgba(0, 0, 0, 0.04);
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+  --warning: #ca8a04;
+  --warning-soft: #fef9c3;
+  --destructive: #dc2626;
+  --destructive-soft: #fee2e2;
+  --focus: #0071e3;
+  --spotlight: rgba(0, 0, 0, 0.05);
+
+  --glass-surface: rgba(255, 255, 255, 0.78);
+  --glass-surface-strong: rgba(255, 255, 255, 0.94);
+  --glass-border: rgba(9, 9, 11, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.95);
+  --nav-surface: rgba(255, 255, 255, 0.90);
+  --nav-surface-solid: #ffffff;
+  --nav-border: rgba(9, 9, 11, 0.08);
+  --nav-text: var(--foreground-muted);
+  --nav-text-active: #09090b;
+  --nav-item-hover: rgba(9, 9, 11, 0.035);
+  --nav-item-active: rgba(9, 9, 11, 0.055);
+  --nav-active-marker: #09090b;
+  --nav-shadow: 0 12px 36px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  --menu-surface: rgba(255, 255, 255, 0.96);
+  --grid-line: rgba(0, 0, 0, 0.035);
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.02), 0 12px 32px rgba(0, 0, 0, 0.04);
+  --shadow-raised: 0 20px 60px rgba(0, 0, 0, 0.08);
   --shadow: var(--shadow-soft);
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
   --content-max: 82rem;
-  /* Gradient references adapted to AMAT brand tokens rather than copied as wallpaper.
-     Inspiration: WebGradients https://github.com/itmeo/webgradients (MIT)
-     and uiGradients https://github.com/ghosh/uiGradients (MIT). */
-  --gradient-study: linear-gradient(135deg, #7b1113 0%, #a73a21 48%, #c76a2a 100%);
-  --gradient-ember: linear-gradient(120deg, #651013 0%, #9b2d1b 42%, #d57a35 100%);
-  --gradient-paper: radial-gradient(circle at 18% 10%, rgb(199 106 42 / 0.12), transparent 34%), radial-gradient(circle at 88% 6%, rgb(123 17 19 / 0.08), transparent 30%);
-  --gradient-soft: linear-gradient(135deg, #fffdf9 0%, #fff4e8 52%, #f9e4d2 100%);
+  --gradient-study: linear-gradient(135deg, #09090b 0%, #27272a 100%);
+  --gradient-ember: linear-gradient(120deg, #09090b 0%, #27272a 100%);
+  --gradient-paper: none;
+  --gradient-soft: linear-gradient(135deg, #ffffff 0%, #f4f4f5 100%);
+
   /* Apple Material Tiers & Optical Glass Constants */
   --material-ultra-thin: rgba(255, 255, 255, 0.65);
   --material-thin: rgba(255, 255, 255, 0.75);
@@ -78,11 +94,92 @@
   --apple-border-specular: 1px solid rgba(255, 255, 255, 0.85);
 }
 
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  --shell-maroon-950: #09090b;
+  --shell-maroon-900: #18181b;
+  --shell-maroon-800: #27272a;
+  --shell-maroon-700: #3f3f46;
+  --shell-maroon-600: #52525b;
+  --shell-orange: #fafafa;
+  --shell-orange-soft: #a1a1aa;
+  --shell-cream: #fafafa;
+  --shell-sand: #18181b;
+  --shell-paper: #111113;
+  --shell-line: #27272a;
+
+  --background: #09090b;
+  --background-deep: #050506;
+  --surface: #111113;
+  --surface-muted: #18181b;
+  --surface-strong: #27272a;
+  --surface-maroon: rgba(255, 255, 255, 0.045);
+  --foreground: #fafafa;
+  --foreground-muted: #a1a1aa;
+  --foreground-soft: #71717a;
+  --border: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.17);
+  --primary: #fafafa;
+  --primary-foreground: #09090b;
+  --primary-hover: #e4e4e7;
+  --primary-soft: rgba(255, 255, 255, 0.07);
+  --accent: #fafafa;
+  --accent-strong: #f4f4f5;
+  --accent-soft: rgba(255, 255, 255, 0.055);
+  --olive: #d4d4d8;
+  --olive-soft: rgba(255, 255, 255, 0.06);
+  --success: #4ade80;
+  --success-soft: rgba(22, 163, 74, 0.18);
+  --warning: #facc15;
+  --warning-soft: rgba(202, 138, 4, 0.18);
+  --destructive: #f87171;
+  --destructive-soft: rgba(220, 38, 38, 0.18);
+  --focus: #60a5fa;
+  --spotlight: rgba(255, 255, 255, 0.05);
+
+  --glass-surface: rgba(17, 17, 19, 0.78);
+  --glass-surface-strong: rgba(17, 17, 19, 0.94);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+  --nav-surface: rgba(17, 17, 19, 0.90);
+  --nav-surface-solid: #111113;
+  --nav-border: rgba(255, 255, 255, 0.10);
+  --nav-text: #a1a1aa;
+  --nav-text-active: #fafafa;
+  --nav-item-hover: rgba(255, 255, 255, 0.055);
+  --nav-item-active: rgba(255, 255, 255, 0.09);
+  --nav-active-marker: #fafafa;
+  --nav-shadow: 0 16px 42px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --menu-surface: rgba(17, 17, 19, 0.96);
+  --grid-line: rgba(255, 255, 255, 0.035);
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.30), 0 12px 32px rgba(0, 0, 0, 0.20);
+  --shadow-raised: 0 20px 60px rgba(0, 0, 0, 0.38);
+  --gradient-study: linear-gradient(135deg, #18181b 0%, #27272a 100%);
+  --gradient-ember: linear-gradient(120deg, #18181b 0%, #27272a 100%);
+  --gradient-soft: linear-gradient(135deg, #111113 0%, #18181b 100%);
+
+  --material-ultra-thin: rgba(17, 17, 19, 0.62);
+  --material-thin: rgba(17, 17, 19, 0.72);
+  --material-regular: rgba(17, 17, 19, 0.84);
+  --material-thick: rgba(17, 17, 19, 0.94);
+  --apple-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 16px 36px -6px rgba(0, 0, 0, 0.36), inset 0 1px 1px 0 rgba(255, 255, 255, 0.06);
+  --apple-shadow-hover: 0 1px 2px rgba(0, 0, 0, 0.45), 0 22px 50px -8px rgba(0, 0, 0, 0.48), inset 0 1px 1px 0 rgba(255, 255, 255, 0.09);
+  --apple-border-specular: 1px solid rgba(255, 255, 255, 0.10);
+}
+
 @media (forced-colors: active) {
-  :root {
+  :root,
+  html[data-theme='dark'] {
     --border: CanvasText;
     --border-strong: CanvasText;
     --focus: Highlight;
     --spotlight: transparent;
+    --nav-border: CanvasText;
+    --nav-text: CanvasText;
+    --nav-text-active: CanvasText;
+    --nav-active-marker: Highlight;
+    --glass-border: CanvasText;
   }
 }
