@@ -417,11 +417,28 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
             .catch(() => {});
           return;
         }
-        const banner = document.getElementById('pwa-update'); const updateMessage = document.getElementById('pwa-update-message'); const updateButton = document.getElementById('pwa-update-button'); const dismissButton = document.getElementById('pwa-update-dismiss'); let waitingWorker; let reloadForUpdate = false; let updateInFlight = false;
+        const banner = document.getElementById('pwa-update'); const updateMessage = document.getElementById('pwa-update-message'); const updateButton = document.getElementById('pwa-update-button'); const dismissButton = document.getElementById('pwa-update-dismiss'); let waitingWorker; let reloadForUpdate = false; let updateInFlight = false; let workerRegistration;
+        const WORKER_UPDATE_INTERVAL_MS = 30 * 60 * 1000;
         const showUpdate = (worker) => { waitingWorker = worker; updateInFlight = false; if (updateButton) { updateButton.disabled = false; updateButton.textContent = 'Save & update'; } if (banner) banner.hidden = false; };
+        const requestWorkerUpdate = async () => {
+          try {
+            await fetch(`/sw.js?__amat19_probe=${Date.now()}`, { cache: 'no-store' });
+          } catch {
+            // The registration update below is still worth attempting.
+          }
+          if (workerRegistration && typeof workerRegistration.update === 'function') {
+            workerRegistration.update().catch(() => {});
+          }
+        };
         navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then((registration) => {
+          workerRegistration = registration;
           if (registration.waiting) showUpdate(registration.waiting);
-          if (typeof registration.update === 'function') registration.update().catch(() => {});
+          requestWorkerUpdate();
+          window.setInterval(requestWorkerUpdate, WORKER_UPDATE_INTERVAL_MS);
+          document.addEventListener('visibilitychange', () => { if (!document.hidden) requestWorkerUpdate(); });
+          window.addEventListener('focus', requestWorkerUpdate);
+          window.addEventListener('online', requestWorkerUpdate);
+          window.addEventListener('pageshow', (event) => { if (event.persisted) requestWorkerUpdate(); });
           registration.addEventListener('updatefound', () => { const installing = registration.installing; if (!installing) return; installing.addEventListener('statechange', () => { if (installing.state === 'installed' && navigator.serviceWorker.controller) showUpdate(installing); }); });
         }).catch(() => {});
         updateButton?.addEventListener('click', async () => {
