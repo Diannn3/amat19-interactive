@@ -1,0 +1,58 @@
+/* ==========================================================================
+   AMAT 19 Editorial Grid — Blueprint Orange foundations
+   Source of truth: docs/AMAT19_EDITORIAL_GRID_BLUEPRINT_ORANGE_IMPLEMENTATION.md
+
+   This layer is intentionally namespaced. It does not redefine mathematical
+   state, learner evidence, route semantics, or persistence behavior.
+   ========================================================================== */
+
+:root {
+  /* Blueprint Orange — user-approved visual palette */
+  --editorial-field: #133B5C;
+  --editorial-paper: #F8F3E8;
+  --editorial-ink: #102A43;
+  --editorial-signal: #F26430;
+  --editorial-secondary: #8FD3C7;
+
+  /* Supporting surfaces derived from the approved five-color relationship. */
+  --editorial-paper-pure: #fffdf8;
+  --editorial-paper-muted: #f1ede2;
+  --editorial-ink-muted: #466073;
+  --editorial-field-soft: #1b4a6d;
+  --editorial-secondary-soft: #d8eeea;
+  --editorial-signal-soft: #ffe1d5;
+
+  /* Grid / rules */
+  --editorial-grid-light: rgb(16 42 67 / 0.075);
+  --editorial-grid-light-major: rgb(16 42 67 / 0.12);
+  --editorial-grid-dark: rgb(248 243 232 / 0.09);
+  --editorial-grid-dark-major: rgb(248 243 232 / 0.14);
+  --editorial-rule: rgb(16 42 67 / 0.28);
+  --editorial-rule-strong: var(--editorial-ink);
+
+  /* Shape */
+  --editorial-radius-xs: 0.35rem;
+  --editorial-radius-sm: 0.55rem;
+  --editorial-radius-md: 0.8rem;
+  --editorial-radius-lg: 1.15rem;
+
+  /* Tactile depth — always paired with a real border for forced colors. */
+  --editorial-shadow-xs: 2px 2px 0 var(--editorial-ink);
+  --editorial-shadow-sm: 4px 4px 0 var(--editorial-ink);
+  --editorial-shadow-md: 6px 6px 0 var(--editorial-ink);
+  --editorial-shadow-signal: 4px 4px 0 var(--editorial-signal);
+
+  /* Type */
+  --editorial-display-xl: clamp(3.2rem, 8.5vw, 8.6rem);
+  --editorial-display-lg: clamp(2.6rem, 6vw, 6.5rem);
+  --editorial-title: clamp(2rem, 4.2vw, 4.4rem);
+  --editorial-heading: clamp(1.5rem, 2.6vw, 2.5rem);
+  --editorial-body: clamp(1rem, 0.35vw + 0.92rem, 1.15rem);
+  --editorial-measure: 68ch;
+
+  /* Motion */
+  --editorial-duration-press: 100ms;
+  --editorial-duration-ui: 160ms;
+  --editorial-duration-reveal: 220ms;
+  --editorial-ease: cubic-bezier(.2, .8, .2, 1);
+}
