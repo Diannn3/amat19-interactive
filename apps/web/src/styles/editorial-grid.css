@@ -5560,3 +5560,206 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
 @media (max-width: 800px), (forced-colors: active) {
   [data-route^="/modules/applications"] .module-overview::after { display: none; }
 }
+
+
+/* --------------------------------------------------------------------------
+   Course companion / utility continuation surfaces
+   -------------------------------------------------------------------------- */
+
+.course-companion-bar.apple-glass-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  padding: 1rem 1.15rem !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 4px 4px 0 var(--editorial-ink) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.course-companion-bar.apple-glass-card::before,
+.course-companion-bar.apple-glass-card::after,
+.utility-card.apple-glass-card::before,
+.utility-card.apple-glass-card::after {
+  display: none !important;
+}
+
+.course-companion-bar__copy {
+  display: flex !important;
+  align-items: center !important;
+  gap: .85rem !important;
+}
+
+.course-companion-bar .apple-icon-squircle {
+  flex: 0 0 auto;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+}
+
+.course-companion-bar__info strong {
+  color: var(--editorial-ink) !important;
+  font: 800 1rem/1.1 var(--font-amat-display) !important;
+}
+
+.course-companion-bar__info p {
+  margin: .3rem 0 0 !important;
+  color: var(--editorial-ink) !important;
+  line-height: 1.5 !important;
+}
+
+.course-companion-bar .apple-btn-black {
+  min-height: 45px !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-paper-pure) !important;
+  box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+}
+
+.course-utilities {
+  padding-block: clamp(2.5rem, 5vw, 4.5rem) !important;
+  border-top: 2px solid var(--editorial-ink) !important;
+}
+
+.course-utilities__title {
+  margin: 0 !important;
+  color: var(--editorial-ink) !important;
+  font: 820 clamp(2rem, 4vw, 3.7rem)/.98 var(--font-amat-display) !important;
+  letter-spacing: -.05em !important;
+}
+
+.course-utilities__subtitle {
+  max-width: 60ch;
+  color: var(--editorial-ink-muted) !important;
+  line-height: 1.6 !important;
+}
+
+.utility-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  margin-top: 1.2rem !important;
+  border: 2px solid var(--editorial-ink);
+  background: var(--editorial-ink);
+}
+
+.utility-card.apple-glass-card {
+  min-width: 0;
+  min-height: 10rem !important;
+  display: grid !important;
+  align-content: space-between !important;
+  gap: 1rem !important;
+  padding: 1rem !important;
+  border: 0 !important;
+  border-right: 1.5px solid var(--editorial-ink) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.utility-card.apple-glass-card:last-child {
+  border-right: 0 !important;
+}
+
+.utility-card.apple-glass-card:hover {
+  background: var(--editorial-secondary-soft) !important;
+  transform: none !important;
+}
+
+.utility-card__icon {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+}
+
+.utility-card__title-row strong,
+.utility-card__arrow {
+  color: var(--editorial-ink) !important;
+}
+
+.utility-card__arrow {
+  color: var(--editorial-signal) !important;
+}
+
+.utility-card small {
+  color: var(--editorial-ink-muted) !important;
+  line-height: 1.45 !important;
+}
+
+@media (max-width: 980px) {
+  .utility-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .utility-card.apple-glass-card:nth-child(even) {
+    border-right: 0 !important;
+  }
+
+  .utility-card.apple-glass-card:nth-child(n + 3) {
+    border-top: 1.5px solid var(--editorial-ink) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .course-companion-bar.apple-glass-card {
+    grid-template-columns: 1fr !important;
+  }
+
+  .course-companion-bar__copy {
+    align-items: flex-start !important;
+  }
+
+  .utility-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .utility-card.apple-glass-card,
+  .utility-card.apple-glass-card:nth-child(even) {
+    border-right: 0 !important;
+  }
+
+  .utility-card.apple-glass-card + .utility-card.apple-glass-card {
+    border-top: 1.5px solid var(--editorial-ink) !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .course-companion-bar.apple-glass-card,
+  .course-companion-bar .apple-icon-squircle,
+  .course-companion-bar .apple-btn-black,
+  .course-utilities,
+  .utility-grid,
+  .utility-card.apple-glass-card,
+  .utility-card__icon {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .course-companion-bar__info strong,
+  .course-companion-bar__info p,
+  .course-utilities__title,
+  .course-utilities__subtitle,
+  .utility-card__title-row strong,
+  .utility-card__arrow,
+  .utility-card small {
+    color: CanvasText !important;
+  }
+}
