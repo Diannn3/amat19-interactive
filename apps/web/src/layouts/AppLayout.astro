@@ -52,6 +52,17 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <script is:inline>
       (() => {
+        try {
+          const url = new URL(window.location.href);
+          if (url.searchParams.get('__amat19_release') === 'amat19-blueprint-v4') {
+            url.searchParams.delete('__amat19_release');
+            url.searchParams.delete('__amat19_reload');
+            window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+          }
+        } catch {
+          // The reset marker is cosmetic; failure here must not block rendering.
+        }
+
         const root = document.documentElement;
         let theme = 'light';
         try {
