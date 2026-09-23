@@ -209,3 +209,102 @@
     font-size: clamp(2.25rem, 12vw, 3.8rem);
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Tactile actions
+   -------------------------------------------------------------------------- */
+
+.editorial-action {
+  min-height: 45px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.72rem 1rem;
+  border: 2px solid var(--editorial-ink);
+  border-radius: var(--editorial-radius-sm);
+  background: var(--editorial-paper-pure);
+  color: var(--editorial-ink);
+  box-shadow: var(--editorial-shadow-sm);
+  font-weight: 780;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transform: translate(0, 0);
+  transition:
+    transform var(--editorial-duration-press) var(--editorial-ease),
+    box-shadow var(--editorial-duration-press) var(--editorial-ease),
+    background-color var(--editorial-duration-ui) ease,
+    color var(--editorial-duration-ui) ease;
+}
+
+.editorial-action:hover {
+  background: var(--editorial-secondary-soft);
+}
+
+.editorial-action:active,
+.editorial-action[data-pressed="true"] {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--editorial-ink);
+}
+
+.editorial-action--primary {
+  background: var(--editorial-signal);
+  color: var(--editorial-paper-pure);
+}
+
+.editorial-action--primary:hover {
+  background: color-mix(in srgb, var(--editorial-signal) 88%, var(--editorial-paper-pure));
+}
+
+.editorial-action--secondary {
+  background: var(--editorial-secondary);
+}
+
+.editorial-action--ink {
+  background: var(--editorial-field);
+  color: var(--editorial-paper);
+}
+
+.editorial-action--ink:hover {
+  background: var(--editorial-field-soft);
+}
+
+.editorial-action:disabled,
+.editorial-action[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.58;
+  transform: none;
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--editorial-ink) 55%, transparent);
+}
+
+.editorial-action:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+html[data-motion="reduced"] .editorial-action,
+@media (prefers-reduced-motion: reduce) {
+  .editorial-action {
+    transition: background-color var(--editorial-duration-ui) ease, color var(--editorial-duration-ui) ease;
+  }
+
+  .editorial-action:active,
+  .editorial-action[data-pressed="true"] {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .editorial-action,
+  .editorial-action--primary,
+  .editorial-action--secondary,
+  .editorial-action--ink {
+    border: 2px solid ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+    box-shadow: none;
+    forced-color-adjust: auto;
+  }
+}
