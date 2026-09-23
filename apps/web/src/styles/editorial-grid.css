@@ -5196,3 +5196,230 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
     color: CanvasText !important;
   }
 }
+
+
+/* ==========================================================================
+   Module pages — shared editorial journey frame
+   ========================================================================== */
+
+[data-route^="/modules/"] .module-overview {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, .34fr) !important;
+  gap: clamp(1.5rem, 4vw, 3rem) !important;
+  align-items: end !important;
+  padding-block: clamp(2.5rem, 6vw, 5.25rem) !important;
+  border-bottom: 2px solid var(--editorial-ink);
+}
+
+[data-route^="/modules/"] .module-overview .display-title {
+  max-width: 14ch;
+  margin: 0 !important;
+  color: var(--editorial-ink) !important;
+  font: 820 clamp(3rem, 7vw, 7rem)/0.9 var(--font-amat-display) !important;
+  letter-spacing: -0.065em !important;
+  text-wrap: balance;
+}
+
+[data-route^="/modules/"] .module-overview .lede {
+  max-width: 66ch !important;
+  margin-top: 1rem !important;
+  color: var(--editorial-ink-muted) !important;
+  font-size: 1rem !important;
+  line-height: 1.68 !important;
+}
+
+[data-route^="/modules/"] .module-overview__context {
+  margin-top: 1rem !important;
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: .68rem !important;
+  font-weight: 780 !important;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+[data-route^="/modules/"] .hero-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: .65rem !important;
+  margin-top: 1.25rem !important;
+}
+
+[data-route^="/modules/"] .hero-action {
+  min-height: 45px !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+}
+
+[data-route^="/modules/"] .hero-action--primary {
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-paper-pure) !important;
+}
+
+[data-route^="/modules/"] .module-journey__metrics {
+  display: grid !important;
+  gap: 0 !important;
+  border: 2px solid var(--editorial-ink) !important;
+  background: var(--editorial-paper-pure) !important;
+  box-shadow: 4px 4px 0 var(--editorial-ink) !important;
+}
+
+[data-route^="/modules/"] .module-journey__metrics > div {
+  padding: .9rem !important;
+  border-bottom: 1px solid var(--editorial-ink) !important;
+}
+
+[data-route^="/modules/"] .module-journey__metrics > div:last-child {
+  border-bottom: 0 !important;
+}
+
+[data-route^="/modules/"] .module-journey__metrics strong {
+  display: block;
+  color: var(--editorial-ink) !important;
+  font: 820 1.55rem/1 var(--font-amat-display) !important;
+}
+
+[data-route^="/modules/"] .module-journey__metrics span {
+  color: var(--editorial-ink-muted) !important;
+  font-family: var(--font-amat-mono);
+  font-size: .64rem !important;
+}
+
+[data-route^="/modules/"] .module-tabs {
+  display: flex !important;
+  gap: 0 !important;
+  margin-top: 1.5rem !important;
+  border: 2px solid var(--editorial-ink) !important;
+  background: var(--editorial-paper-pure) !important;
+}
+
+[data-route^="/modules/"] .module-tabs a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: .55rem .8rem !important;
+  border-right: 1px solid var(--editorial-ink);
+  color: var(--editorial-ink) !important;
+  font-weight: 720 !important;
+  text-decoration: none !important;
+}
+
+[data-route^="/modules/"] .module-tabs a:last-child {
+  border-right: 0;
+}
+
+[data-route^="/modules/"] .module-tabs a[aria-current="page"] {
+  background: var(--editorial-secondary) !important;
+}
+
+[data-route^="/modules/"] .module-view {
+  padding-block: clamp(2rem, 4vw, 3.5rem) !important;
+}
+
+[data-route^="/modules/"] .module-view .section-heading h2 {
+  color: var(--editorial-ink) !important;
+  font: 800 clamp(1.8rem, 3.4vw, 3rem)/1 var(--font-amat-display) !important;
+  letter-spacing: -0.045em !important;
+}
+
+[data-route^="/modules/"] .module-view .section-context {
+  color: var(--editorial-ink-muted) !important;
+}
+
+[data-route^="/modules/"] .module-next-step,
+[data-route^="/modules/"] .module-view-links,
+[data-route^="/modules/"] .module-supplemental,
+[data-route^="/modules/"] .lesson-list {
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+}
+
+[data-route^="/modules/"] .module-next-step {
+  box-shadow: 4px 4px 0 var(--editorial-ink) !important;
+}
+
+[data-route^="/modules/"] .module-next-step__index {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-mono) !important;
+}
+
+[data-route^="/modules/"] .module-view-links a,
+[data-route^="/modules/"] .lesson-list a {
+  border-color: var(--editorial-rule) !important;
+  color: var(--editorial-ink) !important;
+}
+
+[data-route^="/modules/"] .module-view-links a:hover,
+[data-route^="/modules/"] .lesson-list a:hover {
+  background: var(--editorial-secondary-soft) !important;
+}
+
+[data-route^="/modules/"] .module-supplemental {
+  border-style: dashed !important;
+  background: var(--editorial-paper) !important;
+}
+
+@media (max-width: 800px) {
+  [data-route^="/modules/"] .module-overview {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-route^="/modules/"] .module-journey__metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  [data-route^="/modules/"] .module-journey__metrics > div {
+    border-right: 1px solid var(--editorial-ink) !important;
+    border-bottom: 0 !important;
+  }
+
+  [data-route^="/modules/"] .module-journey__metrics > div:last-child {
+    border-right: 0 !important;
+  }
+}
+
+@media (max-width: 560px) {
+  [data-route^="/modules/"] .module-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  [data-route^="/modules/"] .module-tabs a {
+    justify-content: center;
+    padding-inline: .35rem !important;
+    font-size: .72rem !important;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-route^="/modules/"] .module-overview,
+  [data-route^="/modules/"] .hero-action,
+  [data-route^="/modules/"] .module-journey__metrics,
+  [data-route^="/modules/"] .module-tabs,
+  [data-route^="/modules/"] .module-next-step,
+  [data-route^="/modules/"] .module-view-links,
+  [data-route^="/modules/"] .module-supplemental,
+  [data-route^="/modules/"] .lesson-list {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  [data-route^="/modules/"] .module-overview .display-title,
+  [data-route^="/modules/"] .module-overview .lede,
+  [data-route^="/modules/"] .module-overview__context,
+  [data-route^="/modules/"] .module-view .section-heading h2,
+  [data-route^="/modules/"] .module-view .section-context {
+    color: CanvasText !important;
+  }
+}
