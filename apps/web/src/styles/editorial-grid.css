@@ -3656,3 +3656,173 @@ html[data-motion="reduced"] .study-panel--primary::after {
     color: CanvasText !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Settings — outlined form sheet
+   -------------------------------------------------------------------------- */
+
+[data-route="/settings"] .page-intro {
+  padding-block: clamp(2.5rem, 6vw, 5rem) clamp(2rem, 4vw, 3rem) !important;
+  border-bottom: 2px solid var(--editorial-ink);
+}
+
+[data-route="/settings"] .display-title {
+  max-width: 11ch;
+  margin: 0 !important;
+  color: var(--editorial-ink) !important;
+  font: 820 clamp(3rem, 7vw, 7rem)/0.9 var(--font-amat-display) !important;
+  letter-spacing: -0.065em !important;
+}
+
+[data-route="/settings"] .page-context {
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: .68rem !important;
+  font-weight: 780 !important;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+[data-route="/settings"] .lede,
+[data-route="/settings"] .route-note {
+  max-width: 66ch !important;
+  color: var(--editorial-ink-muted) !important;
+}
+
+[data-route="/settings"] .section-shell {
+  padding-block: clamp(2rem, 4vw, 3.5rem) !important;
+}
+
+.settings-grid {
+  display: grid !important;
+  gap: 0 !important;
+  overflow: hidden;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-lg) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 6px 6px 0 var(--editorial-ink) !important;
+}
+
+.setting-row {
+  min-height: 6.5rem;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 1.5rem !important;
+  padding: clamp(1rem, 2.5vw, 1.5rem) !important;
+  border: 0 !important;
+  border-bottom: 1.5px solid var(--editorial-ink) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper-pure) !important;
+}
+
+.setting-row:last-of-type {
+  border-bottom: 0 !important;
+}
+
+.setting-row strong {
+  display: block;
+  color: var(--editorial-ink) !important;
+  font: 780 1rem/1.2 var(--font-amat-display) !important;
+}
+
+.setting-row small {
+  display: block;
+  max-width: 55ch;
+  margin-top: .35rem;
+  color: var(--editorial-ink-muted) !important;
+  line-height: 1.5;
+}
+
+.setting-row input[type="checkbox"] {
+  width: 3.25rem !important;
+  height: 1.85rem !important;
+  appearance: none;
+  position: relative;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: 999px !important;
+  background: var(--editorial-paper-muted) !important;
+  cursor: pointer;
+}
+
+.setting-row input[type="checkbox"]::after {
+  position: absolute;
+  top: 50%;
+  left: .18rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1.5px solid var(--editorial-ink);
+  border-radius: 999px;
+  background: var(--editorial-paper-pure);
+  content: "";
+  transform: translateY(-50%);
+  transition: left var(--editorial-duration-ui) var(--editorial-ease);
+}
+
+.setting-row input[type="checkbox"]:checked {
+  background: var(--editorial-secondary) !important;
+}
+
+.setting-row input[type="checkbox"]:checked::after {
+  left: 1.52rem;
+  background: var(--editorial-signal);
+}
+
+.setting-row input[type="checkbox"]:focus-visible {
+  outline: 3px solid var(--focus) !important;
+  outline-offset: 4px;
+}
+
+.settings-grid .amat-feedback {
+  margin: 1rem !important;
+}
+
+@media (max-width: 640px) {
+  .setting-row {
+    grid-template-columns: 1fr !important;
+    justify-items: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setting-row input[type="checkbox"]::after {
+    transition: none;
+  }
+}
+
+html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
+  transition: none;
+}
+
+@media (forced-colors: active) {
+  [data-route="/settings"] .page-intro,
+  .settings-grid,
+  .setting-row,
+  .setting-row input[type="checkbox"] {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+    forced-color-adjust: auto;
+  }
+
+  .setting-row input[type="checkbox"] {
+    appearance: auto;
+    width: 1.4rem !important;
+    height: 1.4rem !important;
+  }
+
+  .setting-row input[type="checkbox"]::after {
+    display: none;
+  }
+
+  [data-route="/settings"] .display-title,
+  [data-route="/settings"] .page-context,
+  [data-route="/settings"] .lede,
+  .setting-row strong,
+  .setting-row small {
+    color: CanvasText !important;
+  }
+}
