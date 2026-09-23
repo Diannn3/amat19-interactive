@@ -1,2 +1,40 @@
-export type TimelinePoint={time:number;label:string;value?:string;tone?:'primary'|'accent'|'muted'};
-export default function Timeline({points,minTime,maxTime,ariaLabel='Timeline'}:{points:TimelinePoint[];minTime:number;maxTime:number;ariaLabel?:string}){const span=Math.max(.0001,maxTime-minTime);const x=(t:number)=>55+490*(t-minTime)/span;const occurrenceByTime=new Map<number,number>();const positioned=points.map((point)=>{const lane=occurrenceByTime.get(point.time)??0;occurrenceByTime.set(point.time,lane+1);return{point,lane}});return <figure className="finance-timeline"><svg viewBox="0 0 600 180" role="img" aria-label={ariaLabel}><line x1="55" y1="90" x2="545" y2="90"/>{positioned.map(({point,lane},index)=><g key={`${point.time}-${index}`} data-tone={point.tone}><line x1={x(point.time)} y1="78" x2={x(point.time)} y2="102"/><circle cx={x(point.time)} cy="90" r="7"/><text x={x(point.time)} y={lane%2?145:50} textAnchor="middle">{point.label}</text>{point.value&&<text x={x(point.time)} y={lane%2?160:66} textAnchor="middle">{point.value}</text>}</g>)}</svg></figure>}
+export type TimelinePoint = { time: number; label: string; value?: string; tone?: 'primary' | 'accent' | 'muted' };
+
+export default function Timeline({ points, minTime, maxTime, ariaLabel = 'Timeline' }: {
+  points: TimelinePoint[];
+  minTime: number;
+  maxTime: number;
+  ariaLabel?: string;
+}) {
+  const times = [...new Set(points.map(({ time }) => time))].sort((a, b) => a - b);
+  const span = Math.max(0.0001, maxTime - minTime);
+  const x = (time: number) => 40 + (time - minTime) / span * 520;
+
+  return (
+    <figure className="finance-timeline min-w-0" aria-label={ariaLabel}>
+      <svg viewBox="0 0 600 96" className="h-auto w-full" aria-hidden="true">
+        <line x1="40" y1="40" x2="560" y2="40" />
+        {times.map((time) => (
+          <g key={time}>
+            <line x1={x(time)} y1="28" x2={x(time)} y2="52" />
+            <circle cx={x(time)} cy="40" r="7" />
+            <text x={x(time)} y="76" textAnchor="middle">t={time}</text>
+          </g>
+        ))}
+      </svg>
+      <figcaption className="sr-only">Each cash flow and focal event appears in time order below, including events at the same date.</figcaption>
+      <ol className="mt-4 divide-y divide-[var(--border)] border-y border-[var(--border)]">
+        {[...points].sort((a, b) => a.time - b.time).map((point, index) => (
+          <li key={`${point.time}-${index}`} data-timeline-event data-time={point.time}
+            className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3 text-sm leading-relaxed">
+            <span className="flex min-w-0 items-baseline gap-3">
+              <strong className="shrink-0 font-mono text-[var(--foreground)]">t={point.time}</strong>
+              <span className="break-words text-[var(--foreground)]">{point.label}</span>
+            </span>
+            {point.value && <span className="break-words font-mono text-[var(--foreground)]">{point.value}</span>}
+          </li>
+        ))}
+      </ol>
+    </figure>
+  );
+}

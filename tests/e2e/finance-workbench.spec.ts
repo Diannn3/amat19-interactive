@@ -8,12 +8,14 @@ test.beforeEach(async ({ page }) => {
 test('@core Money Timeline starts with one focused cash-flow model', async ({ page }) => {
   const workbench = page.getByTestId('money-timeline-workbench');
   await expect(workbench).toHaveAttribute('data-hydrated', 'true');
+  await expect(workbench.locator('.fin-hero, .fin-instrument-grid, .fin-chart-card')).toHaveCount(0);
   await expect(workbench.getByRole('heading', { level: 2, name: 'Move one cash flow.' })).toBeVisible();
 
   const scenario = workbench.getByRole('combobox', { name: 'Choose a task' });
   await expect(scenario).toHaveValue('cashflows');
   await expect(scenario.locator('option')).toHaveText(['Move cash flows', 'Value an annuity', 'Price a bond']);
   await expect(workbench.locator('[data-money-timeline-object] svg')).toBeVisible();
+  await expect(workbench.locator('[data-money-timeline-object] [data-timeline-event]')).toHaveCount(3);
   await expect(workbench.getByText('Equivalent value', { exact: true })).not.toBeVisible();
 
   const primaryControls = workbench.locator('[data-primary-controls] input, [data-primary-controls] select, [data-primary-controls] button');
