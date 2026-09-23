@@ -54,7 +54,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
       (() => {
         try {
           const url = new URL(window.location.href);
-          if (url.searchParams.get('__amat19_release') === 'amat19-blueprint-v4') {
+          if (['amat19-blueprint-v4', 'amat19-blueprint-v5'].includes(url.searchParams.get('__amat19_release') ?? '')) {
             url.searchParams.delete('__amat19_release');
             url.searchParams.delete('__amat19_reload');
             window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
