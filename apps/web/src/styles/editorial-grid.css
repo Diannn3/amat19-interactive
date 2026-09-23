@@ -6508,3 +6508,43 @@ main .apple-glass-card:hover .apple-action-circle,
 main .apple-glass-card:active .apple-action-circle {
   transform: none !important;
 }
+
+
+/* Home hero density guard: preserve the existing <560px desktop hero contract. */
+@media (min-width: 901px) {
+  .home-hero {
+    padding-block: clamp(1.25rem, 2.2vw, 2rem) !important;
+  }
+
+  .home-math-poster {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-areas: "matrix truth probability" !important;
+    gap: .5rem !important;
+    align-items: stretch !important;
+  }
+
+  .home-math-poster__matrix-body {
+    min-height: 0 !important;
+    padding: .45rem !important;
+  }
+
+  .home-math-poster__truth th,
+  .home-math-poster__truth td {
+    padding-block: .22rem !important;
+  }
+
+  .home-math-poster__probability svg {
+    max-height: 7.2rem;
+  }
+
+  .home-workbench-link.apple-glass-card {
+    min-height: 3rem !important;
+    padding-block: .38rem !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .home-hero__display {
+    font-size: clamp(4.2rem, 5.4vw, 5.1rem) !important;
+  }
+}
