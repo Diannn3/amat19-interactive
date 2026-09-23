@@ -1,66 +1,108 @@
-# AMAT 19 — Pass 1 implementation report
+# AMAT 19 Full-Course Implementation Report
 
-## Source state inspected
+Date: 26 Aug 2026
+Local implementation label: **Pass 3 — Full Course Foundation + Cross-Domain Practice**
 
-The latest canonical AMAT artifact available before this pass was the V2.0 implementation/UI/UX blueprint marked **architecture-ready**, plus course guide, chapter handouts, and sample exams. No AMAT source-code ZIP was present in the project library search, and the guessed public repository path `Diannn3/amat19-interactive` did not resolve. Therefore this pass creates the first implementation repository rather than modifying an existing one.
+## Executive summary
 
-## Implemented architecture
+This pass expands the original Logic vertical slice into a broad AMAT 19 study environment while preserving the architectural rule established in Pass 1: mathematical authority stays in framework-independent domain packages; React/Astro render, manipulate, persist, and teach that state but do not redefine it.
 
-- Astro app/content shell.
-- Single React lab root for Truth Tables.
-- Pure TypeScript packages for math semantics.
-- Separate learning/attempt package.
-- Persistence port + Dexie adapter + in-memory adapter.
-- Web Worker adapter for larger truth tables.
-- Course content represented separately from UI state.
-- No backend/auth/AI dependency.
+The current-guide core now has interactive coverage for Logic, Probability, Financial Mathematics, Matrix Operations/Inverse/Systems, graphical Linear Programming, and a zero-sum Game Theory foundation. Older-material-only topics—formal proof depth, distributions, simulation, bonds, simplex and Markov chains—are explicitly labeled supplemental/extended where appropriate rather than silently treated as current requirements.
 
-## Course semantics implemented
+## Implemented domain engines
 
-The engine follows the supplied Chapter 1 handout semantics for:
+### Logic
+- tokenizer + recursive-descent parser
+- AST with source spans/stable ids
+- deterministic truth tables / classification
+- equivalence + counterexamples
+- argument validity + counterexamples
+- AMAT named proof rules and exact one-step rule validation
+- direct proof line validation and reference safety
 
-- conjunction (`∧`),
-- inclusive disjunction (`∨`),
-- material implication (`→`),
-- biconditional (`↔`),
-- negation (`∼`, plus accepted input aliases),
-- deterministic 2-variable and 3-variable row ordering.
+### Probability
+- BigInt factorial/permutation/combination
+- repetition variants
+- inclusion–exclusion
+- exact Rational probability
+- exact two-way conditional/independence analysis
+- exact discrete expectation/variance
+- deterministic seeded Bernoulli simulation
 
-The evaluator also supports classification, equivalence counterexamples, and argument-validity counterexamples. The interactive vertical slice now includes:
+### Finance
+- simple accumulation
+- compound accumulation
+- nominal conversion-period accumulation
+- nominal ↔ annual effective conversion
+- focal-date valuation of one/many cash flows
+- annuity immediate/due; present/future; solve value/payment
+- supplemental level-coupon bond pricing + premium/discount classification
+- explicit teaching traces for each model
 
-- Explore mode with a selectable evaluation trace,
-- Practice mode on any selected computed subexpression column, with targeted feedback and a one-step conceptual hint,
-- Argument mode with dynamic premise/conclusion inputs, a validity verdict, and persistent counterexample-row highlighting,
-- an 8-symbol safety cap across assignment enumeration, plus a Worker seam for heavier truth-table generation.
+### Linear algebra / applications
+- exact Rational matrix representation
+- add/subtract/scalar/transpose/multiply
+- inspectable row-by-column multiplication trace
+- determinant
+- exact RREF with elementary row-operation history
+- inverse via Gauss–Jordan `[A|I]`
+- exact system classification and solution
+- 2D graphical LP: feasible points/vertices, objective values, infeasible/unbounded/optimal status
+- educational exact simplex tableau trace for supported standard maximization form
+- exact Markov transition validation, k-step movement and two-state stationary distribution
 
-## Test strategy
+### Game theory
+- zero-sum payoff matrix
+- row minima / column maxima
+- maximin / minimax
+- saddle points
+- strict row/column dominance
+- exact interior 2×2 mixed-strategy solution with boundary/degenerate handling
 
-### Dependency-free gates runnable in the implementation container
+## Implemented learner-facing labs
 
-- Node semantic tests against course truth-table definitions.
-- Parser precedence/associativity/error tests.
-- Generated assignment and semantic invariants.
-- Learning-engine reducer tests.
-- Memory-persistence tests.
-- Architecture guard against React/Astro/DOM imports in domain packages.
+1. Logic Basics
+2. Truth Table / Argument Validity
+3. Equivalence
+4. Formal Proof Workspace
+5. Counting Explorer
+6. Conditional Probability & Independence
+7. Discrete Distributions (supplemental)
+8. Probability Simulation (supplemental, Worker-backed)
+9. Interest & Time Value
+10. Annuity Timeline
+11. Bond Pricing (supplemental)
+12. Matrix Operations
+13. Gauss–Jordan / RREF / Inverse / Systems
+14. Graphical LP + synchronized supported Simplex trace
+15. Game Theory
+16. Markov Chain (supplemental)
 
-### Dependency-backed gates scaffolded but not claimable yet
+## Whole-course product work
 
-- `astro check`
-- Astro production build
-- Vitest + fast-check suite
-- Playwright multi-viewport E2E
-- axe scan
-- browser visual critique
-- service-worker offline validation
+- semester-aware course map
+- all five module pages
+- content-collection lesson routing
+- original reference notes across every implemented module
+- Formula & Notation Reference
+- Mixed Practice generator spanning all five modules
+- Mixed Course Check that withholds feedback until submission
+- deterministic seeded question generation
+- direct repair links from missed mixed questions into the relevant lab
+- transparent local mastery evidence
+- attempt persistence
+- IndexedDB snapshot export/import/clear
+- PWA offline shell
+- waiting-worker update flow so a study session is not forcibly reloaded
+- user-facing scope labels for current vs supplemental material
+- explicit graph-theory hold: no invented module without authoritative scope
 
-The implementation runtime could not reach the npm registry, so dependency installation was impossible in this pass. A reviewed `pnpm-lock.yaml` therefore could not be generated here either. Those gates must run immediately after extracting the ZIP on a normal networked development machine; commit the resulting lockfile, then switch CI to `--frozen-lockfile`.
+## Content/IP policy implemented
 
-## Next pass after dependency-backed verification
+Historical handouts/exams are specifications and assessment-pattern evidence. Public content and generated practice are original. `scripts/audit-content.mjs` guards obvious historical-assessment leakage into learner-facing source.
 
-1. Fix any install/type/build issues found by the real toolchain.
-2. Run Playwright at 375×667 first, then the remaining protocol viewports.
-3. Complete browser-based keyboard/forced-colors/reduced-motion review.
-4. Fix any browser-discovered interaction or accessibility defects and record screenshots/baselines.
-5. Extend persistence from expression drafts into complete attempt traces/mastery only after the interaction model passes browser QA.
-6. Only after Truth Table passes the full release gate, reuse the architecture for Probability.
+## Current technical limitation
+
+This environment cannot resolve `registry.npmjs.org`, so pnpm 11.23.0 cannot be downloaded through Corepack and a Pass 3 lockfile cannot be regenerated locally. The dependency-backed Astro/Vitest/Playwright gates therefore remain pending.
+
+The connected GitHub integration can read the repository but returned HTTP 403 for write operations earlier in the work, so this full implementation currently exists as a local artifact rather than a pushed remote commit.

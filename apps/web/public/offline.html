@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <meta id="amat-theme-color" name="theme-color" content="#fbfbfd" />
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    try {
+      const theme = localStorage.getItem('amat19-theme') === 'dark' ? 'dark' : 'light';
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+      document.getElementById('amat-theme-color').content = theme === 'dark' ? '#09090b' : '#fbfbfd';
+    } catch {}
+  </script>
+  <title>Offline · AMAT 19 Study Lab</title>
+  <style>
+    :root{--bg:#fbfbfd;--surface:#fff;--fg:#09090b;--muted:#71717a;--border:rgba(0,0,0,.1)}
+    html[data-theme="dark"]{--bg:#09090b;--surface:#111113;--fg:#fafafa;--muted:#a1a1aa;--border:rgba(255,255,255,.12)}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{width:min(calc(100% - 2rem),44rem);margin:10vh auto;padding:clamp(1.25rem,4vw,2rem);border:1px solid var(--border);border-radius:1.25rem;background:var(--surface)}
+    h1{font-size:clamp(2rem,8vw,4rem);line-height:1.02;letter-spacing:-.04em}
+    p{color:var(--muted);line-height:1.6}
+    p:first-child{color:var(--fg);font-weight:700}
+    a{color:var(--fg);font-weight:700}
+    a:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+  </style>
+</head>
+<body><main>
+  <p>AMAT 19 Study Lab</p>
+  <h1>This route is not cached yet.</h1>
+  <p>You are offline. Previously opened core study routes may still work from the app cache.</p>
+  <p><a href="/">Try the cached home page</a></p>
+</main></body>
+</html>

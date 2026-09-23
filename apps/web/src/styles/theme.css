@@ -1,33 +1,185 @@
 :root {
   color-scheme: light;
-  --background: #fff9f1;
-  --surface: #fffdf9;
-  --surface-muted: #f5eadf;
-  --foreground: #292725;
-  --foreground-muted: #675f59;
-  --border: #d9c9bb;
-  --border-strong: #aa8f7b;
-  --primary: #7b1113;
-  --primary-foreground: #fff9f1;
-  --primary-hover: #651013;
-  --accent: #c76a2a;
-  --accent-soft: #f6dfcd;
-  --success: #176b43;
-  --success-soft: #e1f2e9;
-  --destructive: #a32929;
-  --destructive-soft: #f7dddd;
-  --focus: #145da0;
-  --shadow: 0 8px 24px rgb(66 44 31 / 0.08);
+  /* Pass 6 shell tokens follow the current neutral AMAT workspace relationship
+     while keeping surface names semantic and theme-aware. */
+  --shell-maroon-950: #09090b;
+  --shell-maroon-900: rgba(255, 255, 255, 0.9);
+  --shell-maroon-800: #27272a;
+  --shell-maroon-700: #3f3f46;
+  --shell-maroon-600: #52525b;
+  --shell-orange: #09090b;
+  --shell-orange-soft: #71717a;
+  --shell-cream: #fbfbfd;
+  --shell-sand: #f4f4f5;
+  --shell-paper: #fafafa;
+  --shell-line: #e4e4e7;
+  --sidebar-width: 288px;
+  --sidebar-width-collapsed: 86px;
+  --topbar-height: 72px;
+  --workspace-radius: 26px;
+  --shell-ease: cubic-bezier(.2, .8, .2, 1);
+  --font-amat-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-amat-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-amat-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  --background: #fbfbfd;
+  --background-deep: #f4f4f6;
+  --surface: #ffffff;
+  --surface-muted: #f4f4f5;
+  --surface-strong: #e4e4e7;
+  --surface-maroon: rgba(0, 0, 0, 0.03);
+  --foreground: #09090b;
+  --foreground-muted: #6b6b74;
+  --foreground-soft: #a1a1aa;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.14);
+  --primary: #09090b;
+  --primary-foreground: #ffffff;
+  --primary-hover: #27272a;
+  --primary-soft: rgba(0, 0, 0, 0.04);
+  --accent: #09090b;
+  --accent-strong: #18181b;
+  --accent-soft: rgba(0, 0, 0, 0.03);
+  --olive: #27272a;
+  --olive-soft: rgba(0, 0, 0, 0.04);
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+  --warning: #ca8a04;
+  --warning-soft: #fef9c3;
+  --destructive: #dc2626;
+  --destructive-soft: #fee2e2;
+  --focus: #0071e3;
+  --spotlight: rgba(0, 0, 0, 0.05);
+
+  --glass-surface: rgba(255, 255, 255, 0.78);
+  --glass-surface-strong: rgba(255, 255, 255, 0.94);
+  --glass-border: rgba(9, 9, 11, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.95);
+  --nav-surface: rgba(255, 255, 255, 0.90);
+  --nav-surface-solid: #ffffff;
+  --nav-border: rgba(9, 9, 11, 0.08);
+  --nav-text: var(--foreground-muted);
+  --nav-text-active: #09090b;
+  --nav-item-hover: rgba(9, 9, 11, 0.035);
+  --nav-item-active: rgba(9, 9, 11, 0.055);
+  --nav-active-marker: #09090b;
+  --nav-shadow: 0 12px 36px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  --menu-surface: rgba(255, 255, 255, 0.96);
+  --grid-line: rgba(0, 0, 0, 0.035);
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.02), 0 12px 32px rgba(0, 0, 0, 0.04);
+  --shadow-raised: 0 20px 60px rgba(0, 0, 0, 0.08);
+  --shadow: var(--shadow-soft);
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
-  --content-max: 80rem;
+  --radius-xl: 1.5rem;
+  --content-max: 82rem;
+  --gradient-study: linear-gradient(135deg, #09090b 0%, #27272a 100%);
+  --gradient-ember: linear-gradient(120deg, #09090b 0%, #27272a 100%);
+  --gradient-paper: none;
+  --gradient-soft: linear-gradient(135deg, #ffffff 0%, #f4f4f5 100%);
+
+  /* Apple Material Tiers & Optical Glass Constants */
+  --material-ultra-thin: rgba(255, 255, 255, 0.65);
+  --material-thin: rgba(255, 255, 255, 0.75);
+  --material-regular: rgba(255, 255, 255, 0.85);
+  --material-thick: rgba(255, 255, 255, 0.95);
+  --apple-blur: 28px;
+  --apple-saturate: 190%;
+  --apple-spring-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --apple-spring-exit: cubic-bezier(0.7, 0, 0.84, 0);
+  --apple-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.02), 0 12px 32px -4px rgba(0, 0, 0, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  --apple-shadow-hover: 0 1px 2px rgba(0, 0, 0, 0.03), 0 20px 48px -8px rgba(0, 0, 0, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 1);
+  --apple-border-specular: 1px solid rgba(255, 255, 255, 0.85);
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  --shell-maroon-950: #09090b;
+  --shell-maroon-900: #18181b;
+  --shell-maroon-800: #27272a;
+  --shell-maroon-700: #3f3f46;
+  --shell-maroon-600: #52525b;
+  --shell-orange: #fafafa;
+  --shell-orange-soft: #a1a1aa;
+  --shell-cream: #fafafa;
+  --shell-sand: #18181b;
+  --shell-paper: #111113;
+  --shell-line: #27272a;
+
+  --background: #09090b;
+  --background-deep: #050506;
+  --surface: #111113;
+  --surface-muted: #18181b;
+  --surface-strong: #27272a;
+  --surface-maroon: rgba(255, 255, 255, 0.045);
+  --foreground: #fafafa;
+  --foreground-muted: #a1a1aa;
+  --foreground-soft: #71717a;
+  --border: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.17);
+  --primary: #fafafa;
+  --primary-foreground: #09090b;
+  --primary-hover: #e4e4e7;
+  --primary-soft: rgba(255, 255, 255, 0.07);
+  --accent: #fafafa;
+  --accent-strong: #f4f4f5;
+  --accent-soft: rgba(255, 255, 255, 0.055);
+  --olive: #d4d4d8;
+  --olive-soft: rgba(255, 255, 255, 0.06);
+  --success: #4ade80;
+  --success-soft: rgba(22, 163, 74, 0.18);
+  --warning: #facc15;
+  --warning-soft: rgba(202, 138, 4, 0.18);
+  --destructive: #f87171;
+  --destructive-soft: rgba(220, 38, 38, 0.18);
+  --focus: #60a5fa;
+  --spotlight: rgba(255, 255, 255, 0.05);
+
+  --glass-surface: rgba(17, 17, 19, 0.78);
+  --glass-surface-strong: rgba(17, 17, 19, 0.94);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+  --nav-surface: rgba(17, 17, 19, 0.90);
+  --nav-surface-solid: #111113;
+  --nav-border: rgba(255, 255, 255, 0.10);
+  --nav-text: #a1a1aa;
+  --nav-text-active: #fafafa;
+  --nav-item-hover: rgba(255, 255, 255, 0.055);
+  --nav-item-active: rgba(255, 255, 255, 0.09);
+  --nav-active-marker: #fafafa;
+  --nav-shadow: 0 16px 42px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --menu-surface: rgba(17, 17, 19, 0.96);
+  --grid-line: rgba(255, 255, 255, 0.035);
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.30), 0 12px 32px rgba(0, 0, 0, 0.20);
+  --shadow-raised: 0 20px 60px rgba(0, 0, 0, 0.38);
+  --gradient-study: linear-gradient(135deg, #18181b 0%, #27272a 100%);
+  --gradient-ember: linear-gradient(120deg, #18181b 0%, #27272a 100%);
+  --gradient-soft: linear-gradient(135deg, #111113 0%, #18181b 100%);
+
+  --material-ultra-thin: rgba(17, 17, 19, 0.62);
+  --material-thin: rgba(17, 17, 19, 0.72);
+  --material-regular: rgba(17, 17, 19, 0.84);
+  --material-thick: rgba(17, 17, 19, 0.94);
+  --apple-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 16px 36px -6px rgba(0, 0, 0, 0.36), inset 0 1px 1px 0 rgba(255, 255, 255, 0.06);
+  --apple-shadow-hover: 0 1px 2px rgba(0, 0, 0, 0.45), 0 22px 50px -8px rgba(0, 0, 0, 0.48), inset 0 1px 1px 0 rgba(255, 255, 255, 0.09);
+  --apple-border-specular: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 @media (forced-colors: active) {
-  :root {
+  :root,
+  html[data-theme='dark'] {
     --border: CanvasText;
     --border-strong: CanvasText;
     --focus: Highlight;
+    --spotlight: transparent;
+    --nav-border: CanvasText;
+    --nav-text: CanvasText;
+    --nav-text-active: CanvasText;
+    --nav-active-marker: Highlight;
+    --glass-border: CanvasText;
   }
 }

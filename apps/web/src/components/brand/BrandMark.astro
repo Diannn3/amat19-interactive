@@ -1,0 +1,71 @@
+---
+interface Props {
+  variant?: 'dark' | 'light' | 'mono';
+  decorative?: boolean;
+  className?: string;
+  label?: string;
+}
+
+const {
+  variant = 'light',
+  decorative = true,
+  className = '',
+  label = 'AMAT 19 Matrix Mark [A]',
+} = Astro.props;
+
+const classes = ['math-brand-mark', className].filter(Boolean).join(' ');
+---
+
+<span
+  class={classes}
+  data-brand-mark
+  data-brand-variant={variant}
+  role={decorative ? undefined : 'img'}
+  aria-hidden={decorative ? 'true' : undefined}
+  aria-label={decorative ? undefined : label}
+>
+  <span class="math-brand-mark__bracket" aria-hidden="true">[</span>
+  <span class="math-brand-mark__letter">A</span>
+  <span class="math-brand-mark__bracket" aria-hidden="true">]</span>
+</span>
+
+<style>
+  .math-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    border-radius: 0.7rem;
+    background: rgb(255 249 241 / 0.08);
+    border: 1px solid rgb(255 249 241 / 0.16);
+    font-family: var(--font-mono, ui-monospace, 'JetBrains Mono Variable', monospace);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    user-select: none;
+    box-shadow: inset 0 1px 0 rgb(255 249 241 / 0.12), 0 2px 6px rgb(0 0 0 / 0.18);
+    transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+  }
+
+  .math-brand-mark__bracket {
+    color: rgb(255 249 241 / 0.45);
+    font-weight: 400;
+    font-size: 1.15rem;
+    margin: 0 1px;
+  }
+
+  .math-brand-mark__letter {
+    color: var(--shell-orange-soft, #ff9f43);
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+
+  :global(.wordmark:hover) .math-brand-mark {
+    border-color: var(--shell-orange-soft, #ff9f43);
+    background: rgb(230 106 25 / 0.16);
+    box-shadow: 0 0 16px rgb(230 106 25 / 0.25);
+  }
+</style>

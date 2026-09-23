@@ -1,21 +1,44 @@
-# Dependency ledger — Pass 1
+# Dependency Ledger — Current Hardening Baseline
 
-Only dependencies with concrete Pass 1 use are included.
+## Application/runtime
+- Astro 7.x — static/content shell and routing.
+- React 19.x / React DOM — interactive islands only.
+- `@astrojs/react` — Astro/React integration.
+- Tailwind CSS 4.x / `@tailwindcss/vite` — utility generation and project tokens.
+- Radix Tabs — owned accessible tab primitive.
+- Lucide React — iconography.
+- Plus Jakarta Sans / JetBrains Mono — packaged local fonts; Jakarta is the interface face and JetBrains Mono is reserved for formulas, values, tables, and technical data.
+- Dexie 4.x — IndexedDB adapter behind the persistence port.
+- Motion — narrowly used for reduced-motion-aware headline behavior.
 
-| Package | Role | Pass 1 decision |
-|---|---|---|
-| Astro 7.2.6 | static app shell/content | Adopt |
-| @astrojs/react 6.0.4 | one React root per lab | Adopt |
-| React / React DOM 19.2.8 | lab runtime | Adopt |
-| Tailwind CSS 4.3.3 + @tailwindcss/vite 4.3.3 | CSS-first utility/design-token pipeline | Adopt |
-| @radix-ui/react-tabs | accessible Explore/Practice/Argument mode tabs | Adopt, intentionally Radix |
-| lucide-react | one icon family | Adopt |
-| Fontsource Inter Variable + Sora Variable | self-hosted body/display typography | Adopt; OFL-1.1 font licensing |
-| Dexie | IndexedDB persistence adapter | Adopt behind port |
-| TypeScript 6.0.3 | strict TS baseline compatible with current Astro checker line | Adopt |
-| Vitest | workspace unit/property runner after install | Adopt |
-| fast-check | mathematical properties beyond examples | Adopt |
-| Playwright | E2E/multi-viewport QA | Adopt |
-| @axe-core/playwright | automated a11y checks | Adopt |
+## Test/dev
+- TypeScript 6.x.
+- Vitest 4.x.
+- fast-check 4.x.
+- Playwright 1.62.x.
+- `@axe-core/playwright` 4.x.
 
-Deferred until a module proves need: MathLive, Fraction.js, Decimal.js, Mafs, Cytoscape.js, LP solver/WASM, Nano Stores, React Bits. This keeps Pass 1 dependency pressure aligned with actual shipped behavior rather than speculative architecture.
+## Deliberately project-owned
+- propositional parser/evaluator and named proof-rule validation
+- BigInt Rational arithmetic
+- combinatorics and exact finite probability
+- finance teaching traces and fixed-point decimal layer
+- matrix/RREF/system engine
+- two-variable graphical LP engine
+- bounded educational simplex routine
+- zero-sum 2x2 game engine
+- Markov primitives
+- seeded mixed-assessment generation
+- mastery/retrieval prioritization rules
+
+## Deliberately deferred
+- General LP oracle such as HiGHS WASM until course requirements exceed the current 2D + bounded-simplex surface.
+- MathLive while text/symbol inputs remain sufficient.
+- Cross-island state library while the current architecture has no demonstrated need.
+- Cloud/backend dependencies until local-first workflows are validated.
+
+## Release policy
+- pnpm 11 is the package manager authority declared by root `package.json`.
+- CI uses the pnpm 11-native setup action and a clean frozen-lockfile install.
+- High-severity dependency audit is a blocking release check.
+- Do not add a dependency solely to replace a small deterministic domain function unless correctness, accessibility, security, or maintenance clearly improves.

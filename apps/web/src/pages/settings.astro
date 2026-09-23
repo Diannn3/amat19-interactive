@@ -1,0 +1,18 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import SettingsPanel from '../components/settings/SettingsPanel';
+---
+<AppLayout title="Study preferences">
+  <section class="page-width page-intro">
+    <h1 class="display-title">Make the study surface comfortable.</h1>
+    <p class="page-context">Your preferences</p>
+    <p class="lede">Choose the appearance and motion settings that work best while you study.</p>
+    <details class="route-note">
+      <summary>Privacy note</summary>
+      <p>Preferences stay in this browser. No account is required.</p>
+    </details>
+  </section>
+  <section class="page-width section-shell">
+    <SettingsPanel client:load />
+  </section>
+</AppLayout>

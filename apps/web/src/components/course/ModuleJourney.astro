@@ -1,0 +1,118 @@
+---
+import { currentCourseProfile, getModuleSkillGraph, type ModuleId } from '@amat19/course-content';
+import { ArrowRight, BookOpen, Route } from 'lucide-react';
+import MixedPracticeRunner from '../practice/MixedPracticeRunner';
+
+interface Props {
+  moduleId: ModuleId;
+  moduleNumber: string;
+  headline: string;
+  lede: string;
+  lessons: Array<{ id: string; data: { title: string; description?: string; scope?: string } }>;
+}
+
+const { moduleId, moduleNumber, headline, lede, lessons } = Astro.props;
+const module = currentCourseProfile.modules.find((item) => item.id === moduleId)!;
+const workbench = currentCourseProfile.workbenches.find((item) => item.id === moduleId)!;
+const skills = getModuleSkillGraph(moduleId);
+const current = skills.filter((skill) => skill.scope === 'current');
+const supplemental = skills.filter((skill) => skill.scope === 'supplemental');
+const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-drill`;
+---
+
+<section class="page-width page-intro module-overview" data-testid="module-overview">
+  <div class="module-overview__copy">
+    <h1 class="display-title">{headline}</h1>
+    <p class="lede">{lede}</p>
+    <p class="module-overview__context">Module {moduleNumber} · {module.title}</p>
+    <div class="hero-actions">
+      <a class="hero-action hero-action--primary" href={workbench.href}>Open {workbench.title} <ArrowRight size={17} aria-hidden="true" /></a>
+      <a class="hero-action hero-action--secondary" href={`/modules/${moduleId}?view=practice&preset=${practicePreset}`}><Route size={17} aria-hidden="true" /> Practice module</a>
+    </div>
+  </div>
+  <div class="module-journey__metrics" aria-label={`${module.title} contents`}>
+    <div><strong>1</strong><span>workbench</span></div>
+    <div><strong>{current.length}</strong><span>core skills</span></div>
+    <div><strong>{lessons.length}</strong><span>notes</span></div>
+  </div>
+</section>
+
+<nav class="page-width module-tabs" aria-label="Module sections">
+  <a href={`/modules/${moduleId}?view=overview`} aria-current="page">Overview</a>
+  <a href={`/modules/${moduleId}?view=notes`}>Notes <span>({lessons.length})</span></a>
+  <a href={`/modules/${moduleId}?view=practice&preset=${practicePreset}`}>Practice</a>
+</nav>
+
+<section class="page-width module-view" data-module-view="overview" aria-labelledby={`${moduleId}-overview-heading`}>
+  <div class="section-heading">
+    <div>
+      <h2 id={`${moduleId}-overview-heading`}>Open the workbench.</h2>
+      <p class="section-context">One focused place for the hard parts of {module.title}.</p>
+    </div>
+  </div>
+  <a class="module-next-step module-next-step--workbench" href={workbench.href}>
+    <span class="module-next-step__index">{workbench.notation}</span>
+    <span><strong>{workbench.title}</strong><small>{workbench.description}</small></span>
+    <ArrowRight size={18} aria-hidden="true" />
+  </a>
+  <div class="module-view-links">
+    <a href={`/modules/${moduleId}?view=notes`}><strong>Read the notes</strong><span>{lessons.length} concept notes</span><BookOpen size={16} aria-hidden="true" /></a>
+    <a href="/reference"><strong>Check notation</strong><span>Formulas and assumptions</span><ArrowRight size={16} aria-hidden="true" /></a>
+  </div>
+  {supplemental.length > 0 && (
+    <details class="module-supplemental">
+      <summary>Optional topics <span>({supplemental.length})</span></summary>
+      <div class="module-supplemental__list">
+        {supplemental.map((skill) => (
+          <a href={skill.labHref ?? workbench.href}><span><strong>{skill.title}</strong><small>{skill.description}</small></span><ArrowRight size={16} aria-hidden="true" /></a>
+        ))}
+      </div>
+    </details>
+  )}
+</section>
+
+<section class="page-width module-view" data-module-view="practice" aria-labelledby={`${moduleId}-practice-heading`} hidden>
+  <div class="section-heading">
+    <div>
+      <h2 id={`${moduleId}-practice-heading`}>Practice this module.</h2>
+      <p class="section-context">Answer one question at a time.</p>
+    </div>
+  </div>
+  <MixedPracticeRunner client:load mode="practice" questionCount={8} module={moduleId} defaultPresetId={practicePreset} />
+</section>
+
+<section class="page-width module-view" data-module-view="notes" aria-labelledby={`${moduleId}-notes-heading`} hidden>
+  <div class="section-heading">
+    <div>
+      <h2 id={`${moduleId}-notes-heading`}>Concept notes.</h2>
+      <p class="section-context">Read before or after the workbench.</p>
+    </div>
+  </div>
+  <ol class="lesson-list">
+    {lessons.map((lesson) => <li><a href={`/lessons/${lesson.id}`}><span><strong>{lesson.data.title}</strong>{lesson.data.description && <small>{lesson.data.description}</small>}</span><span>Read <ArrowRight size={15} aria-hidden="true" /></span></a></li>)}
+  </ol>
+</section>
+
+<script>
+  const moduleViews = Array.from(document.querySelectorAll<HTMLElement>('[data-module-view]'));
+  const moduleTabs = Array.from(document.querySelectorAll<HTMLAnchorElement>('.module-tabs a'));
+  const allowedViews = new Set(['overview', 'notes', 'practice']);
+
+  function applyModuleView(requested: string | null) {
+    const candidate = requested === 'labs' ? 'overview' : requested ?? 'overview';
+    const nextView = allowedViews.has(candidate) ? candidate : 'overview';
+    moduleViews.forEach((section) => {
+      const visible = section.getAttribute('data-module-view') === nextView;
+      section.toggleAttribute('hidden', !visible);
+      section.setAttribute('aria-hidden', String(!visible));
+    });
+    moduleTabs.forEach((tab) => {
+      const tabView = new URL(tab.href).searchParams.get('view') ?? 'overview';
+      if (tabView === nextView) tab.setAttribute('aria-current', 'page');
+      else tab.removeAttribute('aria-current');
+    });
+  }
+
+  applyModuleView(new URLSearchParams(window.location.search).get('view'));
+  window.addEventListener('popstate', () => applyModuleView(new URLSearchParams(window.location.search).get('view')));
+</script>

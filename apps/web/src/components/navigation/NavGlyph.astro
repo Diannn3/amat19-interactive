@@ -1,0 +1,19 @@
+---
+import { BookMarked, BookOpen, BookOpenCheck, Bookmark, ChartNoAxesCombined, Ellipsis, House, Settings2, UserRound } from 'lucide-react';
+
+interface Props { name: string; }
+const { name } = Astro.props;
+const icons = {
+  home: House,
+  study: BookOpenCheck,
+  course: BookOpen,
+  progress: ChartNoAxesCombined,
+  reference: BookMarked,
+  saved: Bookmark,
+  settings: Settings2,
+  more: Ellipsis,
+  developer: UserRound,
+};
+const Icon = icons[name as keyof typeof icons] ?? BookOpen;
+---
+<Icon aria-hidden="true" size={19} strokeWidth={1.7} />

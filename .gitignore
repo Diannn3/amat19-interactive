@@ -2,10 +2,12 @@ node_modules/
 .pnpm-store/
 dist/
 .astro/
+.vercel/
 playwright-report/
 test-results/
 coverage/
 .DS_Store
 *.log
-
 .vercel
+.env*
+artifacts/

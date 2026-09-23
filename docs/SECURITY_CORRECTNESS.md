@@ -1,27 +1,48 @@
-# Security and correctness guardrails
+# Security & Correctness Guardrails
 
 ## Mathematical execution
+- No `eval`, `new Function`, or unrestricted expression evaluator.
+- Logic accepts only the controlled propositional grammar and reports unsupported tokens with source position. Input length, token count, and recursive parse depth are bounded before stack exhaustion.
+- Truth-table enumeration is bounded.
+- Probability/matrix/game rational computations use exact arithmetic where mathematically appropriate.
+- Formal proof checks the cited rule and scope, not merely semantic equivalence.
+- LP/simplex/game helpers expose their supported boundaries instead of presenting themselves as universal solvers.
+- Finance uses a bounded 30-decimal fixed-point layer. Fractional power/root computation is deterministic and contains no authoritative native `Math.pow`; release tolerance for irrational approximations still requires an explicit public policy.
 
-- No `eval`, `Function`, dynamic JavaScript compilation, or `mathjs` universal evaluator.
-- Only the AMAT propositional grammar is tokenized and parsed.
-- Unsupported characters fail with source positions.
-- Truth-table symbols are capped at eight in the learner-facing Pass 1 to bound `2^n` growth.
-- Larger supported tables use a Worker seam with timeout/fallback.
-- Assignment order and solution traces are deterministic.
+## Learning correctness
+- Deterministic engines decide correctness; no LLM grades mathematical work.
+- Generated questions retain the skill they actually assess.
+- Leaf mastery evidence rolls up to its parent course skill through one central mapping.
+- Assessment commit, duplicate-fingerprint detection, attempt persistence, and mastery read/modify/write are atomic at the persistence adapter boundary.
+- `Secure` requires repeated, high-scoring independent evidence.
+- The exam-like surface remains a study diagnostic, not an official course examination.
 
-## Dependency boundaries
+## Browser/data
+- No auth, remote analytics, or cloud backend is required.
+- Drafts, attempts, mastery, sessions, settings, and saved items remain browser-local.
+- Snapshot imports are schema-validated and collection-bounded. Snapshot scope (`full`, `progress`, `saved`) is enforced inside the persistence layer, so partial restores preserve unrelated collections and current content metadata.
+- Snapshot replacement/merge is transactional in Dexie.
+- Service-worker update activation remains learner controlled.
+- Navigation fallback ignores query strings and uses a bounded network-first wait.
+- Core fonts and runtime math do not require third-party CDNs.
 
-- Domain code imports no React/Astro/DOM/persistence APIs.
-- Third-party UI/runtime packages live in the web/persistence edges.
-- Future visualization/solver dependencies must sit behind adapters rather than leak across domain modules.
-- No remote CDN is required for fonts, runtime JS, or mathematical functionality.
+## Deployment and supply chain
+- GitHub workflow token is read-only unless a future job explicitly requires more.
+- External GitHub Actions are pinned to reviewed commit SHAs.
+- pnpm 11 uses the pnpm 11-native setup path.
+- High-severity dependency audit is release-blocking.
+- Vercel responses define explicit CSP, framing, MIME-sniffing, referrer, and permissions headers.
+- Service worker is configured for revalidation.
 
-## Data/privacy
+## Content/IP
+- Learner-facing examples are original/generated.
+- Historical handouts/exams are not published as a public question bank.
+- Content audit is a heuristic safeguard; human review remains required.
+- React Bits adaptations/inspirations are documented in `THIRD_PARTY_NOTICES.md`.
 
-- No account, analytics beacon, or backend exists in Pass 1.
-- Browser data is local-first and schema-versioned.
-- The persistence port makes later explicit export/sync possible without changing solver semantics.
-
-## Remaining browser gates
-
-A Content Security Policy, production asset headers, full offline precache validation, and dependency advisory audit belong to the first networked build/deployment pass. They are not falsely marked complete in this snapshot.
+## Remaining release checks
+- Exact merged-tree CI must be green.
+- Real installed PWA update/offline testing on production browsers remains required.
+- Browser-level screen-reader/keyboard review remains required.
+- Public Finance tolerance/certification must be decided.
+- Repository-level license must be chosen by the owner if redistribution is intended.

@@ -43,3 +43,27 @@ test('parser reports missing closing parenthesis', () => {
     (error) => error instanceof LogicParseError && error.code === 'missing-rparen'
   );
 });
+
+
+test('logic input budgets reject pathological size before recursive parsing', () => {
+  assert.throws(
+    () => parseLogic('~'.repeat(10_000) + 'P'),
+    (error) => error instanceof LogicParseError && error.code === 'expression-too-large'
+  );
+});
+
+test('logic parser rejects excessive nesting with a controlled error instead of stack overflow', () => {
+  const deeplyNested = '~'.repeat(300) + 'P';
+  assert.throws(
+    () => parseLogic(deeplyNested),
+    (error) => error instanceof LogicParseError && error.code === 'expression-too-deep'
+  );
+});
+
+test('logic tokenizer enforces a token budget independently of character length', () => {
+  const manyTokens = Array.from({ length: 1100 }, () => 'P').join(' & ');
+  assert.throws(
+    () => tokenizeLogic(manyTokens),
+    (error) => error instanceof LogicParseError && error.code === 'expression-too-large'
+  );
+});

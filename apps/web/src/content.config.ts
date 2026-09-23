@@ -9,7 +9,7 @@ const lessons = defineCollection({
     module: z.enum(['logic', 'probability', 'finance', 'linear', 'applications']),
     order: z.number().int().nonnegative(),
     source: z.string(),
-    status: z.enum(['implemented', 'engine-ready', 'planned'])
+    status: z.enum(['implemented', 'engine-ready', 'planned', 'supplemental'])
   })
 });
 

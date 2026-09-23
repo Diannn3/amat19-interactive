@@ -3,15 +3,26 @@ import path from 'node:path';
 import process from 'node:process';
 
 const ROOT = process.cwd();
-const PURE_PACKAGES = ['packages/math-core/src', 'packages/domain-logic/src', 'packages/learning-engine/src'];
+const PURE_PACKAGES = [
+  'packages/math-core/src',
+  'packages/domain-logic/src',
+  'packages/domain-probability/src',
+  'packages/domain-finance/src',
+  'packages/domain-linear/src',
+  'packages/domain-games/src',
+  'packages/learning-engine/src',
+  'packages/course-content/src'
+];
 const FORBIDDEN = [
   /from\s+['"]react['"]/,
   /from\s+['"]astro/,
   /\bdocument\./,
   /\bwindow\./,
   /\blocalStorage\b/,
-  /\bindexedDB\b/
+  /\bindexedDB\b/,
+  /\bDexie\b/
 ];
+const DANGEROUS = [/\beval\s*\(/, /new\s+Function\s*\(/, /dangerouslySetInnerHTML/, /\.innerHTML\s*=/];
 
 async function filesUnder(directory) {
   const entries = await readdir(path.join(ROOT, directory), { withFileTypes: true });
@@ -19,7 +30,7 @@ async function filesUnder(directory) {
   for (const entry of entries) {
     const relative = path.join(directory, entry.name);
     if (entry.isDirectory()) output.push(...await filesUnder(relative));
-    else if (/\.(ts|tsx|js|mjs)$/.test(entry.name)) output.push(relative);
+    else if (/\.(ts|tsx|js|mjs|astro)$/.test(entry.name)) output.push(relative);
   }
   return output;
 }
@@ -28,16 +39,68 @@ const violations = [];
 for (const directory of PURE_PACKAGES) {
   for (const file of await filesUnder(directory)) {
     const source = await readFile(path.join(ROOT, file), 'utf8');
-    for (const rule of FORBIDDEN) {
-      if (rule.test(source)) violations.push(`${file}: matched ${rule}`);
+    for (const rule of FORBIDDEN) if (rule.test(source)) violations.push(`${file}: pure domain matched ${rule}`);
+    for (const rule of DANGEROUS) if (rule.test(source)) violations.push(`${file}: unsafe execution/render path matched ${rule}`);
+  }
+}
+
+const FABRICATED_STUDY_STATE = ['68%', '18 / 30', '8 / 12', '5 / 8', 'Overall Progress', 'Practice Set 3', 'Matrices · Systems of Equations', '6 / 10'];
+const INERT_STUDY_CONTROLS = ['study-toolbar', 'Search resources', 'Resource filter'];
+const UNSOURCED_STUDY_CATALOG = ['120+ problems', '12 reviewers', '8 sheets', '24 saved', '28 problems', '36 problems', '25 problems', '31 problems'];
+const FABRICATED_COURSE_STATE = ['<span class="syllabus-donut-pct">0%</span>', '<span class="syllabus-donut-sub">Not Started</span>', '0 of 5 modules completed'];
+const UNSOURCED_COURSE_FRAMING = ['Course Syllabus.', 'A 10-week journey', 'follow the syllabus', 'Wk '];
+const INERT_COURSE_CONTROLS = ['course-syllabus-toggle', 'Syllabus view mode', 'List View'];
+const webSourceFiles = await filesUnder('apps/web/src');
+for (const file of webSourceFiles) {
+  const source = await readFile(path.join(ROOT, file), 'utf8');
+  for (const rule of DANGEROUS) if (rule.test(source)) violations.push(`${file}: unsafe execution/render path matched ${rule}`);
+  if (source.includes('/workbench/')) {
+    violations.push(`${file}: noncanonical singular /workbench/ route found; use the canonical /workbenches/ registry`);
+  }
+  if (file.endsWith('pages/study.astro')) {
+    for (const fabricated of FABRICATED_STUDY_STATE) {
+      if (source.includes(fabricated)) violations.push(`${file}: fabricated learner-state literal found: ${fabricated}`);
+    }
+    for (const inert of INERT_STUDY_CONTROLS) {
+      if (source.includes(inert)) violations.push(`${file}: inactive Study control found: ${inert}`);
+    }
+    for (const claim of UNSOURCED_STUDY_CATALOG) {
+      if (source.includes(claim)) violations.push(`${file}: unsourced Study catalog count found: ${claim}`);
+    }
+  }
+  if (file.endsWith('pages/course.astro')) {
+    for (const fabricated of FABRICATED_COURSE_STATE) {
+      if (source.includes(fabricated)) violations.push(`${file}: fabricated Course learner-state literal found: ${fabricated}`);
+    }
+    for (const framing of UNSOURCED_COURSE_FRAMING) {
+      if (source.includes(framing)) violations.push(`${file}: unsourced Course pacing/framing found: ${framing}`);
+    }
+    for (const inert of INERT_COURSE_CONTROLS) {
+      if (source.includes(inert)) violations.push(`${file}: inactive Course control found: ${inert}`);
     }
   }
 }
 
-const labRoute = await readFile(path.join(ROOT, 'apps/web/src/pages/labs/truth-table.astro'), 'utf8');
-const hydrationCount = (labRoute.match(/client:(load|idle|visible|only|media)/g) ?? []).length;
-if (hydrationCount !== 1 || !labRoute.includes('client:load')) {
-  violations.push(`truth-table.astro: expected exactly one client:load lab root; found ${hydrationCount} hydration directives`);
+const labPages = (await filesUnder('apps/web/src/pages/labs')).filter((file) => file.endsWith('.astro'));
+if (labPages.length !== 1 || !labPages[0]?.endsWith(`${path.sep}[lab].astro`)) {
+  violations.push(`apps/web/src/pages/labs: expected one dynamic compatibility route; found ${labPages.length}`);
+} else {
+  const source = await readFile(path.join(ROOT, labPages[0]), 'utf8');
+  if (!source.includes('legacyLabAliases') || !source.includes('window.location.replace') || !source.includes('http-equiv="refresh"')) {
+    violations.push(`${labPages[0]}: legacy lab route must resolve through the canonical alias registry`);
+  }
+  if (/client:(load|idle|visible|only|media)/.test(source)) {
+    violations.push(`${labPages[0]}: compatibility redirects must not hydrate a client root`);
+  }
+}
+
+const workbenchPages = (await filesUnder('apps/web/src/pages/workbenches')).filter((file) => file.endsWith('.astro'));
+for (const file of workbenchPages) {
+  const source = await readFile(path.join(ROOT, file), 'utf8');
+  const hydrationCount = (source.match(/client:(load|idle|visible|only|media)/g) ?? []).length;
+  if (hydrationCount !== 1 || !source.includes('client:load')) {
+    violations.push(`${file}: expected exactly one client:load workbench root; found ${hydrationCount} hydration directives`);
+  }
 }
 
 const webPackage = JSON.parse(await readFile(path.join(ROOT, 'apps/web/package.json'), 'utf8'));
@@ -55,6 +118,14 @@ if (violations.length) {
 }
 
 console.log('Architecture audit PASS');
-console.log('- math-core/domain-logic/learning-engine remain DOM and framework independent');
-console.log('- Truth Table route contains one client:load React root');
-console.log('- no overlapping monolithic UI suites detected');
+console.log(`- ${PURE_PACKAGES.length} domain/content packages remain DOM/framework independent`);
+console.log(`- ${workbenchPages.length} workbench routes each hydrate exactly one client:load root`);
+console.log('- legacy lab URLs resolve through one non-hydrated compatibility route');
+console.log('- learner-facing web source contains no singular /workbench/ routes');
+console.log('- Study source contains no known fabricated learner-state literals');
+console.log('- Study source contains no known inert catalog controls');
+console.log('- Study browse metadata is free of the known unsourced catalog counts');
+console.log('- Course source contains no known fabricated learner-progress state');
+console.log('- Course path is not presented as an official syllabus, fixed 10-week schedule, or week-assigned sequence');
+console.log('- Course source contains no known inert syllabus view controls');
+console.log('- no dynamic JS evaluation, unsafe raw HTML rendering, or overlapping monolithic UI suites detected');

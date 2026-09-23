@@ -1,82 +1,26 @@
-import Dexie, { type EntityTable } from 'dexie';
-import type {
-  ContentMeta,
-  LabDraft,
-  LocalSetting,
-  MasteryRecord,
-  PersistedAttempt,
-  PersistencePort
-} from './types.ts';
-
-const DB_NAME = 'amat19-local';
-
-class AmatDatabase extends Dexie {
-  labDrafts!: EntityTable<LabDraft, 'labId'>;
-  attempts!: EntityTable<PersistedAttempt, 'attemptId'>;
-  mastery!: EntityTable<MasteryRecord, 'skillId'>;
-  settings!: EntityTable<LocalSetting, 'key'>;
-  contentMeta!: EntityTable<ContentMeta, 'id'>;
-
-  constructor() {
-    super(DB_NAME);
-    this.version(1).stores({
-      labDrafts: 'labId, updatedAt, contentVersion',
-      attempts: 'attemptId, exerciseId, module, updatedAt, finalState',
-      mastery: 'skillId, lastPracticed',
-      settings: 'key, updatedAt',
-      contentMeta: 'id, courseVersion, schemaVersion, updatedAt'
-    });
-  }
-}
-
-export class DexiePersistence implements PersistencePort {
-  private readonly db = new AmatDatabase();
-
-  async getLabDraft<T = unknown>(labId: string): Promise<LabDraft<T> | undefined> {
-    return (await this.db.labDrafts.get(labId)) as LabDraft<T> | undefined;
-  }
-
-  async saveLabDraft<T = unknown>(draft: LabDraft<T>): Promise<void> {
-    await this.db.labDrafts.put(draft as LabDraft);
-  }
-
-  async deleteLabDraft(labId: string): Promise<void> {
-    await this.db.labDrafts.delete(labId);
-  }
-
-  async saveAttempt<T = unknown>(attempt: PersistedAttempt<T>): Promise<void> {
-    await this.db.attempts.put(attempt as PersistedAttempt);
-  }
-
-  async listAttempts(exerciseId?: string): Promise<PersistedAttempt[]> {
-    if (exerciseId) {
-      return this.db.attempts.where('exerciseId').equals(exerciseId).reverse().sortBy('updatedAt');
-    }
-    return this.db.attempts.orderBy('updatedAt').reverse().toArray();
-  }
-
-  async getMastery(skillId: string): Promise<MasteryRecord | undefined> {
-    return this.db.mastery.get(skillId);
-  }
-
-  async saveMastery(record: MasteryRecord): Promise<void> {
-    await this.db.mastery.put(record);
-  }
-
-  async getSetting<T = unknown>(key: string): Promise<T | undefined> {
-    const setting = await this.db.settings.get(key);
-    return setting?.value as T | undefined;
-  }
-
-  async setSetting<T = unknown>(key: string, value: T, updatedAt: string): Promise<void> {
-    await this.db.settings.put({ key, value, updatedAt });
-  }
-
-  async getContentMeta(): Promise<ContentMeta | undefined> {
-    return this.db.contentMeta.get('current');
-  }
-
-  async setContentMeta(meta: ContentMeta): Promise<void> {
-    await this.db.contentMeta.put(meta);
-  }
+import Dexie,{type EntityTable}from'dexie';import type{AtomicAssessmentCommitInput,AtomicAssessmentCommitResult,ContentMeta,LabDraft,LocalSetting,LocalSnapshot,MasteryRecord,PersistedAttempt,PersistedSession,PersistencePort,SavedItem}from'./types.ts';import{CURRENT_SCHEMA_VERSION}from'./types.ts';import{validateSnapshot}from'./validation.ts';import{mergeScopedSnapshot}from'./snapshot.ts';
+const DB_NAME='amat19-local';
+class AmatDatabase extends Dexie{
+ labDrafts!:EntityTable<LabDraft,'labId'>;attempts!:EntityTable<PersistedAttempt,'attemptId'>;mastery!:EntityTable<MasteryRecord,'skillId'>;settings!:EntityTable<LocalSetting,'key'>;contentMeta!:EntityTable<ContentMeta,'id'>;sessions!:EntityTable<PersistedSession,'sessionId'>;savedItems!:EntityTable<SavedItem,'id'>;
+ constructor(){super(DB_NAME);
+  this.version(1).stores({labDrafts:'labId, updatedAt, contentVersion',attempts:'attemptId, exerciseId, module, updatedAt, finalState',mastery:'skillId, lastPracticed',settings:'key, updatedAt',contentMeta:'id, courseVersion, schemaVersion, updatedAt'});
+  this.version(2).stores({labDrafts:'labId, updatedAt, contentVersion',attempts:'attemptId, exerciseId, module, startedAt, updatedAt, finalState',mastery:'skillId, attempts, lastPracticed',settings:'key, updatedAt',contentMeta:'id, courseVersion, schemaVersion, updatedAt'});
+  this.version(3).stores({labDrafts:'labId, updatedAt, contentVersion',attempts:'attemptId, exerciseId, module, startedAt, updatedAt, finalState, *skillIds',mastery:'skillId, attempts, independentSuccesses, lastPracticed',settings:'key, updatedAt',sessions:'sessionId, exerciseId, module, updatedAt, outcome, *skillIds',savedItems:'id, kind, module, updatedAt, *skillIds',contentMeta:'id, courseVersion, schemaVersion, updatedAt'}).upgrade(async tx=>{
+   await tx.table('mastery').toCollection().modify((record:MasteryRecord)=>{record.independentSuccesses??=0;record.assistedSuccesses??=0;record.hintsUsed??=0;record.revealsUsed??=0;record.streak??=0;});
+   await tx.table('contentMeta').put({id:'current',courseVersion:'amat19-2026-pass4-deep-learning',schemaVersion:CURRENT_SCHEMA_VERSION,updatedAt:new Date().toISOString()});
+  });
+ }}
+export class DexiePersistence implements PersistencePort{
+ private db=new AmatDatabase();
+ async getLabDraft<T=unknown>(id:string){return await this.db.labDrafts.get(id) as LabDraft<T>|undefined;} async listLabDrafts(){return this.db.labDrafts.orderBy('updatedAt').reverse().toArray();} async saveLabDraft<T=unknown>(d:LabDraft<T>){await this.db.labDrafts.put(d as LabDraft);} async deleteLabDraft(id:string){await this.db.labDrafts.delete(id);}
+ async saveAttempt<T=unknown>(a:PersistedAttempt<T>){await this.db.attempts.put(a as PersistedAttempt);} async listAttempts(e?:string){return e?this.db.attempts.where('exerciseId').equals(e).reverse().sortBy('updatedAt'):this.db.attempts.orderBy('updatedAt').reverse().toArray();}
+ async commitAttemptAndMastery<T=unknown>(input:AtomicAssessmentCommitInput<T>):Promise<AtomicAssessmentCommitResult<T>>{return this.db.transaction('rw',this.db.attempts,this.db.mastery,async()=>{const prior=await this.db.attempts.where('exerciseId').equals(input.exerciseId).toArray();const hasPriorMatch=prior.some(input.priorAttemptMatches);const attempt=input.buildAttempt(hasPriorMatch);if(attempt.exerciseId!==input.exerciseId)throw new RangeError('Atomic assessment attempt exercise id mismatch.');const previous=await this.db.mastery.get(input.skillId);const mastery=input.updateMastery?.(previous,hasPriorMatch);if(mastery&&mastery.skillId!==input.skillId)throw new RangeError('An atomic assessment mastery update cannot change its skill id.');await this.db.attempts.put(attempt as PersistedAttempt);if(mastery)await this.db.mastery.put(mastery);return{attempt,mastery,hasPriorMatch};});}
+ async getMastery(id:string){return this.db.mastery.get(id);} async listMastery(){return this.db.mastery.orderBy('skillId').toArray();} async saveMastery(r:MasteryRecord){await this.db.mastery.put(r);} async updateMastery(id:string,updater:(previous:Readonly<MasteryRecord>|undefined)=>MasteryRecord){return this.db.transaction('rw',this.db.mastery,async()=>{const previous=await this.db.mastery.get(id);const next=updater(previous);if(next.skillId!==id)throw new RangeError('A mastery update cannot change its skill id.');await this.db.mastery.put(next);return next;});}
+ async getSession<T=unknown>(id:string){return await this.db.sessions.get(id) as PersistedSession<T>|undefined;} async listSessions(){return this.db.sessions.orderBy('updatedAt').reverse().toArray();} async saveSession<T=unknown>(s:PersistedSession<T>){await this.db.sessions.put(s as PersistedSession);} async deleteSession(id:string){await this.db.sessions.delete(id);}
+ async getSavedItem<T=unknown>(id:string){return await this.db.savedItems.get(id) as SavedItem<T>|undefined;} async listSavedItems(kind?:SavedItem['kind']){return kind?this.db.savedItems.where('kind').equals(kind).reverse().sortBy('updatedAt'):this.db.savedItems.orderBy('updatedAt').reverse().toArray();} async saveItem<T=unknown>(item:SavedItem<T>){await this.db.savedItems.put(item as SavedItem);} async deleteSavedItem(id:string){await this.db.savedItems.delete(id);}
+ async getSetting<T=unknown>(k:string){return (await this.db.settings.get(k))?.value as T|undefined;} async listSettings(){return this.db.settings.orderBy('key').toArray();} async setSetting<T=unknown>(k:string,v:T,u:string){await this.db.settings.put({key:k,value:v,updatedAt:u});}
+ async getContentMeta(){return this.db.contentMeta.get('current');} async setContentMeta(m:ContentMeta){await this.db.contentMeta.put(m);}
+ async exportSnapshot(now:string):Promise<LocalSnapshot>{return{exportedAt:now,schemaVersion:CURRENT_SCHEMA_VERSION,drafts:await this.listLabDrafts(),attempts:await this.listAttempts(),mastery:await this.listMastery(),settings:await this.listSettings(),sessions:await this.listSessions(),savedItems:await this.listSavedItems(),contentMeta:await this.getContentMeta()};}
+ async importSnapshot(s:unknown){const incoming=validateSnapshot(s);const current=await this.exportSnapshot(new Date().toISOString());const v=mergeScopedSnapshot(current,incoming);await this.db.transaction('rw',[this.db.labDrafts,this.db.attempts,this.db.mastery,this.db.settings,this.db.sessions,this.db.savedItems,this.db.contentMeta],async()=>{await Promise.all([this.db.labDrafts.clear(),this.db.attempts.clear(),this.db.mastery.clear(),this.db.settings.clear(),this.db.sessions.clear(),this.db.savedItems.clear(),this.db.contentMeta.clear()]);if(v.drafts.length)await this.db.labDrafts.bulkPut(v.drafts);if(v.attempts.length)await this.db.attempts.bulkPut(v.attempts);if(v.mastery.length)await this.db.mastery.bulkPut(v.mastery);if(v.settings.length)await this.db.settings.bulkPut(v.settings);if(v.sessions.length)await this.db.sessions.bulkPut(v.sessions);if(v.savedItems.length)await this.db.savedItems.bulkPut(v.savedItems);if(v.contentMeta)await this.db.contentMeta.put(v.contentMeta);});}
+ async clearAll(){await Promise.all([this.db.labDrafts.clear(),this.db.attempts.clear(),this.db.mastery.clear(),this.db.settings.clear(),this.db.sessions.clear(),this.db.savedItems.clear(),this.db.contentMeta.clear()]);}
 }

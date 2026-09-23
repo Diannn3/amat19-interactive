@@ -1,0 +1,14 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import ReferenceBrowser from '../components/reference/ReferenceBrowser';
+---
+<AppLayout title="Reference Sheet">
+  <section class="page-width page-intro">
+    <h1 class="display-title">A map of the symbols, not a substitute for the reasoning.</h1>
+    <p class="page-context">Notation & formulas · quick reference</p>
+    <p class="lede">Search a formula, inspect its assumptions, then open the matching lab.</p>
+  </section>
+  <section class="page-width section-shell" aria-label="AMAT 19 formula and notation reference">
+    <ReferenceBrowser client:load />
+  </section>
+</AppLayout>

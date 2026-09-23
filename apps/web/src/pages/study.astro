@@ -1,0 +1,90 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import StudyDashboard from '../components/study/StudyDashboard';
+import { currentCourseProfile, skillGraph } from '@amat19/course-content';
+
+const studyTopics = currentCourseProfile.workbenches.map((workbench) => ({
+  ...workbench,
+  currentSkillCount: skillGraph.filter((skill) => skill.module === workbench.id && skill.scope === 'current').length,
+}));
+---
+
+<AppLayout title="Practice & Resources">
+  <div class="study-page">
+    <!-- Hero Section -->
+    <section class="study-hero">
+      <div class="study-hero__content">
+        <h1 class="study-hero__title">
+          Practice.<br />
+          Deepen.<br />
+          <span class="text-muted">Go Further.</span>
+        </h1>
+        <p class="study-hero__lede">
+          Your local practice evidence shapes a recommended next step. Resume unfinished work, repair recent misses, or choose a topic yourself.
+        </p>
+      </div>
+      <div class="study-hero__ambient" aria-hidden="true">
+        <div class="study-hero__tagline">
+          <span>SAME MATHEMATICS.</span>
+          <span>A CLEARER VIEW.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="active-queue" class="study-queue-section study-queue-section--primary" aria-labelledby="study-next-heading">
+      <div class="study-queue-section__intro">
+        <div>
+          <p class="section-context">Based on your local evidence</p>
+          <h2 id="study-next-heading">What should I study now?</h2>
+          <p>Your unfinished sessions, recent misses, saved items, and skill evidence shape the queue below.</p>
+        </div>
+      </div>
+      <StudyDashboard client:load />
+    </section>
+
+    <section class="study-catalog" aria-labelledby="study-browse-heading">
+      <div class="study-queue-section__intro study-catalog__intro">
+        <div>
+          <p class="section-context">Browse by topic</p>
+          <h2 id="study-browse-heading">Explore the course.</h2>
+          <p>Open a workbench directly when you already know what you want to practice.</p>
+        </div>
+      </div>
+
+      <div class="study-hub-grid study-hub-grid--single">
+        <div class="study-bento-grid study-bento-grid--topics">
+          {studyTopics.map((topic) => (
+            <a
+              href={topic.href}
+              class="apple-glass-card study-bento-card"
+              data-study-topic={topic.id}
+              data-current-skill-count={topic.currentSkillCount}
+            >
+              <div>
+                <div class="study-bento-card-top">
+                  <div class="apple-icon-squircle study-topic-icon" aria-hidden="true">
+                    <span class="study-topic-notation">{topic.notation}</span>
+                  </div>
+                </div>
+                <strong>{topic.title}</strong>
+                <span>{topic.description}</span>
+              </div>
+              <div class="study-bento-card-bottom">
+                <span class="study-bento-meta">
+                  {topic.currentSkillCount} current {topic.currentSkillCount === 1 ? 'skill' : 'skills'}
+                </span>
+                <div class="apple-action-circle" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </div>
+</AppLayout>

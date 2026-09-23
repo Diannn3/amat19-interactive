@@ -90,7 +90,9 @@ export type LogicParseErrorCode =
   | 'unexpected-token'
   | 'missing-operand'
   | 'missing-rparen'
-  | 'empty-expression';
+  | 'empty-expression'
+  | 'expression-too-large'
+  | 'expression-too-deep';
 
 export class LogicParseError extends Error {
   readonly code: LogicParseErrorCode;

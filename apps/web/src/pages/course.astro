@@ -1,0 +1,443 @@
+---
+import { currentCourseProfile, skillGraph } from '@amat19/course-content';
+import { ArrowRight, BookOpen, GraduationCap, ClipboardCheck, BarChart3, Search, Grid3X3, Network, Infinity, FileText, Sparkles, Layers } from 'lucide-react';
+import AppLayout from '../layouts/AppLayout.astro';
+
+const modulesById = new Map(currentCourseProfile.modules.map((module) => [module.id, module]));
+const workbenchCount = currentCourseProfile.workbenches.length;
+const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current').length;
+
+const currentTopicsByModule = new Map(
+  currentCourseProfile.modules.map((module) => [
+    module.id,
+    skillGraph
+      .filter((skill) => skill.module === module.id && skill.scope === 'current')
+      .slice(0, 3)
+      .map((skill) => skill.title),
+  ]),
+);
+---
+
+<AppLayout title="Course map">
+  <div class="course-page">
+    <header class="course-hero">
+      <div class="course-hero__header">
+        <h1 class="course-hero__title">Explore the Workbenches.</h1>
+        <p class="course-hero__lede">
+          Interactive tools for logic, probability, finance, matrices, and applications. Visualize concepts, experiment freely, and build deeper intuition in finite mathematics.
+        </p>
+
+        <div class="course-filter-bar">
+          <div class="course-search-input-wrap">
+            <Search size={18} strokeWidth={1.8} />
+            <input 
+              type="text" 
+              class="course-search-input" 
+              placeholder="Search workbenches, notations, or skills..." 
+              aria-label="Search workbenches"
+            />
+          </div>
+
+          <div class="course-filter-pills" role="group" aria-label="Workbench filters">
+            <button class="apple-filter-pill is-active" type="button" data-course-filter="all" aria-pressed="true">All</button>
+            {currentCourseProfile.modules.map((module) => (
+              <button class="apple-filter-pill" type="button" data-course-filter={module.id} aria-pressed="false">{module.title}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div class="course-hero__stats sr-only" aria-label="Course coverage facts">
+        <div class="course-stat-chip"><span class="course-stat-chip__val">{workbenchCount}</span><span class="course-stat-chip__label">Workbenches</span></div>
+        <div class="course-stat-chip"><span class="course-stat-chip__val">{currentSkillCount}</span><span class="course-stat-chip__label">Core skills</span></div>
+        <div class="course-stat-chip"><span class="course-stat-chip__val">Local</span><span class="course-stat-chip__label">Study data</span></div>
+      </div>
+      <p class="course-filter-status" role="status" aria-live="polite">
+        <span data-course-filter-count>{workbenchCount}</span> workbenches shown
+      </p>
+    </header>
+
+    {/* Five Workbenches in 5-Column Optical Glass Grid */}
+    <section class="course-workbenches" aria-label="Five core course workbenches">
+      <ol class="workbench-grid workbench-directory" data-testid="workbench-directory">
+        {currentCourseProfile.workbenches.map((workbench, index) => {
+          const module = modulesById.get(workbench.id)!;
+          const topics = currentTopicsByModule.get(workbench.id) ?? [];
+          return (
+            <li
+              class={`workbench-grid__item workbench-grid__item--${workbench.id}`}
+              data-course-workbench
+              data-module={workbench.id}
+              data-search={[module.title, workbench.title, workbench.description, workbench.notation, ...topics].join(' ').toLowerCase()}
+            >
+              <a class="workbench-card apple-glass-card" href={workbench.href}>
+                <div>
+                  <div class="workbench-card__header">
+                    <div class="apple-icon-squircle" aria-hidden="true">
+                      {workbench.id === 'logic' && (
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M4 7h4"/><path d="M4 17h4"/><path d="M8 4v16c5 0 9-3.5 9-8s-4-8-9-8z"/><path d="M17 12h3"/>
+                        </svg>
+                      )}
+                      {workbench.id === 'probability' && (
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 20h18"/><path d="M4 20c2 0 4-1 6-7 1.5-4.5 2-8 2-8s.5 3.5 2 8c2 6 4 7 6 7"/><line x1="12" y1="5" x2="12" y2="20" stroke-dasharray="2 2"/>
+                        </svg>
+                      )}
+                      {workbench.id === 'finance' && <BarChart3 size={20} strokeWidth={1.8} />}
+                      {workbench.id === 'linear' && <Grid3X3 size={20} strokeWidth={1.8} />}
+                      {workbench.id === 'applications' && <Network size={20} strokeWidth={1.8} />}
+                    </div>
+                    <span class="workbench-card__index" aria-hidden="true">0{index + 1}</span>
+                    <span class="workbench-card__module-name sr-only">{module.title}</span>
+                  </div>
+
+                  <div class="workbench-card__body">
+                    <strong class="workbench-card__title">{workbench.title}</strong>
+                    <p class="workbench-card__desc">{workbench.description}</p>
+                    
+                    <div class="workbench-card__topics" aria-label="Topics covered">
+                      {topics.map((topic) => (
+                        <span class="workbench-card__topic-tag">{topic}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="workbench-card__footer">
+                  <span class="workbench-card__action-text">Open Workbench</span>
+                  <div class="apple-action-circle" aria-hidden="true">
+                    <ArrowRight size={15} strokeWidth={2.2} />
+                  </div>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ol>
+      <p class="course-filter-empty" data-course-filter-empty hidden>No workbench matches that search and filter.</p>
+    </section>
+
+    {/* Course Syllabus Timeline (Mockup 4) */}
+    <section class="course-syllabus-section" aria-labelledby="course-syllabus-heading">
+      <div class="course-syllabus-header">
+        <div class="course-syllabus-header__copy">
+          <h2 id="course-syllabus-heading" class="course-syllabus-title">Suggested Study Path.</h2>
+          <p class="course-syllabus-lede">
+            An app-organized route through five connected modules. Follow it in order or jump directly to the topic you need. This is not an official weekly schedule.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="course-syllabus-layout">
+        <div class="syllabus-timeline">
+          <div class="syllabus-module-card apple-glass-card">
+            <div class="syllabus-module-badge">
+              <span class="syllabus-module-week">Step 1</span>
+              <div class="apple-icon-squircle" aria-hidden="true">
+                <Layers size={18} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div class="syllabus-module-body">
+              <strong class="syllabus-module-title">Module 1: Logic &amp; Proof</strong>
+              <p class="syllabus-module-desc">Propositions, truth tables, conditional statements, logical equivalence, and deductive reasoning.</p>
+              <div class="syllabus-module-links">
+                <a href="/workbenches/logic">Workbench →</a>
+                <a href="/modules/logic">Examples</a>
+                <a href="/study">Practice</a>
+              </div>
+            </div>
+            <div class="syllabus-module-arrow">
+              <a href="/workbenches/logic" class="apple-action-circle" aria-label="Open Logic & Proof">
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+            </div>
+          </div>
+
+          <div class="syllabus-module-card apple-glass-card">
+            <div class="syllabus-module-badge">
+              <span class="syllabus-module-week">Step 2</span>
+              <div class="apple-icon-squircle" aria-hidden="true">
+                <Sparkles size={18} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div class="syllabus-module-body">
+              <strong class="syllabus-module-title">Module 2: Probability &amp; Counting</strong>
+              <p class="syllabus-module-desc">Counting, exact probability, conditioning, and independence, with optional Bayes and distribution depth.</p>
+              <div class="syllabus-module-links">
+                <a href="/workbenches/probability">Workbench →</a>
+                <a href="/modules/probability">Examples</a>
+                <a href="/study">Practice</a>
+              </div>
+            </div>
+            <div class="syllabus-module-arrow">
+              <a href="/workbenches/probability" class="apple-action-circle" aria-label="Open Probability & Counting">
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+            </div>
+          </div>
+
+          <div class="syllabus-module-card apple-glass-card">
+            <div class="syllabus-module-badge">
+              <span class="syllabus-module-week">Step 3</span>
+              <div class="apple-icon-squircle" aria-hidden="true">
+                <BarChart3 size={18} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div class="syllabus-module-body">
+              <strong class="syllabus-module-title">Module 3: Financial Mathematics</strong>
+              <p class="syllabus-module-desc">Interest measurement, simple and compound interest, rate equivalence, time value of money, and annuities.</p>
+              <div class="syllabus-module-links">
+                <a href="/workbenches/finance">Workbench →</a>
+                <a href="/modules/finance">Examples</a>
+                <a href="/study">Practice</a>
+              </div>
+            </div>
+            <div class="syllabus-module-arrow">
+              <a href="/workbenches/finance" class="apple-action-circle" aria-label="Open Financial Mathematics">
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+            </div>
+          </div>
+
+          <div class="syllabus-module-card apple-glass-card">
+            <div class="syllabus-module-badge">
+              <span class="syllabus-module-week">Step 4</span>
+              <div class="apple-icon-squircle" aria-hidden="true">
+                <Grid3X3 size={18} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div class="syllabus-module-body">
+              <strong class="syllabus-module-title">Module 4: Matrices &amp; Systems</strong>
+              <p class="syllabus-module-desc">Matrix operations, multiplication, inverse, row reduction, and systems of linear equations.</p>
+              <div class="syllabus-module-links">
+                <a href="/workbenches/linear">Workbench →</a>
+                <a href="/modules/linear">Examples</a>
+                <a href="/study">Practice</a>
+              </div>
+            </div>
+            <div class="syllabus-module-arrow">
+              <a href="/workbenches/linear" class="apple-action-circle" aria-label="Open Matrices & Systems">
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+            </div>
+          </div>
+
+          <div class="syllabus-module-card apple-glass-card">
+            <div class="syllabus-module-badge">
+              <span class="syllabus-module-week">Step 5</span>
+              <div class="apple-icon-squircle" aria-hidden="true">
+                <Network size={18} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div class="syllabus-module-body">
+              <strong class="syllabus-module-title">Module 5: Applied Models &amp; Optimization</strong>
+              <p class="syllabus-module-desc">Graphical linear programming and zero-sum games, with optional simplex and Markov extensions.</p>
+              <div class="syllabus-module-links">
+                <a href="/workbenches/applications">Workbench →</a>
+                <a href="/modules/applications">Examples</a>
+                <a href="/study">Practice</a>
+              </div>
+            </div>
+            <div class="syllabus-module-arrow">
+              <a href="/workbenches/applications" class="apple-action-circle" aria-label="Open Applied Models">
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <aside class="syllabus-sidebar">
+          <div class="syllabus-resources-card apple-glass-card">
+            <h3>Course Resources</h3>
+            <div class="syllabus-resource-list">
+              <a class="syllabus-resource-item" href="/reference">
+                <div class="syllabus-resource-item-left">
+                  <FileText size={16} strokeWidth={1.8} />
+                  <div>
+                    <strong>Concept notes</strong>
+                    <span>Course-aligned notes across all five modules</span>
+                  </div>
+                </div>
+                <ArrowRight size={13} strokeWidth={2} />
+              </a>
+
+              <a class="syllabus-resource-item" href="/course">
+                <div class="syllabus-resource-item-left">
+                  <Sparkles size={16} strokeWidth={1.8} />
+                  <div>
+                    <strong>Interactive workbenches</strong>
+                    <span>{workbenchCount} focused mathematical workspaces</span>
+                  </div>
+                </div>
+                <ArrowRight size={13} strokeWidth={2} />
+              </a>
+
+              <a class="syllabus-resource-item" href="/study">
+                <div class="syllabus-resource-item-left">
+                  <GraduationCap size={16} strokeWidth={1.8} />
+                  <div>
+                    <strong>Practice</strong>
+                    <span>Original practice with step feedback</span>
+                  </div>
+                </div>
+                <ArrowRight size={13} strokeWidth={2} />
+              </a>
+
+              <a class="syllabus-resource-item" href="/workbenches/applications">
+                <div class="syllabus-resource-item-left">
+                  <Network size={16} strokeWidth={1.8} />
+                  <div>
+                    <strong>Applied models</strong>
+                    <span>Optimization, strategy, and financial modeling tools</span>
+                  </div>
+                </div>
+                <ArrowRight size={13} strokeWidth={2} />
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="syllabus-banner-cta apple-glass-card">
+        <div class="syllabus-banner-copy">
+          <strong>Ready to begin?</strong>
+          <p>Start with Propositional Logic and explore how statements and truth tables work together.</p>
+        </div>
+        <a class="apple-btn-black" href="/workbenches/logic">
+          Start Module 1 <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
+        </a>
+      </div>
+    </section>
+
+    {/* Full-Width Companion Bar */}
+    <div class="course-companion-bar apple-glass-card">
+      <div class="course-companion-bar__copy">
+        <div class="apple-icon-squircle" aria-hidden="true">
+          <Infinity size={22} strokeWidth={1.8} />
+        </div>
+        <div class="course-companion-bar__info">
+          <strong>One Connected Course</strong>
+          <p>These workbenches are part of a unified learning experience. Explore freely, or follow the suggested path for guided progression.</p>
+        </div>
+      </div>
+      <a class="apple-btn-black" href="/study">
+        Start Studying <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
+      </a>
+    </div>
+
+    {/* Utilities Companion Section */}
+    <section class="course-utilities" aria-labelledby="course-utilities-heading">
+      <div class="course-utilities__header">
+        <h2 id="course-utilities-heading" class="course-utilities__title">Continue from here</h2>
+        <p class="course-utilities__subtitle">Course-wide study, practice, and reference tools.</p>
+      </div>
+
+      <div class="utility-grid">
+        <a class="utility-card apple-glass-card" href="/study">
+          <div class="utility-card__icon" aria-hidden="true">
+            <GraduationCap size={20} strokeWidth={1.8} />
+          </div>
+          <div class="utility-card__copy">
+            <div class="utility-card__title-row">
+              <strong>Study Queue</strong>
+              <span class="utility-card__arrow" aria-hidden="true">→</span>
+            </div>
+            <small>Resume active modules or practice retrieval</small>
+          </div>
+        </a>
+
+        <a class="utility-card apple-glass-card" href="/exam">
+          <div class="utility-card__icon" aria-hidden="true">
+            <ClipboardCheck size={20} strokeWidth={1.8} />
+          </div>
+          <div class="utility-card__copy">
+            <div class="utility-card__title-row">
+              <strong>Mixed Course Check</strong>
+              <span class="utility-card__arrow" aria-hidden="true">→</span>
+            </div>
+            <small>Multi-topic diagnostic assessment with feedback</small>
+          </div>
+        </a>
+
+        <a class="utility-card apple-glass-card" href="/reference">
+          <div class="utility-card__icon" aria-hidden="true">
+            <BookOpen size={20} strokeWidth={1.8} />
+          </div>
+          <div class="utility-card__copy">
+            <div class="utility-card__title-row">
+              <strong>Formula &amp; Notation</strong>
+              <span class="utility-card__arrow" aria-hidden="true">→</span>
+            </div>
+            <small>Canonical symbols, rules, and workbench links</small>
+          </div>
+        </a>
+
+        <a class="utility-card apple-glass-card" href="/progress">
+          <div class="utility-card__icon" aria-hidden="true">
+            <BarChart3 size={20} strokeWidth={1.8} />
+          </div>
+          <div class="utility-card__copy">
+            <div class="utility-card__title-row">
+              <strong>Progress &amp; Local Data</strong>
+              <span class="utility-card__arrow" aria-hidden="true">→</span>
+            </div>
+            <small>Inspect local mastery evidence and settings</small>
+          </div>
+        </a>
+      </div>
+    </section>
+  </div>
+
+
+<script>
+  function initCourseFilters() {
+    const root = document.querySelector<HTMLElement>('.course-page');
+    if (!root || root.dataset.filtersReady === 'true') return;
+    root.dataset.filtersReady = 'true';
+
+    const input = root.querySelector<HTMLInputElement>('.course-search-input');
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-course-filter]'));
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-course-workbench]'));
+    const count = root.querySelector<HTMLElement>('[data-course-filter-count]');
+    const empty = root.querySelector<HTMLElement>('[data-course-filter-empty]');
+    let activeFilter = 'all';
+
+    const apply = () => {
+      const query = input?.value.trim().toLowerCase() ?? '';
+      let visible = 0;
+
+      for (const item of items) {
+        const matchesFilter = activeFilter === 'all' || item.dataset.module === activeFilter;
+        const matchesQuery = !query || (item.dataset.search ?? '').includes(query);
+        const show = matchesFilter && matchesQuery;
+        item.hidden = !show;
+        if (show) visible += 1;
+      }
+
+      if (count) count.textContent = String(visible);
+      if (empty) empty.hidden = visible !== 0;
+    };
+
+    input?.addEventListener('input', apply);
+
+    for (const button of buttons) {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.courseFilter ?? 'all';
+        for (const candidate of buttons) {
+          const selected = candidate === button;
+          candidate.classList.toggle('is-active', selected);
+          candidate.setAttribute('aria-pressed', String(selected));
+        }
+        apply();
+      });
+    }
+
+    apply();
+  }
+
+  initCourseFilters();
+  document.addEventListener('astro:page-load', initCourseFilters);
+</script>
+</AppLayout>

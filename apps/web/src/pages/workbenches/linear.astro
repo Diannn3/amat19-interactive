@@ -1,0 +1,14 @@
+---
+import { workbenchForModule } from '@amat19/course-content';
+import WorkbenchShell from '../../components/course/WorkbenchShell.astro';
+import RowOperationsCoach from '../../components/workbenches/RowOperationsCoach';
+import AppLayout from '../../layouts/AppLayout.astro';
+
+const workbench = workbenchForModule('linear')!;
+---
+
+<AppLayout title={workbench.title} description={workbench.description}>
+  <WorkbenchShell moduleId="linear">
+    <RowOperationsCoach client:load />
+  </WorkbenchShell>
+</AppLayout>

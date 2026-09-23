@@ -1,0 +1,24 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+---
+<AppLayout title="Study">
+  <section class="page-width page-intro" data-legacy-route="practice">
+    <h1 class="display-title">Opening Study.</h1>
+    <p class="lede">This workspace now starts from a module so every retrieval set has clear context.</p>
+    <noscript><a class="hero-action hero-action--primary" href="/study">Continue to Study</a></noscript>
+  </section>
+  <script is:inline>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const moduleByPreset = {
+        'logic-drill': 'logic',
+        'probability-drill': 'probability',
+        'finance-drill': 'finance',
+        'matrices-drill': 'linear',
+        'applications-drill': 'applications',
+      };
+      const module = moduleByPreset[params.get('preset') ?? ''];
+      window.location.replace(module ? `/modules/${module}?view=practice&preset=${encodeURIComponent(params.get('preset'))}` : '/study');
+    })();
+  </script>
+</AppLayout>

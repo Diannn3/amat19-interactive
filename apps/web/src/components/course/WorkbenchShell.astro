@@ -1,0 +1,32 @@
+---
+import { currentCourseProfile, type ModuleId } from '@amat19/course-content';
+import { ArrowLeft, BookOpen, Sigma } from 'lucide-react';
+
+interface Props {
+  moduleId: ModuleId;
+}
+
+const { moduleId } = Astro.props;
+const module = currentCourseProfile.modules.find((item) => item.id === moduleId);
+const workbench = currentCourseProfile.workbenches.find((item) => item.id === moduleId);
+
+if (!module || !workbench) throw new Error(`Unknown AMAT 19 workbench: ${moduleId}`);
+---
+
+<article class="workbench-route" data-testid="workbench-shell" data-workbench={workbench.id}>
+  <header class="workbench-route__header">
+    <div class="workbench-route__heading">
+      <h1>{workbench.title}</h1>
+      <p>{workbench.description}</p>
+    </div>
+    <nav class="workbench-route__links" aria-label="Workbench resources">
+      <a href={module.href}><ArrowLeft size={16} aria-hidden="true" /> {module.title}</a>
+      <a href={`${module.href}?view=notes`}><BookOpen size={16} aria-hidden="true" /> Notes</a>
+      <a href="/reference"><Sigma size={16} aria-hidden="true" /> Notation</a>
+    </nav>
+  </header>
+
+  <section class="workbench-route__canvas lab-route__canvas" data-workbench-canvas aria-label={`${workbench.title} workspace`}>
+    <slot />
+  </section>
+</article>

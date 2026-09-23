@@ -8,3 +8,7 @@ export * from './truth-table.ts';
 export * from './equivalence.ts';
 export * from './argument.ts';
 export * from './explain.ts';
+export * from './structural.ts';
+export * from './proof.ts';
+
+export * from './proof-scopes.ts';

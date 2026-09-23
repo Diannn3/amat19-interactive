@@ -1,0 +1,38 @@
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowRight, BookOpen, Bookmark, ClipboardCheck, RotateCcw } from 'lucide-react';
+import { buildStudyQueue } from '@amat19/learning-engine';
+import { skillGraph } from '@amat19/course-content';
+import { DexiePersistence, type MasteryRecord, type PersistedAttempt, type PersistedSession, type SavedItem } from '@amat19/persistence';
+import { Badge } from '../ui/Badge';
+import { Skeleton } from '../ui/Skeleton';
+import { masteryLabel } from '../../lib/local-progress';
+import { canonicalMasteryMap, canonicalSkillId } from '../../lib/mastery-targets';
+import { learnerActivityLabel, learnerModuleLabel } from '../../lib/learner-labels';
+
+type Data={mastery:MasteryRecord[];attempts:PersistedAttempt[];sessions:PersistedSession[];saved:SavedItem[]};
+
+export default function StudyDashboard(){
+ const[data,setData]=useState<Data>();const[unavailable,setUnavailable]=useState(false);
+ useEffect(()=>{const db=new DexiePersistence();Promise.all([db.listMastery(),db.listAttempts(),db.listSessions(),db.listSavedItems()]).then(([mastery,attempts,sessions,saved])=>setData({mastery,attempts,sessions,saved})).catch(()=>setUnavailable(true));},[]);
+ const computed=useMemo(()=>{
+  if(!data)return undefined;
+  const mastery=canonicalMasteryMap(data.mastery);
+  const recentMisses=new Set(data.attempts.filter(a=>a.finalState==='incomplete').slice(0,12).flatMap(a=>(a.skillIds??[]).map(canonicalSkillId)));
+  const activeSessions=data.sessions.filter(s=>s.outcome==='active');
+  const bookmarks=new Set(data.saved.flatMap(item=>(item.skillIds??[]).map(canonicalSkillId)));
+  const currentSkills=skillGraph.filter(skill=>skill.scope==='current');
+  const candidates=currentSkills.map(skill=>{
+   const record=mastery.get(skill.id)??(skill.parentId?mastery.get(skill.parentId):undefined);
+   return{skillId:skill.id,title:skill.title,href:skill.labHref,masteryScore:record?.evidenceScore,attempts:record?.attempts,lastPracticedAt:record?.lastPracticed,recentIncorrect:recentMisses.has(skill.id)||(skill.parentId?recentMisses.has(skill.parentId):false),bookmarked:bookmarks.has(skill.id),resumable:activeSessions.some(s=>s.skillIds.map(canonicalSkillId).includes(skill.id)||(skill.parentId?s.skillIds.map(canonicalSkillId).includes(skill.parentId):false))};
+  });
+  const queue=buildStudyQueue(candidates,new Date(),7);
+  const resolvedRecords=currentSkills.map(skill=>mastery.get(skill.id)??(skill.parentId?mastery.get(skill.parentId):undefined));
+  const secure=resolvedRecords.filter(record=>masteryLabel(record)==='Secure').length;
+  const developing=resolvedRecords.filter(record=>masteryLabel(record)==='Developing'||masteryLabel(record)==='Learning').length;
+  return{queue,secure,developing,recent:data.attempts.slice(0,5),activeSessions,savedCount:data.saved.length};
+ },[data]);
+ if(unavailable)return <div className="empty-state" role="status"><strong>Local study data is unavailable.</strong><p>You can still open every lesson and lab directly from the course map.</p></div>;
+ if(!computed)return <div className="study-dashboard" aria-busy="true"><Skeleton className="h-52"/><Skeleton className="h-80"/></div>;
+ const primary=computed.queue[0];
+ return <div className="study-dashboard" data-testid="study-dashboard"><div className="study-dashboard__hero"><section className="study-panel study-panel--primary"><div className="study-panel__body">{primary?<><h2>{primary.title}</h2><p className="section-context">Recommended next</p><p className="lede">{primary.rationale}</p><div className="hero-actions"><a className="hero-action hero-action--primary" href={primary.href}>Open study tool <ArrowRight aria-hidden="true" size={16}/></a></div></>:<><h2>Start with any core module.</h2><p className="section-context">Recommended next</p><p className="lede">Once you practice, this page will prioritize unfinished work, repair targets, and retrieval reviews.</p></>}<div className="study-stat-grid"><div className="study-stat"><strong>{computed.secure}</strong><span>secure current skills</span></div><div className="study-stat"><strong>{computed.developing}</strong><span>still developing</span></div><div className="study-stat"><strong>{computed.savedCount}</strong><span>saved items</span></div></div></div></section><aside className="study-panel"><div className="study-panel__body"><h3>Recent work</h3><p className="section-context">Resume</p>{computed.activeSessions.length?<div className="study-queue">{computed.activeSessions.slice(0,3).map(session=><a className="study-queue__item" key={session.sessionId} href={skillGraph.find(s=>session.skillIds.map(canonicalSkillId).includes(s.id)||Boolean(s.parentId&&session.skillIds.map(canonicalSkillId).includes(s.parentId)))?.labHref??'/study'}><span className="study-queue__rank"><RotateCcw aria-hidden="true" size={14}/></span><span><strong>{learnerActivityLabel(session)}</strong><small>{learnerModuleLabel(session.module)} · Saved {new Date(session.updatedAt).toLocaleDateString()}</small></span><ArrowRight aria-hidden="true" size={15}/></a>)}</div>:<p className="lede">No unfinished learning session yet. Draft-enabled labs still resume their local state.</p>}</div></aside></div><section className="study-panel"><div className="study-panel__body"><div className="section-heading"><div><h2>High-value retrieval first.</h2><p className="section-context">Today’s queue</p></div></div><div className="study-queue">{computed.queue.map((item,index)=><a className="study-queue__item" key={item.skillId} href={item.href}><span className="study-queue__rank">{index+1}</span><span><strong>{item.title}</strong><small>{item.rationale}</small></span><Badge>{item.reason}</Badge></a>)}</div></div></section><section className="study-panel"><div className="study-panel__body"><div className="section-heading"><div><h2>Choose how you want to study.</h2><p className="section-context">Shortcuts</p></div></div><div className="route-grid"><a className="route-link" href="/course"><span><strong><BookOpen aria-hidden="true" size={16}/> Course map</strong><small>Choose a module and retrieve in context.</small></span><span aria-hidden="true">→</span></a><a className="route-link" href="/exam"><span><strong><ClipboardCheck aria-hidden="true" size={16}/> Mixed Course Check</strong><small>Check the whole course, then review feedback.</small></span><span aria-hidden="true">→</span></a><a className="route-link" href="/saved"><span><strong><Bookmark aria-hidden="true" size={16}/> Saved Library</strong><small>Return to lessons, exercises, and custom problems you kept.</small></span><span aria-hidden="true">→</span></a></div></div></section></div>;
+}

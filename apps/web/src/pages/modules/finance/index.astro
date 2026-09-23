@@ -1,0 +1,9 @@
+---
+import { getCollection } from 'astro:content';
+import AppLayout from '../../../layouts/AppLayout.astro';
+import ModuleJourney from '../../../components/course/ModuleJourney.astro';
+const lessons=(await getCollection('lessons')).filter((entry)=>entry.data.module==='finance').sort((a,b)=>a.data.order-b.data.order);
+---
+<AppLayout title="Financial Mathematics module">
+  <ModuleJourney moduleId="finance" moduleNumber="03" headline="Put every cash flow on a timeline." lede="Move money to one focal date, distinguish simple from compound growth, convert equivalent rates, and value payment streams with high-precision arithmetic." lessons={lessons} />
+</AppLayout>
