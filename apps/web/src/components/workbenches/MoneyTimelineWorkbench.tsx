@@ -356,7 +356,7 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-input-row">
             <div className="fin-input-label">
               <span>Principal (P)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>${principal.toLocaleString()}</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>${principal.toLocaleString()}</span>
             </div>
             <input 
               type="number" 
@@ -382,7 +382,7 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-input-row">
             <div className="fin-input-label">
               <span>Annual Interest Rate (r)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>{annualRate.toFixed(1)}%</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>{annualRate.toFixed(1)}%</span>
             </div>
             <input 
               type="number" 
@@ -409,7 +409,7 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-input-row">
             <div className="fin-input-label">
               <span>Time in Years (t)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>{years} yrs</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>{years} yrs</span>
             </div>
             <input 
               type="number" 
