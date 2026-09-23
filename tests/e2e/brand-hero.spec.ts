@@ -62,20 +62,16 @@ test.describe('AMAT 19 brand hero and identity', () => {
     }
   });
 
-  test('identity remains legible in the compact rail and the Developer dialog is axe-clean', async ({ page }) => {
+  test('identity remains legible in the topbar and the Developer dialog is axe-clean', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
-    const mark = page.locator('[data-brand-mark]');
-    await expect(mark).toHaveCSS('width', '44px');
-    await expect(mark).toHaveCSS('height', '44px');
-    await page.getByRole('button', { name: 'Collapse navigation' }).click();
-    await expect(mark).toBeVisible();
-    await expect(mark.locator('.math-brand-mark__letter')).toHaveText('A');
+    const home = page.locator('.topbar-home');
+    await expect(home).toBeVisible();
+    await expect(home).toContainText('AMAT 19');
 
-    await page.locator('[data-more-flyout-trigger]').click();
-    const flyout = page.locator('[data-more-flyout]');
-    await expect(flyout).toBeVisible();
-    await flyout.getByRole('button', { name: 'Developer contact' }).click();
+    const more = page.locator('[data-topbar-more]');
+    await more.locator('summary').click();
+    await more.getByRole('button', { name: 'Developer contact' }).click();
     const results = await new AxeBuilder({ page }).include('#developer-contact-dialog').analyze();
     expect(results.violations).toEqual([]);
   });
@@ -129,42 +125,32 @@ test.describe('AMAT 19 brand hero and identity', () => {
     }
   });
 
-  test('collapsed desktop rail reserves the expand control without navigation overlap', async ({ page }) => {
+  test('desktop More stays contained at short heights', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 480 });
     await page.goto('/');
 
-    const frame = page.locator('.app-frame');
-    const sidebar = page.locator('.sidebar');
-    const toggle = page.getByRole('button', { name: /Collapse navigation/i });
-    await toggle.click();
-    await expect(frame).toHaveClass(/nav-collapsed/);
+    const more = page.locator('[data-topbar-more]');
+    await more.locator('summary').click();
+    const panel = more.locator('.topbar-more-menu__panel');
+    await expect(panel).toBeVisible();
 
-    const geometry = await page.evaluate(() => {
-      const sidebar = document.querySelector<HTMLElement>('.sidebar');
-      const toggle = document.querySelector<HTMLElement>('[data-sidebar-toggle]');
-      const nav = document.querySelector<HTMLElement>('#primary-navigation');
-      if (!sidebar || !toggle || !nav) return null;
-      const box = (element: HTMLElement) => {
-        const rect = element.getBoundingClientRect();
-        return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
-      };
-      const sidebarBox = box(sidebar);
-      const toggleBox = box(toggle);
-      const toggleOverlapsNavigation = Array.from(nav.querySelectorAll<HTMLElement>('a, summary')).some((item) => {
-        const itemBox = box(item);
-        return itemBox.left < toggleBox.right && itemBox.right > toggleBox.left && itemBox.top < toggleBox.bottom && itemBox.bottom > toggleBox.top;
-      });
+    const geometry = await panel.evaluate((element) => {
+      const box = element.getBoundingClientRect();
       return {
-        insideSidebar: toggleBox.left >= sidebarBox.left && toggleBox.right <= sidebarBox.right && toggleBox.top >= sidebarBox.top && toggleBox.bottom <= sidebarBox.bottom,
-        toggleOverlapsNavigation,
-        navScrollable: nav.scrollHeight > nav.clientHeight,
+        left: box.left,
+        right: box.right,
+        top: box.top,
+        bottom: box.bottom,
+        width: document.documentElement.clientWidth,
+        height: window.innerHeight,
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
       };
     });
-
-    expect(geometry).not.toBeNull();
-    expect(geometry?.insideSidebar).toBe(true);
-    expect(geometry?.toggleOverlapsNavigation).toBe(false);
-    expect(await sidebar.isVisible()).toBe(true);
+    expect(geometry.left).toBeGreaterThanOrEqual(0);
+    expect(geometry.right).toBeLessThanOrEqual(geometry.width);
+    expect(geometry.top).toBeGreaterThanOrEqual(0);
+    expect(geometry.bottom).toBeLessThanOrEqual(geometry.height);
+    expect(geometry.overflow).toBe(false);
   });
 });
 
@@ -189,11 +175,11 @@ test.describe('Developer utility dialog', () => {
   test('desktop More opens one native dialog and restores focus on close', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
-    const more = page.locator('.more-menu');
+    const more = page.locator('[data-topbar-more]');
     await more.locator('summary').click();
     const trigger = more.getByRole('button', { name: 'Developer contact' });
     await expect(trigger).toBeVisible();
-    await expect(page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Developer contact' })).toHaveCount(0);
+    await expect(page.getByRole('navigation', { name: 'Primary destinations' }).getByRole('link', { name: 'Developer contact' })).toHaveCount(0);
 
     const dialog = await assertDialog(page, trigger);
     await page.keyboard.press('Escape');

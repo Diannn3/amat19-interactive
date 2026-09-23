@@ -5,11 +5,12 @@ import '../styles/global.css';
 import '../styles/pass4.css';
 import '../styles/audit-v13.css';
 import '../styles/apple-glass.css';
+import '../styles/editorial-grid.css';
 import CommandPalette from '../components/navigation/CommandPalette';
 import DeveloperContact from '../components/navigation/DeveloperContact.astro';
 import BrandMark from '../components/brand/BrandMark.astro';
 import NavGlyph from '../components/navigation/NavGlyph.astro';
-import { PanelLeftClose, Search } from 'lucide-react';
+import { Moon, PanelLeftClose, Search, Sun } from 'lucide-react';
 
 interface Props { title: string; description?: string; }
 type NavItem = { href: string; label: string; mobileLabel: string; icon: string; desktopOnly?: boolean };
@@ -45,14 +46,25 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#2e080d" />
-    <meta name="color-scheme" content="light" />
+    <meta id="amat-theme-color" name="theme-color" content="#fbfbfd" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <script is:inline>
-      try {
-        if (window.localStorage.getItem('amat19-motion') === 'reduced') document.documentElement.dataset.motion = 'reduced';
-      } catch {}
+      (() => {
+        const root = document.documentElement;
+        let theme = 'light';
+        try {
+          if (window.localStorage.getItem('amat19-theme') === 'dark') theme = 'dark';
+          if (window.localStorage.getItem('amat19-motion') === 'reduced') root.dataset.motion = 'reduced';
+        } catch {
+          // Preferences are optional. Light remains the deterministic fallback.
+        }
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+        const themeColor = document.querySelector('meta[name="theme-color"]');
+        if (themeColor instanceof HTMLMetaElement) themeColor.content = theme === 'dark' ? '#09090b' : '#fbfbfd';
+      })();
     </script>
     <title>{title} &middot; AMAT 19 Study Lab</title>
   </head>
@@ -145,25 +157,38 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
           </div>
 
           <nav class="topbar-nav" aria-label="Primary destinations">
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath === '/' }]} href="/">
-              Home
-              {currentPath === '/' && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath.startsWith('/workbenches') }]} href="/course">
-              Workbenches
-              {currentPath.startsWith('/workbenches') && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath === '/course' || currentPath.startsWith('/modules') }]} href="/course">
-              Course
-              {(currentPath === '/course' || currentPath.startsWith('/modules')) && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
-            <a class:list={['topbar-nav-link', { 'is-active': currentPath.startsWith('/reference') }]} href="/reference">
-              Resources
-              {currentPath.startsWith('/reference') && <span class="topbar-nav-dot" aria-hidden="true"></span>}
-            </a>
+            {primaryNavigation.map((item) => (
+              <a class:list={['topbar-nav-link', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+                {isCurrent(item.href) && <span class="topbar-nav-dot" aria-hidden="true"></span>}
+              </a>
+            ))}
           </nav>
 
           <div class="topbar-actions">
+            <details class:list={['topbar-more-menu', { 'is-active': utilityIsCurrent }]} data-topbar-more>
+              <summary class="topbar-more-menu__summary" aria-label="More destinations">
+                <span class="nav-icon"><NavGlyph name="more" /></span>
+                <span>More</span>
+              </summary>
+              <div class="topbar-more-menu__panel">
+                {utilityNavigation.map((item) => item.kind === 'link' ? (
+                  <a class:list={['topbar-more-menu__item', { 'is-active': isCurrent(item.href) }]} href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+                    <span>{item.label}</span>
+                  </a>
+                ) : (
+                  <button class="topbar-more-menu__item topbar-more-menu__action" type="button" data-developer-contact-trigger aria-haspopup="dialog" aria-controls="developer-contact-dialog" aria-label="Developer contact">
+                    <span class="nav-icon"><NavGlyph name={item.icon} /></span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </details>
+            <button class="topbar-theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Turn dark mode on" title="Turn dark mode on">
+              <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true"><Moon size={17} strokeWidth={1.8} /></span>
+              <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true"><Sun size={17} strokeWidth={1.8} /></span>
+            </button>
             <button class="topbar-search" type="button" data-command-button aria-haspopup="dialog" aria-label="Search AMAT 19">
               <Search aria-hidden="true" size={17} strokeWidth={1.7} />
               <span>Search study tools</span>
@@ -203,6 +228,12 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
             <span>More</span>
           </summary>
           <div class="mobile-more-menu__panel">
+            <button class="mobile-more-menu__link mobile-more-menu__action theme-menu-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Turn dark mode on">
+              <span class="nav-icon theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true"><Moon size={17} strokeWidth={1.8} /></span>
+              <span class="nav-icon theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true"><Sun size={17} strokeWidth={1.8} /></span>
+              <span data-theme-toggle-text>Dark mode</span>
+              <span class="theme-menu-toggle__state" data-theme-toggle-state>Off</span>
+            </button>
             {utilityNavigation.map((item) => item.kind === 'link' ? (
               <a class="mobile-more-menu__link" href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
                 <span class="nav-icon"><NavGlyph name={item.icon} /></span>
@@ -229,9 +260,49 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         const moreFlyout = document.querySelector('[data-more-flyout]');
         const inlineMore = document.querySelector('.sidebar [data-more-menu]');
         const inlineMoreSummary = inlineMore?.querySelector('summary');
+        const topbarMore = document.querySelector('[data-topbar-more]');
+        const topbarMoreSummary = topbarMore?.querySelector('summary');
         const sidebarNav = document.querySelector('.sidebar .nav-stack');
         const sidebar = document.querySelector('.sidebar');
         const sidebarStorageKey = 'amat19.sidebar.collapsed';
+        const themeStorageKey = 'amat19-theme';
+        const root = document.documentElement;
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+        const syncThemeControls = () => {
+          const dark = root.dataset.theme === 'dark';
+          document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+            button.setAttribute('aria-pressed', String(dark));
+            button.setAttribute('aria-label', dark ? 'Turn dark mode off' : 'Turn dark mode on');
+            button.setAttribute('title', dark ? 'Turn dark mode off' : 'Turn dark mode on');
+          });
+          document.querySelectorAll('[data-theme-toggle-state]').forEach((state) => {
+            state.textContent = dark ? 'On' : 'Off';
+          });
+        };
+        const applyTheme = (requestedTheme, persist = true) => {
+          const theme = requestedTheme === 'dark' ? 'dark' : 'light';
+          root.dataset.theme = theme;
+          root.style.colorScheme = theme;
+          if (themeMeta instanceof HTMLMetaElement) themeMeta.content = theme === 'dark' ? '#09090b' : '#fbfbfd';
+          if (persist) {
+            try { window.localStorage.setItem(themeStorageKey, theme); } catch { /* storage is optional */ }
+          }
+          syncThemeControls();
+          window.dispatchEvent(new CustomEvent('amat:theme-applied', { detail: { theme } }));
+        };
+        document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+          button.addEventListener('click', () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+        });
+        window.addEventListener('amat:theme-request', (event) => {
+          const requested = event instanceof CustomEvent ? event.detail?.theme : undefined;
+          applyTheme(requested === 'dark' ? 'dark' : 'light');
+        });
+        window.addEventListener('storage', (event) => {
+          if (event.key !== themeStorageKey) return;
+          applyTheme(event.newValue === 'dark' ? 'dark' : 'light', false);
+        });
+        applyTheme(root.dataset.theme === 'dark' ? 'dark' : 'light', false);
+
         const supportsMorePopover = moreFlyout instanceof HTMLElement
           && typeof moreFlyout.showPopover === 'function'
           && typeof moreFlyout.hidePopover === 'function';
@@ -302,6 +373,24 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         sidebarNav?.addEventListener('scroll', repositionMoreFlyout, { passive: true });
         document.querySelector('.sidebar')?.addEventListener('scroll', repositionMoreFlyout, { passive: true });
 
+        const closeTopbarMore = (restoreFocus = false) => {
+          if (!(topbarMore instanceof HTMLDetailsElement) || !topbarMore.open) return;
+          topbarMore.open = false;
+          if (restoreFocus && topbarMoreSummary instanceof HTMLElement) topbarMoreSummary.focus();
+        };
+        topbarMore?.addEventListener('keydown', (event) => {
+          if (event.key !== 'Escape') return;
+          event.preventDefault();
+          closeTopbarMore(true);
+        });
+        document.addEventListener('pointerdown', (event) => {
+          if (!(topbarMore instanceof HTMLDetailsElement) || !topbarMore.open) return;
+          const developerDialog = document.querySelector('[data-developer-contact-dialog]');
+          if (developerDialog instanceof HTMLDialogElement && developerDialog.open) return;
+          const target = event.target;
+          if (target instanceof Node && !topbarMore.contains(target)) closeTopbarMore(false);
+        });
+
         document.querySelectorAll('[data-command-button]').forEach((button) => {
           button.addEventListener('click', () => { window.dispatchEvent(new CustomEvent('amat:command', { detail: { trigger: button } })); });
         });
@@ -319,8 +408,9 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         }
         const banner = document.getElementById('pwa-update'); const updateMessage = document.getElementById('pwa-update-message'); const updateButton = document.getElementById('pwa-update-button'); const dismissButton = document.getElementById('pwa-update-dismiss'); let waitingWorker; let reloadForUpdate = false; let updateInFlight = false;
         const showUpdate = (worker) => { waitingWorker = worker; updateInFlight = false; if (updateButton) { updateButton.disabled = false; updateButton.textContent = 'Save & update'; } if (banner) banner.hidden = false; };
-        navigator.serviceWorker.register('/sw.js').then((registration) => {
+        navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then((registration) => {
           if (registration.waiting) showUpdate(registration.waiting);
+          if (typeof registration.update === 'function') registration.update().catch(() => {});
           registration.addEventListener('updatefound', () => { const installing = registration.installing; if (!installing) return; installing.addEventListener('statechange', () => { if (installing.state === 'installed' && navigator.serviceWorker.controller) showUpdate(installing); }); });
         }).catch(() => {});
         updateButton?.addEventListener('click', async () => {

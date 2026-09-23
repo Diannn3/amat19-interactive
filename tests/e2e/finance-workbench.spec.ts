@@ -51,35 +51,30 @@ test('@core annuity and bond presets reuse the timeline instead of opening separ
 test('Money Timeline keeps its primary object and controls reachable on a 375px phone', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
-  const updateDismiss = page.getByRole('button', { name: 'Later', exact: true });
-  if (await updateDismiss.isVisible()) await updateDismiss.click();
-  await page.locator('.workspace-scroll').evaluate((element) => { element.scrollTop = 0; });
   const workbench = page.getByTestId('money-timeline-workbench');
-  const metrics = await workbench.evaluate((element) => {
-    const object = element.querySelector<HTMLElement>('[data-money-timeline-object]');
-    const scenario = element.querySelector<HTMLElement>('[data-scenario-control]');
-    const result = element.querySelector<HTMLElement>('button[type="submit"]');
-    const dock = document.querySelector<HTMLElement>('.mobile-nav');
-    const objectBox = object?.getBoundingClientRect();
-    const scenarioBox = scenario?.getBoundingClientRect();
-    const resultBox = result?.getBoundingClientRect();
-    const dockBox = dock?.getBoundingClientRect();
-    return {
-      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-      objectTop: objectBox?.top ?? Infinity,
-      objectRight: objectBox?.right ?? Infinity,
-      scenarioTop: scenarioBox?.top ?? Infinity,
-      resultBottom: resultBox?.bottom ?? Infinity,
-      dockTop: dockBox?.top ?? 667,
-      viewportWidth: document.documentElement.clientWidth,
-    };
-  });
+  await expect(workbench).toHaveAttribute('data-hydrated', 'true');
 
-  expect(metrics.overflow).toBe(false);
-  expect(metrics.objectTop).toBeLessThan(667);
-  expect(metrics.scenarioTop).toBeLessThan(667);
-  expect(metrics.objectRight).toBeLessThanOrEqual(metrics.viewportWidth + 1);
-  expect(metrics.resultBottom).toBeLessThanOrEqual(metrics.dockTop);
+  const object = workbench.locator('[data-money-timeline-object]');
+  await object.scrollIntoViewIfNeeded();
+  const objectBox = await object.boundingBox();
+  expect(objectBox).not.toBeNull();
+  expect(objectBox!.x).toBeGreaterThanOrEqual(0);
+  expect(objectBox!.x + objectBox!.width).toBeLessThanOrEqual(376);
+
+  for (const control of [
+    workbench.getByRole('combobox', { name: 'Choose a task' }),
+    workbench.getByRole('button', { name: 'Check step', exact: true }),
+  ]) {
+    await control.evaluate((element) => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
+    const box = await control.boundingBox();
+    const dock = await page.locator('.mobile-nav').boundingBox();
+    expect(box).not.toBeNull();
+    expect(dock).not.toBeNull();
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+    expect(box!.y + box!.height).toBeLessThanOrEqual(dock!.y);
+  }
+
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)).toBe(false);
 });
 
 test('Money Timeline is free of serious automated accessibility violations', async ({ page }) => {

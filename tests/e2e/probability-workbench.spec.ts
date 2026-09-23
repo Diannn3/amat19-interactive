@@ -8,6 +8,9 @@ test.beforeEach(async ({ page }) => {
 test('@core Counting selects the model before showing the exact count', async ({ page }) => {
   const workbench = page.getByTestId('probability-model-builder');
   await expect(workbench).toHaveAttribute('data-hydrated', 'true');
+  const modeGroup = workbench.getByRole('group', { name: 'Probability mode selection' });
+  await expect(modeGroup).toBeVisible();
+  await expect(modeGroup.getByRole('button', { name: 'Conditional Probability' })).toHaveAttribute('aria-pressed', 'true');
   await expect(workbench.getByRole('heading', { name: 'Name what makes an outcome different.' })).toBeVisible();
   await expect(workbench.getByRole('option', { name: /Permutation · order, no repeats/ })).toBeAttached();
   await expect(workbench.locator('[data-probability-result]')).not.toBeVisible();

@@ -31,6 +31,22 @@ test('@core focused workbenches have no automated accessibility violations', asy
   }
 });
 
+test('@core dark focused workbenches have no serious automated accessibility violations', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.addInitScript(() => {
+    localStorage.setItem('amat19-theme', 'dark');
+  });
+
+  for (const route of workbenches) {
+    await page.goto(route);
+    await expect(page.locator('html'), route).toHaveAttribute('data-theme', 'dark');
+    await expect(page.getByTestId('workbench-shell').locator('[data-hydrated="true"]').first(), route).toBeVisible();
+    const results = await new AxeBuilder({ page }).include('[data-testid="workbench-shell"]').analyze();
+    const serious = results.violations.filter((violation) => ['critical', 'serious'].includes(violation.impact ?? ''));
+    expect(serious, route).toEqual([]);
+  }
+});
+
 test('@core course modules expose one focused workbench and retain their notes', async ({ page }) => {
   for (const module of ['logic', 'probability', 'finance', 'linear', 'applications']) {
     await page.goto(`/modules/${module}`);

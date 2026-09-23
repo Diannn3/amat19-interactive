@@ -331,10 +331,11 @@ export default function MoneyTimelineWorkbench() {
           Explore time value of money, compound interest, annuities, and more.
         </p>
 
-        <div className="prob-mode-bar" role="tablist" aria-label="Finance mode selection">
+        <div className="prob-mode-bar" role="group" aria-label="Finance mode selection">
           <button 
             type="button" 
             className={`prob-mode-pill ${modeTab === 'compound' ? 'is-active' : ''}`}
+            aria-pressed={modeTab === 'compound'}
             onClick={() => setModeTab('compound')}
           >
             Compound Interest
@@ -342,6 +343,7 @@ export default function MoneyTimelineWorkbench() {
           <button 
             type="button" 
             className={`prob-mode-pill ${modeTab === 'annuity' ? 'is-active' : ''}`}
+            aria-pressed={modeTab === 'annuity'}
             onClick={() => setModeTab('annuity')}
           >
             Annuity
@@ -354,11 +356,12 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-input-row">
             <div className="fin-input-label">
               <span>Principal (P)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>${principal.toLocaleString()}</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>${principal.toLocaleString()}</span>
             </div>
             <input 
               type="number" 
-              className="fin-number-input" 
+              className="fin-number-input"
+              aria-label="Principal amount"
               value={principal} 
               step="500" 
               min="100" 
@@ -366,7 +369,8 @@ export default function MoneyTimelineWorkbench() {
             />
             <input 
               type="range" 
-              className="prob-slider" 
+              className="prob-slider"
+              aria-label="Principal amount slider"
               min="1000" 
               max="100000" 
               step="1000" 
@@ -378,11 +382,12 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-input-row">
             <div className="fin-input-label">
               <span>Annual Interest Rate (r)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>{annualRate.toFixed(1)}%</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>{annualRate.toFixed(1)}%</span>
             </div>
             <input 
               type="number" 
-              className="fin-number-input" 
+              className="fin-number-input"
+              aria-label="Annual interest rate"
               value={annualRate} 
               step="0.1" 
               min="0.1" 
@@ -391,7 +396,8 @@ export default function MoneyTimelineWorkbench() {
             />
             <input 
               type="range" 
-              className="prob-slider" 
+              className="prob-slider"
+              aria-label="Annual interest rate slider"
               min="0.5" 
               max="20" 
               step="0.5" 
@@ -403,11 +409,12 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-input-row">
             <div className="fin-input-label">
               <span>Time in Years (t)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: '#2563eb' }}>{years} yrs</span>
+              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>{years} yrs</span>
             </div>
             <input 
               type="number" 
-              className="fin-number-input" 
+              className="fin-number-input"
+              aria-label="Time in years"
               value={years} 
               min="1" 
               max="50" 
@@ -415,8 +422,9 @@ export default function MoneyTimelineWorkbench() {
             />
             <input 
               type="range" 
-              className="prob-slider" 
-              min="1" 
+              className="prob-slider"
+              aria-label="Time in years slider"
+              min="1"
               max="40" 
               step="1" 
               value={years} 
@@ -429,7 +437,8 @@ export default function MoneyTimelineWorkbench() {
               <span>Compounding Frequency (n)</span>
             </div>
             <select 
-              className="fin-select" 
+              className="fin-select"
+              aria-label="Compounding frequency"
               value={compoundingN} 
               onChange={(e) => setCompoundingN(Number(e.target.value))}
             >
@@ -459,10 +468,10 @@ export default function MoneyTimelineWorkbench() {
           <div className="fin-chart-card apple-glass-card">
             <svg viewBox="0 0 460 220" style={{ width: '100%', height: 'auto' }} aria-label="Investment growth curve">
               {/* Grid lines */}
-              <line x1="50" y1="20" x2="50" y2="190" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
-              <line x1="50" y1="190" x2="430" y2="190" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
-              <line x1="50" y1="105" x2="430" y2="105" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
-              <line x1="50" y1="20" x2="430" y2="20" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
+              <line x1="50" y1="20" x2="50" y2="190" stroke="var(--border)" strokeWidth="1" />
+              <line x1="50" y1="190" x2="430" y2="190" stroke="var(--border)" strokeWidth="1" />
+              <line x1="50" y1="105" x2="430" y2="105" stroke="var(--border)" strokeDasharray="4 4" />
+              <line x1="50" y1="20" x2="430" y2="20" stroke="var(--border)" strokeDasharray="4 4" />
 
               {/* Shaded Area Under Curve */}
               <path 
@@ -474,7 +483,7 @@ export default function MoneyTimelineWorkbench() {
               <path 
                 d={curvePathD} 
                 fill="none" 
-                stroke="#2563eb" 
+                stroke="var(--editorial-data-blue)" 
                 strokeWidth="3" 
                 strokeLinecap="round" 
               />
@@ -486,8 +495,8 @@ export default function MoneyTimelineWorkbench() {
                   cx={pt.x} 
                   cy={pt.y} 
                   r={i === chartHoverIndex ? 6 : 3.5} 
-                  fill={i === chartHoverIndex ? '#111111' : '#2563eb'} 
-                  stroke="#ffffff" 
+                  fill={i === chartHoverIndex ? 'var(--foreground)' : 'var(--editorial-data-blue)'} 
+                  stroke="var(--surface)" 
                   strokeWidth="2" 
                   style={{ cursor: 'pointer', transition: 'r 150ms ease' }}
                   onMouseEnter={() => setChartHoverIndex(i)}
@@ -503,13 +512,13 @@ export default function MoneyTimelineWorkbench() {
                     width="110" 
                     height="24" 
                     rx="6" 
-                    fill="#111111" 
+                    fill="var(--foreground)" 
                   />
                   <text 
                     x="0" 
                     y="-2" 
                     textAnchor="middle" 
-                    fill="#ffffff" 
+                    fill="var(--surface)" 
                     fontSize="10.5" 
                     fontWeight="600" 
                     fontFamily="monospace"
@@ -520,9 +529,9 @@ export default function MoneyTimelineWorkbench() {
               )}
 
               {/* Axis Labels */}
-              <text x="50" y="206" fill="#71717a" fontSize="10" fontFamily="sans-serif">Yr 0</text>
-              <text x="240" y="206" fill="#71717a" fontSize="10" fontFamily="sans-serif" textAnchor="middle">Yr {Math.round(years / 2)}</text>
-              <text x="430" y="206" fill="#71717a" fontSize="10" fontFamily="sans-serif" textAnchor="end">Yr {years}</text>
+              <text x="50" y="206" fill="var(--foreground-muted)" fontSize="10" fontFamily="sans-serif">Yr 0</text>
+              <text x="240" y="206" fill="var(--foreground-muted)" fontSize="10" fontFamily="sans-serif" textAnchor="middle">Yr {Math.round(years / 2)}</text>
+              <text x="430" y="206" fill="var(--foreground-muted)" fontSize="10" fontFamily="sans-serif" textAnchor="end">Yr {years}</text>
             </svg>
           </div>
 
@@ -533,7 +542,7 @@ export default function MoneyTimelineWorkbench() {
             </div>
             <div className="fin-metric-box apple-glass-card">
               <span>Total Interest</span>
-              <strong style={{ color: '#059669' }}>+${Math.round(totalInt).toLocaleString()}</strong>
+              <strong style={{ color: 'var(--editorial-data-green)' }}>+${Math.round(totalInt).toLocaleString()}</strong>
             </div>
             <div className="fin-metric-box apple-glass-card">
               <span>Growth Multiple</span>

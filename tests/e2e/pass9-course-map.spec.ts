@@ -29,6 +29,42 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     }
   });
 
+
+  test('workbench directory keeps supplemental topics out of current-scope chips', async ({ page }) => {
+    await page.goto('/course');
+
+    const probability = page.locator('.workbench-grid__item--probability');
+    const applications = page.locator('.workbench-grid__item--applications');
+
+    await expect(probability).not.toContainText(/Bayes|distribution|simulation/i);
+    await expect(applications).not.toContainText(/Simplex|Markov/i);
+    await expect(page.getByText('optional simplex and Markov extensions', { exact: false })).toBeVisible();
+  });
+
+  test('course workbench filters are real controls rather than decorative pills', async ({ page }) => {
+    await page.goto('/course');
+
+    const search = page.getByRole('textbox', { name: 'Search workbenches' });
+    const items = page.locator('[data-course-workbench]');
+    const count = page.locator('[data-course-filter-count]');
+
+    await expect(items).toHaveCount(5);
+    await expect(count).toHaveText('5');
+
+    await search.fill('cash');
+    await expect(page.locator('[data-course-workbench]:visible')).toHaveCount(1);
+    await expect(page.getByRole('link', { name: /Money Timeline/i })).toBeVisible();
+    await expect(count).toHaveText('1');
+
+    await search.fill('');
+    const applications = page.getByRole('button', { name: 'Applications', exact: true });
+    await applications.click();
+    await expect(applications).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('[data-course-workbench]:visible')).toHaveCount(1);
+    await expect(page.getByRole('link', { name: /Optimization & Strategy/i })).toBeVisible();
+    await expect(count).toHaveText('1');
+  });
+
   test('workbench ledger and solid headline respond without horizontal overflow', async ({ page }) => {
     for (const viewport of [
       { width: 1280, height: 720, heroColumns: 2 },
@@ -121,86 +157,48 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     expect(forcedColors?.textFill).not.toBe('rgba(0, 0, 0, 0)');
   });
 
-  test('collapsed More opens a viewport-contained top-layer flyout at short heights', async ({ page }) => {
+  test('topbar More stays viewport-contained at short desktop heights', async ({ page }) => {
     for (const viewport of [
       { width: 1280, height: 720 },
       { width: 1280, height: 480 },
     ]) {
       await page.setViewportSize(viewport);
       await page.goto('/');
-      await page.evaluate(() => localStorage.removeItem('amat19.sidebar.collapsed'));
-      await page.reload();
-      await page.getByRole('button', { name: /Collapse navigation/i }).click();
+      const more = page.locator('[data-topbar-more]');
+      await more.locator('summary').click();
+      const panel = more.locator('.topbar-more-menu__panel');
+      await expect(panel).toBeVisible();
 
-      const trigger = page.locator('[data-more-flyout-trigger]');
-      const flyout = page.locator('[data-more-flyout]');
-      await expect(trigger).toBeVisible();
-      await trigger.click();
-      await expect(flyout).toBeVisible();
-
-      const geometry = await page.evaluate(() => {
-        const panel = document.querySelector<HTMLElement>('[data-more-flyout]');
-        const trigger = document.querySelector<HTMLElement>('[data-more-flyout-trigger]');
-        const sidebar = document.querySelector<HTMLElement>('.sidebar');
-        const nav = document.querySelector<HTMLElement>('#primary-navigation');
-        if (!panel || !trigger || !sidebar || !nav) return null;
-        const box = (element: HTMLElement) => {
-          const rect = element.getBoundingClientRect();
-          return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
-        };
-        const panelBox = box(panel);
-        const triggerBox = box(trigger);
-        const sidebarBox = box(sidebar);
-        const navOverlap = Array.from(nav.querySelectorAll<HTMLElement>('a, summary, button')).some((item) => {
-          const itemBox = box(item);
-          return itemBox.left < panelBox.right && itemBox.right > panelBox.left && itemBox.top < panelBox.bottom && itemBox.bottom > panelBox.top;
-        });
+      const geometry = await panel.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
         return {
-          panel: panelBox,
-          trigger: triggerBox,
-          sidebar: sidebarBox,
-          outsideSidebar: !panel.closest('.sidebar'),
-          navOverlap,
-          documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-          ariaExpanded: trigger.getAttribute('aria-expanded'),
+          left: rect.left,
+          right: rect.right,
+          top: rect.top,
+          bottom: rect.bottom,
+          overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
         };
       });
-      expect(geometry).not.toBeNull();
-      expect(geometry?.outsideSidebar).toBe(true);
-      expect(geometry?.panel.left).toBeGreaterThanOrEqual(0);
-      expect(geometry?.panel.right).toBeLessThanOrEqual(viewport.width);
-      expect(geometry?.panel.top).toBeGreaterThanOrEqual(0);
-      expect(geometry?.panel.bottom).toBeLessThanOrEqual(viewport.height);
-      expect(geometry?.panel.left).toBeGreaterThanOrEqual(geometry?.sidebar.right ?? 0);
-      expect(geometry?.navOverlap).toBe(false);
-      expect(geometry?.documentOverflow).toBe(false);
-      expect(geometry?.ariaExpanded).toBe('true');
-      await expect(flyout.locator('a[href="/reference"]')).toBeVisible();
-      await expect(flyout.locator('[data-developer-contact-trigger]')).toBeVisible();
+      expect(geometry.left).toBeGreaterThanOrEqual(0);
+      expect(geometry.right).toBeLessThanOrEqual(viewport.width);
+      expect(geometry.top).toBeGreaterThanOrEqual(0);
+      expect(geometry.bottom).toBeLessThanOrEqual(viewport.height);
+      expect(geometry.overflow).toBe(false);
+      await expect(panel.getByRole('link', { name: 'Reference', exact: true })).toBeVisible();
+      await expect(panel.getByRole('button', { name: 'Developer contact', exact: true })).toBeVisible();
 
       await page.keyboard.press('Escape');
-      await expect(flyout).toBeHidden();
-      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
-      await expect(trigger).toBeFocused();
-
-      await trigger.click();
-      await expect(flyout).toBeVisible();
-      await page.mouse.click(viewport.width - 20, 24);
-      await expect(flyout).toBeHidden();
-      await expect(trigger).toBeFocused();
+      await expect(panel).toBeHidden();
     }
   });
 
-  test('Developer from collapsed More hands focus back after the dialog closes', async ({ page }) => {
+  test('Developer from topbar More restores focus to its trigger after the dialog closes', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
-    await page.getByRole('button', { name: /Collapse navigation/i }).click();
-
-    const trigger = page.locator('[data-more-flyout-trigger]');
-    const flyout = page.locator('[data-more-flyout]');
+    const more = page.locator('[data-topbar-more]');
+    await more.locator('summary').click();
+    const trigger = more.getByRole('button', { name: 'Developer contact', exact: true });
     await trigger.click();
-    await flyout.getByRole('button', { name: 'Developer contact', exact: true }).click();
-    await expect(flyout).toBeHidden();
     const dialog = page.getByRole('dialog', { name: 'Developer contact' });
     await expect(dialog).toBeVisible();
     await dialog.getByRole('button', { name: 'Close developer contact' }).click();
@@ -208,21 +206,25 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     await expect(trigger).toBeFocused();
   });
 
-  test('expanded and mobile More retain their existing navigation surfaces', async ({ page }) => {
+  test('desktop topbar More and mobile More expose the same utility destinations', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
-    await expect(page.locator('[data-more-flyout-trigger]')).toBeHidden();
-    const desktopMore = page.locator('.sidebar [data-more-menu]');
+    const desktopMore = page.locator('[data-topbar-more]');
     await desktopMore.locator('summary').click();
-    await expect(desktopMore.getByRole('link', { name: 'Reference', exact: true })).toBeVisible();
+    for (const label of ['Reference', 'Saved', 'Settings']) {
+      await expect(desktopMore.getByRole('link', { name: label, exact: true })).toBeVisible();
+    }
+    await expect(desktopMore.getByRole('button', { name: 'Developer contact', exact: true })).toBeVisible();
 
     await page.setViewportSize({ width: 375, height: 667 });
     await page.reload();
-    await expect(page.locator('[data-more-flyout-trigger]')).toBeHidden();
     await expect(page.locator('.mobile-nav .mobile-nav-link')).toHaveCount(4);
     const mobileMore = page.locator('.mobile-more-menu');
     await mobileMore.locator('summary').click();
     await expect(mobileMore.locator('.mobile-more-menu__panel')).toBeVisible();
+    for (const label of ['Reference', 'Saved', 'Settings']) {
+      await expect(mobileMore.getByRole('link', { name: label, exact: true })).toBeVisible();
+    }
     await expect(mobileMore.getByRole('button', { name: 'Developer contact', exact: true })).toBeVisible();
   });
 });
