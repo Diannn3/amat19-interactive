@@ -3429,3 +3429,89 @@ button[type="submit"]:hover {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ==========================================================================
+   T05 — direct light/dark controls
+   ========================================================================== */
+.topbar-theme-toggle {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--border) !important;
+  border-radius: 999px;
+  background: var(--glass-surface) !important;
+  color: var(--foreground-muted) !important;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition:
+    background-color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.topbar-theme-toggle:hover {
+  border-color: var(--border-strong) !important;
+  background: var(--surface) !important;
+  color: var(--foreground) !important;
+  transform: translateY(-1px);
+}
+
+.topbar-theme-toggle:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.topbar-theme-toggle:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.theme-toggle__icon {
+  display: inline-grid;
+  place-items: center;
+  color: currentColor;
+}
+
+.theme-toggle__icon--sun {
+  display: none;
+}
+
+html[data-theme='dark'] .theme-toggle__icon--moon {
+  display: none;
+}
+
+html[data-theme='dark'] .theme-toggle__icon--sun {
+  display: inline-grid;
+}
+
+.theme-menu-toggle {
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  width: 100%;
+}
+
+.theme-menu-toggle__state {
+  justify-self: end;
+  color: var(--foreground-soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 900px) {
+  .topbar-theme-toggle {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .topbar-theme-toggle {
+    border-color: ButtonText !important;
+    background: ButtonFace !important;
+    color: ButtonText !important;
+    box-shadow: none;
+  }
+}
