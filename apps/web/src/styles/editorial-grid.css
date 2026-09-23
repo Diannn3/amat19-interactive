@@ -6548,3 +6548,29 @@ main .apple-glass-card:active .apple-action-circle {
     font-size: clamp(4.2rem, 5.4vw, 5.1rem) !important;
   }
 }
+
+
+.course-filter-status {
+  margin: .85rem 0 0 !important;
+  color: var(--editorial-ink-muted) !important;
+  font-family: var(--font-amat-mono);
+  font-size: .68rem !important;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.course-filter-status [data-course-filter-count] {
+  color: var(--editorial-signal);
+  font-weight: 800;
+}
+
+[data-course-workbench][hidden] {
+  display: none !important;
+}
+
+@media (forced-colors: active) {
+  .course-filter-status,
+  .course-filter-status [data-course-filter-count] {
+    color: CanvasText !important;
+  }
+}

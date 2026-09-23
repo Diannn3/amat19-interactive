@@ -36,12 +36,11 @@ const moduleTopics: Record<string, string[]> = {
             />
           </div>
 
-          <div class="course-filter-pills" role="tablist" aria-label="Workbench filters">
-            <button class="apple-filter-pill is-active" type="button">All</button>
-            <button class="apple-filter-pill" type="button">Core Topics</button>
-            <button class="apple-filter-pill" type="button">Applications</button>
-            <button class="apple-filter-pill" type="button">Modeling</button>
-            <button class="apple-filter-pill" type="button">Interactive</button>
+          <div class="course-filter-pills" role="group" aria-label="Workbench filters">
+            <button class="apple-filter-pill is-active" type="button" data-course-filter="all" aria-pressed="true">All</button>
+            {currentCourseProfile.modules.map((module) => (
+              <button class="apple-filter-pill" type="button" data-course-filter={module.id} aria-pressed="false">{module.title}</button>
+            ))}
           </div>
         </div>
       </div>
@@ -51,6 +50,9 @@ const moduleTopics: Record<string, string[]> = {
         <div class="course-stat-chip"><span class="course-stat-chip__val">{currentSkillCount}</span><span class="course-stat-chip__label">Core skills</span></div>
         <div class="course-stat-chip"><span class="course-stat-chip__val">Local</span><span class="course-stat-chip__label">Study data</span></div>
       </div>
+      <p class="course-filter-status" role="status" aria-live="polite">
+        <span data-course-filter-count>{workbenchCount}</span> workbenches shown
+      </p>
     </header>
 
     {/* Five Workbenches in 5-Column Optical Glass Grid */}
@@ -60,7 +62,12 @@ const moduleTopics: Record<string, string[]> = {
           const module = modulesById.get(workbench.id)!;
           const topics = moduleTopics[workbench.id] || [];
           return (
-            <li class={`workbench-grid__item workbench-grid__item--${workbench.id}`}>
+            <li
+              class={`workbench-grid__item workbench-grid__item--${workbench.id}`}
+              data-course-workbench
+              data-module={workbench.id}
+              data-search={[module.title, workbench.title, workbench.description, workbench.notation, ...topics].join(' ').toLowerCase()}
+            >
               <a class="workbench-card apple-glass-card" href={workbench.href}>
                 <div>
                   <div class="workbench-card__header">
@@ -381,3 +388,51 @@ const moduleTopics: Record<string, string[]> = {
   </div>
 
 </AppLayout>
+
+<script>
+  function initCourseFilters() {
+    const root = document.querySelector<HTMLElement>('.course-page');
+    if (!root || root.dataset.filtersReady === 'true') return;
+    root.dataset.filtersReady = 'true';
+
+    const input = root.querySelector<HTMLInputElement>('.course-search-input');
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-course-filter]'));
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-course-workbench]'));
+    const count = root.querySelector<HTMLElement>('[data-course-filter-count]');
+    let activeFilter = 'all';
+
+    const apply = () => {
+      const query = input?.value.trim().toLowerCase() ?? '';
+      let visible = 0;
+
+      for (const item of items) {
+        const matchesFilter = activeFilter === 'all' || item.dataset.module === activeFilter;
+        const matchesQuery = !query || (item.dataset.search ?? '').includes(query);
+        const show = matchesFilter && matchesQuery;
+        item.hidden = !show;
+        if (show) visible += 1;
+      }
+
+      if (count) count.textContent = String(visible);
+    };
+
+    input?.addEventListener('input', apply);
+
+    for (const button of buttons) {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.courseFilter ?? 'all';
+        for (const candidate of buttons) {
+          const selected = candidate === button;
+          candidate.classList.toggle('is-active', selected);
+          candidate.setAttribute('aria-pressed', String(selected));
+        }
+        apply();
+      });
+    }
+
+    apply();
+  }
+
+  initCourseFilters();
+  document.addEventListener('astro:page-load', initCourseFilters);
+</script>
