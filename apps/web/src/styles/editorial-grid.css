@@ -2021,3 +2021,196 @@ html[data-motion="reduced"] .home-journey__badge.apple-glass-card {
     background: CanvasText;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Course workbench directory — numbered editorial index
+   -------------------------------------------------------------------------- */
+
+.course-workbenches {
+  margin: 0 !important;
+}
+
+.workbench-grid.workbench-directory {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 2px solid var(--editorial-ink);
+  background: var(--editorial-ink);
+  list-style: none !important;
+}
+
+.workbench-grid__item {
+  min-width: 0;
+}
+
+.workbench-grid__item + .workbench-grid__item {
+  border-left: 1.5px solid var(--editorial-ink);
+}
+
+.workbench-card.apple-glass-card {
+  min-height: 24rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+  padding: 1.15rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: background-color var(--editorial-duration-ui) ease !important;
+}
+
+.workbench-card.apple-glass-card::before,
+.workbench-card.apple-glass-card::after {
+  display: none !important;
+}
+
+.workbench-card.apple-glass-card:hover {
+  background: var(--editorial-secondary-soft) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.workbench-card__header {
+  align-items: flex-start !important;
+}
+
+.workbench-card .apple-icon-squircle {
+  width: 2.8rem !important;
+  height: 2.8rem !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+}
+
+.workbench-card__index {
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em;
+}
+
+.workbench-card__title {
+  display: block;
+  margin-top: 1.25rem !important;
+  color: var(--editorial-ink) !important;
+  font: 800 clamp(1.15rem, 1.7vw, 1.6rem)/1.05 var(--font-amat-display) !important;
+  letter-spacing: -0.035em !important;
+}
+
+.workbench-card__desc {
+  color: var(--editorial-ink-muted) !important;
+  font-size: 0.86rem !important;
+  line-height: 1.55 !important;
+}
+
+.workbench-card__topics {
+  gap: 0.35rem !important;
+}
+
+.workbench-card__topic-tag {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-mono);
+  font-size: 0.64rem !important;
+  font-weight: 680;
+}
+
+.workbench-card__footer {
+  border-top: 1.5px solid var(--editorial-ink) !important;
+}
+
+.workbench-card__action-text {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-mono);
+  font-size: 0.68rem !important;
+  font-weight: 760 !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.workbench-card .apple-action-circle {
+  border: 1.5px solid var(--editorial-ink) !important;
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-paper-pure) !important;
+}
+
+@media (max-width: 1180px) {
+  .workbench-grid.workbench-directory {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .workbench-grid__item + .workbench-grid__item {
+    border-left: 0;
+  }
+
+  .workbench-grid__item:nth-child(even) {
+    border-left: 1.5px solid var(--editorial-ink);
+  }
+
+  .workbench-grid__item:nth-child(n + 3) {
+    border-top: 1.5px solid var(--editorial-ink);
+  }
+
+  .workbench-card.apple-glass-card {
+    min-height: 18rem !important;
+  }
+
+  .workbench-grid__item:last-child {
+    grid-column: 1 / -1;
+    border-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .workbench-grid.workbench-directory {
+    grid-template-columns: 1fr !important;
+  }
+
+  .workbench-grid__item,
+  .workbench-grid__item:nth-child(even),
+  .workbench-grid__item:last-child {
+    grid-column: auto;
+    border-left: 0;
+  }
+
+  .workbench-grid__item + .workbench-grid__item {
+    border-top: 1.5px solid var(--editorial-ink);
+  }
+
+  .workbench-card.apple-glass-card {
+    min-height: 0 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .workbench-grid.workbench-directory,
+  .workbench-grid__item,
+  .workbench-card.apple-glass-card,
+  .workbench-card .apple-icon-squircle,
+  .workbench-card__topic-tag {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .workbench-card__title,
+  .workbench-card__desc,
+  .workbench-card__index,
+  .workbench-card__action-text {
+    color: CanvasText !important;
+  }
+}
