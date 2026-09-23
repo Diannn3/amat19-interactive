@@ -7147,3 +7147,24 @@ html[data-theme='dark'] .workspace-scroll {
     line-height: 1.25 !important;
   }
 }
+
+
+/* Ultra-wide density guard: keep the editorial hero beneath the established
+   560px desktop masthead budget without clipping its mathematical content. */
+@media (min-width: 1600px) {
+  .home-hero {
+    padding-block: .9rem !important;
+  }
+
+  .home-hero__lede {
+    margin-top: 1rem !important;
+  }
+
+  .home-hero__actions {
+    margin-top: 1rem !important;
+  }
+
+  .home-hero__specs {
+    margin-top: 1.1rem !important;
+  }
+}
