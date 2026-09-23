@@ -1696,3 +1696,163 @@ html[data-motion="reduced"] .home-journey__badge.apple-glass-card {
     color: CanvasText !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Home shortcuts — editorial continuation band
+   -------------------------------------------------------------------------- */
+
+.home-shortcuts {
+  display: grid !important;
+  grid-template-columns: minmax(14rem, .72fr) minmax(0, 1.28fr) !important;
+  margin-top: clamp(2.5rem, 5vw, 4.5rem) !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper-pure) !important;
+  box-shadow: 5px 5px 0 var(--editorial-ink) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.home-shortcuts__lead {
+  display: grid;
+  align-content: center;
+  gap: 0.45rem;
+  padding: clamp(1.25rem, 2.8vw, 2rem) !important;
+  border-right: 2px solid var(--editorial-ink) !important;
+  background: var(--editorial-secondary) !important;
+}
+
+.home-shortcuts__lead h2 {
+  margin: 0;
+  color: var(--editorial-ink);
+  font: 800 clamp(1.55rem, 3vw, 2.5rem)/1 var(--font-amat-display);
+  letter-spacing: -0.045em;
+}
+
+.home-shortcuts__lead p {
+  margin: 0;
+  color: var(--editorial-ink);
+  line-height: 1.55;
+}
+
+.home-shortcuts__links {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  border-inline-start: 0 !important;
+}
+
+.home-shortcuts__links a.apple-glass-card {
+  display: grid !important;
+  grid-template-columns: 2.6rem minmax(0, 1fr) !important;
+  align-content: center;
+  gap: 0.55rem 0.8rem !important;
+  min-height: 9.5rem;
+  padding: 1.15rem !important;
+  border: 0 !important;
+  border-inline-end: 1.5px solid var(--editorial-ink) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.home-shortcuts__links a.apple-glass-card:last-child {
+  border-inline-end: 0 !important;
+}
+
+.home-shortcuts__links a.apple-glass-card::before,
+.home-shortcuts__links a.apple-glass-card::after {
+  display: none !important;
+}
+
+.home-shortcuts__links a.apple-glass-card:hover {
+  background: var(--editorial-secondary-soft) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.home-shortcuts__icon {
+  width: 2.6rem !important;
+  height: 2.6rem !important;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+}
+
+.home-shortcuts__body strong {
+  color: var(--editorial-ink) !important;
+  font-size: 0.95rem;
+}
+
+.home-shortcuts__body span {
+  color: var(--editorial-ink-muted) !important;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.home-shortcuts__action {
+  grid-column: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono);
+  font-size: 0.7rem;
+  font-weight: 760;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .home-shortcuts {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-shortcuts__lead {
+    border-right: 0 !important;
+    border-bottom: 2px solid var(--editorial-ink) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-shortcuts__links {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-shortcuts__links a.apple-glass-card {
+    min-height: 0;
+    border-inline-end: 0 !important;
+    border-bottom: 1.5px solid var(--editorial-ink) !important;
+  }
+
+  .home-shortcuts__links a.apple-glass-card:last-child {
+    border-bottom: 0 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .home-shortcuts,
+  .home-shortcuts__lead,
+  .home-shortcuts__links a.apple-glass-card,
+  .home-shortcuts__icon {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .home-shortcuts__lead h2,
+  .home-shortcuts__lead p,
+  .home-shortcuts__body strong,
+  .home-shortcuts__body span,
+  .home-shortcuts__action {
+    color: CanvasText !important;
+  }
+}
