@@ -6362,3 +6362,120 @@ html[data-motion="reduced"] .reference-entry-grid {
   animation: none !important;
   transform: none !important;
 }
+
+
+/* ==========================================================================
+   Accessibility hardening — focus, target size, contrast fallbacks
+   ========================================================================== */
+
+:where(
+  .topbar a,
+  .topbar button,
+  .mobile-nav a,
+  .mobile-nav button,
+  .home-hero a,
+  .home-workbench-ledger a,
+  .home-shortcuts a,
+  .course-page a,
+  .course-page button,
+  .study-page a,
+  .study-page button,
+  .study-page input,
+  .study-page select,
+  [data-route="/progress"] a,
+  [data-route="/progress"] button,
+  [data-route="/reference"] a,
+  [data-route="/reference"] button,
+  [data-route="/reference"] input,
+  [data-route="/reference"] select,
+  [data-route="/saved"] a,
+  [data-route="/saved"] button,
+  [data-route="/settings"] a,
+  [data-route="/settings"] button,
+  [data-route="/settings"] input,
+  [data-route="/exam"] a,
+  [data-route="/exam"] button,
+  [data-route="/exam"] input,
+  [data-route^="/modules/"] a,
+  [data-route^="/modules/"] button,
+  [data-route^="/lessons/"] a,
+  [data-route^="/lessons/"] button,
+  .workbench-route a,
+  .workbench-route button,
+  .workbench-route input,
+  .workbench-route select,
+  .workbench-route textarea,
+  .lab-route a,
+  .lab-route button,
+  .lab-route input,
+  .lab-route select,
+  .lab-route textarea
+):focus-visible {
+  outline: 3px solid var(--focus) !important;
+  outline-offset: 3px !important;
+}
+
+:where(
+  .home-hero__actions a,
+  .home-workbench-link,
+  .home-shortcuts__links a,
+  .course-filter-pills button,
+  .workbench-card,
+  .syllabus-module-links a,
+  .syllabus-resource-item,
+  .course-companion-bar a,
+  .utility-card,
+  .study-bento-card,
+  .study-queue__item,
+  .study-panel .route-link,
+  .reference-entry summary,
+  .lesson-pager a,
+  .module-tabs a,
+  .module-view-links a,
+  .lab-route__links a,
+  .lab-route__context-rail nav a,
+  .workbench-route__links a
+) {
+  min-height: 44px;
+}
+
+:where(
+  .home-workbench-link,
+  .workbench-card,
+  .utility-card,
+  .study-bento-card,
+  .study-queue__item,
+  .study-panel .route-link,
+  .reference-entry summary,
+  .syllabus-resource-item
+) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 400px) {
+  .topbar {
+    padding-inline: .65rem !important;
+  }
+
+  .topbar-home-label {
+    max-width: 7.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-nav {
+    max-width: calc(100vw - .7rem);
+  }
+
+  .command-dialog {
+    width: calc(100vw - 1rem) !important;
+    max-width: calc(100vw - 1rem) !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, summary):focus-visible {
+    outline-color: Highlight !important;
+  }
+}
