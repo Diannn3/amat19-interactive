@@ -31,7 +31,7 @@ const utilityNavigation: UtilityItem[] = [
   { kind: 'link', href: '/settings', label: 'Settings', mobileLabel: 'Settings', icon: 'settings' },
   { kind: 'action', id: 'developer-contact', label: 'Developer', mobileLabel: 'Developer', icon: 'developer' },
 ];
-const currentPath = Astro.url.pathname;
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const pwaEnabled = import.meta.env.PROD;
 const isCurrent = (href: string) => {
   if (href === '/course') return currentPath === '/course' || currentPath.startsWith('/modules/') || currentPath.startsWith('/lessons/') || currentPath.startsWith('/workbenches/');
