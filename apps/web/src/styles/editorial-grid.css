@@ -1315,3 +1315,41 @@ html[data-motion="reduced"] .home-workbench-link.apple-glass-card {
     color: CanvasText !important;
   }
 }
+
+
+/* Home math-poster layout. The existing five-workbench ledger remains inside
+   the hero so its tested navigation contract stays intact. */
+@media (min-width: 901px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1.05fr) minmax(26rem, .95fr) !important;
+    grid-template-areas:
+      "copy poster"
+      "copy ledger" !important;
+    align-items: center !important;
+  }
+
+  .home-hero__copy {
+    grid-area: copy;
+  }
+
+  .home-math-poster {
+    grid-area: poster;
+  }
+
+  .home-workbench-ledger {
+    grid-area: ledger;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-hero {
+    grid-template-areas:
+      "copy"
+      "poster"
+      "ledger" !important;
+  }
+
+  .home-hero__copy { grid-area: copy; }
+  .home-math-poster { grid-area: poster; }
+  .home-workbench-ledger { grid-area: ledger; }
+}

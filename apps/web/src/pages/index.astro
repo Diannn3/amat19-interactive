@@ -2,6 +2,7 @@
 import { currentCourseProfile } from '@amat19/course-content';
 import { ArrowRight, GraduationCap, BarChart3, BookOpen, Grid3X3, Network, Search, Boxes, Activity } from 'lucide-react';
 import AppLayout from '../layouts/AppLayout.astro';
+import HomeMathPoster from '../components/home/HomeMathPoster.astro';
 
 const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench) => [workbench.id, workbench]));
 ---
@@ -43,6 +44,8 @@ const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench)
         </div>
       </div>
     </div>
+
+    <HomeMathPoster />
 
     <nav class="home-workbench-ledger" data-home-course-rail aria-labelledby="home-workbench-heading">
       <div class="home-workbench-ledger__heading sr-only">

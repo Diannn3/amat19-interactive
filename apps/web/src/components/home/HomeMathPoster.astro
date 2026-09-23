@@ -1,0 +1,258 @@
+---
+---
+<div class="home-math-poster" aria-hidden="true">
+  <div class="home-math-poster__panel home-math-poster__matrix">
+    <div class="home-math-poster__bar">
+      <span class="home-math-poster__dots"><i></i><i></i><i></i></span>
+      <strong>Matrix operations</strong>
+    </div>
+    <div class="home-math-poster__matrix-body">
+      <span class="home-math-poster__math-label">A =</span>
+      <span class="home-math-poster__bracket">[</span>
+      <span class="home-math-poster__matrix-values">
+        <span>2</span><span>−1</span><span>0</span>
+        <span>1</span><span>3</span><span>4</span>
+      </span>
+      <span class="home-math-poster__bracket">]</span>
+    </div>
+  </div>
+
+  <div class="home-math-poster__panel home-math-poster__truth">
+    <div class="home-math-poster__bar">
+      <span class="home-math-poster__dots"><i></i><i></i><i></i></span>
+      <strong>Truth table</strong>
+    </div>
+    <table>
+      <thead><tr><th>P</th><th>Q</th><th>P ∧ Q</th></tr></thead>
+      <tbody>
+        <tr><td>T</td><td>T</td><td>T</td></tr>
+        <tr><td>T</td><td>F</td><td>F</td></tr>
+        <tr><td>F</td><td>T</td><td>F</td></tr>
+        <tr><td>F</td><td>F</td><td>F</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="home-math-poster__panel home-math-poster__probability">
+    <div class="home-math-poster__bar">
+      <span class="home-math-poster__dots"><i></i><i></i><i></i></span>
+      <strong>Probability tree</strong>
+    </div>
+    <svg viewBox="0 0 330 150" role="presentation" focusable="false">
+      <path d="M28 76 L118 34 M28 76 L118 118 M118 34 L238 18 M118 34 L238 56 M118 118 L238 96 M118 118 L238 136" />
+      <circle cx="28" cy="76" r="8" />
+      <circle class="secondary" cx="118" cy="34" r="8" />
+      <circle class="signal" cx="118" cy="118" r="8" />
+      <text x="65" y="43">P(A)</text>
+      <text x="60" y="118">P(Aᶜ)</text>
+      <text x="242" y="21">P(B|A)</text>
+      <text x="242" y="59">P(Bᶜ|A)</text>
+      <text x="242" y="99">P(B|Aᶜ)</text>
+      <text x="242" y="139">P(Bᶜ|Aᶜ)</text>
+    </svg>
+  </div>
+
+  <div class="home-math-poster__note">
+    <span>See the structure.</span>
+    <strong>Then solve it.</strong>
+  </div>
+</div>
+
+<style>
+  .home-math-poster {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(0, .82fr);
+    grid-template-areas:
+      "matrix truth"
+      "probability truth";
+    gap: .7rem;
+    align-self: center;
+    color: var(--editorial-ink);
+  }
+
+  .home-math-poster__panel {
+    min-width: 0;
+    overflow: hidden;
+    border: 2px solid var(--editorial-paper);
+    border-radius: var(--editorial-radius-sm);
+    background: var(--editorial-paper-pure);
+    box-shadow: 5px 5px 0 var(--editorial-ink);
+  }
+
+  .home-math-poster__matrix { grid-area: matrix; }
+  .home-math-poster__truth { grid-area: truth; }
+  .home-math-poster__probability { grid-area: probability; }
+
+  .home-math-poster__bar {
+    display: flex;
+    min-height: 2.35rem;
+    align-items: center;
+    gap: .55rem;
+    padding: .45rem .6rem;
+    border-bottom: 1.5px solid var(--editorial-ink);
+    font-size: .68rem;
+    line-height: 1.1;
+  }
+
+  .home-math-poster__dots {
+    display: inline-flex;
+    gap: .22rem;
+  }
+
+  .home-math-poster__dots i {
+    width: .45rem;
+    height: .45rem;
+    border: 1px solid var(--editorial-ink);
+    border-radius: 999px;
+    background: var(--editorial-signal);
+  }
+
+  .home-math-poster__dots i:nth-child(2) { background: var(--editorial-secondary); }
+  .home-math-poster__dots i:nth-child(3) { background: var(--editorial-paper); }
+
+  .home-math-poster__matrix-body {
+    display: flex;
+    min-height: 5rem;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+    padding: .7rem;
+    font-family: var(--font-amat-mono);
+  }
+
+  .home-math-poster__math-label {
+    margin-right: .25rem;
+    font-weight: 760;
+  }
+
+  .home-math-poster__bracket {
+    font-size: 3.25rem;
+    font-weight: 300;
+    line-height: .8;
+  }
+
+  .home-math-poster__matrix-values {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(1.25rem, auto));
+    gap: .35rem .65rem;
+    text-align: center;
+    font-weight: 720;
+  }
+
+  .home-math-poster__truth table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-amat-mono);
+    font-size: .68rem;
+    text-align: center;
+  }
+
+  .home-math-poster__truth th,
+  .home-math-poster__truth td {
+    border-bottom: 1px solid color-mix(in srgb, var(--editorial-ink) 24%, transparent);
+    padding: .38rem .25rem;
+  }
+
+  .home-math-poster__truth th + th,
+  .home-math-poster__truth td + td {
+    border-left: 1px solid color-mix(in srgb, var(--editorial-ink) 18%, transparent);
+  }
+
+  .home-math-poster__probability svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: .25rem .55rem .45rem;
+  }
+
+  .home-math-poster__probability path {
+    fill: none;
+    stroke: var(--editorial-ink);
+    stroke-width: 2.2;
+  }
+
+  .home-math-poster__probability circle {
+    fill: var(--editorial-paper);
+    stroke: var(--editorial-ink);
+    stroke-width: 2;
+  }
+
+  .home-math-poster__probability circle.secondary { fill: var(--editorial-secondary); }
+  .home-math-poster__probability circle.signal { fill: var(--editorial-signal); }
+
+  .home-math-poster__probability text {
+    fill: var(--editorial-ink);
+    font: 600 13px var(--font-amat-mono);
+  }
+
+  .home-math-poster__note {
+    position: absolute;
+    right: 8%;
+    bottom: -1.05rem;
+    display: grid;
+    gap: .08rem;
+    padding: .65rem .8rem;
+    border: 2px solid var(--editorial-ink);
+    background: var(--editorial-secondary);
+    box-shadow: 3px 3px 0 var(--editorial-ink);
+    color: var(--editorial-ink);
+    font-size: .72rem;
+    transform: rotate(-2deg);
+  }
+
+  .home-math-poster__note strong {
+    font-size: .82rem;
+  }
+
+  @media (max-width: 560px) {
+    .home-math-poster {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .home-math-poster__probability {
+      grid-column: 1 / -1;
+    }
+
+    .home-math-poster__note {
+      right: .55rem;
+      bottom: -.75rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-math-poster__note {
+      transform: none;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .home-math-poster__note {
+    transform: none;
+  }
+
+  @media (forced-colors: active) {
+    .home-math-poster__panel,
+    .home-math-poster__note {
+      border-color: CanvasText;
+      background: Canvas;
+      color: CanvasText;
+      box-shadow: none;
+    }
+
+    .home-math-poster__probability path,
+    .home-math-poster__probability circle {
+      stroke: CanvasText;
+    }
+
+    .home-math-poster__probability circle,
+    .home-math-poster__probability circle.secondary,
+    .home-math-poster__probability circle.signal {
+      fill: Canvas;
+    }
+
+    .home-math-poster__probability text {
+      fill: CanvasText;
+    }
+  }
+</style>
