@@ -6700,3 +6700,32 @@ main .apple-glass-card:active .apple-action-circle {
     color: CanvasText !important;
   }
 }
+
+
+/* Compact landscape / short-height hero guard. */
+@media (min-width: 561px) and (max-width: 900px) and (max-height: 520px) {
+  .home-hero {
+    margin-top: .5rem !important;
+    padding: .75rem !important;
+    gap: .8rem !important;
+  }
+
+  .home-hero__display {
+    font-size: clamp(2.6rem, 8vw, 3.2rem) !important;
+    line-height: .88 !important;
+  }
+
+  .home-hero__lede {
+    margin-top: .6rem !important;
+    font-size: .88rem !important;
+    line-height: 1.42 !important;
+  }
+
+  .home-hero__actions {
+    margin-top: .6rem !important;
+  }
+
+  .home-hero__specs {
+    margin-top: .7rem !important;
+  }
+}
