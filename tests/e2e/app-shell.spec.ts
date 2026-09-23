@@ -90,7 +90,7 @@ test('@core shell navigation controls meet the 44px touch target contract', asyn
 
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
-  const desktopTargets = ['.topbar-home', '.topbar-search'];
+  const desktopTargets = ['.topbar-home', '.topbar-theme-toggle', '.topbar-search'];
   if (await page.locator('.sidebar-toggle').isVisible()) desktopTargets.unshift('.sidebar-toggle');
   await assertTouchTargets(desktopTargets);
 
@@ -516,4 +516,101 @@ test('exam keeps one question in view and exposes a jump navigator', async ({ pa
   await expect(exam.getByText('Question 2 of 12', { exact: true })).toBeVisible();
   await expect(stage.locator('.mixed-question')).toHaveCount(1);
   await expect(exam.locator('.mixed-question__result')).toHaveCount(0);
+});
+
+
+test('dark mode toggles from the desktop topbar and persists across reloads', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+
+  const root = page.locator('html');
+  const toggle = page.getByRole('button', { name: 'Turn dark mode on' });
+  await expect(root).toHaveAttribute('data-theme', 'light');
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+  await toggle.click();
+
+  await expect(root).toHaveAttribute('data-theme', 'dark');
+  await expect(page.getByRole('button', { name: 'Turn dark mode off' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#09090b');
+  expect(await page.evaluate(() => localStorage.getItem('amat19-theme'))).toBe('dark');
+
+  await page.reload();
+
+  await expect(root).toHaveAttribute('data-theme', 'dark');
+  await expect(page.getByRole('button', { name: 'Turn dark mode off' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Turn dark mode off' }).click();
+  await expect(root).toHaveAttribute('data-theme', 'light');
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#fbfbfd');
+  expect(await page.evaluate(() => localStorage.getItem('amat19-theme'))).toBe('light');
+});
+
+test('stored dark mode is applied by the head bootstrap before hydrated controls sync', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('amat19-theme', 'dark');
+  });
+
+  await page.goto('/settings');
+
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
+  await expect(page.getByRole('switch', { name: 'Dark mode' })).toBeChecked();
+});
+
+test('mobile More exposes the dark-mode trigger and the dock never falls back to legacy maroon', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto('/study');
+
+  const root = page.locator('html');
+  const mobile = page.getByRole('navigation', { name: 'Mobile navigation' });
+  const more = mobile.locator('.mobile-more-menu');
+  const dock = mobile.locator('.mobile-nav').or(mobile);
+
+  await more.locator('summary').click();
+  const themeToggle = more.getByRole('button', { name: 'Turn dark mode on' });
+  await expect(themeToggle).toBeVisible();
+  await expect(themeToggle.getByText('Dark mode', { exact: true })).toBeVisible();
+  await expect(themeToggle.getByText('Off', { exact: true })).toBeVisible();
+
+  const lightBackground = await mobile.evaluate((element) => getComputedStyle(element).backgroundColor);
+  expect(lightBackground).not.toBe('rgb(36, 5, 9)');
+
+  await themeToggle.click();
+  await expect(root).toHaveAttribute('data-theme', 'dark');
+  await expect(more.getByRole('button', { name: 'Turn dark mode off' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(more.getByText('On', { exact: true })).toBeVisible();
+
+  const darkBackground = await mobile.evaluate((element) => getComputedStyle(element).backgroundColor);
+  expect(darkBackground).not.toBe('rgb(36, 5, 9)');
+  expect(darkBackground).not.toBe(lightBackground);
+});
+
+test('Settings dark-mode switch stays synchronized with shell theme controls', async ({ page }) => {
+  await page.goto('/settings');
+
+  const setting = page.getByRole('switch', { name: 'Dark mode' });
+  await expect(setting).not.toBeChecked();
+
+  await setting.check();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(setting).toBeChecked();
+  expect(await page.evaluate(() => localStorage.getItem('amat19-theme'))).toBe('dark');
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.getByRole('button', { name: 'Turn dark mode off' }).click();
+  await expect(setting).not.toBeChecked();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+});
+
+test('dark Settings surface has no serious automated accessibility violations', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('amat19-theme', 'dark');
+  });
+  await page.goto('/settings');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations.filter((violation) => ['critical', 'serious'].includes(violation.impact ?? ''))).toEqual([]);
 });
