@@ -7081,3 +7081,69 @@ html[data-theme='dark'] .workspace-scroll {
     linear-gradient(to bottom, var(--editorial-grid-light) 1px, transparent 1px) !important;
   background-size: 52px 52px !important;
 }
+
+
+/* Wide hero uses one shared side track so the mathematical poster and module
+   index reinforce each other without making the masthead vertically dominant. */
+@media (min-width: 1280px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1.06fr) minmax(31rem, .94fr) !important;
+    grid-template-areas: "copy side" !important;
+    align-items: stretch !important;
+    gap: 2rem !important;
+    padding-block: 1.15rem !important;
+  }
+
+  .home-hero__copy {
+    grid-area: copy !important;
+    align-self: center !important;
+  }
+
+  .home-math-poster,
+  .home-workbench-ledger {
+    grid-area: side !important;
+    min-width: 0;
+  }
+
+  .home-math-poster {
+    align-self: start !important;
+    width: 100%;
+  }
+
+  .home-workbench-ledger {
+    align-self: end !important;
+    width: 100%;
+  }
+
+  .home-math-poster__panel {
+    min-height: 0 !important;
+  }
+
+  .home-math-poster__bar {
+    min-height: 2rem !important;
+    padding-block: .3rem !important;
+  }
+
+  .home-math-poster__matrix-body {
+    min-height: 3.8rem !important;
+  }
+
+  .home-math-poster__truth th,
+  .home-math-poster__truth td {
+    padding-block: .16rem !important;
+  }
+
+  .home-math-poster__probability svg {
+    max-height: 5.75rem !important;
+  }
+
+  .home-workbench-link.apple-glass-card {
+    min-height: 2.75rem !important;
+    padding-block: .28rem !important;
+  }
+
+  .home-workbench-link__description {
+    font-size: .68rem !important;
+    line-height: 1.25 !important;
+  }
+}
