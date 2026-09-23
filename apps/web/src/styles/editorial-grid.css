@@ -7046,3 +7046,17 @@ html[data-motion='reduced'] .topbar-theme-toggle {
     box-shadow: none !important;
   }
 }
+
+
+/* Disabled primary actions remain visibly disabled through cursor/state styling,
+   but stay opaque enough to preserve WCAG contrast on the orange signal fill. */
+.workbench-route__canvas .amat-button--primary:disabled,
+.workbench-route__canvas .button--primary:disabled,
+.workbench-route__canvas .apple-btn-black:disabled {
+  opacity: 1 !important;
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-on-signal) !important;
+  border-color: var(--editorial-ink) !important;
+  box-shadow: 1px 1px 0 var(--editorial-ink) !important;
+  cursor: not-allowed !important;
+}
