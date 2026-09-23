@@ -409,6 +409,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         const showUpdate = (worker) => { waitingWorker = worker; updateInFlight = false; if (updateButton) { updateButton.disabled = false; updateButton.textContent = 'Save & update'; } if (banner) banner.hidden = false; };
         navigator.serviceWorker.register('/sw.js').then((registration) => {
           if (registration.waiting) showUpdate(registration.waiting);
+          if (typeof registration.update === 'function') registration.update().catch(() => {});
           registration.addEventListener('updatefound', () => { const installing = registration.installing; if (!installing) return; installing.addEventListener('statechange', () => { if (installing.state === 'installed' && navigator.serviceWorker.controller) showUpdate(installing); }); });
         }).catch(() => {});
         updateButton?.addEventListener('click', async () => {
