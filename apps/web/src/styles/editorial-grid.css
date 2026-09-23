@@ -4164,3 +4164,163 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
     color: CanvasText !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Shared mathematical control grammar
+   -------------------------------------------------------------------------- */
+
+.form-field__label,
+.fin-input-label {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: .68rem !important;
+  font-weight: 760 !important;
+  letter-spacing: .045em;
+}
+
+.form-field__hint {
+  color: var(--editorial-ink-muted) !important;
+}
+
+.form-field__error {
+  color: #9b241c !important;
+  font-weight: 720;
+}
+
+.text-input,
+.select-input,
+.fin-number-input,
+.fin-select,
+.matrix-cell-input,
+.matrix-textarea,
+.app-select {
+  min-height: 44px !important;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+}
+
+.text-input::placeholder,
+.fin-number-input::placeholder,
+.matrix-textarea::placeholder {
+  color: color-mix(in srgb, var(--editorial-ink-muted) 72%, transparent) !important;
+}
+
+.text-input:focus-visible,
+.select-input:focus-visible,
+.fin-number-input:focus-visible,
+.fin-select:focus-visible,
+.matrix-cell-input:focus-visible,
+.matrix-textarea:focus-visible,
+.app-select:focus-visible {
+  outline: 3px solid var(--focus) !important;
+  outline-offset: 2px !important;
+  border-color: var(--editorial-ink) !important;
+}
+
+.text-input[aria-invalid="true"],
+.fin-number-input[aria-invalid="true"],
+.matrix-cell-input[aria-invalid="true"] {
+  border-color: #9b241c !important;
+  box-shadow: inset 4px 0 0 #9b241c !important;
+}
+
+.prob-mode-bar {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: .35rem !important;
+  padding: .35rem !important;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper) !important;
+}
+
+.prob-mode-pill {
+  min-height: 42px !important;
+  padding: .5rem .7rem !important;
+  border: 1.5px solid transparent !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: transparent !important;
+  color: var(--editorial-ink-muted) !important;
+  font-weight: 720 !important;
+}
+
+.prob-mode-pill:hover {
+  border-color: var(--editorial-rule) !important;
+  background: var(--editorial-secondary-soft) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.prob-mode-pill.is-active,
+.prob-mode-pill[aria-pressed="true"] {
+  border-color: var(--editorial-ink) !important;
+  background: var(--editorial-field) !important;
+  color: var(--editorial-paper) !important;
+}
+
+.prob-slider {
+  accent-color: var(--editorial-signal) !important;
+}
+
+.amat-button,
+.button,
+.apple-btn-black,
+.apple-btn-glass {
+  min-height: 44px;
+}
+
+.workbench-route__canvas .amat-button,
+.workbench-route__canvas .button,
+.workbench-route__canvas .apple-btn-black,
+.workbench-route__canvas .apple-btn-glass {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+}
+
+.workbench-route__canvas .amat-button--primary,
+.workbench-route__canvas .button--primary,
+.workbench-route__canvas .apple-btn-black {
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-paper-pure) !important;
+}
+
+.workbench-route__canvas .amat-button:hover,
+.workbench-route__canvas .button:hover,
+.workbench-route__canvas .apple-btn-black:hover,
+.workbench-route__canvas .apple-btn-glass:hover {
+  border-color: var(--editorial-ink) !important;
+  transform: none !important;
+}
+
+@media (forced-colors: active) {
+  .text-input,
+  .select-input,
+  .fin-number-input,
+  .fin-select,
+  .matrix-cell-input,
+  .matrix-textarea,
+  .app-select,
+  .prob-mode-bar,
+  .prob-mode-pill,
+  .workbench-route__canvas .amat-button,
+  .workbench-route__canvas .button,
+  .workbench-route__canvas .apple-btn-black,
+  .workbench-route__canvas .apple-btn-glass {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .prob-mode-pill.is-active,
+  .prob-mode-pill[aria-pressed="true"] {
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+}
