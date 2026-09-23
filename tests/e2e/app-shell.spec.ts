@@ -26,47 +26,37 @@ test('home and module journeys lead with a brand index instead of a snapshot pan
 });
 
 test('primary navigation marks the current route and mobile navigation stays docked', async ({ page }) => {
-  await page.goto('/progress');
   await page.setViewportSize({ width: 1280, height: 800 });
-  const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
-  await expect(primaryNavigation.getByRole('link', { name: 'Home' })).toBeVisible();
-  await expect(primaryNavigation.getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
-  await expect(primaryNavigation.locator('.nav-link').filter({ hasText: 'Practice' })).toHaveCount(0);
+  await page.goto('/progress');
+  const primaryNavigation = page.getByRole('navigation', { name: 'Primary destinations' });
+  await expect(primaryNavigation.getByRole('link', { name: 'Home', exact: true })).toBeVisible();
+  await expect(primaryNavigation.getByRole('link', { name: 'Progress', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(primaryNavigation.getByRole('link', { name: 'Study', exact: true })).toBeVisible();
 
   await page.setViewportSize({ width: 375, height: 667 });
   const mobileNavigation = page.getByRole('navigation', { name: 'Mobile navigation' });
   await expect(mobileNavigation).toBeVisible();
-  await expect(mobileNavigation.getByText('Progress', { exact: true })).toBeVisible();
+  await expect(mobileNavigation.getByRole('link', { name: 'Progress', exact: true })).toHaveAttribute('aria-current', 'page');
   await expect(mobileNavigation.locator('.mobile-nav-link')).toHaveCount(4);
 });
 
-test('Elbi workspace shell exposes desktop navigation, collapse state, and mobile dock', async ({ page }) => {
+test('workspace shell exposes topbar navigation on desktop and the mobile dock on phones', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
 
-  const frame = page.locator('.app-frame');
-  const sidebar = page.locator('.sidebar');
-  const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
-  const toggle = page.getByRole('button', { name: /Collapse navigation/i });
-
-  await expect(frame).toBeVisible();
+  await expect(page.locator('.app-frame')).toBeVisible();
   await expect(page.locator('.workspace')).toBeVisible();
+  await expect(page.locator('.sidebar')).toBeHidden();
+  await expect(page.getByRole('navigation', { name: 'Primary destinations' })).toBeVisible();
+  await expect(page.locator('[data-topbar-more] > summary')).toBeVisible();
   await expect(page.locator('.topbar-search')).toBeVisible();
-  await expect(page.locator('.sidebar-footer')).toHaveCount(0);
 
-  if (await sidebar.isVisible()) {
-    await expect(primaryNavigation.getByRole('link', { name: 'Home', exact: true })).toHaveAttribute('href', '/');
-    await expect(primaryNavigation.getByRole('link', { name: 'Study' })).toBeVisible();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await toggle.click();
-    await expect(frame).toHaveClass(/nav-collapsed/);
-    await expect(page.getByRole('button', { name: /Expand navigation/i })).toHaveAttribute('aria-expanded', 'false');
-    await page.setViewportSize({ width: 375, height: 667 });
-  }
-
-  await expect(sidebar).toBeHidden();
-  await expect(page.locator('.mobile-nav')).toBeVisible();
-  await expect(page.locator('.mobile-nav').getByRole('link', { name: 'Study' })).toBeVisible();
-  await expect(page.locator('.mobile-nav').getByText('More', { exact: true })).toBeVisible();
+  await page.setViewportSize({ width: 375, height: 667 });
+  await expect(page.getByRole('navigation', { name: 'Primary destinations' })).toBeHidden();
+  const mobile = page.getByRole('navigation', { name: 'Mobile navigation' });
+  await expect(mobile).toBeVisible();
+  await expect(mobile.getByRole('link', { name: 'Study', exact: true })).toBeVisible();
+  await expect(mobile.getByText('More', { exact: true })).toBeVisible();
 });
 
 test('Home stays reachable in the compact shell and utility navigation opens on request', async ({ page }) => {
@@ -100,7 +90,9 @@ test('@core shell navigation controls meet the 44px touch target contract', asyn
 
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
-  await assertTouchTargets(['.sidebar-toggle', '.topbar-home', '.topbar-search']);
+  const desktopTargets = ['.topbar-home', '.topbar-theme-toggle', '.topbar-search'];
+  if (await page.locator('.sidebar-toggle').isVisible()) desktopTargets.unshift('.sidebar-toggle');
+  await assertTouchTargets(desktopTargets);
 
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
@@ -421,10 +413,33 @@ test('progress leads with needs attention and can reveal full core evidence', as
 test('mobile routes do not create page-level horizontal overflow', async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 375, height: 812 });
-  for (const route of ['/', '/modules/logic', '/modules/logic?view=practice', '/workbenches/logic', '/workbenches/probability', '/workbenches/finance', '/workbenches/linear', '/workbenches/applications', '/exam', '/reference', '/progress']) {
+  for (const route of ['/', '/course', '/study', '/progress', '/reference', '/saved', '/settings', '/exam', '/modules/logic', '/modules/logic?view=practice', '/lessons/logic/truth-tables', '/workbenches/logic', '/workbenches/probability', '/workbenches/finance', '/workbenches/linear', '/workbenches/applications']) {
     await page.goto(route);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow, route).toBe(false);
+  }
+});
+
+test('editorial redesign stays overflow-free at 320px', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 320, height: 700 });
+
+  for (const route of [
+    '/',
+    '/course',
+    '/study',
+    '/settings',
+    '/modules/logic',
+    '/workbenches/probability',
+    '/workbenches/linear',
+  ]) {
+    await page.goto(route);
+    const metrics = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      width: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+    }));
+    expect(metrics.overflow, `${route} should fit 320px (client ${metrics.width}, scroll ${metrics.scrollWidth})`).toBe(false);
   }
 });
 
@@ -447,7 +462,7 @@ test('@core logic task switch is keyboard-accessible', async ({ page }) => {
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('ArrowDown');
   await expect(picker).toHaveValue('compare');
-  await expect(page.getByRole('heading', { name: 'Find the row that separates them.' })).toBeVisible();
+  await expect(workbench.getByRole('region', { name: 'Find the row that separates them.' })).toBeVisible();
 });
 
 test('reference browser searches, filters by module, and expands assumptions', async ({ page }) => {
@@ -524,4 +539,100 @@ test('exam keeps one question in view and exposes a jump navigator', async ({ pa
   await expect(exam.getByText('Question 2 of 12', { exact: true })).toBeVisible();
   await expect(stage.locator('.mixed-question')).toHaveCount(1);
   await expect(exam.locator('.mixed-question__result')).toHaveCount(0);
+});
+
+
+test('dark mode toggles from the desktop topbar and persists across reloads', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+
+  const root = page.locator('html');
+  const toggle = page.getByRole('button', { name: 'Turn dark mode on' });
+  await expect(root).toHaveAttribute('data-theme', 'light');
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+  await toggle.click();
+
+  await expect(root).toHaveAttribute('data-theme', 'dark');
+  await expect(page.getByRole('button', { name: 'Turn dark mode off' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#09090b');
+  expect(await page.evaluate(() => localStorage.getItem('amat19-theme'))).toBe('dark');
+
+  await page.reload();
+
+  await expect(root).toHaveAttribute('data-theme', 'dark');
+  await expect(page.getByRole('button', { name: 'Turn dark mode off' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Turn dark mode off' }).click();
+  await expect(root).toHaveAttribute('data-theme', 'light');
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#fbfbfd');
+  expect(await page.evaluate(() => localStorage.getItem('amat19-theme'))).toBe('light');
+});
+
+test('stored dark mode is applied by the head bootstrap before hydrated controls sync', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('amat19-theme', 'dark');
+  });
+
+  await page.goto('/settings');
+
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
+  await expect(page.getByRole('switch', { name: 'Dark mode' })).toBeChecked();
+});
+
+test('mobile More exposes the dark-mode trigger and the dock never falls back to legacy maroon', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto('/study');
+
+  const root = page.locator('html');
+  const mobile = page.getByRole('navigation', { name: 'Mobile navigation' });
+  const more = mobile.locator('.mobile-more-menu');
+
+  await more.locator('summary').click();
+  const themeToggle = more.getByRole('button', { name: 'Turn dark mode on' });
+  await expect(themeToggle).toBeVisible();
+  await expect(themeToggle.getByText('Dark mode', { exact: true })).toBeVisible();
+  await expect(themeToggle.getByText('Off', { exact: true })).toBeVisible();
+
+  const lightBackground = await mobile.evaluate((element) => getComputedStyle(element).backgroundColor);
+  expect(lightBackground).not.toBe('rgb(36, 5, 9)');
+
+  await themeToggle.click();
+  await expect(root).toHaveAttribute('data-theme', 'dark');
+  await expect(more.getByRole('button', { name: 'Turn dark mode off' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(more.getByText('On', { exact: true })).toBeVisible();
+
+  const darkBackground = await mobile.evaluate((element) => getComputedStyle(element).backgroundColor);
+  expect(darkBackground).not.toBe('rgb(36, 5, 9)');
+  expect(darkBackground).not.toBe(lightBackground);
+});
+
+test('Settings dark-mode switch stays synchronized with shell theme controls', async ({ page }) => {
+  await page.goto('/settings');
+
+  const setting = page.getByRole('switch', { name: 'Dark mode' });
+  await expect(setting).not.toBeChecked();
+
+  await setting.check();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(setting).toBeChecked();
+  expect(await page.evaluate(() => localStorage.getItem('amat19-theme'))).toBe('dark');
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.getByRole('button', { name: 'Turn dark mode off' }).click();
+  await expect(setting).not.toBeChecked();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+});
+
+test('dark Settings surface has no serious automated accessibility violations', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('amat19-theme', 'dark');
+  });
+  await page.goto('/settings');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations.filter((violation) => ['critical', 'serious'].includes(violation.impact ?? ''))).toEqual([]);
 });

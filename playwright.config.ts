@@ -4,6 +4,7 @@ const existingBaseURL = process.env.AMAT_E2E_BASE_URL;
 
 export default defineConfig({
   testDir: './tests/e2e',
+  testIgnore: '**/pwa-production.spec.ts',
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,

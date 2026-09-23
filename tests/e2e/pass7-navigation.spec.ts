@@ -1,18 +1,17 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Pass 7 navigation and workspace clarity', () => {
-  test('desktop shell exposes four primary destinations and a More utility menu', async ({ page }) => {
+  test('desktop shell exposes the topbar destinations and a More utility menu', async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 901, 'Desktop navigation is replaced by the mobile dock below 901px.');
     await page.goto('/');
 
-    const primary = page.getByRole('navigation', { name: 'Primary navigation' });
-    await expect(primary.locator('.nav-link')).toHaveCount(4);
+    const primary = page.getByRole('navigation', { name: 'Primary destinations' });
     for (const label of ['Home', 'Study', 'Course', 'Progress']) {
       await expect(primary.getByRole('link', { name: label, exact: true })).toBeVisible();
     }
 
-    const more = primary.locator('[data-more-menu]');
-    await expect(more).toBeVisible();
+    const more = page.locator('[data-topbar-more]');
+    await expect(more.locator('summary')).toBeVisible();
     await more.locator('summary').click();
     for (const label of ['Reference', 'Saved', 'Settings']) {
       await expect(more.getByRole('link', { name: label, exact: true })).toBeVisible();
@@ -24,7 +23,7 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     await page.goto('/');
 
     await expect(page.locator('[data-home-hero]')).toBeVisible();
-    await expect(page.locator('.home-hero__title')).toHaveText('Finite mathematics, made visible.');
+    await expect(page.locator('.home-hero__title')).toHaveAccessibleName('Finite mathematics, made visible.');
     await expect(page.locator('[data-home-course-rail] [data-home-module]')).toHaveCount(5);
     await expect(page.locator('.module-spotlight-link')).toHaveCount(0);
     await expect(page.locator('.home-bento')).toHaveCount(0);
@@ -121,7 +120,7 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     await expect(settings.locator('select')).toHaveCount(0);
     await expect(settings.getByText(/future shared formatters|internal precision|adaptive practice presets/i)).toHaveCount(0);
 
-    const motion = settings.getByRole('checkbox');
+    const motion = settings.getByRole('switch', { name: 'Reduce interface motion' });
     await expect(motion).toBeVisible();
     await motion.check();
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.motion)).toBe('reduced');
@@ -173,10 +172,129 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
 
 test('mobile navigation keeps the four core destinations and More visible', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
-  await page.goto('/');
+  await page.goto('/study');
   const mobile = page.getByRole('navigation', { name: 'Mobile navigation' });
   await expect(mobile.locator('.mobile-nav-link')).toHaveCount(4);
   for (const label of ['Study', 'Course', 'Progress', 'More']) {
     await expect(mobile.getByText(label, { exact: true })).toBeVisible();
   }
+
+  await expect(mobile.getByRole('link', { name: 'Study', exact: true })).toHaveAttribute('aria-current', 'page');
+
+  const metrics = await mobile.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const links = Array.from(element.querySelectorAll<HTMLElement>('.mobile-nav-link'));
+    const boxes = links.map((link) => link.getBoundingClientRect());
+    const viewportWidth = document.documentElement.clientWidth;
+    const rect = element.getBoundingClientRect();
+
+    return {
+      backgroundColor: style.backgroundColor,
+      backdropFilter: style.backdropFilter || style.webkitBackdropFilter,
+      height: rect.height,
+      left: rect.left,
+      right: rect.right,
+      viewportWidth,
+      allTargetsAtLeast44: boxes.every((box) => box.width >= 44 && box.height >= 44),
+      labelsFit: links.every((link) => link.scrollWidth <= link.clientWidth + 1),
+    };
+  });
+
+  expect(metrics.backgroundColor).not.toBe('rgb(36, 5, 9)');
+  expect(metrics.backgroundColor).not.toBe('rgba(36, 5, 9, 1)');
+  expect(metrics.backdropFilter).not.toBe('none');
+  expect(metrics.height).toBeLessThanOrEqual(72);
+  expect(metrics.left).toBeGreaterThanOrEqual(0);
+  expect(metrics.right).toBeLessThanOrEqual(metrics.viewportWidth);
+  expect(metrics.allTargetsAtLeast44).toBe(true);
+  expect(metrics.labelsFit).toBe(true);
+
+  await mobile.locator('.mobile-more-menu > summary').click();
+  const panel = mobile.locator('.mobile-more-menu__panel');
+  await expect(panel).toBeVisible();
+  const panelBackground = await panel.evaluate((element) => getComputedStyle(element).backgroundColor);
+  expect(panelBackground).not.toBe('rgb(46, 8, 13)');
+});
+
+
+test('adaptive Study queue appears before the browse catalog', async ({ page }) => {
+  await page.goto('/study');
+  const dashboard = page.getByTestId('study-dashboard');
+  await expect(dashboard).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'What should I study now?' })).toBeVisible();
+  await expect(page.getByText('Your unfinished sessions, recent misses, saved items, and skill evidence shape the queue below.', { exact: true })).toBeVisible();
+
+  const order = await page.evaluate(() => {
+    const dashboard = document.querySelector('[data-testid="study-dashboard"]');
+    const catalog = document.querySelector('.study-hub-grid');
+    if (!dashboard || !catalog) return null;
+    return Boolean(dashboard.compareDocumentPosition(catalog) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  expect(order).toBe(true);
+});
+
+
+test('Study page does not expose inactive resource controls', async ({ page }) => {
+  await page.goto('/study');
+  await expect(page.locator('.study-toolbar')).toHaveCount(0);
+  await expect(page.getByRole('searchbox', { name: 'Search resources' })).toHaveCount(0);
+  await expect(page.getByRole('tablist', { name: 'Resource filter' })).toHaveCount(0);
+});
+
+
+test('Study browse catalog is registry-backed and exposes truthful skill counts', async ({ page }) => {
+  await page.goto('/study');
+  const topics = page.locator('[data-study-topic]');
+  await expect(topics).toHaveCount(5);
+
+  for (const title of ['Logic & Proof', 'Probability Model Builder', 'Money Timeline', 'Row Operations Coach', 'Optimization & Strategy']) {
+    await expect(topics.filter({ hasText: title })).toHaveCount(1);
+  }
+
+  await expect(topics.filter({ hasText: 'Optimization & Strategy' })).toHaveAttribute('href', '/workbenches/applications');
+
+  const metadata = await topics.evaluateAll((cards) => cards.map((card) => ({
+    count: Number(card.getAttribute('data-current-skill-count')),
+    text: card.textContent ?? '',
+  })));
+  expect(metadata.every(({ count, text }) => Number.isInteger(count) && count > 0 && text.includes(`${count} current skill`))).toBe(true);
+
+  const body = await page.locator('body').innerText();
+  expect(body).not.toMatch(/120\+ problems|12 reviewers|8 sheets|24 saved|28 problems|36 problems|25 problems|31 problems/);
+});
+
+
+test('Course page does not fabricate learner progress', async ({ page }) => {
+  await page.goto('/course');
+  await expect(page.locator('.syllabus-progress-card')).toHaveCount(0);
+  await expect(page.getByText('0 of 5 modules completed.', { exact: false })).toHaveCount(0);
+  await expect(page.getByText('Not Started', { exact: true })).toHaveCount(0);
+});
+
+
+test('Course presents the roadmap as an app-organized suggested path', async ({ page }) => {
+  await page.goto('/course');
+  await expect(page.getByRole('heading', { name: 'Suggested Study Path.' })).toBeVisible();
+  await expect(page.getByText('This is not an official weekly schedule.', { exact: false })).toBeVisible();
+  await expect(page.getByText('Course Syllabus.', { exact: true })).toHaveCount(0);
+  await expect(page.locator('main')).not.toContainText('10-week journey');
+});
+
+
+test('Course suggested path uses neutral sequence labels instead of week claims', async ({ page }) => {
+  await page.goto('/course');
+  const labels = page.locator('.syllabus-module-week');
+  await expect(labels).toHaveCount(5);
+  for (let index = 0; index < 5; index += 1) {
+    await expect(labels.nth(index)).toHaveText(`Step ${index + 1}`);
+  }
+  await expect(page.locator('main')).not.toContainText(/Wk\s+\d/);
+});
+
+
+test('Course suggested path does not expose an inactive view switch', async ({ page }) => {
+  await page.goto('/course');
+  await expect(page.locator('.course-syllabus-toggle')).toHaveCount(0);
+  await expect(page.getByRole('tablist', { name: 'Syllabus view mode' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'List View', exact: true })).toHaveCount(0);
 });

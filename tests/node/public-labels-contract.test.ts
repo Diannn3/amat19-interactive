@@ -56,3 +56,19 @@ test('public surfaces do not interpolate implementation identifiers into visible
   assert.doesNotMatch(source, /\{item\.kind\}|\{item\.module\}/);
   assert.doesNotMatch(source, /Start with any live module|Choose a live workspace/);
 });
+
+
+test('public redesign does not expose the visual reference brand identity', async () => {
+  const files = [
+    '../../apps/web/src/pages/index.astro',
+    '../../apps/web/src/pages/course.astro',
+    '../../apps/web/src/pages/study.astro',
+    '../../apps/web/src/components/home/HomeMathPoster.astro',
+    '../../apps/web/src/styles/editorial-grid.css',
+  ];
+  const sources = await Promise.all(files.map((file) => readFile(new URL(file, import.meta.url), 'utf8')));
+  const source = sources.join('\n');
+
+  assert.doesNotMatch(source, /\bASES\b|Build\s+With\s+ASES|buildwithases/i);
+  assert.doesNotMatch(source, /ASES\s+Manila/i);
+});
