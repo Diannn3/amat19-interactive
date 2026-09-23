@@ -84,7 +84,7 @@ At the audited base:
 - PWA/offline shell and local persistence;
 - current visual override stack includes `global.css`, `pass4.css`, `audit-v13.css`, and a large `apple-glass.css` layer.
 
-A separate `feat/dark-mode-mobile-nav` branch exists ahead of main. It is deliberately not used as this redesign base because the audited redesign plan starts from current `main`; dark-mode integration can be reconciled later as an explicit feature.
+Dark mode and the mobile-navigation theme work were merged to `main` through PR #4 on 2026-09-23 (`main@043a882355dbf092c1c8e3f9476a98fb8a7e7639`). The redesign branch reconciled that history with a two-parent merge commit (`ce5c38d711cefff2002d7f3b8daf489a9c1c26f0`). Blueprint Orange therefore preserves the repository's binary light/dark appearance contract, mobile More theme control, PWA appearance behavior, and theme-aware workbench visuals. There is no system theme mode.
 
 ## Dependency decision
 
@@ -175,3 +175,16 @@ Implementation guidance:
 ## Definition of success
 
 The redesign is successful only when AMAT feels like an original Blueprint Orange editorial mathematics product **and** remains at least as truthful, accessible, usable, offline-capable, and mathematically correct as the audited base.
+
+
+## 2026-09-23 reconciliation note
+
+The implementation began from the audited base `64988b57fecb6078033c5c619bb36a607ae44473`. While the redesign branch was in progress, `main` advanced via PR #4. The branch was not declared complete on the stale base. Instead it was reconciled against the new `main` tree, preserving new theme, PWA, Settings, workbench-neutral, and regression-test changes while reapplying only redesign-owned surfaces.
+
+Post-reconciliation requirements:
+
+- `main..redesign/editorial-grid-neobrutalism` must report `behind_by: 0`;
+- exact light/dark theme-color metadata remains owned by the theme contract;
+- Blueprint Orange adapts through semantic tokens under `html[data-theme='dark']`;
+- new dark-mode/mobile-navigation tests from PR #4 must remain green;
+- the redesign must pass quality, production PWA, Chromium, Firefox, and WebKit CI before handoff.
