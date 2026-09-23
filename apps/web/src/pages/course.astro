@@ -113,6 +113,7 @@ const moduleTopics: Record<string, string[]> = {
           );
         })}
       </ol>
+      <p class="course-filter-empty" data-course-filter-empty hidden>No workbench matches that search and filter.</p>
     </section>
 
     {/* Course Syllabus Timeline (Mockup 4) */}
@@ -398,6 +399,7 @@ const moduleTopics: Record<string, string[]> = {
     const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-course-filter]'));
     const items = Array.from(root.querySelectorAll<HTMLElement>('[data-course-workbench]'));
     const count = root.querySelector<HTMLElement>('[data-course-filter-count]');
+    const empty = root.querySelector<HTMLElement>('[data-course-filter-empty]');
     let activeFilter = 'all';
 
     const apply = () => {
@@ -413,6 +415,7 @@ const moduleTopics: Record<string, string[]> = {
       }
 
       if (count) count.textContent = String(visible);
+      if (empty) empty.hidden = visible !== 0;
     };
 
     input?.addEventListener('input', apply);
