@@ -4015,3 +4015,152 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
     color: CanvasText !important;
   }
 }
+
+
+/* ==========================================================================
+   Phase 8 — Shared workbench frame
+   ========================================================================== */
+
+.workbench-route {
+  width: min(calc(100% - 4rem), 92rem) !important;
+  margin-inline: auto !important;
+  padding-block: clamp(1.5rem, 3vw, 2.5rem) 4rem !important;
+}
+
+.workbench-route__header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: end !important;
+  gap: 1.25rem !important;
+  margin-bottom: 1rem !important;
+  padding: 0 0 1.1rem !important;
+  border-bottom: 2px solid var(--editorial-ink) !important;
+}
+
+.workbench-route__heading h1 {
+  margin: 0 !important;
+  color: var(--editorial-ink) !important;
+  font: 820 clamp(2rem, 4vw, 3.7rem)/0.95 var(--font-amat-display) !important;
+  letter-spacing: -0.055em !important;
+}
+
+.workbench-route__heading p {
+  display: block !important;
+  max-width: 65ch;
+  margin: .65rem 0 0 !important;
+  color: var(--editorial-ink-muted) !important;
+  font-size: .9rem !important;
+  line-height: 1.55 !important;
+}
+
+.workbench-route__links {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-end !important;
+  gap: .45rem !important;
+}
+
+.workbench-route__links a {
+  min-height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: .4rem !important;
+  padding: .55rem .7rem !important;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+  font-size: .74rem !important;
+  font-weight: 720 !important;
+  text-decoration: none !important;
+}
+
+.workbench-route__links a:hover {
+  border-color: var(--editorial-ink) !important;
+  background: var(--editorial-secondary-soft) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.workbench-route__canvas.lab-route__canvas {
+  min-width: 0;
+  overflow: clip;
+  padding: clamp(1rem, 2.6vw, 1.6rem) !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 5px 5px 0 var(--editorial-ink) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Mathematical workspaces intentionally do not inherit the page graph grid. */
+.workbench-route__canvas::before,
+.workbench-route__canvas::after {
+  display: none !important;
+}
+
+/* Domain identity is a small structural rail, never the only state signal. */
+.workbench-route[data-workbench="logic"] .workbench-route__canvas,
+.workbench-route[data-workbench="linear"] .workbench-route__canvas {
+  border-top-color: var(--editorial-secondary) !important;
+  border-top-width: 5px !important;
+}
+
+.workbench-route[data-workbench="probability"] .workbench-route__canvas,
+.workbench-route[data-workbench="finance"] .workbench-route__canvas,
+.workbench-route[data-workbench="applications"] .workbench-route__canvas {
+  border-top-color: var(--editorial-signal) !important;
+  border-top-width: 5px !important;
+}
+
+@media (max-width: 900px) {
+  .workbench-route {
+    width: min(calc(100% - 2rem), 92rem) !important;
+  }
+
+  .workbench-route__header {
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+  }
+
+  .workbench-route__links {
+    justify-content: flex-start !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .workbench-route {
+    width: min(calc(100% - 1.25rem), 92rem) !important;
+    padding-block: 1rem 3rem !important;
+  }
+
+  .workbench-route__canvas.lab-route__canvas {
+    padding: .8rem !important;
+    box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+  }
+
+  .workbench-route__links a {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+@media (forced-colors: active) {
+  .workbench-route__header,
+  .workbench-route__links a,
+  .workbench-route__canvas.lab-route__canvas,
+  .workbench-route[data-workbench] .workbench-route__canvas {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .workbench-route__heading h1,
+  .workbench-route__heading p,
+  .workbench-route__links a {
+    color: CanvasText !important;
+  }
+}
