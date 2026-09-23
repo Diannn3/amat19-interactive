@@ -97,14 +97,14 @@
 html[data-theme='dark'] {
   color-scheme: dark;
 
-  --shell-maroon-950: #fafafa;
-  --shell-maroon-900: rgba(24, 24, 27, 0.92);
-  --shell-maroon-800: #e4e4e7;
-  --shell-maroon-700: #d4d4d8;
-  --shell-maroon-600: #a1a1aa;
+  --shell-maroon-950: #09090b;
+  --shell-maroon-900: #18181b;
+  --shell-maroon-800: #27272a;
+  --shell-maroon-700: #3f3f46;
+  --shell-maroon-600: #52525b;
   --shell-orange: #fafafa;
   --shell-orange-soft: #a1a1aa;
-  --shell-cream: #09090b;
+  --shell-cream: #fafafa;
   --shell-sand: #18181b;
   --shell-paper: #111113;
   --shell-line: #27272a;
