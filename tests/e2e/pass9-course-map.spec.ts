@@ -40,7 +40,7 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     await expect(items).toHaveCount(5);
     await expect(count).toHaveText('5');
 
-    await search.fill('annuity');
+    await search.fill('cash');
     await expect(page.locator('[data-course-workbench]:visible')).toHaveCount(1);
     await expect(page.getByRole('link', { name: /Money Timeline/i })).toBeVisible();
     await expect(count).toHaveText('1');
