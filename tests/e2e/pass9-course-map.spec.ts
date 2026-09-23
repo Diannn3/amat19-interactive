@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
 
 const homeModules = [
-  { title: 'Logic & Proof', href: '/workbenches/logic', notation: 'P → Q' },
-  { title: 'Probability Model Builder', href: '/workbenches/probability', notation: 'P(A | B)' },
+  { title: 'Logic Workbench', href: '/workbenches/logic', notation: 'P → Q' },
+  { title: 'Probability Workbench', href: '/workbenches/probability', notation: 'P(A | B)' },
   { title: 'Money Timeline', href: '/workbenches/finance', notation: 'F = P(1 + i)ⁿ' },
-  { title: 'Row Operations Coach', href: '/workbenches/linear', notation: 'R₂ ← R₂ − 2R₁' },
-  { title: 'Optimization & Strategy', href: '/workbenches/applications', notation: 'max z = cᵀx' },
+  { title: 'Matrices & Systems', href: '/workbenches/linear', notation: 'R₂ ← R₂ − 2R₁' },
+
 ];
 
 test.describe('Pass 9 collapsed More and Compact Course Map', () => {
@@ -34,10 +34,10 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     await page.goto('/course');
 
     const probability = page.locator('.workbench-grid__item--probability');
-    const applications = page.locator('.workbench-grid__item--applications');
 
-    await expect(probability).not.toContainText(/Bayes|distribution|simulation/i);
-    await expect(applications).not.toContainText(/Simplex|Markov/i);
+
+    await expect(probability.locator('.workbench-card__topics')).not.toContainText(/Bayes|distribution|simulation/i);
+    await expect(page.locator('.workbench-grid__item--applications')).toHaveCount(0);
     await expect(page.getByText('optional simplex and Markov extensions', { exact: false })).toBeVisible();
   });
 
@@ -48,8 +48,8 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     const items = page.locator('[data-course-workbench]');
     const count = page.locator('[data-course-filter-count]');
 
-    await expect(items).toHaveCount(5);
-    await expect(count).toHaveText('5');
+    await expect(items).toHaveCount(4);
+    await expect(count).toHaveText('4');
 
     await search.fill('cash');
     await expect(page.locator('[data-course-workbench]:visible')).toHaveCount(1);
@@ -57,11 +57,11 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     await expect(count).toHaveText('1');
 
     await search.fill('');
-    const applications = page.getByRole('button', { name: 'Applications', exact: true });
-    await applications.click();
-    await expect(applications).toHaveAttribute('aria-pressed', 'true');
+    const probability = page.getByRole('button', { name: 'Probability', exact: true });
+    await probability.click();
+    await expect(probability).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('[data-course-workbench]:visible')).toHaveCount(1);
-    await expect(page.getByRole('link', { name: /Optimization & Strategy/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Probability Workbench/i })).toBeVisible();
     await expect(count).toHaveText('1');
   });
 

@@ -6,7 +6,7 @@ const workbenches = [
   '/workbenches/probability',
   '/workbenches/finance',
   '/workbenches/linear',
-  '/workbenches/applications',
+
 ];
 
 test('@core all focused workbenches render without document overflow', async ({ page }) => {
@@ -50,8 +50,12 @@ test('@core dark focused workbenches have no serious automated accessibility vio
 test('@core course modules expose one focused workbench and retain their notes', async ({ page }) => {
   for (const module of ['logic', 'probability', 'finance', 'linear', 'applications']) {
     await page.goto(`/modules/${module}`);
-    const workbenchLink = page.getByRole('link', { name: /Open (Logic & Proof|Probability Model Builder|Money Timeline|Row Operations Coach|Optimization & Strategy)/ });
-    await expect(workbenchLink).toHaveAttribute('href', `/workbenches/${module}`);
+    if (module === 'applications') {
+      await expect(page.getByTestId('module-overview').getByRole('link', { name: 'Read the notes' })).toHaveAttribute('href', '/modules/applications?view=notes');
+    } else {
+      const workbenchLink = page.getByRole('link', { name: /Open (Logic Workbench|Probability Workbench|Money Timeline|Matrices & Systems)/ });
+      await expect(workbenchLink).toHaveAttribute('href', `/workbenches/${module}`);
+    }
     await expect(page.getByRole('link', { name: /Notes/ })).toHaveAttribute('href', `/modules/${module}?view=notes`);
   }
 });

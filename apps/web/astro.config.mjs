@@ -4,6 +4,9 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   integrations: [react()],
+  redirects: {
+    '/workbenches/applications': '/modules/applications?view=notes'
+  },
   vite: {
     plugins: [tailwindcss()]
   },

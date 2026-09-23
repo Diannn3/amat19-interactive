@@ -1,30 +1,29 @@
 import { expect, test } from '@playwright/test';
 
 const workbenches = [
-  { href: '/workbenches/logic', title: 'Logic & Proof' },
-  { href: '/workbenches/probability', title: 'Probability Model Builder' },
+  { href: '/workbenches/logic', title: 'Logic Workbench' },
+  { href: '/workbenches/probability', title: 'Probability Workbench' },
   { href: '/workbenches/finance', title: 'Money Timeline' },
-  { href: '/workbenches/linear', title: 'Row Operations Coach' },
-  { href: '/workbenches/applications', title: 'Optimization & Strategy' },
+  { href: '/workbenches/linear', title: 'Matrices & Systems' },
 ];
 
-test('course map presents five workbenches instead of a lab catalog', async ({ page }) => {
+test('course map presents four workbenches instead of a lab catalog', async ({ page }) => {
   await page.goto('/course');
 
   const directory = page.getByTestId('workbench-directory');
-  await expect(directory.getByRole('link')).toHaveCount(5);
+  await expect(directory.getByRole('link')).toHaveCount(4);
   for (const workbench of workbenches) {
     await expect(directory.getByRole('link', { name: new RegExp(workbench.title) })).toHaveAttribute('href', workbench.href);
   }
   await expect(directory.locator('a[href^="/labs/"]')).toHaveCount(0);
 });
 
-test('desktop course map keeps all five workbenches reachable without horizontal overflow', async ({ page }) => {
+test('desktop course map keeps all four workbenches reachable without horizontal overflow', async ({ page }) => {
   test.skip(page.viewportSize()!.width < 1000, 'desktop directory contract');
   await page.goto('/course');
   const directory = page.getByTestId('workbench-directory');
   const links = directory.getByRole('link');
-  await expect(links).toHaveCount(5);
+  await expect(links).toHaveCount(4);
 
   const firstBox = await links.first().boundingBox();
   const lastBox = await links.last().boundingBox();

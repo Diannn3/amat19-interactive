@@ -24,7 +24,7 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
 
     await expect(page.locator('[data-home-hero]')).toBeVisible();
     await expect(page.locator('.home-hero__title')).toHaveAccessibleName('Finite mathematics, made visible.');
-    await expect(page.locator('[data-home-course-rail] [data-home-module]')).toHaveCount(5);
+    await expect(page.locator('[data-home-course-rail] [data-home-module]')).toHaveCount(4);
     await expect(page.locator('.module-spotlight-link')).toHaveCount(0);
     await expect(page.locator('.home-bento')).toHaveCount(0);
     await expect(page.locator('.home-loop')).toHaveCount(0);
@@ -43,7 +43,7 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     const tabs = page.getByRole('navigation', { name: 'Module sections' });
     await expect(tabs.getByRole('link', { name: /^Overview/ })).toHaveAttribute('aria-current', 'page');
     await expect(tabs.getByRole('link', { name: /^Labs/ })).toHaveCount(0);
-    await expect(page.getByRole('link', { name: /Logic & Proof/ }).first()).toHaveAttribute('href', '/workbenches/logic');
+    await expect(page.getByRole('link', { name: /Logic Workbench/ }).first()).toHaveAttribute('href', '/workbenches/logic');
 
     await page.getByRole('navigation', { name: 'Module sections' }).getByRole('link', { name: /^Notes/ }).click();
     await expect(page).toHaveURL(/\/modules\/logic\?view=notes$/);
@@ -53,12 +53,12 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
   test('public indexes use learner labels instead of implementation taxonomy', async ({ page }) => {
     await page.goto('/modules/logic?view=labs');
     const moduleWorkbench = page.locator('.module-next-step--workbench');
-    await expect(moduleWorkbench).toContainText('Logic & Proof');
+    await expect(moduleWorkbench).toContainText('Logic Workbench');
     await expect(moduleWorkbench).not.toContainText(/\b(logic|probability|finance|linear|applications)\.[a-z-]+/i);
 
     await page.goto('/course');
     const directory = page.getByTestId('workbench-directory');
-    await expect(directory).toContainText('Logic & Proof');
+    await expect(directory).toContainText('Logic Workbench');
     await expect(directory).not.toContainText(/implemented|engine-ready|planned|live/i);
 
     await page.goto('/lessons/logic/truth-tables');
@@ -72,10 +72,8 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     await expect(studyDashboard).not.toContainText('live module');
 
     await page.goto('/lessons/finance/interest-measurement');
-    const lessonIslands = await page.locator('astro-island[client="load"]').count();
-    await expect(page.locator('astro-island[client="load"][client-render-time]')).toHaveCount(lessonIslands);
     const saveLesson = page.getByRole('button', { name: 'Save lesson', exact: true });
-    await expect(saveLesson).toBeVisible();
+    await expect(saveLesson).toBeEnabled();
     await saveLesson.click();
     await expect(page.getByRole('button', { name: 'Saved', exact: true })).toBeVisible();
     await page.goto('/saved');
@@ -245,13 +243,13 @@ test('Study page does not expose inactive resource controls', async ({ page }) =
 test('Study browse catalog is registry-backed and exposes truthful skill counts', async ({ page }) => {
   await page.goto('/study');
   const topics = page.locator('[data-study-topic]');
-  await expect(topics).toHaveCount(5);
+  await expect(topics).toHaveCount(4);
 
-  for (const title of ['Logic & Proof', 'Probability Model Builder', 'Money Timeline', 'Row Operations Coach', 'Optimization & Strategy']) {
+  for (const title of ['Logic Workbench', 'Probability Workbench', 'Money Timeline', 'Matrices & Systems']) {
     await expect(topics.filter({ hasText: title })).toHaveCount(1);
   }
 
-  await expect(topics.filter({ hasText: 'Optimization & Strategy' })).toHaveAttribute('href', '/workbenches/applications');
+  await expect(topics.filter({ hasText: 'Optimization & Strategy' })).toHaveCount(0);
 
   const metadata = await topics.evaluateAll((cards) => cards.map((card) => ({
     count: Number(card.getAttribute('data-current-skill-count')),

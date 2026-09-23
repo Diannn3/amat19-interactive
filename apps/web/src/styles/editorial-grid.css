@@ -2046,7 +2046,7 @@ html[data-motion="reduced"] .home-journey__badge.apple-glass-card {
 
 .workbench-grid.workbench-directory {
   display: grid !important;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   gap: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -2181,10 +2181,6 @@ html[data-motion="reduced"] .home-journey__badge.apple-glass-card {
     min-height: 18rem !important;
   }
 
-  .workbench-grid__item:last-child {
-    grid-column: 1 / -1;
-    border-left: 0;
-  }
 }
 
 @media (max-width: 640px) {
