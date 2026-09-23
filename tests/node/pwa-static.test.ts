@@ -63,3 +63,16 @@ test('offline immutable chunks match module requests despite preview Vary Origin
  });
  assert.equal(await resolved, response);
 });
+
+
+test('offline and manifest surfaces no longer expose the legacy maroon theme', async () => {
+ const [offline, manifest] = await Promise.all([
+  readFile(new URL('../../apps/web/public/offline.html', import.meta.url), 'utf8'),
+  readFile(new URL('../../apps/web/public/manifest.webmanifest', import.meta.url), 'utf8'),
+ ]);
+ assert.match(offline, /amat19-theme/);
+ assert.match(offline, /data-theme=["']light["']/);
+ assert.match(offline, /#09090b/);
+ assert.doesNotMatch(offline, /#7b1113|#fff9f1/i);
+ assert.doesNotMatch(manifest, /#2e080d|#fff9f1/i);
+});
