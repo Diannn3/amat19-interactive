@@ -170,3 +170,16 @@ test('offline and manifest surfaces no longer expose the legacy maroon theme', a
  assert.doesNotMatch(offline, /#7b1113|#fff9f1/i);
  assert.doesNotMatch(manifest, /#2e080d|#fff9f1/i);
 });
+
+
+test('Vercel serves the migration worker without browser or CDN caching', async () => {
+ const config = JSON.parse(await readFile(new URL('../../vercel.json', import.meta.url), 'utf8'));
+ const swRule = config.headers.find((rule: { source?: string }) => rule.source === '/sw.js');
+ assert.ok(swRule);
+ const headers = Object.fromEntries(swRule.headers.map((header: { key: string; value: string }) => [header.key, header.value]));
+ assert.match(headers['Cache-Control'], /no-store/);
+ assert.equal(headers['CDN-Cache-Control'], 'no-store');
+ assert.equal(headers['Vercel-CDN-Cache-Control'], 'no-store');
+ assert.equal(headers['Clear-Site-Data'], '"cache"');
+ assert.equal(headers['Service-Worker-Allowed'], '/');
+});
