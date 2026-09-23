@@ -30,6 +30,17 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
   });
 
 
+  test('workbench directory keeps supplemental topics out of current-scope chips', async ({ page }) => {
+    await page.goto('/course');
+
+    const probability = page.locator('.workbench-grid__item--probability');
+    const applications = page.locator('.workbench-grid__item--applications');
+
+    await expect(probability).not.toContainText(/Bayes|distribution|simulation/i);
+    await expect(applications).not.toContainText(/Simplex|Markov/i);
+    await expect(page.getByText('optional simplex and Markov extensions', { exact: false })).toBeVisible();
+  });
+
   test('course workbench filters are real controls rather than decorative pills', async ({ page }) => {
     await page.goto('/course');
 
