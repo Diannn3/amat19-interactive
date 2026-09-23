@@ -2902,3 +2902,187 @@ html[data-motion="reduced"] .study-panel--primary::after {
     color: CanvasText !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Study topic browser — registry-derived workbench index
+   -------------------------------------------------------------------------- */
+
+.study-catalog__intro h2 {
+  max-width: 16ch;
+  margin: 0.25rem 0 0 !important;
+  color: var(--editorial-ink) !important;
+  font: 820 clamp(2rem, 4.4vw, 4rem)/0.98 var(--font-amat-display) !important;
+  letter-spacing: -0.05em !important;
+}
+
+.study-catalog__intro p {
+  max-width: 68ch;
+  color: var(--editorial-ink-muted) !important;
+  line-height: 1.6 !important;
+}
+
+.study-catalog__intro .section-context {
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono);
+  font-size: 0.68rem !important;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.study-bento-grid--topics {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  border: 2px solid var(--editorial-ink);
+  background: var(--editorial-ink);
+}
+
+.study-bento-card.apple-glass-card {
+  min-width: 0;
+  min-height: 17rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+  padding: 1rem !important;
+  border: 0 !important;
+  border-right: 1.5px solid var(--editorial-ink) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.study-bento-card.apple-glass-card:last-child {
+  border-right: 0 !important;
+}
+
+.study-bento-card.apple-glass-card::before,
+.study-bento-card.apple-glass-card::after {
+  display: none !important;
+}
+
+.study-bento-card.apple-glass-card:hover {
+  background: var(--editorial-secondary-soft) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.study-topic-icon.apple-icon-squircle {
+  width: auto !important;
+  min-width: 3.2rem;
+  max-width: 100%;
+  height: auto !important;
+  min-height: 2.65rem;
+  padding: 0.45rem 0.55rem;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+}
+
+.study-topic-notation {
+  overflow-wrap: anywhere;
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: 0.68rem !important;
+  font-weight: 760 !important;
+}
+
+.study-bento-card > div > strong {
+  display: block;
+  margin-top: 1rem !important;
+  color: var(--editorial-ink) !important;
+  font: 800 clamp(1.05rem, 1.7vw, 1.35rem)/1.1 var(--font-amat-display) !important;
+  letter-spacing: -0.03em;
+}
+
+.study-bento-card > div > span {
+  display: block;
+  margin-top: 0.6rem !important;
+  color: var(--editorial-ink-muted) !important;
+  font-size: 0.82rem !important;
+  line-height: 1.55 !important;
+}
+
+.study-bento-card-bottom {
+  padding-top: 0.75rem !important;
+  border-top: 1.5px solid var(--editorial-rule);
+}
+
+.study-bento-meta {
+  color: var(--editorial-ink-muted) !important;
+  font-family: var(--font-amat-mono);
+  font-size: 0.64rem !important;
+  font-weight: 700 !important;
+}
+
+.study-bento-card .apple-action-circle {
+  border: 1.5px solid var(--editorial-ink) !important;
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-paper-pure) !important;
+}
+
+@media (max-width: 1120px) {
+  .study-bento-grid--topics {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .study-bento-card.apple-glass-card {
+    min-height: 13rem !important;
+    border-bottom: 1.5px solid var(--editorial-ink) !important;
+  }
+
+  .study-bento-card.apple-glass-card:nth-child(even) {
+    border-right: 0 !important;
+  }
+
+  .study-bento-card.apple-glass-card:last-child {
+    grid-column: 1 / -1;
+    border-bottom: 0 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .study-bento-grid--topics {
+    grid-template-columns: 1fr !important;
+  }
+
+  .study-bento-card.apple-glass-card,
+  .study-bento-card.apple-glass-card:nth-child(even),
+  .study-bento-card.apple-glass-card:last-child {
+    grid-column: auto;
+    min-height: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1.5px solid var(--editorial-ink) !important;
+  }
+
+  .study-bento-card.apple-glass-card:last-child {
+    border-bottom: 0 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .study-bento-grid--topics,
+  .study-bento-card.apple-glass-card,
+  .study-topic-icon.apple-icon-squircle {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .study-catalog__intro h2,
+  .study-catalog__intro p,
+  .study-catalog__intro .section-context,
+  .study-topic-notation,
+  .study-bento-card > div > strong,
+  .study-bento-card > div > span,
+  .study-bento-meta {
+    color: CanvasText !important;
+  }
+}
