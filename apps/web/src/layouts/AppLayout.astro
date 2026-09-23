@@ -9,7 +9,7 @@ import CommandPalette from '../components/navigation/CommandPalette';
 import DeveloperContact from '../components/navigation/DeveloperContact.astro';
 import BrandMark from '../components/brand/BrandMark.astro';
 import NavGlyph from '../components/navigation/NavGlyph.astro';
-import { PanelLeftClose, Search } from 'lucide-react';
+import { Moon, PanelLeftClose, Search, Sun } from 'lucide-react';
 
 interface Props { title: string; description?: string; }
 type NavItem = { href: string; label: string; mobileLabel: string; icon: string; desktopOnly?: boolean };
@@ -184,6 +184,10 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
                 ))}
               </div>
             </details>
+            <button class="topbar-theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Turn dark mode on" title="Turn dark mode on">
+              <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true"><Moon size={17} strokeWidth={1.8} /></span>
+              <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true"><Sun size={17} strokeWidth={1.8} /></span>
+            </button>
             <button class="topbar-search" type="button" data-command-button aria-haspopup="dialog" aria-label="Search AMAT 19">
               <Search aria-hidden="true" size={17} strokeWidth={1.7} />
               <span>Search study tools</span>
@@ -223,6 +227,12 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
             <span>More</span>
           </summary>
           <div class="mobile-more-menu__panel">
+            <button class="mobile-more-menu__link mobile-more-menu__action theme-menu-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Turn dark mode on">
+              <span class="nav-icon theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true"><Moon size={17} strokeWidth={1.8} /></span>
+              <span class="nav-icon theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true"><Sun size={17} strokeWidth={1.8} /></span>
+              <span data-theme-toggle-text>Dark mode</span>
+              <span class="theme-menu-toggle__state" data-theme-toggle-state>Off</span>
+            </button>
             {utilityNavigation.map((item) => item.kind === 'link' ? (
               <a class="mobile-more-menu__link" href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
                 <span class="nav-icon"><NavGlyph name={item.icon} /></span>
@@ -254,6 +264,44 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         const sidebarNav = document.querySelector('.sidebar .nav-stack');
         const sidebar = document.querySelector('.sidebar');
         const sidebarStorageKey = 'amat19.sidebar.collapsed';
+        const themeStorageKey = 'amat19-theme';
+        const root = document.documentElement;
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+        const syncThemeControls = () => {
+          const dark = root.dataset.theme === 'dark';
+          document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+            button.setAttribute('aria-pressed', String(dark));
+            button.setAttribute('aria-label', dark ? 'Turn dark mode off' : 'Turn dark mode on');
+            button.setAttribute('title', dark ? 'Turn dark mode off' : 'Turn dark mode on');
+          });
+          document.querySelectorAll('[data-theme-toggle-state]').forEach((state) => {
+            state.textContent = dark ? 'On' : 'Off';
+          });
+        };
+        const applyTheme = (requestedTheme, persist = true) => {
+          const theme = requestedTheme === 'dark' ? 'dark' : 'light';
+          root.dataset.theme = theme;
+          root.style.colorScheme = theme;
+          if (themeMeta instanceof HTMLMetaElement) themeMeta.content = theme === 'dark' ? '#09090b' : '#fbfbfd';
+          if (persist) {
+            try { window.localStorage.setItem(themeStorageKey, theme); } catch { /* storage is optional */ }
+          }
+          syncThemeControls();
+          window.dispatchEvent(new CustomEvent('amat:theme-applied', { detail: { theme } }));
+        };
+        document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+          button.addEventListener('click', () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+        });
+        window.addEventListener('amat:theme-request', (event) => {
+          const requested = event instanceof CustomEvent ? event.detail?.theme : undefined;
+          applyTheme(requested === 'dark' ? 'dark' : 'light');
+        });
+        window.addEventListener('storage', (event) => {
+          if (event.key !== themeStorageKey) return;
+          applyTheme(event.newValue === 'dark' ? 'dark' : 'light', false);
+        });
+        applyTheme(root.dataset.theme === 'dark' ? 'dark' : 'light', false);
+
         const supportsMorePopover = moreFlyout instanceof HTMLElement
           && typeof moreFlyout.showPopover === 'function'
           && typeof moreFlyout.hidePopover === 'function';
