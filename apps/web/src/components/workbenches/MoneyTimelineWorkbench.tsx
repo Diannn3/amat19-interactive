@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
+import 'katex/dist/katex.min.css';
 import {
   FinanceDecimal,
   annuityValue,
@@ -13,6 +14,7 @@ import { Button } from '../ui/Button';
 import { Feedback } from '../ui/Feedback';
 import Timeline, { type TimelinePoint } from '../math/Timeline';
 import StepTrace from '../math/StepTrace';
+import FinanceTraceExpression from '../math/FinanceTraceExpression';
 import { financeCertaintyLabel } from '../../lib/finance-display';
 import { loadDraft, saveDraft } from '../../lib/draft';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
@@ -336,7 +338,21 @@ export default function MoneyTimelineWorkbench() {
               {computed.resultDetail && <small>{computed.resultDetail}</small>}
               <small>{financeCertaintyLabel(computed.result)}</small>
             </output>
-            <StepTrace steps={computed.result.trace} title="Money timeline calculation" initialCount={computed.result.trace.length} />
+            <StepTrace
+              steps={computed.result.trace}
+              title="Money timeline calculation"
+              initialCount={computed.result.trace.length}
+              renderExpression={(step) => (
+                <FinanceTraceExpression
+                  step={step}
+                  scenario={scenario}
+                  direction={annuityDirection}
+                  timing={annuityTiming}
+                  zeroRate={Number(annuityRate) === 0}
+                  certainty={computed.result!.certainty}
+                />
+              )}
+            />
           </MoneyStepCoach>
         )}
       </div>

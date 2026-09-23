@@ -50,6 +50,22 @@ test('@core annuity and bond presets reuse the timeline instead of opening separ
   await expect(workbench.getByText('premium', { exact: true })).toBeVisible();
 });
 
+test('calculation traces typeset annuity and bond notation without internal tokens', async ({ page }) => {
+  const workbench = page.getByTestId('money-timeline-workbench');
+  const scenario = workbench.getByRole('combobox', { name: 'Choose a task' });
+  await scenario.selectOption('annuity');
+  await workbench.getByRole('button', { name: 'Show full calculation', exact: true }).click();
+  const annuityTrace = workbench.locator('.step-trace');
+  await expect(annuityTrace.locator('math')).not.toHaveCount(0);
+  await expect(annuityTrace).not.toContainText(/a-angle-n|s-angle-n|\^\(-n\)/);
+
+  await scenario.selectOption('bond');
+  await workbench.getByRole('button', { name: 'Show full calculation', exact: true }).click();
+  const bondTrace = workbench.locator('.step-trace');
+  await expect(bondTrace.locator('math')).not.toHaveCount(0);
+  await expect(bondTrace).not.toContainText(/a_n\|j|\^\(-\d+\)/);
+});
+
 test('Money Timeline keeps its primary object and controls reachable on a 375px phone', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();

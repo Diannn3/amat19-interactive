@@ -8,7 +8,7 @@ status: supplemental
 
 A level-coupon bond can be valued by moving **every promised cash flow to the purchase date**. If the face value is `F`, the coupon rate per coupon period is `r`, the redemption value is `C`, the investor yield per coupon period is `j`, and there are `n` coupon periods, then the coupon is `Fr` and
 
-`P = (Fr) a-angle-n at j + C(1+j)^(-n)`.
+`P = Fr × [1 − (1+j)⁻ⁿ] / j + C(1+j)⁻ⁿ` when `j` is nonzero. At zero yield, the coupon stream is `nFr`, so `P = nFr + C`.
 
 The first term is the present value of the coupon annuity. The second is the present value of redemption. If price exceeds redemption value, the bond is at a premium; if price is below redemption value, it is at a discount.
 
