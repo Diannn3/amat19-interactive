@@ -71,7 +71,7 @@
 
 .editorial-grid-surface {
   --editorial-grid-size: 52px;
-  background-color: var(--editorial-on-field);
+  background-color: var(--editorial-paper);
   background-image:
     linear-gradient(to right, var(--editorial-grid-light) 1px, transparent 1px),
     linear-gradient(to bottom, var(--editorial-grid-light) 1px, transparent 1px);
@@ -507,7 +507,7 @@ html {
 }
 
 body {
-  background-color: var(--editorial-on-field) !important;
+  background-color: var(--editorial-paper) !important;
   color: var(--editorial-ink) !important;
 }
 
@@ -520,7 +520,7 @@ body {
 }
 
 .workspace-scroll {
-  background-color: var(--editorial-on-field) !important;
+  background-color: var(--editorial-paper) !important;
   background-image:
     linear-gradient(to right, var(--editorial-grid-light) 1px, transparent 1px),
     linear-gradient(to bottom, var(--editorial-grid-light) 1px, transparent 1px) !important;
@@ -7065,4 +7065,19 @@ html[data-motion='reduced'] .topbar-theme-toggle {
   border-color: var(--editorial-ink) !important;
   box-shadow: 1px 1px 0 var(--editorial-ink) !important;
   cursor: not-allowed !important;
+}
+
+
+/* Dark-mode main has higher-specificity canvas rules; Blueprint Orange owns the
+   final learning-surface appearance after reconciliation. */
+html[data-theme='dark'] body,
+html[data-theme='dark'] .workspace-scroll {
+  background-color: var(--editorial-paper) !important;
+}
+
+html[data-theme='dark'] .workspace-scroll {
+  background-image:
+    linear-gradient(to right, var(--editorial-grid-light) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--editorial-grid-light) 1px, transparent 1px) !important;
+  background-size: 52px 52px !important;
 }
