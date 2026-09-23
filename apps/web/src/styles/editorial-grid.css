@@ -1044,3 +1044,274 @@ html[data-motion="reduced"] .update-banner button {
     box-shadow: none !important;
   }
 }
+
+
+/* ==========================================================================
+   Phase 3 — Home: Blueprint Orange hero
+   ========================================================================== */
+
+.home-hero {
+  position: relative !important;
+  isolation: isolate;
+  width: min(calc(100% - 2rem), 92rem) !important;
+  margin-top: clamp(1rem, 2vw, 1.5rem) !important;
+  padding: clamp(1.5rem, 3.6vw, 3.5rem) !important;
+  gap: clamp(1.5rem, 3vw, 3.5rem) !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-md) !important;
+  background-color: var(--editorial-field) !important;
+  background-image:
+    linear-gradient(to right, var(--editorial-grid-dark) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--editorial-grid-dark) 1px, transparent 1px) !important;
+  background-size: 44px 44px !important;
+  box-shadow: 7px 7px 0 var(--editorial-ink) !important;
+  color: var(--editorial-paper) !important;
+  overflow: hidden;
+}
+
+.home-hero__copy {
+  min-width: 0;
+  align-self: center;
+}
+
+.home-hero__title {
+  color: var(--editorial-paper) !important;
+  background-image: none !important;
+  text-wrap: balance !important;
+}
+
+.home-hero__display {
+  display: flex !important;
+  flex-direction: column !important;
+  max-width: 8.5ch;
+  font: 820 clamp(3.15rem, 5.9vw, 6.5rem)/0.86 var(--font-amat-display) !important;
+  letter-spacing: -0.065em !important;
+  color: var(--editorial-paper) !important;
+}
+
+.home-hero__display > span:nth-child(2) {
+  color: var(--editorial-secondary) !important;
+}
+
+.home-hero__display > span:nth-child(3) {
+  color: var(--editorial-signal) !important;
+}
+
+.home-hero__lede {
+  max-width: 58ch !important;
+  margin-top: 1.35rem !important;
+  color: color-mix(in srgb, var(--editorial-paper) 88%, transparent) !important;
+  font-size: clamp(0.98rem, 0.4vw + 0.9rem, 1.15rem) !important;
+  line-height: 1.65 !important;
+}
+
+.home-hero__actions {
+  margin-top: 1.35rem !important;
+  gap: 0.8rem !important;
+}
+
+.home-hero__actions .apple-btn-black,
+.home-hero__actions .apple-btn-glass {
+  min-height: 45px !important;
+  border: 2px solid var(--editorial-paper) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  padding: 0.72rem 1rem !important;
+  font-weight: 780 !important;
+  box-shadow: 4px 4px 0 var(--editorial-ink) !important;
+  transform: translate(0, 0);
+  transition:
+    transform var(--editorial-duration-press) var(--editorial-ease),
+    box-shadow var(--editorial-duration-press) var(--editorial-ease),
+    background-color var(--editorial-duration-ui) ease !important;
+}
+
+.home-hero__actions .apple-btn-black {
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-paper-pure) !important;
+}
+
+.home-hero__actions .apple-btn-glass {
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.home-hero__actions .apple-btn-black:hover {
+  background: color-mix(in srgb, var(--editorial-signal) 88%, white) !important;
+}
+
+.home-hero__actions .apple-btn-glass:hover {
+  border-color: var(--editorial-paper) !important;
+  background: var(--editorial-secondary) !important;
+}
+
+.home-hero__actions .apple-btn-black:active,
+.home-hero__actions .apple-btn-glass:active {
+  transform: translate(3px, 3px) !important;
+  box-shadow: 1px 1px 0 var(--editorial-ink) !important;
+}
+
+.home-hero__specs {
+  gap: 0 !important;
+  margin-top: 1.5rem !important;
+  padding-top: 0 !important;
+  border: 2px solid var(--editorial-paper) !important;
+  background: rgb(16 42 67 / 0.18);
+}
+
+.home-spec-item {
+  min-width: 0;
+  padding: 0.8rem !important;
+}
+
+.home-spec-item + .home-spec-item {
+  border-left: 1.5px solid var(--editorial-paper) !important;
+}
+
+.home-spec-item__val {
+  color: var(--editorial-paper) !important;
+  font-family: var(--font-amat-display) !important;
+  font-size: 1.35rem !important;
+}
+
+.home-spec-item__label {
+  color: var(--editorial-paper) !important;
+}
+
+.home-spec-item__sub {
+  color: color-mix(in srgb, var(--editorial-paper) 72%, transparent) !important;
+}
+
+.home-workbench-ledger {
+  align-self: center;
+}
+
+.home-workbench-link.apple-glass-card {
+  border: 2px solid var(--editorial-paper) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 4px 4px 0 var(--editorial-ink) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.home-workbench-link.apple-glass-card::before,
+.home-workbench-link.apple-glass-card::after {
+  display: none !important;
+}
+
+.home-workbench-link.apple-glass-card:hover {
+  border-color: var(--editorial-paper) !important;
+  background: var(--editorial-secondary-soft) !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 5px 5px 0 var(--editorial-ink) !important;
+}
+
+.home-workbench-link__title,
+.home-workbench-link code[data-home-notation] {
+  color: var(--editorial-ink) !important;
+}
+
+.home-workbench-link__description {
+  color: var(--editorial-ink-muted) !important;
+}
+
+.home-workbench-link code[data-home-notation] {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary-soft) !important;
+}
+
+.home-workbench-link .apple-icon-squircle {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+}
+
+.home-workbench-link .apple-action-circle {
+  border: 1.5px solid var(--editorial-ink) !important;
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-paper-pure) !important;
+}
+
+@media (max-width: 900px) {
+  .home-hero {
+    width: min(calc(100% - 1.5rem), 92rem) !important;
+    grid-template-columns: 1fr !important;
+    padding: 1.35rem !important;
+    background-size: 36px 36px !important;
+    box-shadow: 4px 4px 0 var(--editorial-ink) !important;
+  }
+
+  .home-hero__display {
+    max-width: none;
+    font-size: clamp(3rem, 14vw, 5.3rem) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .home-hero {
+    width: calc(100% - 1rem) !important;
+    padding: 1rem !important;
+    border-radius: var(--editorial-radius-sm) !important;
+  }
+
+  .home-hero__display {
+    font-size: clamp(2.8rem, 15.8vw, 4.25rem) !important;
+  }
+
+  .home-hero__specs {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-spec-item + .home-spec-item {
+    border-left: 0 !important;
+    border-top: 1.5px solid var(--editorial-paper) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero__actions .apple-btn-black,
+  .home-hero__actions .apple-btn-glass,
+  .home-workbench-link.apple-glass-card {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+html[data-motion="reduced"] .home-hero__actions .apple-btn-black,
+html[data-motion="reduced"] .home-hero__actions .apple-btn-glass,
+html[data-motion="reduced"] .home-workbench-link.apple-glass-card {
+  transition: none !important;
+  transform: none !important;
+}
+
+@media (forced-colors: active) {
+  .home-hero,
+  .home-workbench-link.apple-glass-card,
+  .home-hero__specs,
+  .home-hero__actions .apple-btn-black,
+  .home-hero__actions .apple-btn-glass {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .home-hero {
+    background-image: none !important;
+  }
+
+  .home-hero__display,
+  .home-hero__display > span,
+  .home-hero__lede,
+  .home-spec-item__val,
+  .home-spec-item__label,
+  .home-spec-item__sub {
+    color: CanvasText !important;
+  }
+}
