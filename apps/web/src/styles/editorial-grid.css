@@ -4892,3 +4892,147 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
     color: CanvasText !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Linear workbench — matrix / row-operation editorial motif
+   -------------------------------------------------------------------------- */
+
+.row-coach {
+  gap: 1rem !important;
+}
+
+.row-coach__header,
+.row-coach__editor,
+.row-coach__matrix-stage,
+.row-coach__arithmetic-stage,
+.row-coach__history,
+.row-coach__outcome {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.row-coach__header,
+.matrix-hero {
+  padding: 1rem !important;
+  border-left: 5px solid var(--editorial-secondary) !important;
+  background: var(--editorial-paper) !important;
+}
+
+.matrix-title,
+.row-coach__header h2,
+.row-coach__matrix-stage h2,
+.row-coach__arithmetic-stage h2 {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-display) !important;
+  letter-spacing: -0.04em !important;
+}
+
+.matrix-lede,
+.row-coach__goal,
+.row-coach__outcome-details {
+  color: var(--editorial-ink-muted) !important;
+}
+
+.row-coach__editor,
+.row-coach__matrix-stage,
+.row-coach__arithmetic-stage {
+  padding: clamp(1rem, 2.5vw, 1.5rem) !important;
+}
+
+.matrix-instrument-grid {
+  gap: 1rem !important;
+}
+
+.matrix-bracket-box {
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.matrix-grid-cells {
+  gap: .35rem !important;
+}
+
+.matrix-cell-input {
+  min-width: 3rem;
+  text-align: center;
+  font-family: var(--font-amat-mono) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix-operations-strip {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: .4rem !important;
+  padding: .65rem !important;
+  border: 1.5px solid var(--editorial-ink) !important;
+  background: var(--editorial-secondary-soft) !important;
+}
+
+.row-coach__operation,
+.row-coach__operation-kind,
+.row-coach__step-check,
+.row-coach__arithmetic-result {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.row-coach__arithmetic-symbol {
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-weight: 800 !important;
+}
+
+.row-coach__history {
+  overflow: hidden;
+}
+
+.row-coach__history > * + * {
+  border-top: 1px solid var(--editorial-rule);
+}
+
+.row-coach__outcome {
+  border-left-width: 5px !important;
+  border-left-color: var(--editorial-signal) !important;
+  background: var(--editorial-paper-warm, #fff3c7) !important;
+}
+
+@media (forced-colors: active) {
+  .row-coach__header,
+  .row-coach__editor,
+  .row-coach__matrix-stage,
+  .row-coach__arithmetic-stage,
+  .row-coach__history,
+  .row-coach__outcome,
+  .matrix-bracket-box,
+  .matrix-operations-strip,
+  .row-coach__operation,
+  .row-coach__operation-kind,
+  .row-coach__step-check,
+  .row-coach__arithmetic-result {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .matrix-title,
+  .row-coach__header h2,
+  .row-coach__matrix-stage h2,
+  .row-coach__arithmetic-stage h2,
+  .matrix-lede,
+  .row-coach__goal,
+  .row-coach__outcome-details,
+  .row-coach__arithmetic-symbol {
+    color: CanvasText !important;
+  }
+}
