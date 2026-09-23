@@ -4426,3 +4426,159 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
     color: CanvasText !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Logic workbench — truth-table / proof editorial motif
+   -------------------------------------------------------------------------- */
+
+.logic-workbench {
+  gap: 1rem !important;
+}
+
+.logic-workbench__header,
+.logic-workbench__stage,
+.logic-aside-card,
+.logic-example-card {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.logic-workbench__header {
+  padding: 1rem !important;
+  border-left-width: 5px !important;
+  border-left-color: var(--editorial-secondary) !important;
+}
+
+.logic-workbench__header h2,
+.logic-workbench__stage h2 {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-display) !important;
+  letter-spacing: -0.035em !important;
+}
+
+.logic-workbench__notation,
+.apple-formula-chip {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary-soft) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+  font-family: var(--font-amat-mono) !important;
+}
+
+.logic-workbench__stage {
+  padding: clamp(1rem, 2.6vw, 1.6rem) !important;
+}
+
+.logic-instrument-grid,
+.logic-workbench__argument-grid,
+.logic-workbench__compare-grid {
+  gap: 1rem !important;
+}
+
+.logic-input-bar,
+.logic-workbench__translation-result,
+.logic-workbench__summary,
+.logic-workbench__verdict {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.logic-keypad {
+  gap: .35rem !important;
+}
+
+.apple-keypad-pill {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+}
+
+.apple-keypad-pill:hover {
+  background: var(--editorial-secondary-soft) !important;
+}
+
+.apple-keypad-pill--backspace {
+  background: var(--editorial-signal-soft) !important;
+}
+
+.logic-workbench__table-scroll {
+  border: 1.5px solid var(--editorial-ink) !important;
+  background: var(--editorial-paper-pure) !important;
+}
+
+.logic-workbench__table-scroll table {
+  border-collapse: collapse !important;
+}
+
+.logic-workbench__table-scroll th {
+  background: var(--editorial-secondary-soft) !important;
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-mono) !important;
+}
+
+.logic-workbench__table-scroll th,
+.logic-workbench__table-scroll td {
+  border: 1px solid var(--editorial-rule) !important;
+}
+
+.logic-example-card,
+.logic-aside-card {
+  box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+}
+
+.logic-example-card__label,
+.logic-summary-meta,
+.venn-caption {
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: .66rem !important;
+  font-weight: 740 !important;
+}
+
+.logic-example-card__formula,
+.statement-formula {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-mono) !important;
+}
+
+@media (forced-colors: active) {
+  .logic-workbench__header,
+  .logic-workbench__stage,
+  .logic-aside-card,
+  .logic-example-card,
+  .logic-input-bar,
+  .logic-workbench__translation-result,
+  .logic-workbench__summary,
+  .logic-workbench__verdict,
+  .apple-keypad-pill,
+  .logic-workbench__table-scroll {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .logic-workbench__header h2,
+  .logic-workbench__stage h2,
+  .logic-workbench__notation,
+  .logic-example-card__label,
+  .logic-summary-meta,
+  .venn-caption,
+  .logic-example-card__formula,
+  .statement-formula {
+    color: CanvasText !important;
+  }
+}
