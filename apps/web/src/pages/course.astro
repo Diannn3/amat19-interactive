@@ -7,13 +7,15 @@ const modulesById = new Map(currentCourseProfile.modules.map((module) => [module
 const workbenchCount = currentCourseProfile.workbenches.length;
 const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current').length;
 
-const moduleTopics: Record<string, string[]> = {
-  logic: ['Propositions', 'Truth Tables', 'Logical Equivalence'],
-  probability: ['Counting Models', 'Conditioning', 'Bayes Update'],
-  finance: ['Interest Rates', 'Cash Timelines', 'Annuities'],
-  linear: ['Row Operations', 'Matrix Inverse', 'Systems'],
-  applications: ['Graphical LP', 'Simplex Pivot', 'Game Theory'],
-};
+const currentTopicsByModule = new Map(
+  currentCourseProfile.modules.map((module) => [
+    module.id,
+    skillGraph
+      .filter((skill) => skill.module === module.id && skill.scope === 'current')
+      .slice(0, 3)
+      .map((skill) => skill.title),
+  ]),
+);
 ---
 
 <AppLayout title="Course map">
@@ -60,7 +62,7 @@ const moduleTopics: Record<string, string[]> = {
       <ol class="workbench-grid workbench-directory" data-testid="workbench-directory">
         {currentCourseProfile.workbenches.map((workbench, index) => {
           const module = modulesById.get(workbench.id)!;
-          const topics = moduleTopics[workbench.id] || [];
+          const topics = currentTopicsByModule.get(workbench.id) ?? [];
           return (
             <li
               class={`workbench-grid__item workbench-grid__item--${workbench.id}`}
