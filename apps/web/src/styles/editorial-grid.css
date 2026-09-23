@@ -1478,3 +1478,221 @@ html[data-motion="reduced"] .home-workbench-link.apple-glass-card {
     color: CanvasText !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Home learning flow — open editorial sequence
+   -------------------------------------------------------------------------- */
+
+.home-scroll-prompt {
+  margin: 2.25rem auto 0.75rem !important;
+  color: var(--editorial-ink-muted) !important;
+  font-family: var(--font-amat-mono);
+  font-size: 0.68rem !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase;
+}
+
+.home-scroll-pill {
+  width: 1.3rem !important;
+  height: 2rem !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: 999px !important;
+  background: var(--editorial-paper-pure) !important;
+}
+
+.home-scroll-dot {
+  background: var(--editorial-signal) !important;
+}
+
+.home-journey {
+  margin-top: clamp(2.5rem, 5vw, 4.5rem) !important;
+  padding-block: clamp(2.5rem, 5vw, 4.5rem) !important;
+  border-top: 2px solid var(--editorial-ink) !important;
+}
+
+.home-journey__header-row {
+  align-items: flex-end !important;
+  margin-bottom: 2rem !important;
+}
+
+.home-journey__header {
+  max-width: 52rem !important;
+}
+
+.home-journey__title {
+  max-width: 16ch;
+  margin: 0 0 1rem !important;
+  color: var(--editorial-ink) !important;
+  font: 820 clamp(2.35rem, 5vw, 5rem)/0.96 var(--font-amat-display) !important;
+  letter-spacing: -0.055em !important;
+  text-wrap: balance;
+}
+
+.home-journey__lede {
+  max-width: 66ch;
+  color: var(--editorial-ink-muted) !important;
+  font-size: clamp(1rem, 0.35vw + 0.92rem, 1.12rem) !important;
+  line-height: 1.68 !important;
+}
+
+.home-journey__badge.apple-glass-card {
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary) !important;
+  box-shadow: 4px 4px 0 var(--editorial-ink) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: rotate(1deg);
+}
+
+.home-journey__badge.apple-glass-card::before,
+.home-journey__badge.apple-glass-card::after {
+  display: none !important;
+}
+
+.home-journey__badge-icon,
+.home-journey__badge-title,
+.home-journey__badge-sub {
+  color: var(--editorial-ink) !important;
+}
+
+.home-journey__grid {
+  gap: 0 !important;
+  border-top: 2px solid var(--editorial-ink);
+  border-bottom: 2px solid var(--editorial-ink);
+}
+
+.home-journey__step.apple-glass-card {
+  min-width: 0;
+  min-height: 15rem;
+  padding: clamp(1.15rem, 2.4vw, 1.65rem) !important;
+  border: 0 !important;
+  border-right: 1.5px solid var(--editorial-ink) !important;
+  border-radius: 0 !important;
+  background: color-mix(in srgb, var(--editorial-paper) 92%, white) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: background-color var(--editorial-duration-ui) ease !important;
+}
+
+.home-journey__step.apple-glass-card:last-child {
+  border-right: 0 !important;
+}
+
+.home-journey__step.apple-glass-card::before,
+.home-journey__step.apple-glass-card::after {
+  display: none !important;
+}
+
+.home-journey__step.apple-glass-card:hover {
+  background: var(--editorial-secondary-soft) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.home-journey__step .apple-icon-squircle {
+  width: 2.6rem !important;
+  height: 2.6rem !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+}
+
+.home-journey__step-num {
+  color: var(--editorial-signal) !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em;
+}
+
+.home-journey__step h3 {
+  color: var(--editorial-ink) !important;
+  font-size: clamp(1.25rem, 2vw, 1.6rem) !important;
+  font-weight: 800 !important;
+}
+
+.home-journey__step p {
+  color: var(--editorial-ink-muted) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.6 !important;
+}
+
+@media (max-width: 1024px) {
+  .home-journey__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .home-journey__step.apple-glass-card:nth-child(2) {
+    border-right: 0 !important;
+  }
+
+  .home-journey__step.apple-glass-card:nth-child(n + 3) {
+    border-top: 1.5px solid var(--editorial-ink) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-journey__header-row {
+    align-items: flex-start !important;
+  }
+
+  .home-journey__badge.apple-glass-card {
+    transform: none;
+  }
+
+  .home-journey__grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-journey__step.apple-glass-card {
+    min-height: 0;
+    border-right: 0 !important;
+  }
+
+  .home-journey__step.apple-glass-card + .home-journey__step.apple-glass-card {
+    border-top: 1.5px solid var(--editorial-ink) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-scroll-dot {
+    animation: none !important;
+  }
+
+  .home-journey__badge.apple-glass-card {
+    transform: none !important;
+  }
+}
+
+html[data-motion="reduced"] .home-scroll-dot {
+  animation: none !important;
+}
+
+html[data-motion="reduced"] .home-journey__badge.apple-glass-card {
+  transform: none !important;
+}
+
+@media (forced-colors: active) {
+  .home-journey,
+  .home-journey__grid,
+  .home-journey__step.apple-glass-card,
+  .home-journey__badge.apple-glass-card,
+  .home-scroll-pill {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .home-journey__title,
+  .home-journey__lede,
+  .home-journey__step h3,
+  .home-journey__step p,
+  .home-journey__step-num {
+    color: CanvasText !important;
+  }
+}
