@@ -5452,3 +5452,30 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
     display: none;
   }
 }
+
+
+/* Probability module identity — conditional probability notation. */
+[data-route^="/modules/probability"] .module-overview {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-route^="/modules/probability"] .module-overview::after {
+  position: absolute;
+  right: 2%;
+  bottom: 8%;
+  z-index: -1;
+  color: color-mix(in srgb, var(--editorial-signal) 24%, transparent);
+  content: "P(A | B)";
+  font: 800 clamp(4rem, 9vw, 9rem)/1 var(--font-amat-mono);
+  letter-spacing: -.08em;
+  pointer-events: none;
+}
+
+[data-route^="/modules/probability"] .module-next-step {
+  border-top: 5px solid var(--editorial-signal) !important;
+}
+
+@media (max-width: 800px), (forced-colors: active) {
+  [data-route^="/modules/probability"] .module-overview::after { display: none; }
+}
