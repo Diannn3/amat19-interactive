@@ -41,7 +41,7 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     await expect(count).toHaveText('5');
 
     await search.fill('annuity');
-    await expect(items.filter({ visible: true })).toHaveCount(1);
+    await expect(page.locator('[data-course-workbench]:visible')).toHaveCount(1);
     await expect(page.getByRole('link', { name: /Money Timeline/i })).toBeVisible();
     await expect(count).toHaveText('1');
 
@@ -49,7 +49,7 @@ test.describe('Pass 9 collapsed More and Compact Course Map', () => {
     const applications = page.getByRole('button', { name: 'Applications', exact: true });
     await applications.click();
     await expect(applications).toHaveAttribute('aria-pressed', 'true');
-    await expect(items.filter({ visible: true })).toHaveCount(1);
+    await expect(page.locator('[data-course-workbench]:visible')).toHaveCount(1);
     await expect(page.getByRole('link', { name: /Optimization & Strategy/i })).toBeVisible();
     await expect(count).toHaveText('1');
   });
