@@ -6245,3 +6245,120 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
     color: CanvasText !important;
   }
 }
+
+
+/* ==========================================================================
+   Motion — restrained orientation, never decorative smooth scrolling
+   ========================================================================== */
+
+@keyframes editorial-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes editorial-rule-in {
+  from { transform: scaleX(.86); }
+  to { transform: scaleX(1); }
+}
+
+.home-hero,
+.course-hero,
+.study-hero,
+[data-route="/progress"] .page-intro,
+[data-route="/reference"] .page-intro,
+[data-route="/saved"] .page-intro,
+[data-route="/settings"] .page-intro,
+[data-route="/exam"] .page-intro,
+[data-route^="/modules/"] .module-overview,
+[data-route^="/lessons/"] .lesson-header,
+.workbench-route__header,
+.lab-route__header {
+  animation: editorial-enter var(--editorial-duration-reveal) var(--editorial-ease) both;
+}
+
+.home-journey__grid,
+.workbench-grid.workbench-directory,
+.syllabus-timeline,
+.study-bento-grid--topics,
+.progress-overview,
+.reference-entry-grid {
+  transform-origin: left center;
+  animation: editorial-rule-in var(--editorial-duration-reveal) var(--editorial-ease) both;
+}
+
+.home-workbench-link.apple-glass-card,
+.workbench-card.apple-glass-card,
+.study-bento-card.apple-glass-card,
+.utility-card.apple-glass-card,
+.reference-entry,
+.study-queue__item,
+.progress-skill,
+.syllabus-resource-item {
+  transition:
+    background-color var(--editorial-duration-ui) ease,
+    color var(--editorial-duration-ui) ease,
+    border-color var(--editorial-duration-ui) ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero,
+  .course-hero,
+  .study-hero,
+  [data-route="/progress"] .page-intro,
+  [data-route="/reference"] .page-intro,
+  [data-route="/saved"] .page-intro,
+  [data-route="/settings"] .page-intro,
+  [data-route="/exam"] .page-intro,
+  [data-route^="/modules/"] .module-overview,
+  [data-route^="/lessons/"] .lesson-header,
+  .workbench-route__header,
+  .lab-route__header,
+  .home-journey__grid,
+  .workbench-grid.workbench-directory,
+  .syllabus-timeline,
+  .study-bento-grid--topics,
+  .progress-overview,
+  .reference-entry-grid {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .home-workbench-link.apple-glass-card,
+  .workbench-card.apple-glass-card,
+  .study-bento-card.apple-glass-card,
+  .utility-card.apple-glass-card,
+  .reference-entry,
+  .study-queue__item,
+  .progress-skill,
+  .syllabus-resource-item {
+    transition: none !important;
+  }
+}
+
+html[data-motion="reduced"] .home-hero,
+html[data-motion="reduced"] .course-hero,
+html[data-motion="reduced"] .study-hero,
+html[data-motion="reduced"] [data-route="/progress"] .page-intro,
+html[data-motion="reduced"] [data-route="/reference"] .page-intro,
+html[data-motion="reduced"] [data-route="/saved"] .page-intro,
+html[data-motion="reduced"] [data-route="/settings"] .page-intro,
+html[data-motion="reduced"] [data-route="/exam"] .page-intro,
+html[data-motion="reduced"] [data-route^="/modules/"] .module-overview,
+html[data-motion="reduced"] [data-route^="/lessons/"] .lesson-header,
+html[data-motion="reduced"] .workbench-route__header,
+html[data-motion="reduced"] .lab-route__header,
+html[data-motion="reduced"] .home-journey__grid,
+html[data-motion="reduced"] .workbench-grid.workbench-directory,
+html[data-motion="reduced"] .syllabus-timeline,
+html[data-motion="reduced"] .study-bento-grid--topics,
+html[data-motion="reduced"] .progress-overview,
+html[data-motion="reduced"] .reference-entry-grid {
+  animation: none !important;
+  transform: none !important;
+}
