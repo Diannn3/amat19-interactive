@@ -405,7 +405,7 @@ export default function OptimizationStrategyWorkbench() {
                   {GRAPH_NODES.map((n) => <option key={n.id} value={n.id}>Node {n.id}</option>)}
                 </select>
               </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: '#52525b', fontWeight: 500 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--foreground-muted)', fontWeight: 500 }}>
                 To
                 <select className="app-select" value={endNode} onChange={(e) => { const next = e.target.value as NodeId; setEndNode(next); setEvaluatedPath(dijkstra(startNode, next, graphWeights)); }}>
                   {GRAPH_NODES.map((n) => <option key={n.id} value={n.id}>Node {n.id}</option>)}
