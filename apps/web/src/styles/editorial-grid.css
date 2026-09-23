@@ -2645,3 +2645,260 @@ html[data-motion="reduced"] .study-hero__tagline {
     color: CanvasText !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Study dashboard — evidence-backed task sheets
+   -------------------------------------------------------------------------- */
+
+.study-dashboard {
+  gap: 1rem !important;
+}
+
+.study-dashboard__hero {
+  gap: 1rem !important;
+}
+
+.study-panel {
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+}
+
+.study-panel--primary {
+  position: relative;
+  overflow: hidden;
+  background: var(--editorial-paper-warm, #fff3c7) !important;
+  box-shadow: 5px 5px 0 var(--editorial-ink) !important;
+}
+
+.study-panel--primary::after {
+  position: absolute;
+  top: 0.8rem;
+  right: -2.25rem;
+  width: 8rem;
+  padding: 0.32rem 0;
+  background: var(--editorial-signal);
+  color: var(--editorial-paper-pure);
+  content: "NEXT";
+  font: 800 0.62rem/1 var(--font-amat-mono);
+  letter-spacing: 0.1em;
+  text-align: center;
+  transform: rotate(34deg);
+}
+
+.study-panel__body {
+  padding: clamp(1rem, 2.8vw, 1.6rem) !important;
+}
+
+.study-panel h2,
+.study-panel h3 {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-display) !important;
+  letter-spacing: -0.035em !important;
+}
+
+.study-panel h2 {
+  font-size: clamp(1.45rem, 2.6vw, 2.2rem) !important;
+}
+
+.study-panel .section-context {
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono);
+  font-size: 0.67rem !important;
+  font-weight: 780 !important;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.study-panel .lede {
+  color: var(--editorial-ink-muted) !important;
+  line-height: 1.6 !important;
+}
+
+.study-panel .hero-action,
+.study-panel .route-link {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+}
+
+.study-panel .hero-action--primary {
+  min-height: 44px !important;
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-paper-pure) !important;
+  box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+}
+
+.study-stat-grid {
+  gap: 0 !important;
+  margin-top: 1.2rem !important;
+  border: 1.5px solid var(--editorial-ink);
+}
+
+.study-stat {
+  padding: 0.7rem !important;
+  border: 0 !important;
+  border-right: 1px solid var(--editorial-ink) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper-pure) !important;
+}
+
+.study-stat:last-child {
+  border-right: 0 !important;
+}
+
+.study-stat strong {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-display) !important;
+}
+
+.study-stat span {
+  color: var(--editorial-ink-muted) !important;
+}
+
+.study-queue {
+  gap: 0 !important;
+  border: 1.5px solid var(--editorial-ink);
+}
+
+.study-queue__item {
+  min-height: 4.25rem !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--editorial-rule) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  transition: background-color var(--editorial-duration-ui) ease !important;
+}
+
+.study-queue__item:last-child {
+  border-bottom: 0 !important;
+}
+
+.study-queue__item:hover {
+  background: var(--editorial-secondary-soft) !important;
+  transform: none !important;
+}
+
+.study-queue__rank {
+  display: grid !important;
+  min-width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+}
+
+.study-queue__item strong {
+  color: var(--editorial-ink) !important;
+}
+
+.study-queue__item small {
+  color: var(--editorial-ink-muted) !important;
+  line-height: 1.45 !important;
+}
+
+.study-panel .amat-badge {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.study-panel .route-grid {
+  gap: 0 !important;
+  border: 1.5px solid var(--editorial-ink);
+}
+
+.study-panel .route-link {
+  min-height: 5rem !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--editorial-rule) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.study-panel .route-link:last-child {
+  border-bottom: 0 !important;
+}
+
+.study-panel .route-link:hover {
+  background: var(--editorial-secondary-soft) !important;
+  transform: none !important;
+}
+
+@media (max-width: 640px) {
+  .study-panel--primary::after {
+    display: none;
+  }
+
+  .study-stat-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .study-stat {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--editorial-ink) !important;
+  }
+
+  .study-stat:last-child {
+    border-bottom: 0 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .study-panel--primary::after {
+    transform: none !important;
+    right: 0.75rem;
+    width: auto;
+    padding-inline: 0.45rem;
+  }
+}
+
+html[data-motion="reduced"] .study-panel--primary::after {
+  transform: none !important;
+  right: 0.75rem;
+  width: auto;
+  padding-inline: 0.45rem;
+}
+
+@media (forced-colors: active) {
+  .study-panel,
+  .study-panel--primary,
+  .study-stat-grid,
+  .study-stat,
+  .study-queue,
+  .study-queue__item,
+  .study-queue__rank,
+  .study-panel .route-grid,
+  .study-panel .route-link,
+  .study-panel .hero-action--primary {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .study-panel--primary::after {
+    display: none;
+  }
+
+  .study-panel h2,
+  .study-panel h3,
+  .study-panel .section-context,
+  .study-panel .lede,
+  .study-stat strong,
+  .study-stat span,
+  .study-queue__item strong,
+  .study-queue__item small {
+    color: CanvasText !important;
+  }
+}
