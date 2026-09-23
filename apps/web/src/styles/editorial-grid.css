@@ -4737,3 +4737,158 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
     color: CanvasText !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Finance workbench — cash-flow / timeline editorial motif
+   -------------------------------------------------------------------------- */
+
+.money-timeline {
+  gap: 1rem !important;
+}
+
+.money-timeline__header,
+.money-timeline__workspace,
+.fin-form-card,
+.fin-chart-card,
+.prob-formula-card {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.money-timeline__header,
+.fin-hero {
+  padding: 1rem !important;
+  border-left: 5px solid var(--editorial-signal) !important;
+  background: var(--editorial-paper) !important;
+}
+
+.fin-title,
+.money-timeline__header h2,
+.money-timeline__workspace h2 {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-display) !important;
+  letter-spacing: -0.04em !important;
+}
+
+.fin-lede,
+.money-timeline__storage-note,
+.money-timeline__empty {
+  color: var(--editorial-ink-muted) !important;
+}
+
+.money-timeline__workspace {
+  padding: clamp(1rem, 2.5vw, 1.5rem) !important;
+}
+
+.fin-instrument-grid {
+  gap: 1rem !important;
+}
+
+.fin-form-card,
+.fin-chart-card {
+  padding: 1rem !important;
+  box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+}
+
+.fin-chart-card {
+  border-top-width: 5px !important;
+  border-top-color: var(--editorial-secondary) !important;
+}
+
+.fin-metrics-deck {
+  gap: 0 !important;
+  border: 1.5px solid var(--editorial-ink);
+}
+
+.fin-metric-box {
+  border: 0 !important;
+  border-right: 1px solid var(--editorial-ink) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.fin-metric-box:last-child {
+  border-right: 0 !important;
+}
+
+.money-timeline__flows,
+.money-timeline__editor,
+.money-timeline__result,
+.money-timeline__scenario {
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.money-timeline__flow {
+  border-color: var(--editorial-ink) !important;
+}
+
+.money-timeline__flow-number {
+  border: 1.5px solid var(--editorial-ink) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-mono) !important;
+}
+
+.fin-chart-panel svg text,
+.money-timeline svg text {
+  fill: var(--editorial-ink) !important;
+}
+
+.fin-chart-panel svg path,
+.fin-chart-panel svg line,
+.money-timeline svg path,
+.money-timeline svg line {
+  stroke: var(--editorial-ink) !important;
+}
+
+@media (max-width: 640px) {
+  .fin-metrics-deck {
+    grid-template-columns: 1fr !important;
+  }
+
+  .fin-metric-box {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--editorial-ink) !important;
+  }
+
+  .fin-metric-box:last-child {
+    border-bottom: 0 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .money-timeline__header,
+  .money-timeline__workspace,
+  .fin-form-card,
+  .fin-chart-card,
+  .fin-metrics-deck,
+  .fin-metric-box,
+  .money-timeline__flows,
+  .money-timeline__editor,
+  .money-timeline__result,
+  .money-timeline__scenario {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .fin-title,
+  .money-timeline__header h2,
+  .money-timeline__workspace h2,
+  .fin-lede,
+  .money-timeline__storage-note,
+  .money-timeline__empty {
+    color: CanvasText !important;
+  }
+}
