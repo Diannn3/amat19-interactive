@@ -53,6 +53,23 @@ async function capture() {
     isMobile: true,
   });
 
+  const darkDesktop = await browser.newContext({
+    viewport: { width: 1280, height: 720 },
+    deviceScaleFactor: 1,
+  });
+  await darkDesktop.addInitScript(() => {
+    localStorage.setItem('amat19-theme', 'dark');
+  });
+
+  const darkMobile = await browser.newContext({
+    viewport: { width: 375, height: 667 },
+    deviceScaleFactor: 1,
+    isMobile: true,
+  });
+  await darkMobile.addInitScript(() => {
+    localStorage.setItem('amat19-theme', 'dark');
+  });
+
   for (const [name, route] of routes) {
     await captureRoute(desktop, 'desktop-1280', name, route);
     await captureRoute(mobile, 'mobile-375', name, route);
@@ -66,6 +83,16 @@ async function capture() {
     ['settings', '/settings'],
   ]) {
     await captureRoute(desktop, 'desktop-1280', name, route, true);
+  }
+
+  for (const [name, route] of [
+    ['home', '/'],
+    ['settings', '/settings'],
+    ['logic', '/workbenches/logic'],
+    ['probability', '/workbenches/probability'],
+  ]) {
+    await captureRoute(darkDesktop, 'desktop-1280-dark', name, route);
+    await captureRoute(darkMobile, 'mobile-375-dark', name, route);
   }
 
   // Keep one deterministic interaction-state capture for the densest workbench.
