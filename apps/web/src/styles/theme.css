@@ -29,7 +29,7 @@
   --surface-strong: #e4e4e7;
   --surface-maroon: rgba(0, 0, 0, 0.03);
   --foreground: #09090b;
-  --foreground-muted: #71717a;
+  --foreground-muted: #6b6b74;
   --foreground-soft: #a1a1aa;
   --border: rgba(0, 0, 0, 0.08);
   --border-strong: rgba(0, 0, 0, 0.14);
@@ -58,7 +58,7 @@
   --nav-surface: rgba(255, 255, 255, 0.90);
   --nav-surface-solid: #ffffff;
   --nav-border: rgba(9, 9, 11, 0.08);
-  --nav-text: #71717a;
+  --nav-text: var(--foreground-muted);
   --nav-text-active: #09090b;
   --nav-item-hover: rgba(9, 9, 11, 0.035);
   --nav-item-active: rgba(9, 9, 11, 0.055);
