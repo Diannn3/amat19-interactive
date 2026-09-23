@@ -3826,3 +3826,192 @@ html[data-motion="reduced"] .setting-row input[type="checkbox"]::after {
     color: CanvasText !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Mixed Course Check — distinct exam framing, unchanged assessment semantics
+   -------------------------------------------------------------------------- */
+
+[data-route="/exam"] .page-intro {
+  width: min(calc(100% - 4rem), 92rem) !important;
+  margin-top: 1.5rem !important;
+  padding: clamp(1.5rem, 4vw, 3.25rem) !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-md) !important;
+  background-color: var(--editorial-field) !important;
+  background-image:
+    linear-gradient(to right, var(--editorial-grid-dark) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--editorial-grid-dark) 1px, transparent 1px) !important;
+  background-size: 44px 44px !important;
+  box-shadow: 6px 6px 0 var(--editorial-ink) !important;
+  color: var(--editorial-paper) !important;
+}
+
+[data-route="/exam"] .display-title {
+  max-width: 12ch;
+  margin: 0 !important;
+  color: var(--editorial-paper) !important;
+  font: 820 clamp(3rem, 7vw, 7rem)/0.9 var(--font-amat-display) !important;
+  letter-spacing: -0.065em !important;
+}
+
+[data-route="/exam"] .page-context {
+  color: var(--editorial-secondary) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: .68rem !important;
+  font-weight: 780 !important;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+[data-route="/exam"] .lede,
+[data-route="/exam"] .route-note,
+[data-route="/exam"] .route-note summary,
+[data-route="/exam"] .route-note p {
+  color: rgb(248 243 232 / .82) !important;
+}
+
+[data-route="/exam"] .route-note {
+  border-top-color: rgb(248 243 232 / .42) !important;
+}
+
+[data-route="/exam"] .module-section {
+  width: min(calc(100% - 4rem), 92rem) !important;
+  margin-inline: auto !important;
+  padding-block: clamp(2.5rem, 5vw, 4.5rem) !important;
+}
+
+[data-route="/exam"] .mixed-practice {
+  display: grid !important;
+  gap: 1rem !important;
+}
+
+[data-route="/exam"] .mixed-practice__toolbar,
+[data-route="/exam"] .practice-presets,
+[data-route="/exam"] .mixed-question-stage,
+[data-route="/exam"] .mixed-practice__score {
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 4px 4px 0 var(--editorial-ink) !important;
+}
+
+[data-route="/exam"] .practice-presets {
+  gap: .5rem !important;
+}
+
+[data-route="/exam"] .practice-presets .amat-button {
+  min-height: 44px !important;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+}
+
+[data-route="/exam"] .mixed-practice__toolbar .section-context,
+[data-route="/exam"] .mixed-question__counter,
+[data-route="/exam"] .section-label {
+  color: var(--editorial-signal) !important;
+  font-family: var(--font-amat-mono) !important;
+  font-size: .68rem !important;
+  font-weight: 760 !important;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+[data-route="/exam"] .exam-question-nav {
+  gap: .35rem !important;
+}
+
+[data-route="/exam"] .exam-question-nav button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+}
+
+[data-route="/exam"] .exam-question-nav button[aria-current="true"],
+[data-route="/exam"] .exam-question-nav button.is-active {
+  background: var(--editorial-secondary) !important;
+}
+
+[data-route="/exam"] .mixed-question {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+[data-route="/exam"] .mixed-question__head h2,
+[data-route="/exam"] .mixed-question__head h3 {
+  color: var(--editorial-ink) !important;
+  font-family: var(--font-amat-display) !important;
+  letter-spacing: -0.035em !important;
+}
+
+[data-route="/exam"] .choice-grid {
+  gap: .55rem !important;
+}
+
+[data-route="/exam"] .choice-option {
+  min-height: 48px !important;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+}
+
+[data-route="/exam"] .choice-option:hover,
+[data-route="/exam"] .choice-option:has(input:checked) {
+  background: var(--editorial-secondary-soft) !important;
+}
+
+[data-route="/exam"] .mixed-question__actions .amat-button {
+  min-height: 45px !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+}
+
+@media (max-width: 700px) {
+  [data-route="/exam"] .page-intro,
+  [data-route="/exam"] .module-section {
+    width: min(calc(100% - 1.5rem), 92rem) !important;
+  }
+
+  [data-route="/exam"] .page-intro {
+    padding: 1.15rem !important;
+    background-size: 36px 36px !important;
+    box-shadow: 4px 4px 0 var(--editorial-ink) !important;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-route="/exam"] .page-intro,
+  [data-route="/exam"] .mixed-practice__toolbar,
+  [data-route="/exam"] .practice-presets,
+  [data-route="/exam"] .mixed-question-stage,
+  [data-route="/exam"] .mixed-practice__score,
+  [data-route="/exam"] .practice-presets .amat-button,
+  [data-route="/exam"] .exam-question-nav button,
+  [data-route="/exam"] .choice-option {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  [data-route="/exam"] .page-intro {
+    background-image: none !important;
+  }
+
+  [data-route="/exam"] .display-title,
+  [data-route="/exam"] .page-context,
+  [data-route="/exam"] .lede,
+  [data-route="/exam"] .route-note,
+  [data-route="/exam"] .mixed-question__head h2,
+  [data-route="/exam"] .mixed-question__head h3 {
+    color: CanvasText !important;
+  }
+}
