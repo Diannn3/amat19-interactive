@@ -3487,6 +3487,7 @@ html[data-theme='dark'] .theme-toggle__icon--sun {
 }
 
 .theme-menu-toggle {
+  display: grid !important;
   grid-template-columns: auto minmax(0, 1fr) auto !important;
   align-items: center !important;
   width: 100%;
