@@ -6729,3 +6729,160 @@ main .apple-glass-card:active .apple-action-circle {
     margin-top: .7rem !important;
   }
 }
+
+
+/* ==========================================================================
+   Developer dialog — Blueprint Orange utility surface
+   ========================================================================== */
+
+.developer-dialog {
+  width: min(92vw, 34rem) !important;
+  max-height: min(82vh, 42rem) !important;
+  padding: 0 !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-lg) !important;
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+  box-shadow: 8px 8px 0 var(--editorial-ink) !important;
+}
+
+.developer-dialog::backdrop {
+  background: rgb(16 42 67 / .42) !important;
+  backdrop-filter: none !important;
+}
+
+.developer-dialog__surface {
+  background: var(--editorial-paper-pure) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.developer-dialog__header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+  padding: 1rem !important;
+  border-bottom: 2px solid var(--editorial-ink) !important;
+  background: var(--editorial-paper) !important;
+}
+
+.developer-dialog__heading {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: .75rem !important;
+}
+
+.developer-dialog__heading h2 {
+  margin: 0 !important;
+  color: var(--editorial-ink) !important;
+  font: 800 1.35rem/1 var(--font-amat-display) !important;
+  letter-spacing: -.04em !important;
+}
+
+.developer-dialog__heading p {
+  max-width: 30rem;
+  margin: .35rem 0 0 !important;
+  color: var(--editorial-ink-muted) !important;
+  line-height: 1.5 !important;
+}
+
+.developer-dialog__icon,
+.developer-dialog__close {
+  width: 2.65rem !important;
+  height: 2.65rem !important;
+  display: grid !important;
+  place-items: center !important;
+  flex: 0 0 auto;
+  border: 1.5px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  color: var(--editorial-ink) !important;
+}
+
+.developer-dialog__icon {
+  background: var(--editorial-secondary) !important;
+  box-shadow: 2px 2px 0 var(--editorial-ink) !important;
+}
+
+.developer-dialog__close {
+  background: var(--editorial-paper-pure) !important;
+  cursor: pointer;
+}
+
+.developer-dialog__close:hover {
+  background: var(--editorial-secondary-soft) !important;
+}
+
+.developer-dialog__profile {
+  display: grid !important;
+  gap: .25rem !important;
+  padding: 1rem !important;
+  border-bottom: 1.5px solid var(--editorial-rule) !important;
+}
+
+.developer-dialog__profile strong {
+  color: var(--editorial-ink) !important;
+  font: 800 1.05rem/1.1 var(--font-amat-display) !important;
+}
+
+.developer-dialog__profile span {
+  color: var(--editorial-ink-muted) !important;
+  font-family: var(--font-amat-mono);
+  font-size: .68rem !important;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.developer-dialog__links {
+  display: grid !important;
+  gap: 0 !important;
+  padding: 0 !important;
+}
+
+.developer-dialog__links a {
+  min-height: 48px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+  padding: .8rem 1rem !important;
+  border-bottom: 1px solid var(--editorial-rule) !important;
+  color: var(--editorial-ink) !important;
+  text-decoration: none !important;
+  font-weight: 720 !important;
+}
+
+.developer-dialog__links a:last-child {
+  border-bottom: 0 !important;
+}
+
+.developer-dialog__links a:hover {
+  background: var(--editorial-secondary-soft) !important;
+}
+
+.developer-dialog__close:focus-visible,
+.developer-dialog__links a:focus-visible {
+  outline: 3px solid var(--focus) !important;
+  outline-offset: 3px !important;
+}
+
+@media (forced-colors: active) {
+  .developer-dialog,
+  .developer-dialog__surface,
+  .developer-dialog__header,
+  .developer-dialog__icon,
+  .developer-dialog__close,
+  .developer-dialog__profile,
+  .developer-dialog__links a {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .developer-dialog__heading h2,
+  .developer-dialog__heading p,
+  .developer-dialog__profile strong,
+  .developer-dialog__profile span {
+    color: CanvasText !important;
+  }
+}
