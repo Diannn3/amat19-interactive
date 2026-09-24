@@ -1,5 +1,5 @@
 import { createSeededRandom } from '@amat19/math-core';
-import { buildTruthTable } from '@amat19/domain-logic';
+import { buildTruthTable, formatLogic } from '@amat19/domain-logic';
 import { combinations, permutations, makeTwoWayTable, analyzeTwoWayTable } from '@amat19/domain-probability';
 import { simpleAccumulation, compoundAccumulation, roundFinance } from '@amat19/domain-finance';
 import { matrix, multiplyMatrices, solveLinearSystem, solveGraphicalLP } from '@amat19/domain-linear';
@@ -44,10 +44,11 @@ function choiceExercise(input: Omit<AssessmentExercise, 'choices' | 'correctInde
 
 function logicExercise(random: () => number, index: number): AssessmentExercise {
   const expression = pick(['P -> P', 'P & ~P', '(P -> Q) | (Q -> P)', 'P <-> ~P', '(P & Q) -> P'] as const, random);
-  const classification = buildTruthTable(expression).classification;
+  const table = buildTruthTable(expression);
+  const classification = table.classification;
   return choiceExercise({
     id: `logic-${index}`, module: 'logic', skillId: 'logic.truth-table.classify', title: 'Truth-table classification',
-    prompt: `Without relying on a single row, classify ${expression}.`,
+    prompt: `Without relying on a single row, classify ${formatLogic(table.ast)}.`,
     answer: classification, distractors: ['tautology', 'contradiction', 'contingent'],
     explanation: `Enumerating all valuations makes the final column ${classification}. Classification is a statement about the entire final column, not one convenient assignment.`,
     labHref: '/workbenches/logic?mode=table'
@@ -137,7 +138,7 @@ function lpExercise(random: () => number, index: number): AssessmentExercise {
     prompt: `Maximize Z=${cx}x+${cy}y subject to x+y≤4, x≤3, y≤3, x,y≥0. Which listed corner is optimal?`,
     answer, distractors: [`(0, 0), Z=0`, `(3, 0), Z=${3 * cx}`, `(0, 3), Z=${3 * cy}`],
     explanation: `A bounded two-variable linear program reaches an optimum at a feasible corner. Evaluating all feasible vertices gives ${answer}.`,
-    labHref: '/workbenches/applications?mode=linear'
+    labHref: '/lessons/applications/graphical-lp'
   }, random);
 }
 function gameExercise(random: () => number, index: number): AssessmentExercise {
@@ -151,7 +152,7 @@ function gameExercise(random: () => number, index: number): AssessmentExercise {
     prompt: `For the row-player payoff matrix [[${values[0]!.join(',')}],[${values[1]!.join(',')}]], compare maximin and minimax.`,
     answer, distractors: ['pure saddle point exists', 'no pure saddle; mixed analysis is needed', 'the game is infeasible', 'the matrix must be inverted first'],
     explanation: `The row player guarantees ${lo.toString()} and the column player holds the payoff to ${hi.toString()}. ${lo.equals(hi) ? 'Because they match, that value is a saddle-point game.' : 'Because they differ, there is no pure saddle point.'}`,
-    labHref: '/workbenches/applications?mode=game'
+    labHref: '/lessons/applications/game-theory'
   }, random);
 }
 

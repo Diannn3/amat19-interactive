@@ -43,7 +43,7 @@ test('@core annuity and bond presets reuse the timeline instead of opening separ
 
   await scenario.selectOption('bond');
   await workbench.getByText('Edit cash flows and rates', { exact: true }).click();
-  await expect(workbench.getByLabel('Face value')).toBeVisible();
+  await expect(workbench.getByRole('textbox', { name: 'Face value' })).toBeVisible();
   await expect(workbench.getByLabel('Yield per coupon period')).toBeVisible();
   await workbench.getByRole('button', { name: 'Show full calculation', exact: true }).click();
   await expect(workbench.locator('.money-timeline__result').getByText('Bond price', { exact: true })).toBeVisible();
@@ -64,6 +64,35 @@ test('calculation traces typeset annuity and bond notation without internal toke
   const bondTrace = workbench.locator('.step-trace');
   await expect(bondTrace.locator('math')).not.toHaveCount(0);
   await expect(bondTrace).not.toContainText(/a_n\|j|\^\(-\d+\)/);
+});
+
+test('zero-rate annuity and bond traces use finite formulas', async ({ page }) => {
+  const workbench = page.getByTestId('money-timeline-workbench');
+  const scenario = workbench.getByRole('combobox', { name: 'Choose a task' });
+  await scenario.selectOption('annuity');
+  await workbench.getByText('Edit cash flows and rates', { exact: true }).click();
+  await workbench.locator('input[name="annuity-rate"]').fill('0');
+  await workbench.getByRole('button', { name: 'Show full calculation', exact: true }).click();
+  await expect(workbench.locator('.step-trace math[aria-label="present annuity factor equals n"]')).toBeVisible();
+
+  await scenario.selectOption('bond');
+  await workbench.getByText('Edit cash flows and rates', { exact: true }).click();
+  await workbench.locator('input[name="bond-yield"]').fill('0');
+  await workbench.getByRole('button', { name: 'Show full calculation', exact: true }).click();
+  const trace = workbench.locator('.step-trace');
+  await expect(trace.locator('math[aria-label^="Coupon value equals n times face value F times coupon rate r"]')).toBeVisible();
+  await expect(trace.locator('math[aria-label="Redemption value equals C at zero yield"]')).toBeVisible();
+});
+
+test('sampled finance timelines disclose full payment counts', async ({ page }) => {
+  const workbench = page.getByTestId('money-timeline-workbench');
+  const scenario = workbench.getByRole('combobox', { name: 'Choose a task' });
+  await scenario.selectOption('annuity');
+  await expect(workbench.locator('[data-money-timeline-object] [data-timeline-summary]'))
+    .toContainText('Showing 5 sample points for 12 scheduled payments; all 12 are included in valuation.');
+  await scenario.selectOption('bond');
+  await expect(workbench.locator('[data-money-timeline-object] [data-timeline-summary]'))
+    .toContainText('Showing 5 sample points for 10 scheduled coupon payments, plus redemption; all coupons and redemption are included in price.');
 });
 
 test('Money Timeline keeps its primary object and controls reachable on a 375px phone', async ({ page }) => {

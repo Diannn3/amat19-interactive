@@ -1,10 +1,11 @@
 export type TimelinePoint = { time: number; label: string; value?: string; tone?: 'primary' | 'accent' | 'muted' };
 
-export default function Timeline({ points, minTime, maxTime, ariaLabel = 'Timeline' }: {
+export default function Timeline({ points, minTime, maxTime, ariaLabel = 'Timeline', summary }: {
   points: TimelinePoint[];
   minTime: number;
   maxTime: number;
   ariaLabel?: string;
+  summary?: string;
 }) {
   const times = [...new Set(points.map(({ time }) => time))].sort((a, b) => a - b);
   const span = Math.max(0.0001, maxTime - minTime);
@@ -23,6 +24,7 @@ export default function Timeline({ points, minTime, maxTime, ariaLabel = 'Timeli
         ))}
       </svg>
       <figcaption className="sr-only">Each cash flow and focal event appears in time order below, including events at the same date.</figcaption>
+      {summary && <p data-timeline-summary className="mb-3 text-sm leading-relaxed text-[var(--foreground-muted)]">{summary}</p>}
       <ol className="mt-4 divide-y divide-[var(--border)] border-y border-[var(--border)]">
         {[...points].sort((a, b) => a.time - b.time).map((point, index) => (
           <li key={`${point.time}-${index}`} data-timeline-event data-time={point.time}

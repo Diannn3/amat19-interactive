@@ -3,6 +3,16 @@ import test from 'node:test';
 import {assessmentCoverage,generateMixedAssessment} from '../../apps/web/src/lib/mixed-assessment.ts';
 import {aggregateMasteryForCourseSkill,canonicalMasteryMap,canonicalSkillId,canonicalizeSkillIds,masteryHierarchyIds,moduleForSkill} from '../../apps/web/src/lib/mastery-targets.ts';
 
+test('generated logic prompts display canonical symbols while accepting source aliases',()=>{
+ const questions=generateMixedAssessment('logic-display-notation',50,{skillId:'logic.truth-table.classify'});
+ assert.equal(questions.length,50);
+ assert.ok(questions.every(question=>question.module==='logic'));
+ for(const question of questions){
+  assert.doesNotMatch(question.prompt,/<->|->|(?<!\w)&(?!\w)|~/);
+ }
+ assert.ok(questions.some(question=>/[↔→∧∨∼]/u.test(question.prompt)));
+});
+
 test('targeted conditional practice only emits a genuinely conditional question',()=>{
  const questions=generateMixedAssessment('conditional-target',6,{skillId:'probability.conditional.denominator'});
  assert.equal(questions.length,6);

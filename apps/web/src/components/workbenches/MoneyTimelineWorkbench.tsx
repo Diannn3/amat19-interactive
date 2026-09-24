@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import 'katex/dist/katex.min.css';
+
 import {
   FinanceDecimal,
   annuityValue,
@@ -47,6 +47,7 @@ type Computed = {
   error?: string;
   resultLabel: string;
   resultDetail?: string;
+  timelineSummary?: string;
   points: TimelinePoint[];
   minTime: number;
   maxTime: number;
@@ -218,10 +219,14 @@ export default function MoneyTimelineWorkbench() {
           tone: 'accent',
         }));
         points.push({ time: focal, label: annuityDirection === 'present' ? 'Present' : 'Future', value: 'focal date', tone: 'primary' });
+        const visiblePayments = sampledTimes(start, end).length;
         return {
           result,
           resultLabel: annuityDirection === 'present' ? 'Present value' : 'Future value',
           resultDetail: annuityTiming === 'immediate' ? 'payments at each period end' : 'payments at each period start',
+          timelineSummary: visiblePayments < count
+            ? `Showing ${visiblePayments} sample points for ${count} scheduled payments; all ${count} are included in valuation.`
+            : `All ${count} scheduled payments are shown and included in valuation.`,
           points,
           ...bounds(points),
           step: { label: 'Payment 1', amount: annuityPayment, time: String(start), focalDate: String(focal), rate: annuityRate },
@@ -245,10 +250,14 @@ export default function MoneyTimelineWorkbench() {
       }));
       points.push({ time: count, label: 'Redemption', value: currency.format(decimalNumber(bondRedemption)), tone: 'accent' });
       points.push({ time: 0, label: 'Bond price', value: 'value here', tone: 'primary' });
+      const visibleCoupons = sampledTimes(1, count).length;
       return {
         result,
         resultLabel: 'Bond price',
         resultDetail: result.classification,
+        timelineSummary: visibleCoupons < count
+          ? `Showing ${visibleCoupons} sample points for ${count} scheduled coupon payments, plus redemption; all coupons and redemption are included in price.`
+          : `All ${count} coupon payments and redemption are shown and included in price.`,
         points,
         ...bounds(points),
         step: { label: 'Redemption', amount: bondRedemption, time: String(count), focalDate: '0', rate: bondYield },
@@ -324,6 +333,7 @@ export default function MoneyTimelineWorkbench() {
               maxTime={computed.maxTime}
               points={computed.points}
               ariaLabel={`${computed.resultLabel} timeline`}
+              summary={computed.timelineSummary}
             />
           ) : (
             <div className="money-timeline__empty">Edit the cash flows and rates to restore the timeline.</div>
@@ -348,7 +358,7 @@ export default function MoneyTimelineWorkbench() {
                   scenario={scenario}
                   direction={annuityDirection}
                   timing={annuityTiming}
-                  zeroRate={Number(annuityRate) === 0}
+                  zeroRate={scenario === 'annuity' ? Number(annuityRate) === 0 : scenario === 'bond' && Number(bondYield) === 0}
                   certainty={computed.result!.certainty}
                 />
               )}
