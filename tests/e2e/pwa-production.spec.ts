@@ -27,8 +27,10 @@ test('PWA update waits for slow persistence work before activating the worker', 
     });
   });
 
-  await page.goto('/workbenches/logic?mode=compare');
-  await expect(page.getByTestId('logic-proof-workbench')).toHaveAttribute('data-hydrated', 'true', { timeout: 10_000 });
+  await page.goto('/workbenches/logic?mode=argument');
+  const logic = page.getByTestId('logic-proof-workbench');
+  await expect(logic).toHaveAttribute('data-hydrated', 'true', { timeout: 10_000 });
+  await expect(logic.getByRole('tab', { name: 'Test an Argument' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('button', { name: 'Save & update' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Save & update' }).click();
@@ -64,8 +66,10 @@ test('PWA update stays pending when a persistence task fails', async ({ page }) 
     });
   });
 
-  await page.goto('/workbenches/logic?mode=compare');
-  await expect(page.getByTestId('logic-proof-workbench')).toHaveAttribute('data-hydrated', 'true', { timeout: 10_000 });
+  await page.goto('/workbenches/logic?mode=argument');
+  const logic = page.getByTestId('logic-proof-workbench');
+  await expect(logic).toHaveAttribute('data-hydrated', 'true', { timeout: 10_000 });
+  await expect(logic.getByRole('tab', { name: 'Test an Argument' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('button', { name: 'Save & update' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Save & update' }).click();
@@ -99,19 +103,21 @@ test('production PWA serves query-based study routes from the service-worker cac
     await page.getByRole('radio').first().check();
     await page.getByRole('button', { name: 'Check item' }).click();
     await expect(page.locator('.mixed-question__result')).toBeVisible();
-    await page.goto('/workbenches/probability?mode=bayes&offline=1', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByTestId('probability-model-builder')).toBeVisible();
-    await expect(page.getByTestId('probability-model-builder')).toHaveAttribute('data-hydrated', 'true');
-    await expect(page.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('bayes');
+    await page.goto('/workbenches/probability?view=conditional&offline=1', { waitUntil: 'domcontentloaded' });
+    const probability = page.getByTestId('probability-model-builder');
+    await expect(probability).toBeVisible();
+    await expect(probability).toHaveAttribute('data-hydrated', 'true');
+    await expect(probability.getByRole('tab', { name: 'Conditional Probability' })).toHaveAttribute('aria-selected', 'true');
     for (const [route, selector] of [
-      ['/workbenches/logic?mode=compare', 'logic-proof-workbench'],
+      ['/workbenches/logic?mode=argument', 'logic-proof-workbench'],
       ['/workbenches/finance?scenario=bond', 'money-timeline-workbench'],
       ['/workbenches/linear?goal=inverse', 'row-operations-coach'],
-      ['/workbenches/applications?mode=game', 'optimization-strategy-workbench'],
     ]) {
       await page.goto(route!, { waitUntil: 'domcontentloaded' });
       await expect(page.getByTestId(selector!)).toHaveAttribute('data-hydrated', 'true');
     }
+    await page.goto('/modules/applications?view=notes', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-module-view="notes"]')).toBeVisible();
   } finally {
     await context.setOffline(false);
   }
@@ -120,7 +126,7 @@ test('production PWA serves query-based study routes from the service-worker cac
 test('built legacy redirects preserve task selection with a no-script fallback', async ({ page, browser }) => {
   await page.goto('/labs/truth-table?mode=argument');
   await expect(page).toHaveURL(/\/workbenches\/logic\?mode=argument$/);
-  await expect(page.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('argument');
+  await expect(page.getByRole('tab', { name: 'Test an Argument' })).toHaveAttribute('aria-selected', 'true');
   const noScript = await browser.newContext({ javaScriptEnabled: false, baseURL: 'http://127.0.0.1:4321' });
   try {
     const fallback = await noScript.newPage();

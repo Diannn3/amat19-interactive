@@ -100,7 +100,6 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
       '/workbenches/probability',
       '/workbenches/finance',
       '/workbenches/linear',
-      '/workbenches/applications',
     ]) {
       await page.goto(route);
       await expect(page.locator('main')).not.toContainText(/\bworker\b|internal value|deterministic run|engine(?:'s)? (?:trace|step)|probability engine/i);
