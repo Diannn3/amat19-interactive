@@ -111,10 +111,10 @@ export default function ReferenceBrowser() {
     <div className="reference-browser__summary" aria-live="polite"><strong>{filteredEntries.length}</strong> of {referenceEntries.length} entries · open an entry for assumptions and its live lab.</div>
 
     {filteredEntries.length ? <div className="reference-entry-grid">
-      {filteredEntries.map((entry) => <details className="reference-entry" data-module={entry.module} key={entry.id}>
+      {[filteredEntries.slice(0, Math.ceil(filteredEntries.length / 2)), filteredEntries.slice(Math.ceil(filteredEntries.length / 2))].map((entries, column) => <div className="reference-entry-column" key={column}>{entries.map((entry) => <details className="reference-entry" data-module={entry.module} key={entry.id}>
         <summary><span className="reference-entry__summary"><code>{entry.formula}</code><strong>{entry.title}</strong></span><span className="reference-entry__module">{entry.module}</span></summary>
         <div className="reference-entry__body"><p>{entry.explanation}</p><div className="reference-entry__assumption"><span>Assumption</span><strong>{entry.assumptions}</strong></div><a className="text-link" href={entry.labHref}>{entry.labLabel} <ArrowUpRight size={15} aria-hidden="true" /></a></div>
-      </details>)}
+      </details>)}</div>)}
     </div> : <div className="empty-state"><strong>No matching reference entries.</strong><p>Try a formula, a module name, or clear the filters.</p></div>}
   </div>;
 }
