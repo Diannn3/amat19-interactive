@@ -1239,7 +1239,7 @@ html[data-motion="reduced"] .update-banner button {
   box-shadow: none !important;
 }
 
-.home-workbench-link .apple-action-circle {
+.home-workbench-link .blueprint-action-circle {
   border: 1.5px solid var(--editorial-ink) !important;
   background: var(--editorial-signal) !important;
   color: var(--editorial-paper-pure) !important;
@@ -1443,7 +1443,7 @@ html[data-motion="reduced"] .home-workbench-link.apple-glass-card {
   color: var(--editorial-on-field) !important;
 }
 
-.home-workbench-link .apple-action-circle {
+.home-workbench-link .blueprint-action-circle {
   width: 2rem !important;
   height: 2rem !important;
   border-color: var(--editorial-on-field) !important;
@@ -2154,7 +2154,7 @@ html[data-motion="reduced"] .home-journey__badge.apple-glass-card {
   text-transform: uppercase;
 }
 
-.workbench-card .apple-action-circle {
+.workbench-card .blueprint-action-circle {
   border: 1.5px solid var(--editorial-ink) !important;
   background: var(--editorial-signal) !important;
   color: var(--editorial-paper-pure) !important;
@@ -2356,7 +2356,7 @@ html[data-motion="reduced"] .home-journey__badge.apple-glass-card {
   text-decoration-thickness: 2px !important;
 }
 
-.syllabus-module-arrow .apple-action-circle {
+.syllabus-module-arrow .blueprint-action-circle {
   border: 1.5px solid var(--editorial-ink) !important;
   background: var(--editorial-signal) !important;
   color: var(--editorial-paper-pure) !important;
@@ -3030,7 +3030,7 @@ html[data-motion="reduced"] .study-panel--primary::after {
   font-weight: 700 !important;
 }
 
-.study-bento-card .apple-action-circle {
+.study-bento-card .blueprint-action-circle {
   border: 1.5px solid var(--editorial-ink) !important;
   background: var(--editorial-signal) !important;
   color: var(--editorial-paper-pure) !important;
@@ -6513,8 +6513,8 @@ main .apple-glass-card:active {
   transform: none !important;
 }
 
-main .apple-glass-card:hover .apple-action-circle,
-main .apple-glass-card:active .apple-action-circle {
+main .apple-glass-card:hover .blueprint-action-circle,
+main .apple-glass-card:active .blueprint-action-circle {
   transform: none !important;
 }
 
@@ -6623,13 +6623,13 @@ main .apple-glass-card:active .apple-action-circle {
 .editorial-sticker--signal,
 .update-banner button:first-of-type,
 .home-hero__actions .apple-btn-black,
-.home-workbench-link .apple-action-circle,
-.workbench-card .apple-action-circle,
+.home-workbench-link .blueprint-action-circle,
+.workbench-card .blueprint-action-circle,
 .syllabus-module-week,
-.syllabus-module-arrow .apple-action-circle,
+.syllabus-module-arrow .blueprint-action-circle,
 .syllabus-banner-cta .apple-btn-black,
 .study-panel .hero-action--primary,
-.study-bento-card .apple-action-circle,
+.study-bento-card .blueprint-action-circle,
 .workbench-route__canvas .amat-button--primary,
 .workbench-route__canvas .button--primary,
 .workbench-route__canvas .apple-btn-black,
@@ -6935,13 +6935,13 @@ html[data-theme='dark'] {
 .editorial-sticker--signal,
 .update-banner button:first-of-type,
 .home-hero__actions .apple-btn-black,
-.home-workbench-link .apple-action-circle,
-.workbench-card .apple-action-circle,
+.home-workbench-link .blueprint-action-circle,
+.workbench-card .blueprint-action-circle,
 .syllabus-module-week,
-.syllabus-module-arrow .apple-action-circle,
+.syllabus-module-arrow .blueprint-action-circle,
 .syllabus-banner-cta .apple-btn-black,
 .study-panel .hero-action--primary,
-.study-bento-card .apple-action-circle,
+.study-bento-card .blueprint-action-circle,
 .workbench-route__canvas .amat-button--primary,
 .workbench-route__canvas .button--primary,
 .workbench-route__canvas .apple-btn-black,
@@ -7576,5 +7576,50 @@ html[data-theme='dark'] .workspace-scroll {
   [data-route^="/modules/"] .choice-option:has(input:checked) {
     outline-color: Highlight;
     background: Canvas !important;
+  }
+}
+
+
+/* Blueprint v7 — styles formerly unique to the retired Apple/glass layer. */
+.logic-input--large {
+  width: 100%;
+  min-height: 46px;
+  padding: .75rem .9rem;
+  border: 1.5px solid var(--editorial-ink);
+  border-radius: var(--editorial-radius-xs);
+  background: var(--editorial-paper-pure);
+  color: var(--editorial-ink);
+  font: 600 1rem/1.4 var(--font-amat-mono);
+}
+
+.logic-input--large:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.logic-summary-badge {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: .65rem;
+  padding: .45rem .7rem;
+  border: 1.5px solid var(--editorial-ink);
+  border-radius: var(--editorial-radius-xs);
+  background: var(--editorial-paper-muted);
+  color: var(--editorial-ink);
+  flex-wrap: wrap;
+}
+
+.logic-summary-class {
+  color: var(--editorial-ink);
+  font-size: .82rem;
+  font-weight: 750;
+  text-transform: capitalize;
+}
+
+@media (max-width: 640px) {
+  .logic-input--large {
+    padding: .6rem .72rem;
+    font-size: .92rem;
   }
 }
