@@ -73,7 +73,7 @@ const currentTopicsByModule = new Map(
               data-module={workbench.id}
               data-search={[module.title, workbench.title, workbench.description, workbench.notation, ...topics].join(' ').toLowerCase()}
             >
-              <a class="workbench-card apple-glass-card" href={workbench.href}>
+              <a class="workbench-card" href={workbench.href}>
                 <div>
                   <div class="workbench-card__header">
                     <div class="apple-icon-squircle" aria-hidden="true">
@@ -108,7 +108,7 @@ const currentTopicsByModule = new Map(
 
                 <div class="workbench-card__footer">
                   <span class="workbench-card__action-text">Open Workbench</span>
-                  <div class="apple-action-circle" aria-hidden="true">
+                  <div class="blueprint-action-circle" aria-hidden="true">
                     <ArrowRight size={15} strokeWidth={2.2} />
                   </div>
                 </div>
@@ -134,7 +134,7 @@ const currentTopicsByModule = new Map(
 
       <div class="course-syllabus-layout">
         <div class="syllabus-timeline">
-          <div class="syllabus-module-card apple-glass-card">
+          <div class="syllabus-module-card">
             <div class="syllabus-module-badge">
               <span class="syllabus-module-week">Step 1</span>
               <div class="apple-icon-squircle" aria-hidden="true">
@@ -151,13 +151,13 @@ const currentTopicsByModule = new Map(
               </div>
             </div>
             <div class="syllabus-module-arrow">
-              <a href="/workbenches/logic" class="apple-action-circle" aria-label="Open Logic & Proof">
+              <a href="/workbenches/logic" class="blueprint-action-circle" aria-label="Open Logic & Proof">
                 <ArrowRight size={15} strokeWidth={2.2} />
               </a>
             </div>
           </div>
 
-          <div class="syllabus-module-card apple-glass-card">
+          <div class="syllabus-module-card">
             <div class="syllabus-module-badge">
               <span class="syllabus-module-week">Step 2</span>
               <div class="apple-icon-squircle" aria-hidden="true">
@@ -174,13 +174,13 @@ const currentTopicsByModule = new Map(
               </div>
             </div>
             <div class="syllabus-module-arrow">
-              <a href="/workbenches/probability" class="apple-action-circle" aria-label="Open Probability & Counting">
+              <a href="/workbenches/probability" class="blueprint-action-circle" aria-label="Open Probability & Counting">
                 <ArrowRight size={15} strokeWidth={2.2} />
               </a>
             </div>
           </div>
 
-          <div class="syllabus-module-card apple-glass-card">
+          <div class="syllabus-module-card">
             <div class="syllabus-module-badge">
               <span class="syllabus-module-week">Step 3</span>
               <div class="apple-icon-squircle" aria-hidden="true">
@@ -197,13 +197,13 @@ const currentTopicsByModule = new Map(
               </div>
             </div>
             <div class="syllabus-module-arrow">
-              <a href="/workbenches/finance" class="apple-action-circle" aria-label="Open Financial Mathematics">
+              <a href="/workbenches/finance" class="blueprint-action-circle" aria-label="Open Financial Mathematics">
                 <ArrowRight size={15} strokeWidth={2.2} />
               </a>
             </div>
           </div>
 
-          <div class="syllabus-module-card apple-glass-card">
+          <div class="syllabus-module-card">
             <div class="syllabus-module-badge">
               <span class="syllabus-module-week">Step 4</span>
               <div class="apple-icon-squircle" aria-hidden="true">
@@ -220,13 +220,13 @@ const currentTopicsByModule = new Map(
               </div>
             </div>
             <div class="syllabus-module-arrow">
-              <a href="/workbenches/linear" class="apple-action-circle" aria-label="Open Matrices & Systems">
+              <a href="/workbenches/linear" class="blueprint-action-circle" aria-label="Open Matrices & Systems">
                 <ArrowRight size={15} strokeWidth={2.2} />
               </a>
             </div>
           </div>
 
-          <div class="syllabus-module-card apple-glass-card">
+          <div class="syllabus-module-card">
             <div class="syllabus-module-badge">
               <span class="syllabus-module-week">Step 5</span>
               <div class="apple-icon-squircle" aria-hidden="true">
@@ -243,7 +243,7 @@ const currentTopicsByModule = new Map(
               </div>
             </div>
             <div class="syllabus-module-arrow">
-              <a href="/modules/applications?view=notes" class="apple-action-circle" aria-label="Read Applied Models notes">
+              <a href="/modules/applications?view=notes" class="blueprint-action-circle" aria-label="Read Applied Models notes">
                 <ArrowRight size={15} strokeWidth={2.2} />
               </a>
             </div>
@@ -251,7 +251,7 @@ const currentTopicsByModule = new Map(
         </div>
 
         <aside class="syllabus-sidebar">
-          <div class="syllabus-resources-card apple-glass-card">
+          <div class="syllabus-resources-card">
             <h3>Course Resources</h3>
             <div class="syllabus-resource-list">
               <a class="syllabus-resource-item" href="/reference">
@@ -302,7 +302,7 @@ const currentTopicsByModule = new Map(
         </aside>
       </div>
 
-      <div class="syllabus-banner-cta apple-glass-card">
+      <div class="syllabus-banner-cta">
         <div class="syllabus-banner-copy">
           <strong>Ready to begin?</strong>
           <p>Start with Propositional Logic and explore how statements and truth tables work together.</p>
@@ -314,7 +314,7 @@ const currentTopicsByModule = new Map(
     </section>
 
     {/* Full-Width Companion Bar */}
-    <div class="course-companion-bar apple-glass-card">
+    <div class="course-companion-bar">
       <div class="course-companion-bar__copy">
         <div class="apple-icon-squircle" aria-hidden="true">
           <Infinity size={22} strokeWidth={1.8} />
@@ -337,7 +337,7 @@ const currentTopicsByModule = new Map(
       </div>
 
       <div class="utility-grid">
-        <a class="utility-card apple-glass-card" href="/study">
+        <a class="utility-card" href="/study">
           <div class="utility-card__icon" aria-hidden="true">
             <GraduationCap size={20} strokeWidth={1.8} />
           </div>
@@ -350,7 +350,7 @@ const currentTopicsByModule = new Map(
           </div>
         </a>
 
-        <a class="utility-card apple-glass-card" href="/exam">
+        <a class="utility-card" href="/exam">
           <div class="utility-card__icon" aria-hidden="true">
             <ClipboardCheck size={20} strokeWidth={1.8} />
           </div>
@@ -363,7 +363,7 @@ const currentTopicsByModule = new Map(
           </div>
         </a>
 
-        <a class="utility-card apple-glass-card" href="/reference">
+        <a class="utility-card" href="/reference">
           <div class="utility-card__icon" aria-hidden="true">
             <BookOpen size={20} strokeWidth={1.8} />
           </div>
@@ -376,7 +376,7 @@ const currentTopicsByModule = new Map(
           </div>
         </a>
 
-        <a class="utility-card apple-glass-card" href="/progress">
+        <a class="utility-card" href="/progress">
           <div class="utility-card__icon" aria-hidden="true">
             <BarChart3 size={20} strokeWidth={1.8} />
           </div>
