@@ -8,6 +8,7 @@ const files = {
   theme: new URL('../../apps/web/src/styles/theme.css', import.meta.url),
   pass4: new URL('../../apps/web/src/styles/pass4.css', import.meta.url),
   editorial: new URL('../../apps/web/src/styles/editorial-grid.css', import.meta.url),
+  shell: new URL('../../apps/web/src/styles/shell-v7.css', import.meta.url),
 };
 
 test('appearance contract is binary light or dark with a deterministic light fallback', async () => {
@@ -30,15 +31,17 @@ test('appearance contract is binary light or dark with a deterministic light fal
 });
 
 test('legacy Apple glass layer is no longer part of the live design system', async () => {
-  const [layout, pass4, editorial] = await Promise.all([
+  const [layout, pass4, editorial, shell] = await Promise.all([
     readFile(files.layout, 'utf8'),
     readFile(files.pass4, 'utf8'),
     readFile(files.editorial, 'utf8'),
+    readFile(files.shell, 'utf8'),
   ]);
 
   assert.doesNotMatch(layout, /apple-glass\.css/);
   assert.doesNotMatch(layout, /apple-glass-card/);
   assert.doesNotMatch(pass4, /#240509/i);
-  assert.match(editorial, /\.mobile-nav/);
-  assert.match(editorial, /var\(--editorial-paper-pure\)/);
+  assert.doesNotMatch(editorial, /\.mobile-nav/);
+  assert.match(shell, /\.mobile-nav/);
+  assert.match(shell, /var\(--editorial-paper-pure\)/);
 });
