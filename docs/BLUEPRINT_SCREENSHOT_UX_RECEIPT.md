@@ -36,3 +36,6 @@ No deployment or remote push performed. Local production preview: http://127.0.0
 
 Implementation commit: 18766e09cb161059b7ff102b31016fbad8bf9738.
 Final independent critic review: no additional concrete regressions; earlier findings fixed. Mobile expanded notation and dark practice were also visually inspected.
+
+## CI dependency audit repair
+The protected-branch quality job initially failed because the inherited dependency lock contained 11 high-severity transitive advisories (24 total). Updated vulnerable lockfile packages to patched releases and added a scoped pnpm override for source-map-js 1.2.2 where upstream ranges otherwise retained 1.2.1. pnpm audit --audit-level high now reports no known vulnerabilities; pnpm verify passes after the update. Changes are in pnpm-lock.yaml and pnpm-workspace.yaml.
