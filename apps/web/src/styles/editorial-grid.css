@@ -7258,7 +7258,7 @@ html[data-theme='dark'] .workspace-scroll {
 
 [data-route^="/modules/"] .module-overview__context {
   margin: 0 0 .75rem !important;
-  color: var(--editorial-signal) !important;
+  color: var(--editorial-signal-ink) !important;
 }
 
 [data-route^="/modules/"] .module-overview .display-title {
