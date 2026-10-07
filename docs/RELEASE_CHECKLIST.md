@@ -44,12 +44,14 @@
 - [ ] Fresh install works offline for all core routes.
 - [ ] Query-based routes work offline.
 - [ ] Explicit Reload requests the network without the four-second stale-page timeout.
-- [ ] Upgrade from a legacy v2-v5 controller succeeds even when old Cache Storage was already cleared.
-- [ ] Ordinary v6-to-v6 updates remain waiting until Save & update or an explicit browser Reload.
+- [ ] Upgrade from a legacy v2-v6 controller succeeds even when old Cache Storage was already cleared.
+- [ ] Ordinary v7-to-v7 updates remain waiting until Save & update or an explicit browser Reload.
 - [ ] Upgrade preserves local IndexedDB data.
 - [x] Update activation waits for an explicit persistence flush before reload.
 
 ## Deployment
+- [ ] `version.json` reports the exact expected production commit and `amat19-blueprint-v7`.
+- [ ] Post-merge `production-origin` CI verifies the real `amat19.vercel.app` alias, not only a Vercel build status.
 - [ ] Security headers verified with actual production response headers.
 - [ ] CSP produces no unexpected violations.
 - [ ] `sw.js` and `sw-assets.json` are served with no-store browser/CDN headers.
