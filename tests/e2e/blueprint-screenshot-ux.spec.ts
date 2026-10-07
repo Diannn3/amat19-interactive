@@ -49,13 +49,31 @@ test('audited learning surfaces have no serious accessibility violations', async
   }
 });
 
-test('audited pages fit the viewport and Logic intro uses a solid surface', async ({ page }) => {
-  for (const route of ['/study', '/reference', '/modules/logic', '/modules/logic?view=notes', '/modules/logic?view=practice', '/workbenches/logic']) {
-    await page.goto(route);
-    await expect(page.locator('h1').first()).toBeVisible();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
-    if (route === '/modules/logic') {
-      expect(await page.locator('.module-overview').evaluate(el => getComputedStyle(el).backgroundImage)).toBe('none');
+test('all module pages use the compact Blueprint sheet without horizontal overflow', async ({ page }) => {
+  const modules = ['logic', 'probability', 'finance', 'linear', 'applications'];
+  for (const module of modules) {
+    for (const suffix of ['', '?view=notes', '?view=practice']) {
+      await page.goto(`/modules/${module}${suffix}`);
+      await expect(page.locator('h1').first()).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+
+      const overview = page.getByTestId('module-overview');
+      expect(await overview.evaluate(el => getComputedStyle(el).backgroundImage)).toBe('none');
+      expect(await overview.evaluate(el => getComputedStyle(el).backgroundColor)).not.toBe('rgb(19, 59, 92)');
+
+      if (suffix.includes('practice')) {
+        await expect(page.getByTestId('mixed-practice')).toHaveAttribute('data-hydrated', 'true');
+      }
     }
   }
+});
+
+test('Applications is visibly notes-first and never revives the retired Optimization workbench CTA', async ({ page }) => {
+  await page.goto('/modules/applications');
+  const overview = page.getByTestId('module-overview');
+  await expect(overview.getByRole('link', { name: 'Read Applications notes' })).toHaveAttribute('href', '/modules/applications?view=notes');
+  await expect(overview).toContainText('Notes-first');
+  await expect(page.getByRole('link', { name: /Open Optimization & Strategy/i })).toHaveCount(0);
+  await expect(page.locator('a[href^="/workbenches/applications"]')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Start with the notes.' })).toBeVisible();
 });

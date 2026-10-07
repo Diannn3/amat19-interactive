@@ -7224,3 +7224,357 @@ html[data-theme='dark'] .workspace-scroll {
   .reference-entry-column { background: Canvas !important; color: CanvasText !important; border-color: CanvasText !important; box-shadow: none !important; }
   [data-route="/modules/logic"] .choice-option:has(input:checked) { outline-color: Highlight; background: Canvas !important; }
 }
+
+
+/* ==========================================================================
+   Module surface reconciliation — compact Blueprint sheet for every module
+   The screenshot-repair pass originally scoped this treatment to Logic only.
+   Keep every module on the same current visual grammar.
+   ========================================================================== */
+
+[data-route^="/modules/"] .module-overview {
+  position: relative !important;
+  isolation: isolate;
+  grid-template-columns: 1fr !important;
+  align-items: start !important;
+  gap: 1.5rem !important;
+  min-height: 0 !important;
+  margin-top: clamp(1rem, 2.4vw, 1.5rem) !important;
+  padding: clamp(1.25rem, 3vw, 2rem) !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper-pure) !important;
+  background-image: none !important;
+  box-shadow: var(--editorial-shadow-sm) !important;
+  color: var(--editorial-ink) !important;
+  overflow: hidden;
+}
+
+[data-route^="/modules/"] .module-overview__copy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+[data-route^="/modules/"] .module-overview__context {
+  margin: 0 0 .75rem !important;
+  color: var(--editorial-signal-ink) !important;
+}
+
+[data-route^="/modules/"] .module-overview .display-title {
+  max-width: 24ch !important;
+  margin: 0 !important;
+  color: var(--editorial-ink) !important;
+  font: 820 clamp(2.15rem, 4.6vw, 3.8rem)/1.02 var(--font-amat-display) !important;
+  letter-spacing: -.055em !important;
+}
+
+[data-route^="/modules/"] .module-overview .lede {
+  max-width: 68ch !important;
+  margin: .9rem 0 0 !important;
+  color: var(--editorial-ink-muted) !important;
+  font-size: clamp(.96rem, .3vw + .9rem, 1.08rem) !important;
+  line-height: 1.65 !important;
+}
+
+[data-route^="/modules/"] .module-overview .hero-actions {
+  margin-top: 1.15rem !important;
+}
+
+[data-route^="/modules/"] .module-overview .hero-action {
+  min-height: 46px !important;
+  padding: .72rem .9rem !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+}
+
+[data-route^="/modules/"] .module-overview .hero-action:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--editorial-ink) !important;
+}
+
+[data-route^="/modules/"] .module-journey__metrics {
+  position: static !important;
+  z-index: 1;
+  width: min(100%, 36rem) !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper) !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+
+[data-route^="/modules/"] .module-journey__metrics > div {
+  min-width: 0;
+  padding: .8rem .9rem !important;
+  border: 0 !important;
+  border-right: 1px solid var(--editorial-ink) !important;
+}
+
+[data-route^="/modules/"] .module-journey__metrics > div:last-child {
+  border-right: 0 !important;
+}
+
+[data-route^="/modules/"] .module-journey__metrics strong {
+  overflow-wrap: anywhere;
+  color: var(--editorial-ink) !important;
+  font-size: clamp(1rem, 2vw, 1.4rem) !important;
+}
+
+[data-route^="/modules/"] .module-journey__metrics span {
+  display: block;
+  margin-top: .25rem;
+  color: var(--editorial-ink-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+[data-route^="/modules/"] .module-tabs {
+  margin-top: 1rem !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+  overflow: hidden;
+}
+
+[data-route^="/modules/"] .module-tabs a {
+  position: relative;
+  flex: 1 1 auto;
+  justify-content: center;
+  min-width: 0;
+}
+
+[data-route^="/modules/"] .module-tabs a[aria-current="page"] {
+  background: var(--editorial-secondary) !important;
+  box-shadow: inset 0 -4px 0 var(--editorial-ink);
+}
+
+[data-route^="/modules/"] .module-view {
+  padding-block: clamp(1.75rem, 3.5vw, 3rem) !important;
+}
+
+[data-route^="/modules/"] .module-view > .section-heading {
+  margin-bottom: 1rem !important;
+}
+
+[data-route^="/modules/"] .module-next-step {
+  min-height: 5.5rem !important;
+  padding: clamp(1rem, 2.4vw, 1.35rem) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+}
+
+[data-route^="/modules/"] .module-next-step strong {
+  color: var(--editorial-ink) !important;
+  font: 800 clamp(1rem, 1.6vw, 1.2rem)/1.15 var(--font-amat-display) !important;
+}
+
+[data-route^="/modules/"] .module-next-step small,
+[data-route^="/modules/"] .module-view-links a span,
+[data-route^="/modules/"] .lesson-list small,
+[data-route^="/modules/"] .module-supplemental small {
+  color: var(--editorial-ink-muted) !important;
+}
+
+[data-route^="/modules/"] .module-view-links {
+  margin-top: .9rem !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  overflow: hidden;
+}
+
+[data-route^="/modules/"] .module-view-links a {
+  min-height: 4.75rem;
+  padding: 1rem !important;
+}
+
+[data-route^="/modules/"] .module-view-links a + a {
+  border-left: 1px solid var(--editorial-ink) !important;
+}
+
+[data-route^="/modules/"] .module-supplemental {
+  margin-top: 1rem !important;
+  border-radius: var(--editorial-radius-xs) !important;
+}
+
+[data-route^="/modules/"] .module-supplemental summary {
+  min-height: 48px;
+  padding: .75rem 1rem !important;
+}
+
+[data-route^="/modules/"] .module-supplemental__list a {
+  min-height: 4.5rem;
+  padding: .85rem 1rem !important;
+  border-top: 1px solid var(--editorial-rule) !important;
+}
+
+[data-route^="/modules/"] .lesson-list {
+  overflow: hidden;
+  border-radius: var(--editorial-radius-xs) !important;
+}
+
+[data-route^="/modules/"] .lesson-list a {
+  min-height: 5rem !important;
+  padding: 1rem 1.1rem !important;
+  gap: 1rem !important;
+}
+
+[data-route^="/modules/"] .lesson-list a > span:last-child {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  white-space: nowrap;
+}
+
+[data-route^="/modules/"] .lesson-list a:focus-visible,
+[data-route^="/modules/"] .module-view-links a:focus-visible,
+[data-route^="/modules/"] .module-next-step:focus-visible,
+[data-route^="/modules/"] .module-tabs a:focus-visible {
+  outline: 3px solid var(--focus) !important;
+  outline-offset: -4px;
+}
+
+[data-route^="/modules/"] .mixed-practice__progress,
+[data-route^="/modules/"] .mixed-question {
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-sm) !important;
+  background: var(--editorial-paper-pure) !important;
+  box-shadow: var(--editorial-shadow-sm) !important;
+  color: var(--editorial-ink) !important;
+  padding: 1.5rem !important;
+}
+
+[data-route^="/modules/"] .mixed-practice__progress {
+  padding: 1rem 1.5rem !important;
+}
+
+[data-route^="/modules/"] .mixed-question__head h3 {
+  margin: 0;
+  color: var(--editorial-ink) !important;
+  font: 750 1.25rem/1.3 var(--font-amat-display);
+}
+
+[data-route^="/modules/"] .mixed-question__counter,
+[data-route^="/modules/"] .mixed-question > p {
+  color: var(--editorial-ink-muted) !important;
+}
+
+[data-route^="/modules/"] .choice-option {
+  min-height: 48px !important;
+  padding: 1rem !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  background: var(--editorial-paper) !important;
+  color: var(--editorial-ink) !important;
+}
+
+[data-route^="/modules/"] .choice-option:has(input:checked) {
+  background: var(--editorial-secondary-soft) !important;
+  outline: 2px solid var(--editorial-ink);
+  outline-offset: 2px;
+}
+
+[data-route^="/modules/"] .choice-option:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+[data-route^="/modules/"] .mixed-practice .amat-button {
+  min-height: 44px !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-xs) !important;
+  box-shadow: var(--editorial-shadow-xs) !important;
+}
+
+[data-route^="/modules/"] .mixed-question > .amat-button:not(:disabled) {
+  background: var(--editorial-signal) !important;
+  color: var(--editorial-on-signal) !important;
+}
+
+[data-route^="/modules/"] .mixed-practice .amat-button:disabled {
+  opacity: 1 !important;
+  background: var(--editorial-paper-muted) !important;
+  color: var(--editorial-ink-muted) !important;
+  box-shadow: none !important;
+}
+
+[data-route^="/modules/"] .mixed-question__result {
+  padding-top: 1rem;
+  border-top: 2px solid var(--editorial-rule);
+}
+
+@media (max-width: 700px) {
+  [data-route^="/modules/"] .module-overview {
+    padding: 1rem !important;
+    box-shadow: 3px 3px 0 var(--editorial-ink) !important;
+  }
+
+  [data-route^="/modules/"] .module-overview .display-title {
+    font-size: clamp(2rem, 10vw, 3rem) !important;
+  }
+
+  [data-route^="/modules/"] .module-journey__metrics {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-route^="/modules/"] .module-journey__metrics > div {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--editorial-ink) !important;
+  }
+
+  [data-route^="/modules/"] .module-journey__metrics > div:last-child {
+    border-bottom: 0 !important;
+  }
+
+  [data-route^="/modules/"] .module-view-links {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-route^="/modules/"] .module-view-links a + a {
+    border-left: 0 !important;
+    border-top: 1px solid var(--editorial-ink) !important;
+  }
+
+  [data-route^="/modules/"] .lesson-list a,
+  [data-route^="/modules/"] .mixed-question {
+    padding: 1rem !important;
+  }
+
+  [data-route^="/modules/"] .choice-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-route^="/modules/"] .module-overview,
+  [data-route^="/modules/"] .module-journey__metrics,
+  [data-route^="/modules/"] .module-tabs,
+  [data-route^="/modules/"] .module-next-step,
+  [data-route^="/modules/"] .module-view-links,
+  [data-route^="/modules/"] .module-supplemental,
+  [data-route^="/modules/"] .lesson-list,
+  [data-route^="/modules/"] .mixed-practice__progress,
+  [data-route^="/modules/"] .mixed-question,
+  [data-route^="/modules/"] .choice-option,
+  [data-route^="/modules/"] .mixed-practice .amat-button {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  [data-route^="/modules/"] .module-overview .display-title,
+  [data-route^="/modules/"] .module-overview .lede,
+  [data-route^="/modules/"] .module-overview__context,
+  [data-route^="/modules/"] .module-next-step strong,
+  [data-route^="/modules/"] .module-next-step small,
+  [data-route^="/modules/"] .mixed-question__head h3,
+  [data-route^="/modules/"] .mixed-question__counter,
+  [data-route^="/modules/"] .mixed-question > p {
+    color: CanvasText !important;
+  }
+
+  [data-route^="/modules/"] .choice-option:has(input:checked) {
+    outline-color: Highlight;
+    background: Canvas !important;
+  }
+}
