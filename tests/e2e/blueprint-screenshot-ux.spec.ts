@@ -78,3 +78,38 @@ test('Applications is visibly notes-first and never revives the retired Optimiza
   await expect(page.locator('a[href^="/workbenches/applications"]')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Start here.' })).toBeVisible();
 });
+
+
+test('mobile module chrome stays compact enough to expose study content', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-375');
+  await page.goto('/modules/logic');
+
+  const topbar = page.locator('.topbar');
+  const dock = page.locator('.mobile-nav');
+  const overview = page.getByTestId('module-overview');
+  const tabs = page.getByRole('navigation', { name: 'Module sections' });
+  const nextStep = page.locator('.module-next-step').first();
+
+  const [topbarBox, dockBox, overviewBox, tabsBox, nextStepBox] = await Promise.all([
+    topbar.boundingBox(),
+    dock.boundingBox(),
+    overview.boundingBox(),
+    tabs.boundingBox(),
+    nextStep.boundingBox(),
+  ]);
+
+  expect(topbarBox).not.toBeNull();
+  expect(dockBox).not.toBeNull();
+  expect(overviewBox).not.toBeNull();
+  expect(tabsBox).not.toBeNull();
+  expect(nextStepBox).not.toBeNull();
+
+  expect(topbarBox!.height).toBeLessThanOrEqual(60);
+  expect(dockBox!.height).toBeLessThanOrEqual(64);
+  expect(overviewBox!.height).toBeLessThanOrEqual(390);
+  expect(tabsBox!.y + tabsBox!.height).toBeLessThan(560);
+  expect(nextStepBox!.y).toBeLessThan(667);
+
+  expect(await page.locator('.workspace-scroll').evaluate((element) => getComputedStyle(element).backgroundImage)).toBe('none');
+  expect(await overview.evaluate((element) => getComputedStyle(element).boxShadow)).toBe('none');
+});
