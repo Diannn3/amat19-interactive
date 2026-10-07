@@ -87,10 +87,17 @@ Snapshot export/import is validated and local-only. Cloud sync remains absent.
 The custom service worker uses:
 - network-first navigations with an offline page fallback
 - cache-first same-origin static assets
-- explicit versioned caches
-- waiting-worker activation
+- a stable release family plus a generated per-build revision
+- waiting-worker activation for ordinary same-release updates
+- a one-time v6 rescue path for legacy v2-v5 controllers
 
-An installed update never calls `skipWaiting()` automatically during an active study session. The page prompts the learner, dispatches `amat:before-update` with a task-collection detail, and waits for every mounted draft editor to become restoration-ready before asking it to persist current state. A rejected, `false`-returning, or never-ready task keeps the update pending so local work is not discarded.
+The production build stamps only `BUILD_REVISION`; it never rewrites the release-family identifier used by lifecycle decisions. During the v6 rescue, the installing worker detects legacy cache namespaces and also handshakes with the currently active worker. v5 and older workers do not answer the `GET_RELEASE` handshake, so v6 can replace them even when legacy Cache Storage was already cleared. A rescue marker cache carries that decision across activation and is removed during cleanup.
+
+Ordinary v6-to-v6 updates remain learner-controlled. The page prompts the learner, dispatches `amat:before-update` with a task-collection detail, and waits for mounted draft editors before asking the waiting worker to activate. Persistence work has a bounded failure path: a rejected, `false`-returning, or timed-out task keeps the update pending instead of discarding local work. Pressing the in-app Save & update control activates the worker explicitly. A deliberate browser Reload is also treated as update consent and runs through the same persistence contract before activation.
+
+Normal navigations retain the bounded network-first fallback. Explicit browser reloads bypass the four-second stale-page timeout and request the network with `cache: 'no-store'`, falling back to offline content only on an actual network failure.
+
+The Progress local-data tools include Repair offline app. It unregisters this origin's service-worker registrations and deletes only `amat19-*` Cache Storage entries before reloading. It does not clear IndexedDB learner data or local preferences.
 
 ## Current/supplemental curriculum boundary
 
