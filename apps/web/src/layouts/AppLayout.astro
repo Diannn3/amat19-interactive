@@ -19,6 +19,8 @@ type UtilityAction = { kind: 'action'; id: 'developer-contact'; label: string; m
 type UtilityItem = UtilityLink | UtilityAction;
 
 const { title, description = 'Interactive, course-aligned AMAT 19 finite mathematics study tools.' } = Astro.props;
+const buildCommit = process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GITHUB_SHA ?? 'local';
+const buildRelease = 'amat19-blueprint-v7';
 const primaryNavigation: NavItem[] = [
   { href: '/', label: 'Home', mobileLabel: 'Home', icon: 'home', desktopOnly: true },
   { href: '/study', label: 'Study', mobileLabel: 'Study', icon: 'study' },
@@ -46,6 +48,8 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="amat19-build" content={buildCommit} />
+    <meta name="amat19-release" content={buildRelease} />
     <meta id="amat-theme-color" name="theme-color" content="#fbfbfd" />
     <meta name="color-scheme" content="light dark" />
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -55,7 +59,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         try {
           const url = new URL(window.location.href);
           const releaseMarker = url.searchParams.get('__amat19_release') ?? '';
-          const knownReleaseMarker = ['amat19-blueprint-v4', 'amat19-blueprint-v5', 'amat19-blueprint-v6']
+          const knownReleaseMarker = ['amat19-blueprint-v4', 'amat19-blueprint-v5', 'amat19-blueprint-v6', 'amat19-blueprint-v7']
             .some((prefix) => releaseMarker.startsWith(prefix));
           if (knownReleaseMarker) {
             url.searchParams.delete('__amat19_release');
