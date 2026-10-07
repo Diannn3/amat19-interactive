@@ -1,4 +1,4 @@
-const RELEASE = 'amat19-blueprint-v6';
+const RELEASE = 'amat19-blueprint-v7';
 const BUILD_REVISION = '__AMAT19_BUILD_REVISION__';
 const VERSION = `${RELEASE}-${BUILD_REVISION}`;
 const STATIC_CACHE = `${VERSION}-static`;
@@ -10,6 +10,7 @@ const LEGACY_CACHE_PREFIXES = [
   'amat19-blueprint-v3-',
   'amat19-blueprint-v4-',
   'amat19-blueprint-v5-',
+  'amat19-blueprint-v6-',
 ];
 const CORE_ROUTES = [
   '/',
@@ -63,7 +64,7 @@ async function shouldRescueLegacyClient() {
 self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
-      // v6 is a one-time rescue for clients still carrying v2-v5 cache
+      // v7 is a one-time rescue for clients still carrying v2-v6 cache
       // generations. Future v6 revisions remain learner-controlled.
       const legacyMigration = await shouldRescueLegacyClient();
       if (legacyMigration) {
@@ -84,8 +85,8 @@ self.addEventListener('install', (event) => {
       } catch (error) {
         if (!legacyMigration) throw error;
         // Replacing a known-stale legacy worker is more important than keeping
-        // its offline cache warm. Normal v6 updates still fail closed.
-        console.warn('[AMAT 19] v6 rescue precache warmup failed; continuing legacy migration.', error);
+        // its offline cache warm. Normal v7 updates still fail closed.
+        console.warn('[AMAT 19] v7 rescue precache warmup failed; continuing legacy migration.', error);
       }
     })()
   );
