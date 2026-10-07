@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CheckCircle2, ExternalLink, History, LockKeyhole, RefreshCw, Sparkles, Target } from 'lucide-react';
 import { practicePresets, skillGraph, type ModuleId } from '@amat19/course-content';
 import { DexiePersistence } from '@amat19/persistence';
@@ -150,6 +150,7 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
   }
 
   function reset() {
+    focusNextQuestion.current = true;
     setSeed(freshSeed(mode));
     setAnswers({});
     setChecked({});
@@ -158,7 +159,14 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
     setSaved(false);
   }
 
+  const questionHeading = useRef<HTMLHeadingElement>(null);
+  const focusNextQuestion = useRef(false);
+  useEffect(() => {
+    if (mode === 'practice' && module === 'logic' && focusNextQuestion.current) { questionHeading.current?.focus(); focusNextQuestion.current = false; }
+  }, [activeIndex, seed]);
+
   function goToQuestion(index: number) {
+    focusNextQuestion.current = true;
     setActiveQuestionIndex(Math.min(Math.max(index, 0), Math.max(questions.length - 1, 0)));
   }
 
@@ -219,7 +227,7 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
           const selected = answers[question.id];
           const correct = selected === question.correctIndex;
           return <li className="mixed-question" key={question.id} data-result={showResult ? (correct ? 'correct' : 'wrong') : undefined}>
-            <div className="mixed-question__head"><Badge>{moduleLabel[question.module]}</Badge><span className="mixed-question__counter">Question {activeIndex + 1}</span><strong>{question.title}</strong></div>
+            <div className="mixed-question__head"><Badge>{moduleLabel[question.module]}</Badge><span className="mixed-question__counter">Question {activeIndex + 1}</span>{mode === 'practice' && module === 'logic' ? <h3 ref={questionHeading} tabIndex={-1}>{question.title}</h3> : <strong>{question.title}</strong>}</div>
             <p>{question.prompt}</p>
             <fieldset disabled={mode === 'exam' ? submitted : Boolean(showResult)}>
               <legend className="sr-only">Answer question {activeIndex + 1}</legend>
@@ -228,6 +236,7 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
                 <span>{choice}</span>
               </label>)}</div>
             </fieldset>
+            {mode === 'practice' && module === 'logic' && !showResult && selected === undefined && <p className="practice-selection-hint">Choose an answer to check.</p>}
             {mode === 'practice' && !showResult && <Button variant="primary" type="button" disabled={selected === undefined} onClick={() => void checkOne(question)}>Check item</Button>}
             {showResult && <div className="mixed-question__result"><Feedback tone={correct ? 'success' : 'error'}>{correct ? 'Correct.' : `Not yet. The correct answer is ${question.choices[question.correctIndex]}.`} {question.explanation}</Feedback><a className="text-link" href={question.labHref}>Repair this skill in its lab <ExternalLink size={14} aria-hidden="true" /></a></div>}
             <div className="mixed-question__actions">

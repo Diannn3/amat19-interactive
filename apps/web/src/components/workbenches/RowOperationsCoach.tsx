@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Lightbulb, RotateCcw, Undo2 } from 'lucide-react';
+import * as Tabs from '@radix-ui/react-tabs';
 import {
   DEFAULT_INTERACTIVE_MATRIX_INPUT_LIMITS,
   applyRowOperation,
@@ -7,6 +8,7 @@ import {
   inverse,
   matricesEqual,
   matrixToStrings,
+  multiplicationCellTrace,
   parseMatrixText,
   rref,
   solveLinearSystem,
@@ -61,6 +63,7 @@ const ARITHMETIC_RIGHT_SAMPLE = '2 1\n1 2';
 type Analysis =
   | { kind: 'row'; source: Matrix; target: Matrix; summary: string; detail: string; splitAfter?: number }
   | { kind: 'arithmetic'; source: Matrix; right: Matrix; target: Matrix; operation: ArithmeticOperation }
+  | { kind: 'arithmetic-error'; source: Matrix; right: Matrix; error: string; operation: ArithmeticOperation }
   | { kind: 'error'; error: string };
 
 function parse(raw: string) {
@@ -126,13 +129,18 @@ export default function RowOperationsCoach() {
   const candidateRowInput = useRef<HTMLTextAreaElement>(null);
   const candidateMatrixInput = useRef<HTMLTextAreaElement>(null);
   const userInteracted = useRef(false);
+  const initialGoal = useRef<Goal>('system');
 
   const analysis: Analysis = useMemo(() => {
     try {
       const source = parse(sourceRaw);
       if (goal === 'arithmetic') {
         const right = parse(arithmeticRightRaw);
-        return { kind: 'arithmetic' as const, source, right, target: arithmeticResult(source, right, arithmeticOperation), operation: arithmeticOperation };
+        try {
+          return { kind: 'arithmetic' as const, source, right, target: arithmeticResult(source, right, arithmeticOperation), operation: arithmeticOperation };
+        } catch (error) {
+          return { kind: 'arithmetic-error' as const, source, right, error: error instanceof Error ? error.message : 'These matrix dimensions are incompatible.', operation: arithmeticOperation };
+        }
       }
       const initial = startingMatrix(source, goal);
       const reduced = rref(initial);
@@ -185,51 +193,13 @@ export default function RowOperationsCoach() {
     arithmeticOperation,
   };
 
-  // Mockup 8: Matrices & Systems Flagship State
-  const [matrixCells, setMatrixCells] = useState<number[][]>([
-    [2, -1, 0],
-    [1, 3, 4],
-    [0, 1, 2],
-  ]);
-  const [matrixDim, setMatrixDim] = useState<2 | 3>(3);
-  const [activeMatrixTab, setActiveMatrixTab] = useState<'ops' | 'solve' | 'det' | 'rref' | 'eigen'>('det');
-  const [activeMatrixOp, setActiveMatrixOp] = useState<string>('det');
-
-  const detValue = useMemo(() => {
-    if (matrixDim === 2) {
-      return matrixCells[0][0] * matrixCells[1][1] - matrixCells[0][1] * matrixCells[1][0];
-    }
-    const a = matrixCells[0][0], b = matrixCells[0][1], c = matrixCells[0][2];
-    const d = matrixCells[1][0], e = matrixCells[1][1], f = matrixCells[1][2];
-    const g = matrixCells[2][0], h = matrixCells[2][1], i = matrixCells[2][2];
-    return a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
-  }, [matrixCells, matrixDim]);
-
-  const isoProject = (x: number, y: number, z: number) => {
-    const x0 = 160;
-    const y0 = 135;
-    const s = 18;
-    const cos30 = 0.866;
-    const sin30 = 0.5;
-    const px = x0 + (x * cos30 - y * cos30) * s;
-    const py = y0 - (z - x * sin30 - y * sin30) * s;
-    return { x: px, y: py };
-  };
-
-  const updateMatrixCell = (r: number, c: number, val: number) => {
-    setMatrixCells((prev) => {
-      const next = prev.map((row) => [...row]);
-      next[r][c] = val;
-      return next;
-    });
-  };
-
   useEffect(() => {
     const requestedGoal = readWorkbenchOption('goal', GOALS);
     loadDraft<StoredDraft>(LAB_ID, CONTENT_VERSION).then((saved) => {
       const savedGoal = saved && isGoal(saved.goal) ? saved.goal : undefined;
       if (!userInteracted.current && requestedGoal && requestedGoal !== savedGoal) {
         const raw = SAMPLES[requestedGoal];
+        initialGoal.current = requestedGoal;
         setGoal(requestedGoal);
         setSourceRaw(raw);
         setEditorRaw(raw);
@@ -243,6 +213,7 @@ export default function RowOperationsCoach() {
           const restoredSource = parse(saved.sourceRaw);
           const restoredCurrent = parse(saved.currentRaw);
           startingMatrix(restoredSource, savedGoal);
+          initialGoal.current = savedGoal;
           setGoal(savedGoal);
           setSourceRaw(saved.sourceRaw);
           setEditorRaw(saved.sourceRaw);
@@ -273,7 +244,13 @@ export default function RowOperationsCoach() {
 
   usePersistenceFlush(() => saveDraft(LAB_ID, CONTENT_VERSION, draft), hydrated);
 
-  const selectGoal = (next: Goal) => {
+  const selectGoal = (next: Goal, updateUrl = true) => {
+    if (next === goal) return;
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('goal', next);
+      window.history.pushState(null, '', url);
+    }
     const raw = SAMPLES[next];
     setGoal(next);
     setSourceRaw(raw);
@@ -293,6 +270,12 @@ export default function RowOperationsCoach() {
     setCheckedOperationKey(undefined);
     setEditorError(undefined);
   };
+
+  useEffect(() => {
+    const restoreGoal = () => selectGoal(readWorkbenchOption('goal', GOALS) ?? initialGoal.current, false);
+    window.addEventListener('popstate', restoreGoal);
+    return () => window.removeEventListener('popstate', restoreGoal);
+  }, [goal]);
 
   const readRow = (raw: string, label: string) => {
     const parsed = parseNonnegativeIntegerInput(raw, { label, positive: true, max: current.length });
@@ -336,7 +319,7 @@ export default function RowOperationsCoach() {
   };
 
   const checkArithmetic = () => {
-    if (analysis.kind !== 'arithmetic') return;
+    if (analysis.kind !== 'arithmetic' && analysis.kind !== 'arithmetic-error') return;
     const result = checkMatrixArithmetic(analysis.source, analysis.right, arithmeticOperation, arithmeticCandidateRaw);
     setArithmeticFeedback(result);
     if (result.field === 'candidate') candidateMatrixInput.current?.focus();
@@ -425,265 +408,13 @@ export default function RowOperationsCoach() {
         if (event.target instanceof HTMLElement && event.target.closest('button,input,select,textarea,summary')) userInteracted.current = true;
       }}
     >
-      {/* Mockup 8: Matrices & Systems Flagship Instrument */}
-      <header className="matrix-hero">
-        <h2 className="matrix-title">Matrices &amp; Systems.</h2>
-        <p className="matrix-lede">
-          Explore matrix operations, solve systems, and build intuition through interactive examples.
-        </p>
-
-        <div className="prob-mode-bar" role="group" aria-label="Matrix view selection">
-          <button 
-            type="button" 
-            className={`prob-mode-pill ${activeMatrixTab === 'ops' ? 'is-active' : ''}`}
-            aria-pressed={activeMatrixTab === 'ops'}
-            onClick={() => setActiveMatrixTab('ops')}
-          >
-            Matrix Operations
-          </button>
-          <button 
-            type="button" 
-            className={`prob-mode-pill ${activeMatrixTab === 'solve' ? 'is-active' : ''}`}
-            aria-pressed={activeMatrixTab === 'solve'}
-            onClick={() => setActiveMatrixTab('solve')}
-          >
-            Solve Systems
-          </button>
-          <button 
-            type="button" 
-            className={`prob-mode-pill ${activeMatrixTab === 'det' ? 'is-active' : ''}`}
-            aria-pressed={activeMatrixTab === 'det'}
-            onClick={() => setActiveMatrixTab('det')}
-          >
-            Determinant
-          </button>
-          <button 
-            type="button" 
-            className={`prob-mode-pill ${activeMatrixTab === 'rref' ? 'is-active' : ''}`}
-            aria-pressed={activeMatrixTab === 'rref'}
-            onClick={() => setActiveMatrixTab('rref')}
-          >
-            Row Reduction
-          </button>
-          <button 
-            type="button" 
-            className={`prob-mode-pill ${activeMatrixTab === 'eigen' ? 'is-active' : ''}`}
-            aria-pressed={activeMatrixTab === 'eigen'}
-            onClick={() => setActiveMatrixTab('eigen')}
-          >
-            Eigenvalues
-          </button>
-        </div>
-      </header>
-
-      <div className="matrix-instrument-grid" style={{ marginBottom: '2.5rem' }}>
-        {/* Left Side Navigation & Hints */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div className="apple-glass-card" style={{ padding: '1.25rem' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--foreground-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Operations</span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: '0.75rem' }}>
-              {['Matrix Operations', 'Solve Systems', 'Determinant', 'Row Reduction', 'Eigenvalues'].map((item, idx) => (
-                <button 
-                  key={item} 
-                  type="button" 
-                  style={{
-                    border: 'none',
-                    background: idx === 2 ? 'var(--foreground)' : 'transparent',
-                    color: idx === 2 ? 'var(--surface)' : 'var(--foreground-muted)',
-                    padding: '0.5rem 0.75rem',
-                    borderRadius: '8px',
-                    fontSize: '0.82rem',
-                    fontWeight: 600,
-                    textAlign: 'left',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="apple-glass-card" style={{ padding: '1.25rem' }}>
-            <strong style={{ fontSize: '0.85rem', color: 'var(--foreground)', display: 'block', marginBottom: '0.35rem' }}>Tip</strong>
-            <p style={{ fontSize: '0.78rem', color: 'var(--foreground-muted)', margin: 0, lineHeight: 1.45 }}>
-              Elementary row replacement preserves the determinant: det(R_i ← R_i + cR_j) = det(A).
-            </p>
-          </div>
-        </div>
-
-        {/* Center Matrix Workspace */}
-        <div className="apple-glass-card" style={{ padding: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <strong style={{ fontSize: '1.2rem', color: 'var(--foreground)' }}>Matrix A</strong>
-              <span style={{ fontSize: '0.82rem', color: 'var(--foreground-muted)', display: 'block' }}>{matrixDim}×{matrixDim} Square Matrix</span>
-            </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button 
-                type="button" 
-                className="apple-btn-glass" 
-                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                onClick={() => setMatrixDim(matrixDim === 2 ? 3 : 2)}
-              >
-                {matrixDim === 3 ? '2×2' : '3×3'}
-              </button>
-              <button 
-                type="button" 
-                className="apple-btn-glass" 
-                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                onClick={() => {
-                  setMatrixCells([
-                    [Math.floor(Math.random() * 7) - 2, Math.floor(Math.random() * 7) - 2, Math.floor(Math.random() * 5)],
-                    [Math.floor(Math.random() * 7) - 2, Math.floor(Math.random() * 7) - 2, Math.floor(Math.random() * 5)],
-                    [Math.floor(Math.random() * 5) - 2, Math.floor(Math.random() * 5), Math.floor(Math.random() * 5)]
-                  ]);
-                }}
-              >
-                Random
-              </button>
-            </div>
-          </div>
-
-          {/* Matrix Bracket Display */}
-          <div style={{ display: 'flex', justifyContent: 'center', margin: '1.5rem 0' }}>
-            <div className="matrix-bracket-box">
-              <div 
-                className="matrix-grid-cells" 
-                style={{ gridTemplateColumns: `repeat(${matrixDim}, 46px)` }}
-              >
-                {Array.from({ length: matrixDim }).map((_, r) => (
-                  Array.from({ length: matrixDim }).map((_, c) => (
-                    <input
-                      key={`${r}-${c}`}
-                      type="number"
-                      className="matrix-cell-input"
-                      aria-label={`Matrix row ${r + 1}, column ${c + 1}`}
-                      value={matrixCells[r]?.[c] ?? 0}
-                      onChange={(e) => updateMatrixCell(r, c, Number(e.target.value))}
-                    />
-                  ))
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Operation Pills */}
-          <div className="matrix-operations-strip">
-            {[
-              { id: 'add', label: '+ A + B' },
-              { id: 'sub', label: '− A − B' },
-              { id: 'mult', label: '× A × B' },
-              { id: 'trans', label: '⇄ Aᵀ' },
-              { id: 'det', label: '| | det(A)' },
-              { id: 'rref', label: '≡ Row Reduce' },
-            ].map((op) => (
-              <button 
-                key={op.id} 
-                type="button" 
-                className={`matrix-op-pill ${activeMatrixOp === op.id ? 'is-active' : ''}`}
-                onClick={() => setActiveMatrixOp(op.id)}
-              >
-                {op.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Step-by-Step Arithmetic Expansion */}
-          <div style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)', borderRadius: '14px', padding: '1.25rem', marginTop: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--foreground-muted)' }}>Calculation</span>
-              <button type="button" style={{ border: 'none', background: 'transparent', color: 'var(--editorial-data-blue)', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}>
-                Copy Calculation
-              </button>
-            </div>
-            <div style={{ fontFamily: 'var(--font-amat-mono)', fontSize: '1.15rem', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.02em' }}>
-              det(A) = {detValue}
-            </div>
-            <p style={{ fontSize: '0.82rem', color: 'var(--foreground-muted)', margin: '0.4rem 0 0 0', fontFamily: 'monospace' }}>
-              Expansion: {matrixCells[0][0]}({matrixCells[1][1]}·{matrixCells[2][2]} − {matrixCells[1][2]}·{matrixCells[2][1]}) − ({matrixCells[0][1]})({matrixCells[1][0]}·{matrixCells[2][2]} − {matrixCells[1][2]}·{matrixCells[2][0]}) + {matrixCells[0][2]}...
-            </p>
-          </div>
-        </div>
-
-        {/* Right 3D Isometric Geometric Projection in R^3 */}
-        <div className="apple-glass-card" style={{ padding: '1.75rem' }}>
-          <strong style={{ fontSize: '1.05rem', color: 'var(--foreground)', display: 'block', marginBottom: '0.25rem' }}>3D Geometric View</strong>
-          <span style={{ fontSize: '0.78rem', color: 'var(--foreground-muted)', display: 'block', marginBottom: '1rem' }}>Column space projection in ℝ³</span>
-
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '0.5rem', display: 'flex', justifyContent: 'center' }}>
-            <svg viewBox="0 0 320 270" style={{ width: '100%', height: 'auto' }} aria-label="3D Isometric vector projection in R3">
-              <defs>
-                <marker id="arrowHeadBlue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 8 5 L 0 9 z" fill="var(--editorial-data-blue)" />
-                </marker>
-                <marker id="arrowHeadPurple" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 8 5 L 0 9 z" fill="var(--editorial-data-purple)" />
-                </marker>
-                <marker id="arrowHeadGreen" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 8 5 L 0 9 z" fill="var(--editorial-data-green)" />
-                </marker>
-              </defs>
-
-              {/* Dotted Isometric Axes */}
-              {/* Origin is at (160, 135) */}
-              <line x1="160" y1="135" x2="60" y2="195" stroke="var(--border-strong)" strokeWidth="1.5" strokeDasharray="3 3" />
-              <text x="50" y="205" fill="var(--foreground-soft)" fontSize="10" fontFamily="sans-serif">X</text>
-
-              <line x1="160" y1="135" x2="260" y2="195" stroke="var(--border-strong)" strokeWidth="1.5" strokeDasharray="3 3" />
-              <text x="270" y="205" fill="var(--foreground-soft)" fontSize="10" fontFamily="sans-serif">Y</text>
-
-              <line x1="160" y1="135" x2="160" y2="25" stroke="var(--border-strong)" strokeWidth="1.5" strokeDasharray="3 3" />
-              <text x="160" y="18" fill="var(--foreground-soft)" fontSize="10" fontFamily="sans-serif" textAnchor="middle">Z</text>
-
-              {/* Vector a1 (col 0): (matrixCells[0][0], matrixCells[1][0], matrixCells[2][0]) */}
-              {(() => {
-                const p1 = isoProject(matrixCells[0][0], matrixCells[1][0], matrixCells[2][0]);
-                const p2 = isoProject(matrixCells[0][1], matrixCells[1][1], matrixCells[2][1]);
-                const p3 = isoProject(matrixCells[0][2], matrixCells[1][2], matrixCells[2][2]);
-                const p12 = isoProject(matrixCells[0][0] + matrixCells[0][1], matrixCells[1][0] + matrixCells[1][1], matrixCells[2][0] + matrixCells[2][1]);
-                const p13 = isoProject(matrixCells[0][0] + matrixCells[0][2], matrixCells[1][0] + matrixCells[1][2], matrixCells[2][0] + matrixCells[2][2]);
-                const p23 = isoProject(matrixCells[0][1] + matrixCells[0][2], matrixCells[1][1] + matrixCells[1][2], matrixCells[2][1] + matrixCells[2][2]);
-                const p123 = isoProject(matrixCells[0][0] + matrixCells[0][1] + matrixCells[0][2], matrixCells[1][0] + matrixCells[1][1] + matrixCells[1][2], matrixCells[2][0] + matrixCells[2][1] + matrixCells[2][2]);
-
-                return (
-                  <>
-                    {/* Parallelepiped edges */}
-                    <line x1={p1.x} y1={p1.y} x2={p12.x} y2={p12.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p2.x} y1={p2.y} x2={p12.x} y2={p12.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p1.x} y1={p1.y} x2={p13.x} y2={p13.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p3.x} y1={p3.y} x2={p13.x} y2={p13.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p2.x} y1={p2.y} x2={p23.x} y2={p23.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p3.x} y1={p3.y} x2={p23.x} y2={p23.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p12.x} y1={p12.y} x2={p123.x} y2={p123.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p13.x} y1={p13.y} x2={p123.x} y2={p123.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
-                    <line x1={p23.x} y1={p23.y} x2={p123.x} y2={p123.y} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="2 2" />
-
-                    {/* Vector a1 */}
-                    <line x1="160" y1="135" x2={p1.x} y2={p1.y} stroke="var(--editorial-data-blue)" strokeWidth="2.5" markerEnd="url(#arrowHeadBlue)" />
-                    <text x={p1.x + 5} y={p1.y - 5} fill="var(--editorial-data-blue)" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₁</text>
-
-                    {/* Vector a2 */}
-                    <line x1="160" y1="135" x2={p2.x} y2={p2.y} stroke="var(--editorial-data-purple)" strokeWidth="2.5" markerEnd="url(#arrowHeadPurple)" />
-                    <text x={p2.x + 5} y={p2.y - 5} fill="var(--editorial-data-purple)" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₂</text>
-
-                    {/* Vector a3 */}
-                    <line x1="160" y1="135" x2={p3.x} y2={p3.y} stroke="var(--editorial-data-green)" strokeWidth="2.5" markerEnd="url(#arrowHeadGreen)" />
-                    <text x={p3.x + 5} y={p3.y - 5} fill="var(--editorial-data-green)" fontSize="11" fontWeight="700" fontFamily="sans-serif">a₃</text>
-                  </>
-                );
-              })()}
-            </svg>
-          </div>
-
-          <div style={{ marginTop: '1rem', padding: '0.85rem', background: 'var(--surface-muted)', borderRadius: '10px', border: '1px solid var(--border)' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--foreground-muted)', lineHeight: 1.45, display: 'block' }}>
-              These three vectors span a parallelepiped with volume <strong>|det(A)| = {Math.abs(detValue)}</strong>.
-            </span>
-          </div>
-        </div>
-      </div>
-
+      <Tabs.Root value={goal} onValueChange={(value) => { if (isGoal(value)) selectGoal(value); }}>
+        <Tabs.List aria-label="Matrix goals" className="flex flex-wrap gap-2 border-b border-[var(--border)] pb-3">
+          <Tabs.Trigger disabled={!hydrated} value="arithmetic" className="min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-[var(--foreground)] data-[state=active]:border-[var(--foreground)] data-[state=active]:bg-[var(--foreground)] data-[state=active]:text-[var(--surface)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]">Matrix Operations</Tabs.Trigger>
+          <Tabs.Trigger disabled={!hydrated} value="system" className="min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-[var(--foreground)] data-[state=active]:border-[var(--foreground)] data-[state=active]:bg-[var(--foreground)] data-[state=active]:text-[var(--surface)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]">Solve Systems</Tabs.Trigger>
+          <Tabs.Trigger disabled={!hydrated} value="rref" className="min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-[var(--foreground)] data-[state=active]:border-[var(--foreground)] data-[state=active]:bg-[var(--foreground)] data-[state=active]:text-[var(--surface)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]">Row Reduction</Tabs.Trigger>
+          <Tabs.Trigger disabled={!hydrated} value="inverse" className="min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-[var(--foreground)] data-[state=active]:border-[var(--foreground)] data-[state=active]:bg-[var(--foreground)] data-[state=active]:text-[var(--surface)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]">Inverse</Tabs.Trigger>
+        </Tabs.List>
       <header className="row-coach__header">
         <div>
           <h2>Change one row. See what stays equivalent.</h2>
@@ -699,13 +430,15 @@ export default function RowOperationsCoach() {
         </div>
       </header>
 
+      <Tabs.Content value={goal} className="pt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]">
       {analysis.kind === 'error' ? (
         <Feedback tone="error" role="alert">{analysis.error}</Feedback>
-      ) : analysis.kind === 'arithmetic' ? (
+      ) : analysis.kind === 'arithmetic' || analysis.kind === 'arithmetic-error' ? (
         <>
           <div className="row-coach__arithmetic-stage" aria-label="Matrix arithmetic model">
             <div>
               <h3>Matrix A</h3>
+              <p>{analysis.source.length} × {analysis.source[0]!.length}</p>
               <MatrixBoard value={analysis.source} label="Matrix A" />
             </div>
             <span className="row-coach__arithmetic-symbol" aria-hidden="true">
@@ -713,6 +446,7 @@ export default function RowOperationsCoach() {
             </span>
             <div>
               <h3>Matrix B</h3>
+              <p>{analysis.right.length} × {analysis.right[0]!.length}</p>
               <MatrixBoard value={analysis.right} label="Matrix B" />
             </div>
           </div>
@@ -730,6 +464,7 @@ export default function RowOperationsCoach() {
                 <option value="multiply">AB (row by column)</option>
               </select>
             </label>
+            {analysis.kind === 'arithmetic-error' && <Feedback tone="error" role="alert">Check the matrix dimensions first. {analysis.error}</Feedback>}
             <form onSubmit={(event) => { event.preventDefault(); checkArithmetic(); }}>
               <label className="form-field">
                 <span className="form-field__label">Candidate result matrix</span>
@@ -754,13 +489,28 @@ export default function RowOperationsCoach() {
             <div id="matrix-arithmetic-feedback">
               {arithmeticFeedback && <Feedback tone={arithmeticFeedback.status === 'correct' ? 'success' : 'error'}>{arithmeticFeedback.message}</Feedback>}
             </div>
-            <Button type="button" variant="ghost" aria-expanded={arithmeticRevealed} onClick={() => setArithmeticRevealed((revealed) => !revealed)}>
+            <Button type="button" variant="ghost" disabled={analysis.kind === 'arithmetic-error'} aria-expanded={arithmeticRevealed && analysis.kind === 'arithmetic'} onClick={() => setArithmeticRevealed((revealed) => !revealed)}>
               {arithmeticRevealed ? 'Hide exact result' : 'Show exact result'}
             </Button>
-            {arithmeticRevealed && (
+            {arithmeticRevealed && analysis.kind === 'arithmetic' && (
               <div className="row-coach__arithmetic-result">
                 <h3>Exact result</h3>
                 <MatrixBoard value={analysis.target} label="Exact result matrix" />
+                {arithmeticOperation === 'multiply' && (
+                  <div>
+                    <h4>Row-by-column trace</h4>
+                    <ol>
+                      {analysis.target.flatMap((row, rowIndex) => row.map((_, columnIndex) => {
+                        const trace = multiplicationCellTrace(analysis.source, analysis.right, rowIndex, columnIndex);
+                        return (
+                          <li key={`${rowIndex}-${columnIndex}`}>
+                            Row {rowIndex + 1}, column {columnIndex + 1}: {trace.terms.map(({ left, right }) => `${left.toString()} · ${right.toString()}`).join(' + ')} = {trace.value.toString()}
+                          </li>
+                        );
+                      }))}
+                    </ol>
+                  </div>
+                )}
               </div>
             )}
           </section>
@@ -788,6 +538,7 @@ export default function RowOperationsCoach() {
       ) : (
         <>
           <div className="row-coach__matrix-stage">
+            {goal === 'inverse' && <p>[ A | I ] → [ I | A⁻¹ ]</p>}
             <MatrixBoard value={current} label="Current augmented matrix" splitAfter={analysis.splitAfter} />
           </div>
 
@@ -858,7 +609,7 @@ export default function RowOperationsCoach() {
 
           {complete && <Feedback tone="success"><strong>Reduced.</strong> You reached the exact target using equivalent row operations.</Feedback>}
 
-          <details key={goal} className="row-coach__outcome-details">
+          <details key={`${goal}|${sourceRaw}`} className="row-coach__outcome-details">
             <summary>Show target context</summary>
             <div className="row-coach__outcome">
             <span>{goal === 'system' ? 'System result' : goal === 'inverse' ? 'Matrix result' : 'Reduction result'}</span>
@@ -889,6 +640,8 @@ export default function RowOperationsCoach() {
           )}
         </>
       )}
+      </Tabs.Content>
+      </Tabs.Root>
     </section>
   );
 }

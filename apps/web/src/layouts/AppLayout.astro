@@ -31,7 +31,7 @@ const utilityNavigation: UtilityItem[] = [
   { kind: 'link', href: '/settings', label: 'Settings', mobileLabel: 'Settings', icon: 'settings' },
   { kind: 'action', id: 'developer-contact', label: 'Developer', mobileLabel: 'Developer', icon: 'developer' },
 ];
-const currentPath = Astro.url.pathname;
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const pwaEnabled = import.meta.env.PROD;
 const isCurrent = (href: string) => {
   if (href === '/course') return currentPath === '/course' || currentPath.startsWith('/modules/') || currentPath.startsWith('/lessons/') || currentPath.startsWith('/workbenches/');
@@ -54,7 +54,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
       (() => {
         try {
           const url = new URL(window.location.href);
-          if (url.searchParams.get('__amat19_release') === 'amat19-blueprint-v4') {
+          if (['amat19-blueprint-v4', 'amat19-blueprint-v5'].includes(url.searchParams.get('__amat19_release') ?? '')) {
             url.searchParams.delete('__amat19_release');
             url.searchParams.delete('__amat19_reload');
             window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);

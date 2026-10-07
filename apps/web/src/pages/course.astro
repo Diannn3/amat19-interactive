@@ -24,7 +24,7 @@ const currentTopicsByModule = new Map(
       <div class="course-hero__header">
         <h1 class="course-hero__title">Explore the Workbenches.</h1>
         <p class="course-hero__lede">
-          Interactive tools for logic, probability, finance, matrices, and applications. Visualize concepts, experiment freely, and build deeper intuition in finite mathematics.
+          Four interactive workbenches for logic, probability, finance, and matrices. Study applied models through lessons and practice in the fifth course module.
         </p>
 
         <div class="course-filter-bar">
@@ -40,9 +40,12 @@ const currentTopicsByModule = new Map(
 
           <div class="course-filter-pills" role="group" aria-label="Workbench filters">
             <button class="apple-filter-pill is-active" type="button" data-course-filter="all" aria-pressed="true">All</button>
-            {currentCourseProfile.modules.map((module) => (
-              <button class="apple-filter-pill" type="button" data-course-filter={module.id} aria-pressed="false">{module.title}</button>
-            ))}
+            {currentCourseProfile.workbenches.map((workbench) => {
+              const module = modulesById.get(workbench.id)!;
+              return (
+                <button class="apple-filter-pill" type="button" data-course-filter={module.id} aria-pressed="false">{module.title}</button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -57,8 +60,8 @@ const currentTopicsByModule = new Map(
       </p>
     </header>
 
-    {/* Five Workbenches in 5-Column Optical Glass Grid */}
-    <section class="course-workbenches" aria-label="Five core course workbenches">
+    {/* Four active workbenches; Applications remains a separate course module. */}
+    <section class="course-workbenches" aria-label="Four core course workbenches">
       <ol class="workbench-grid workbench-directory" data-testid="workbench-directory">
         {currentCourseProfile.workbenches.map((workbench, index) => {
           const module = modulesById.get(workbench.id)!;
@@ -86,7 +89,6 @@ const currentTopicsByModule = new Map(
                       )}
                       {workbench.id === 'finance' && <BarChart3 size={20} strokeWidth={1.8} />}
                       {workbench.id === 'linear' && <Grid3X3 size={20} strokeWidth={1.8} />}
-                      {workbench.id === 'applications' && <Network size={20} strokeWidth={1.8} />}
                     </div>
                     <span class="workbench-card__index" aria-hidden="true">0{index + 1}</span>
                     <span class="workbench-card__module-name sr-only">{module.title}</span>
@@ -235,13 +237,13 @@ const currentTopicsByModule = new Map(
               <strong class="syllabus-module-title">Module 5: Applied Models &amp; Optimization</strong>
               <p class="syllabus-module-desc">Graphical linear programming and zero-sum games, with optional simplex and Markov extensions.</p>
               <div class="syllabus-module-links">
-                <a href="/workbenches/applications">Workbench →</a>
+                <a href="/modules/applications?view=notes">Concept notes →</a>
                 <a href="/modules/applications">Examples</a>
                 <a href="/study">Practice</a>
               </div>
             </div>
             <div class="syllabus-module-arrow">
-              <a href="/workbenches/applications" class="apple-action-circle" aria-label="Open Applied Models">
+              <a href="/modules/applications?view=notes" class="apple-action-circle" aria-label="Read Applied Models notes">
                 <ArrowRight size={15} strokeWidth={2.2} />
               </a>
             </div>
@@ -285,12 +287,12 @@ const currentTopicsByModule = new Map(
                 <ArrowRight size={13} strokeWidth={2} />
               </a>
 
-              <a class="syllabus-resource-item" href="/workbenches/applications">
+              <a class="syllabus-resource-item" href="/modules/applications?view=notes">
                 <div class="syllabus-resource-item-left">
                   <Network size={16} strokeWidth={1.8} />
                   <div>
                     <strong>Applied models</strong>
-                    <span>Optimization, strategy, and financial modeling tools</span>
+                    <span>Optimization and strategy concept notes</span>
                   </div>
                 </div>
                 <ArrowRight size={13} strokeWidth={2} />

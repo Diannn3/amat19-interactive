@@ -5,7 +5,8 @@ import { runInNewContext } from 'node:vm';
 
 test('service worker precaches canonical workbenches and local-first workspace routes',async()=>{
  const source=await readFile(new URL('../../apps/web/public/sw.js',import.meta.url),'utf8');
- for(const route of ['/study','/saved','/settings','/workbenches/logic','/workbenches/probability','/workbenches/finance','/workbenches/linear','/workbenches/applications'])assert.match(source,new RegExp(`['\"]${route.replace('/','\\/')}['\"]`));
+ for(const route of ['/study','/saved','/settings','/modules/applications','/workbenches/logic','/workbenches/probability','/workbenches/finance','/workbenches/linear'])assert.match(source,new RegExp(`['\"]${route.replace('/','\\/')}['\"]`));
+ assert.doesNotMatch(source,/['"]\/workbenches\/applications['"]/);
 });
 
 test('navigation fallback ignores query strings and uses a bounded network wait',async()=>{
@@ -18,8 +19,8 @@ test('navigation fallback ignores query strings and uses a bounded network wait'
 
 test('service worker cache namespace is bumped for the Blueprint production migration',async()=>{
  const source=await readFile(new URL('../../apps/web/public/sw.js',import.meta.url),'utf8');
- assert.match(source,/VERSION\s*=\s*['"]amat19-blueprint-v4['"]/);
- assert.match(source,/FORCE_ACTIVATE_RELEASE\s*=\s*VERSION\s*===\s*['"]amat19-blueprint-v4['"]/);
+ assert.match(source,/VERSION\s*=\s*['"]amat19-blueprint-v5['"]/);
+ assert.match(source,/FORCE_ACTIVATE_RELEASE\s*=\s*VERSION\s*===\s*['"]amat19-blueprint-v5['"]/);
  assert.doesNotMatch(source,/['"]\/labs\//);
  assert.doesNotMatch(source,/amat19-v13-audited-backend/);
 });
@@ -49,7 +50,7 @@ test('installation caches the built workbench scripts before reporting offline r
  await installation;
  assert.equal(manifestRequested, true);
  assert.equal(skipWaitingCalled, true);
- assert.deepEqual(cached.get('amat19-blueprint-v4-static'), ['/_astro/workbench.js', '/_astro/styles.css']);
+ assert.deepEqual(cached.get('amat19-blueprint-v5-static'), ['/_astro/workbench.js', '/_astro/styles.css']);
 });
 
 
@@ -98,6 +99,8 @@ test('Blueprint migration claims clients, clears legacy caches, and cache-busts 
     'amat19-blueprint-v3-pages',
     'amat19-blueprint-v4-static',
     'amat19-blueprint-v4-pages',
+    'amat19-blueprint-v5-static',
+    'amat19-blueprint-v5-pages',
     'unrelated-cache',
    ],
    delete: async (key: string) => { deleted.push(key); return true; },
@@ -113,12 +116,12 @@ test('Blueprint migration claims clients, clears legacy caches, and cache-busts 
  handlers.get('activate')({ waitUntil: (promise: Promise<unknown>) => { activation = promise; } });
  await activation;
  assert.equal(claimed, true);
- assert.deepEqual(deleted.sort(), ['amat19-blueprint-v3-pages', 'amat19-workbenches-v2-pages']);
+ assert.deepEqual(deleted.sort(), ['amat19-blueprint-v3-pages', 'amat19-blueprint-v4-pages', 'amat19-blueprint-v4-static', 'amat19-workbenches-v2-pages']);
  assert.equal(navigated.length, 1);
  const resetUrl = new URL(navigated[0]);
  assert.equal(resetUrl.pathname, '/course');
  assert.equal(resetUrl.searchParams.get('keep'), '1');
- assert.equal(resetUrl.searchParams.get('__amat19_release'), 'amat19-blueprint-v4');
+ assert.equal(resetUrl.searchParams.get('__amat19_release'), 'amat19-blueprint-v5');
  assert.ok(resetUrl.searchParams.get('__amat19_reload'));
 });
 
@@ -132,10 +135,10 @@ test('application asks the browser to bypass HTTP cache when checking sw.js', as
  assert.match(source, /serviceWorker\.register\(['"]\/sw\.js['"],\s*\{\s*updateViaCache:\s*['"]none['"]\s*\}\)/);
 });
 
-test('application removes the v4 migration query marker after the fresh document loads', async () => {
+test('application removes the v5 migration query marker after the fresh document loads', async () => {
  const source = await readFile(new URL('../../apps/web/src/layouts/AppLayout.astro', import.meta.url), 'utf8');
  assert.match(source, /__amat19_release/);
- assert.match(source, /amat19-blueprint-v4/);
+ assert.match(source, /amat19-blueprint-v5/);
  assert.match(source, /history\.replaceState/);
 });
 

@@ -3,123 +3,112 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/workbenches/logic');
+  await expect(page.getByTestId('logic-proof-workbench')).toHaveAttribute('data-hydrated', 'true');
 });
 
-test('@core Translate checks controlled language before showing canonical notation', async ({ page }) => {
+test('@core Logic offers exactly two working learner tabs', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('translate');
-  await expect(workbench.getByRole('region', { name: 'Turn controlled language into symbols.' })).toBeVisible();
-  await expect(workbench.locator('[data-logic-translation-result]')).not.toBeVisible();
-
-  await workbench.getByLabel('Symbolic translation').fill('Q -> P');
-  await workbench.getByRole('button', { name: 'Check translation' }).click();
-  await expect(workbench.getByText(/Recheck the connective/)).toBeVisible();
-  await expect(workbench.locator('[data-logic-translation-result]')).not.toBeVisible();
-
-  await workbench.getByLabel('Symbolic translation').fill('P -> Q');
-  await workbench.getByRole('button', { name: 'Check translation' }).click();
-  await expect(workbench.getByText('Correct. Your symbolic form matches the statement.')).toBeVisible();
-  await expect(workbench.locator('[data-logic-translation-result]')).toContainText('P → Q');
+  const tabs = workbench.getByRole('tab');
+  await expect(tabs).toHaveCount(2);
+  await expect(tabs.nth(0)).toHaveText('Truth Table');
+  await expect(tabs.nth(1)).toHaveText('Test an Argument');
+  await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true');
+  await expect(workbench.getByRole('combobox', { name: 'Choose a task' })).toHaveCount(0);
+  await tabs.nth(1).click();
+  await expect(workbench.getByRole('button', { name: 'Test validity' })).toBeVisible();
+  await expect(workbench.getByRole('table', { name: /Truth table for/ })).toHaveCount(0);
+  await expect(workbench.getByTestId('formal-proof-lab')).toHaveCount(0);
 });
 
-test('@core Translate accepts a second controlled-language template and keyboard aliases', async ({ page }) => {
+test('@core Truth Table keeps aliases in the input and displays exact canonical notation', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('translate');
-  await workbench.getByLabel('Statement to translate').selectOption('iff');
-  await workbench.getByLabel('Symbolic translation').fill('P <-> Q');
-  await workbench.getByRole('button', { name: 'Check translation' }).click();
-  await expect(workbench.locator('[data-logic-translation-result]')).toContainText('P ↔ Q');
-});
-
-test('@core Logic & Proof opens on a complete exact truth table', async ({ page }) => {
-  const workbench = page.getByTestId('logic-proof-workbench');
-  await expect(workbench).toHaveAttribute('data-hydrated', 'true');
-  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('table');
-  await expect(workbench.getByRole('region', { name: 'See every truth value.' })).toBeVisible();
-  await expect(workbench.getByLabel('Logic expression')).toHaveValue('P -> Q');
-  if ((page.viewportSize()?.width ?? 1280) > 640) {
-    await expect(workbench.getByRole('status')).toContainText('contingent');
-  }
+  const expression = workbench.getByLabel('Logic expression');
+  await expect(expression).toHaveValue('P -> Q');
   await expect(workbench.getByRole('table', { name: 'Truth table for P → Q' }).locator('tbody tr')).toHaveCount(4);
-
-  const visiblePrimaryControls = workbench.locator('[data-primary-control]:visible');
-  expect(await visiblePrimaryControls.count()).toBeLessThanOrEqual(8);
-  for (const control of await visiblePrimaryControls.all()) {
-    const box = await control.boundingBox();
-    // Firefox can return 43.999984 for a CSS 44px box after layout rounding.
-    expect(Math.round(box?.height ?? 0)).toBeGreaterThanOrEqual(44);
-  }
+  await expression.fill('P <-> ~P');
+  await expect(expression).toHaveValue('P <-> ~P');
+  await expect(workbench.getByRole('status')).toContainText('contradiction');
+  await expect(workbench.getByRole('table', { name: 'Truth table for P ↔ ∼P' }).locator('tbody tr')).toHaveCount(2);
+  await expression.fill('P ->');
+  await expect(workbench.getByRole('alert')).toBeVisible();
+  await expect(workbench.getByRole('table')).toHaveCount(0);
 });
 
-test('@core Compare exposes a counterexample instead of only a verdict', async ({ page }) => {
+test('@core Argument tester shows a falsifying assignment and clears stale feedback', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('compare');
-  await expect(workbench.getByText('Equivalent everywhere.')).toBeVisible();
-
-  await workbench.getByLabel('Expression B').fill('Q -> P');
-  await expect(workbench.getByText('Not equivalent.')).toBeVisible();
-  await expect(workbench.getByText(/P=T/)).toBeVisible();
-  await expect(workbench.getByText(/Q=F/)).toBeVisible();
-});
-
-test('@core Argument validity names a falsifying assignment', async ({ page }) => {
-  const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('argument');
-  await workbench.getByRole('button', { name: 'Check validity' }).click();
-
+  await workbench.getByRole('tab', { name: 'Test an Argument' }).click();
+  await workbench.getByRole('button', { name: 'Test validity' }).click();
   await expect(workbench.getByText('Invalid argument.')).toBeVisible();
   await expect(workbench.getByText(/P=F/)).toBeVisible();
   await expect(workbench.getByText(/Q=T/)).toBeVisible();
+  await expect(workbench.getByText('P → Q; Q ∴ P')).toBeVisible();
+  await workbench.getByLabel('Premises · one per line').fill('P -> Q\nP');
+  await expect(workbench.getByText('Invalid argument.')).toHaveCount(0);
+  await workbench.getByRole('button', { name: 'Test validity' }).click();
+  await expect(workbench.getByText('Valid argument.')).toBeVisible();
+  await workbench.getByRole('tab', { name: 'Truth Table' }).click();
+  await workbench.getByRole('tab', { name: 'Test an Argument' }).click();
+  await expect(workbench.getByText('Valid argument.')).toHaveCount(0);
+  await expect(workbench.getByLabel('Premises · one per line')).toHaveValue('P -> Q\nP');
 });
 
-test('Guided proof stays inside the same workbench', async ({ page }) => {
+test('query mode wins over saved mode and Back/Forward restores the selected panel', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('proof');
-  await expect(workbench.getByTestId('formal-proof-lab')).toHaveAttribute('data-hydrated', 'true');
-  await expect(workbench.getByRole('heading', { name: 'Derive the goal one justified line at a time.' })).toBeVisible();
+  await expect(page).toHaveURL(/\/workbenches\/logic\?mode=table$/);
+  await workbench.getByRole('tab', { name: 'Test an Argument' }).click();
+  await expect(page).toHaveURL(/\/workbenches\/logic\?mode=argument$/);
+  await page.goBack();
+  await expect(workbench.getByRole('tab', { name: 'Truth Table' })).toHaveAttribute('aria-selected', 'true');
+  await page.goForward();
+  await expect(workbench.getByRole('tab', { name: 'Test an Argument' })).toHaveAttribute('aria-selected', 'true');
+  await page.waitForTimeout(350);
+
+  const reopened = await page.context().newPage();
+  await reopened.goto('/workbenches/logic');
+  await expect(reopened.getByTestId('logic-proof-workbench')).toHaveAttribute('data-hydrated', 'true');
+  await expect(reopened.getByRole('tab', { name: 'Test an Argument' })).toHaveAttribute('aria-selected', 'true');
+  await reopened.goto('/workbenches/logic?mode=table');
+  await expect(reopened.getByRole('tab', { name: 'Truth Table' })).toHaveAttribute('aria-selected', 'true');
+  await reopened.close();
 });
 
-test('@core Guided proof keeps implementation metadata out of copy and localizes invalid-line feedback', async ({ page }) => {
+test('tabs preserve both inputs and accept keyboard selection', async ({ page }) => {
   const workbench = page.getByTestId('logic-proof-workbench');
-  await workbench.getByRole('combobox', { name: 'Choose a task' }).selectOption('proof');
-  const proof = workbench.getByTestId('formal-proof-lab');
-  await expect(proof).toHaveAttribute('data-hydrated', 'true');
-  await expect(proof.getByText('Scoped formal proof workspace')).not.toBeVisible();
-  await expect(proof.getByText(/fingerprint/i)).not.toBeVisible();
-
-  await proof.getByLabel('Next proof statement').fill('Q');
-  await proof.getByRole('button', { name: 'Add checked line' }).click();
-  await expect(proof.getByText('Needs revision')).toBeVisible();
-  await expect(proof.locator('[data-proof-feedback] [role="alert"]')).toBeVisible();
+  await workbench.getByLabel('Logic expression').fill('P <-> ~P');
+  const tableTab = workbench.getByRole('tab', { name: 'Truth Table' });
+  await tableTab.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(workbench.getByRole('tab', { name: 'Test an Argument' })).toHaveAttribute('aria-selected', 'true');
+  await workbench.getByLabel('Conclusion').fill('Q');
+  await workbench.getByRole('tab', { name: 'Test an Argument' }).focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(tableTab).toHaveAttribute('aria-selected', 'true');
+  await expect(workbench.getByLabel('Logic expression')).toHaveValue('P <-> ~P');
+  await tableTab.press('ArrowRight');
+  await expect(workbench.getByLabel('Conclusion')).toHaveValue('Q');
 });
 
-test('Logic & Proof keeps the expression and truth table above the mobile dock', async ({ page }) => {
+test('retired query modes resolve to a canonical learner tab', async ({ page }) => {
+  await page.goto('/workbenches/logic?mode=proof');
+  await expect(page.getByTestId('logic-proof-workbench')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page).toHaveURL(/\/workbenches\/logic\?mode=table$/);
+  await expect(page.getByRole('tab', { name: 'Truth Table' })).toHaveAttribute('aria-selected', 'true');
+});
+
+test('Truth Table remains usable at 375 × 667', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
-  await page.getByTestId('logic-proof-workbench').getByRole('combobox', { name: 'Choose a task' }).selectOption('table');
-  await page.locator('.workspace-scroll').evaluate((element) => { element.scrollTop = 0; });
-  const metrics = await page.getByTestId('logic-proof-workbench').evaluate((element) => {
-    const input = element.querySelector<HTMLElement>('[aria-label="Logic expression"]');
-    const table = element.querySelector<HTMLElement>('table');
-    const dock = document.querySelector<HTMLElement>('.mobile-nav');
-    const inputBox = input?.getBoundingClientRect();
-    const tableBox = table?.getBoundingClientRect();
-    const dockBox = dock?.getBoundingClientRect();
-    return {
-      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-      inputBottom: inputBox?.bottom ?? Infinity,
-      tableTop: tableBox?.top ?? Infinity,
-      dockTop: dockBox?.top ?? 667,
-    };
-  });
-
-  expect(metrics.overflow).toBe(false);
-  expect(metrics.inputBottom).toBeLessThan(metrics.dockTop);
-  expect(metrics.tableTop).toBeLessThan(metrics.dockTop);
+  const workbench = page.getByTestId('logic-proof-workbench');
+  await expect(workbench.getByRole('tab')).toHaveCount(2);
+  await expect(workbench.getByLabel('Logic expression')).toBeVisible();
+  await expect(workbench.getByRole('table', { name: 'Truth table for P → Q' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)).toBe(false);
+  for (const tab of await workbench.getByRole('tab').all()) {
+    expect(Math.round((await tab.boundingBox())?.height ?? 0)).toBeGreaterThanOrEqual(44);
+  }
 });
 
-test('Logic & Proof is free of serious automated accessibility violations', async ({ page }) => {
-  await expect(page.getByTestId('logic-proof-workbench')).toHaveAttribute('data-hydrated', 'true', { timeout: 10_000 });
+test('Logic workbench has no serious automated accessibility violations', async ({ page }) => {
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((violation) => ['critical', 'serious'].includes(violation.impact ?? ''))).toEqual([]);
 });

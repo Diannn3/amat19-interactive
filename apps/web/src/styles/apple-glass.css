@@ -1194,8 +1194,15 @@ body {
   .logic-instrument-main {
     gap: 0.25rem !important;
   }
-  .logic-workbench__summary {
-    display: none !important;
+  .logic-summary-badge {
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    border-radius: 0.75rem;
+  }
+  .logic-summary-meta {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 }
 

@@ -4,7 +4,6 @@ import { ArrowRight, GraduationCap, BarChart3, BookOpen, Grid3X3, Network, Searc
 import AppLayout from '../layouts/AppLayout.astro';
 import HomeMathPoster from '../components/home/HomeMathPoster.astro';
 
-const workbenchesById = new Map(currentCourseProfile.workbenches.map((workbench) => [workbench.id, workbench]));
 const workbenchCount = currentCourseProfile.workbenches.length;
 const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current').length;
 ---
@@ -19,7 +18,7 @@ const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current'
         </span>
         <span class="sr-only">Finite mathematics, made visible.</span>
       </h1>
-      <p class="home-hero__lede">Study AMAT 19 through exact, interactive labs for logic, probability, financial mathematics, matrices, and applied models.</p>
+      <p class="home-hero__lede">Study five AMAT 19 modules through four exact workbenches, lessons, and practice. Applied models remain part of the course.</p>
       
       <div class="home-hero__actions">
         <a class="apple-btn-black primary-button" data-home-primary-action href="/study">
@@ -32,7 +31,7 @@ const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current'
         <div class="home-spec-item">
           <span class="home-spec-item__val">{workbenchCount}</span>
           <span class="home-spec-item__label">Workbenches</span>
-          <span class="home-spec-item__sub">Logic, Probability, Finance, Matrices, Applications</span>
+          <span class="home-spec-item__sub">Logic, Probability, Finance, Matrices</span>
         </div>
         <div class="home-spec-item">
           <span class="home-spec-item__val">{currentSkillCount}</span>
@@ -55,8 +54,8 @@ const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current'
         <p>Choose the model your problem needs, then check every step.</p>
       </div>
       <ol>
-        {currentCourseProfile.modules.map((module) => {
-          const workbench = workbenchesById.get(module.id)!;
+        {currentCourseProfile.workbenches.map((workbench) => {
+          const module = currentCourseProfile.modules.find((item) => item.id === workbench.id)!;
           return (
             <li>
               <a 
@@ -78,7 +77,6 @@ const currentSkillCount = skillGraph.filter((skill) => skill.scope === 'current'
                   )}
                   {module.id === 'finance' && <BarChart3 size={20} strokeWidth={1.8} />}
                   {module.id === 'linear' && <Grid3X3 size={20} strokeWidth={1.8} />}
-                  {module.id === 'applications' && <Network size={20} strokeWidth={1.8} />}
                 </div>
 
                 <div class="home-workbench-link__content">

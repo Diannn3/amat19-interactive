@@ -13,7 +13,7 @@ interface Props {
 
 const { moduleId, moduleNumber, headline, lede, lessons } = Astro.props;
 const module = currentCourseProfile.modules.find((item) => item.id === moduleId)!;
-const workbench = currentCourseProfile.workbenches.find((item) => item.id === moduleId)!;
+const workbench = currentCourseProfile.workbenches.find((item) => item.id === moduleId);
 const skills = getModuleSkillGraph(moduleId);
 const current = skills.filter((skill) => skill.scope === 'current');
 const supplemental = skills.filter((skill) => skill.scope === 'supplemental');
@@ -26,12 +26,12 @@ const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-d
     <p class="lede">{lede}</p>
     <p class="module-overview__context">Module {moduleNumber} · {module.title}</p>
     <div class="hero-actions">
-      <a class="hero-action hero-action--primary" href={workbench.href}>Open {workbench.title} <ArrowRight size={17} aria-hidden="true" /></a>
+      <a class="hero-action hero-action--primary" href={workbench?.href ?? `/modules/${moduleId}?view=notes`}>{workbench ? `Open ${workbench.title}` : 'Read the notes'} <ArrowRight size={17} aria-hidden="true" /></a>
       <a class="hero-action hero-action--secondary" href={`/modules/${moduleId}?view=practice&preset=${practicePreset}`}><Route size={17} aria-hidden="true" /> Practice module</a>
     </div>
   </div>
   <div class="module-journey__metrics" aria-label={`${module.title} contents`}>
-    <div><strong>1</strong><span>workbench</span></div>
+    <div><strong>{workbench ? 1 : 0}</strong><span>workbenches</span></div>
     <div><strong>{current.length}</strong><span>core skills</span></div>
     <div><strong>{lessons.length}</strong><span>notes</span></div>
   </div>
@@ -46,13 +46,13 @@ const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-d
 <section class="page-width module-view" data-module-view="overview" aria-labelledby={`${moduleId}-overview-heading`}>
   <div class="section-heading">
     <div>
-      <h2 id={`${moduleId}-overview-heading`}>Open the workbench.</h2>
-      <p class="section-context">One focused place for the hard parts of {module.title}.</p>
+      <h2 id={`${moduleId}-overview-heading`}>{workbench ? 'Open the workbench.' : 'Explore the course material.'}</h2>
+      <p class="section-context">{workbench ? `One focused place for the hard parts of ${module.title}.` : 'Study applied models through worked examples, concept notes, and practice.'}</p>
     </div>
   </div>
-  <a class="module-next-step module-next-step--workbench" href={workbench.href}>
-    <span class="module-next-step__index">{workbench.notation}</span>
-    <span><strong>{workbench.title}</strong><small>{workbench.description}</small></span>
+  <a class="module-next-step module-next-step--workbench" href={workbench?.href ?? `/modules/${moduleId}?view=notes`}>
+    <span class="module-next-step__index">{workbench?.notation ?? 'AMAT 19'}</span>
+    <span><strong>{workbench?.title ?? 'Applications concept notes'}</strong><small>{workbench?.description ?? 'Graphical optimization, games, and optional extensions.'}</small></span>
     <ArrowRight size={18} aria-hidden="true" />
   </a>
   <div class="module-view-links">
@@ -64,7 +64,7 @@ const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-d
       <summary>Optional topics <span>({supplemental.length})</span></summary>
       <div class="module-supplemental__list">
         {supplemental.map((skill) => (
-          <a href={skill.labHref ?? workbench.href}><span><strong>{skill.title}</strong><small>{skill.description}</small></span><ArrowRight size={16} aria-hidden="true" /></a>
+          <a href={skill.labHref ?? workbench?.href ?? `/modules/${moduleId}?view=notes`}><span><strong>{skill.title}</strong><small>{skill.description}</small></span><ArrowRight size={16} aria-hidden="true" /></a>
         ))}
       </div>
     </details>

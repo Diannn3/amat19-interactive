@@ -100,14 +100,6 @@ test('@core shell navigation controls meet the 44px touch target contract', asyn
 });
 
 test('@core workbench controls meet the 44px touch target contract', async ({ page }) => {
-  const waitForClientLoad = async () => {
-    const islands = page.locator('astro-island[client="load"]');
-    const islandCount = await islands.count();
-    if (islandCount > 0) {
-      await expect(page.locator('astro-island[client="load"][client-render-time]')).toHaveCount(islandCount);
-    }
-  };
-
   const assertVisibleTouchTargets = async (selector: string, route: string) => {
     const controls = page.locator(selector);
     await expect(controls.first(), `${route} should render ${selector}`).toBeVisible();
@@ -123,22 +115,26 @@ test('@core workbench controls meet the 44px touch target contract', async ({ pa
     }
   };
 
-  for (const route of ['/workbenches/logic', '/workbenches/probability', '/workbenches/finance', '/workbenches/linear', '/workbenches/applications']) {
-    await page.goto(route);
-    await waitForClientLoad();
-    const selector = route.endsWith('/finance')
-      ? '[data-primary-controls] input, [data-primary-controls] select, [data-primary-controls] button'
-      : '[data-primary-control]';
-    await assertVisibleTouchTargets(selector, route);
+  const workbenches = [
+    { route: '/workbenches/logic', testId: 'logic-proof-workbench', selector: '[data-primary-control]' },
+    { route: '/workbenches/probability', testId: 'probability-model-builder', selector: '[role="tab"]' },
+    { route: '/workbenches/finance', testId: 'money-timeline-workbench', selector: '[data-primary-controls] input, [data-primary-controls] select, [data-primary-controls] button' },
+    { route: '/workbenches/linear', testId: 'row-operations-coach', selector: '[data-primary-control]' },
+  ];
+
+  for (const workbench of workbenches) {
+    await page.goto(workbench.route);
+    await expect(page.getByTestId(workbench.testId), workbench.route).toHaveAttribute('data-hydrated', 'true');
+    await assertVisibleTouchTargets(workbench.selector, workbench.route);
   }
 });
 
-test('home presents a brand-first route index around real AMAT course objects', async ({ page }) => {
+test('home presents a brand-first route index around four active workbenches', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.locator('[data-home-hero]')).toBeVisible();
   await expect(page.locator('[data-home-course-rail]')).toBeVisible();
-  await expect(page.locator('[data-home-course-rail] [data-home-module]')).toHaveCount(5);
+  await expect(page.locator('[data-home-course-rail] [data-home-module]')).toHaveCount(4);
   await expect(page.getByTestId('home-study-snapshot')).toHaveCount(0);
   await expect(page.locator('.home-facts, .home-modules, .module-spotlight-grid')).toHaveCount(0);
   await expect(page.locator('[data-home-primary-action][href="/study"]')).toBeVisible();
@@ -163,7 +159,7 @@ test('public surfaces obey the anti-vibecode hierarchy and status semantics', as
     '/workbenches/probability',
     '/workbenches/finance',
     '/workbenches/linear',
-    '/workbenches/applications',
+    '/modules/applications?view=notes',
   ];
 
   for (const route of routes) {
@@ -254,7 +250,7 @@ test('command palette groups results and supports arrow-key selection', async ({
   await expect(palette.getByRole('group', { name: 'Workspace', exact: true })).toBeVisible();
 
   await input.fill('conditional');
-  const result = palette.getByRole('option', { name: /Probability Model Builder/i }).first();
+  const result = palette.getByRole('option', { name: /Probability Workbench/i }).first();
   await expect(result).toBeVisible();
   await page.keyboard.press('ArrowDown');
   await expect(result).toHaveAttribute('aria-selected', 'true');
@@ -327,9 +323,7 @@ test('open command palette has no serious accessibility violations', async ({ pa
 });
 
 test('hydrated workbench registers a persistence flush before a PWA update', async ({ page }) => {
-  await page.goto('/workbenches/logic?mode=compare');
-  const islandCount = await page.locator('astro-island[client="load"]').count();
-  await expect(page.locator('astro-island[client="load"][client-render-time]')).toHaveCount(islandCount);
+  await page.goto('/workbenches/logic?mode=argument');
   await expect(page.getByTestId('logic-proof-workbench')).toHaveAttribute('data-hydrated', 'true');
 
   const taskCount = await page.evaluate(() => {
@@ -413,7 +407,7 @@ test('progress leads with needs attention and can reveal full core evidence', as
 test('mobile routes do not create page-level horizontal overflow', async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 375, height: 812 });
-  for (const route of ['/', '/course', '/study', '/progress', '/reference', '/saved', '/settings', '/exam', '/modules/logic', '/modules/logic?view=practice', '/lessons/logic/truth-tables', '/workbenches/logic', '/workbenches/probability', '/workbenches/finance', '/workbenches/linear', '/workbenches/applications']) {
+  for (const route of ['/', '/course', '/study', '/progress', '/reference', '/saved', '/settings', '/exam', '/modules/logic', '/modules/logic?view=practice', '/lessons/logic/truth-tables', '/workbenches/logic', '/workbenches/probability', '/workbenches/finance', '/workbenches/linear', '/modules/applications?view=notes']) {
     await page.goto(route);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow, route).toBe(false);
@@ -456,13 +450,11 @@ test('@core logic task switch is keyboard-accessible', async ({ page }) => {
   await page.goto('/workbenches/logic');
   const workbench = page.getByTestId('logic-proof-workbench');
   await expect(workbench).toHaveAttribute('data-hydrated', 'true');
-  const picker = workbench.getByRole('combobox', { name: 'Choose a task' });
-  await expect(picker).toHaveValue('translate');
-  await picker.focus();
-  await page.keyboard.press('ArrowDown');
-  await page.keyboard.press('ArrowDown');
-  await expect(picker).toHaveValue('compare');
-  await expect(workbench.getByRole('region', { name: 'Find the row that separates them.' })).toBeVisible();
+  const truthTable = workbench.getByRole('tab', { name: 'Truth Table' });
+  await truthTable.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(workbench.getByRole('tab', { name: 'Test an Argument' })).toHaveAttribute('aria-selected', 'true');
+  await expect(workbench.getByRole('button', { name: 'Test validity' })).toBeVisible();
 });
 
 test('reference browser searches, filters by module, and expands assumptions', async ({ page }) => {
@@ -527,8 +519,6 @@ test('exam keeps one question in view and exposes a jump navigator', async ({ pa
   const exam = page.getByTestId('mixed-exam');
   const stage = exam.locator('.mixed-question-stage');
 
-  const islandCount = await page.locator('astro-island[client="load"]').count();
-  await expect(page.locator('astro-island[client="load"][client-render-time]')).toHaveCount(islandCount);
   await expect(exam).toHaveAttribute('data-hydrated', 'true');
   await expect(stage.locator('.mixed-question')).toHaveCount(1);
   await expect(exam.locator('.exam-question-nav')).toBeVisible();

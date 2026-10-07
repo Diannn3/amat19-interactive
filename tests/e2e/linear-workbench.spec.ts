@@ -5,6 +5,102 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/workbenches/linear');
 });
 
+test('@core canonical matrix tabs change the mathematical surface without mockup controls', async ({ page }) => {
+  const coach = page.getByTestId('row-operations-coach');
+  await expect(coach).toHaveAttribute('data-hydrated', 'true');
+  const tabs = coach.getByRole('tablist', { name: 'Matrix goals' });
+  await expect(tabs.getByRole('tab')).toHaveCount(4);
+  await expect(tabs.getByRole('tab', { name: 'Solve Systems' })).toHaveAttribute('aria-selected', 'true');
+  await expect(coach.getByText('Eigenvalues')).toHaveCount(0);
+  await expect(coach.getByText('3D Geometric View')).toHaveCount(0);
+  await expect(coach.getByRole('button', { name: 'Determinant' })).toHaveCount(0);
+
+  await tabs.getByRole('tab', { name: 'Matrix Operations' }).click();
+  await expect(coach).toHaveAttribute('data-goal', 'arithmetic');
+  await expect(coach.getByLabel('Candidate result matrix')).toBeVisible();
+  await expect(page).toHaveURL(/goal=arithmetic/);
+
+  await tabs.getByRole('tab', { name: 'Row Reduction' }).click();
+  await expect(coach).toHaveAttribute('data-goal', 'rref');
+  await expect(coach.getByLabel('Candidate target row')).toBeVisible();
+
+  await tabs.getByRole('tab', { name: 'Inverse' }).click();
+  await expect(coach).toHaveAttribute('data-goal', 'inverse');
+  await expect(coach.getByLabel('Current augmented matrix')).toHaveAttribute('aria-label', /2, 4, 1, 0/);
+});
+
+test('@core URL goal wins over a saved draft and browser history restores the active tab', async ({ page }) => {
+  const coach = page.getByTestId('row-operations-coach');
+  await expect(coach).toHaveAttribute('data-hydrated', 'true');
+  const tabs = coach.getByRole('tablist', { name: 'Matrix goals' });
+  await tabs.getByRole('tab', { name: 'Inverse' }).click();
+  await expect(page).toHaveURL(/goal=inverse/);
+  await page.waitForTimeout(300);
+  await page.goto('/workbenches/linear?goal=arithmetic');
+  await expect(coach).toHaveAttribute('data-goal', 'arithmetic');
+  await tabs.getByRole('tab', { name: 'Row Reduction' }).click();
+  await expect(coach).toHaveAttribute('data-goal', 'rref');
+  await page.goBack();
+  await expect(coach).toHaveAttribute('data-goal', 'arithmetic');
+  await expect(tabs.getByRole('tab', { name: 'Matrix Operations' })).toHaveAttribute('aria-selected', 'true');
+  await page.goForward();
+  await expect(coach).toHaveAttribute('data-goal', 'rref');
+});
+
+test('feedback stays with the goal that produced it', async ({ page }) => {
+  const coach = page.getByTestId('row-operations-coach');
+  await expect(coach).toHaveAttribute('data-hydrated', 'true');
+  const tabs = coach.getByRole('tablist', { name: 'Matrix goals' });
+  await tabs.getByRole('tab', { name: 'Matrix Operations' }).click();
+  await coach.getByLabel('Candidate result matrix').fill('0');
+  await coach.getByRole('button', { name: 'Check result' }).click();
+  await expect(coach.getByRole('status')).toBeVisible();
+  await tabs.getByRole('tab', { name: 'Solve Systems' }).click();
+  await expect(coach.getByRole('status')).toHaveCount(0);
+  await tabs.getByRole('tab', { name: 'Matrix Operations' }).click();
+  await expect(coach.getByRole('status')).toHaveCount(0);
+});
+
+test('@core multiplication exposes an exact row-by-column trace with the revealed result', async ({ page }) => {
+  const coach = page.getByTestId('row-operations-coach');
+  await expect(coach).toHaveAttribute('data-hydrated', 'true');
+  await coach.getByRole('tab', { name: 'Matrix Operations' }).click();
+  await coach.getByLabel('Arithmetic operation').selectOption('multiply');
+  await expect(coach.getByText('Row-by-column trace')).toHaveCount(0);
+  await coach.getByRole('button', { name: 'Show exact result' }).click();
+  await expect(coach.getByLabel('Exact result matrix')).toHaveAttribute('aria-label', /4, 5; 10, 11/);
+  await expect(coach.getByText('Row-by-column trace')).toBeVisible();
+  await expect(coach.getByText(/1 · 2 \+ 2 · 1 = 4/)).toBeVisible();
+});
+
+test('incompatible multiplication explains dimensions while keeping both editors reachable', async ({ page }) => {
+  const coach = page.getByTestId('row-operations-coach');
+  await expect(coach).toHaveAttribute('data-hydrated', 'true');
+  await coach.getByRole('tab', { name: 'Matrix Operations' }).click();
+  await coach.getByText('Edit matrices').click();
+  await coach.getByLabel('Matrix B').last().fill('1 2 3');
+  await coach.getByRole('button', { name: 'Use this model' }).click();
+  await coach.getByLabel('Arithmetic operation').selectOption('multiply');
+  await expect(coach.getByRole('alert')).toContainText('A columns (2) = B rows (1)');
+  await expect(coach.getByText('Edit matrices')).toBeVisible();
+  await expect(coach.getByLabel('Matrix B').last()).toBeVisible();
+});
+
+test('@core edited systems classify infinite and inconsistent solutions exactly after reveal', async ({ page }) => {
+  const coach = page.getByTestId('row-operations-coach');
+  await expect(coach).toHaveAttribute('data-hydrated', 'true');
+  await coach.getByText('Edit the starting matrix').click();
+  const rows = coach.getByLabel('Matrix rows');
+  await rows.fill('1 1 2\n2 2 4');
+  await coach.getByRole('button', { name: 'Use this matrix' }).click();
+  await coach.getByText('Show target context').click();
+  await expect(coach.getByText('infinite system', { exact: true })).toBeVisible();
+  await rows.fill('1 1 2\n2 2 5');
+  await coach.getByRole('button', { name: 'Use this matrix' }).click();
+  await coach.getByText('Show target context').click();
+  await expect(coach.getByText('inconsistent system', { exact: true })).toBeVisible();
+});
+
 test('@core Row Operations Coach starts with one matrix and one legal move', async ({ page }) => {
   const coach = page.getByTestId('row-operations-coach');
   await expect(coach).toHaveAttribute('data-hydrated', 'true');

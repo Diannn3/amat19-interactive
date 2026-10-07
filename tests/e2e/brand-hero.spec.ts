@@ -3,11 +3,10 @@ import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 
 const homeModules = [
-  { title: 'Logic & Proof', href: '/workbenches/logic', notation: 'P → Q', description: 'Translate statements, test arguments, and build a valid proof one step at a time.' },
-  { title: 'Probability Model Builder', href: '/workbenches/probability', notation: 'P(A | B)', description: 'Choose a counting or probability model, then compare its table, tree, and exact fraction.' },
+  { title: 'Logic Workbench', href: '/workbenches/logic', notation: 'P → Q', description: 'Build a truth table and test an argument against every assignment.' },
+  { title: 'Probability Workbench', href: '/workbenches/probability', notation: 'P(A | B)', description: 'Explore conditional probability, discrete distributions, random variables, and supplemental inference.' },
   { title: 'Money Timeline', href: '/workbenches/finance', notation: 'F = P(1 + i)ⁿ', description: 'Place cash flows on a timeline and move every amount to one focal date.' },
-  { title: 'Row Operations Coach', href: '/workbenches/linear', notation: 'R₂ ← R₂ − 2R₁', description: 'Perform row operations, inspect the arithmetic, and classify the resulting system.' },
-  { title: 'Optimization & Strategy', href: '/workbenches/applications', notation: 'max z = cᵀx', description: 'Formulate an optimization or strategy model before solving it.' },
+  { title: 'Matrices & Systems', href: '/workbenches/linear', notation: 'R₂ ← R₂ − 2R₁', description: 'Inspect exact matrix operations, solve systems, reduce rows, and find inverses.' },
 ];
 
 test.describe('AMAT 19 brand hero and identity', () => {
@@ -17,7 +16,7 @@ test.describe('AMAT 19 brand hero and identity', () => {
     const hero = page.locator('[data-home-hero]');
     await expect(hero).toBeVisible();
     await expect(hero.getByRole('heading', { level: 1, name: 'Finite mathematics, made visible.' })).toBeVisible();
-    await expect(hero.getByText('Study AMAT 19 through exact, interactive labs for logic, probability, financial mathematics, matrices, and applied models.', { exact: true })).toBeVisible();
+    await expect(hero.getByText('Study five AMAT 19 modules through four exact workbenches, lessons, and practice. Applied models remain part of the course.', { exact: true })).toBeVisible();
     await expect(hero.getByRole('link', { name: 'Start studying' })).toHaveAttribute('href', '/study');
     await expect(hero.getByRole('link', { name: 'Explore the course' })).toHaveAttribute('href', '/course');
 

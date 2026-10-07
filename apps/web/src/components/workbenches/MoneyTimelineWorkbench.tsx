@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
+
 import {
   FinanceDecimal,
   annuityValue,
@@ -13,6 +14,7 @@ import { Button } from '../ui/Button';
 import { Feedback } from '../ui/Feedback';
 import Timeline, { type TimelinePoint } from '../math/Timeline';
 import StepTrace from '../math/StepTrace';
+import FinanceTraceExpression from '../math/FinanceTraceExpression';
 import { financeCertaintyLabel } from '../../lib/finance-display';
 import { loadDraft, saveDraft } from '../../lib/draft';
 import { usePersistenceFlush } from '../../lib/use-persistence-flush';
@@ -45,6 +47,7 @@ type Computed = {
   error?: string;
   resultLabel: string;
   resultDetail?: string;
+  timelineSummary?: string;
   points: TimelinePoint[];
   minTime: number;
   maxTime: number;
@@ -97,6 +100,13 @@ function isScenario(value: unknown): value is Scenario {
   return typeof value === 'string' && SCENARIOS.includes(value as Scenario);
 }
 
+function setScenarioUrl(scenario: Scenario, method: 'pushState' | 'replaceState') {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get('scenario') === scenario) return;
+  url.searchParams.set('scenario', scenario);
+  window.history[method](window.history.state, '', url);
+}
+
 export default function MoneyTimelineWorkbench() {
   const [hydrated, setHydrated] = useState(false);
   const [scenario, setScenario] = useState<Scenario>('cashflows');
@@ -114,31 +124,6 @@ export default function MoneyTimelineWorkbench() {
   const [bondYield, setBondYield] = useState('0.04');
   const [bondPeriods, setBondPeriods] = useState('10');
   const userInteracted = useRef(false);
-
-  // Mockup 7: Financial Mathematics Laboratory State
-  const [principal, setPrincipal] = useState(10000);
-  const [annualRate, setAnnualRate] = useState(5.0);
-  const [years, setYears] = useState(10);
-  const [compoundingN, setCompoundingN] = useState(1);
-  const [modeTab, setModeTab] = useState<'compound' | 'annuity'>('compound');
-  const [chartHoverIndex, setChartHoverIndex] = useState<number | null>(10);
-
-  const rateDecimal = annualRate / 100;
-  const futureVal = principal * Math.pow(1 + rateDecimal / compoundingN, compoundingN * years);
-  const totalInt = Math.max(0, futureVal - principal);
-  const growthMult = principal > 0 ? (futureVal / principal).toFixed(2) : '1.00';
-
-  const growthCurvePoints = Array.from({ length: 11 }, (_, i) => {
-    const t = (years / 10) * i;
-    const fv = principal * Math.pow(1 + rateDecimal / compoundingN, compoundingN * t);
-    const x = 50 + (i / 10) * 380;
-    const y = 190 - ((fv - principal) / (futureVal - principal || 1)) * 130;
-    return { t: Math.round(t), fv: Math.round(fv), x, y };
-  });
-
-  const curvePathD = growthCurvePoints.reduce((acc, pt, i) => {
-    return i === 0 ? `M ${pt.x},${pt.y}` : `${acc} L ${pt.x},${pt.y}`;
-  }, '');
 
   const draft: Draft = {
     scenario,
@@ -162,7 +147,9 @@ export default function MoneyTimelineWorkbench() {
     loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((saved) => {
       const savedScenario = saved && isScenario(saved.scenario) ? saved.scenario : undefined;
       if (!userInteracted.current && saved) {
-        setScenario(requestedScenario ?? savedScenario ?? 'cashflows');
+        const selectedScenario = requestedScenario ?? savedScenario ?? 'cashflows';
+        setScenario(selectedScenario);
+        setScenarioUrl(selectedScenario, 'replaceState');
         setFlows(saved.flows);
         setCashflowRate(saved.cashflowRate);
         setFocalDate(saved.focalDate);
@@ -177,9 +164,27 @@ export default function MoneyTimelineWorkbench() {
         setBondYield(saved.bondYield);
         setBondPeriods(saved.bondPeriods);
       }
-      if (!userInteracted.current && !saved && requestedScenario) setScenario(requestedScenario);
+      if (!userInteracted.current && !saved) {
+        const selectedScenario = requestedScenario ?? 'cashflows';
+        setScenario(selectedScenario);
+        setScenarioUrl(selectedScenario, 'replaceState');
+      }
       setHydrated(true);
-    }).catch(() => setHydrated(true));
+    }).catch(() => {
+      const selectedScenario = requestedScenario ?? 'cashflows';
+      setScenario(selectedScenario);
+      setScenarioUrl(selectedScenario, 'replaceState');
+      setHydrated(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    const restoreScenario = () => {
+      const requestedScenario = readWorkbenchOption('scenario', SCENARIOS);
+      if (requestedScenario) setScenario(requestedScenario);
+    };
+    window.addEventListener('popstate', restoreScenario);
+    return () => window.removeEventListener('popstate', restoreScenario);
   }, []);
 
   useEffect(() => {
@@ -241,10 +246,14 @@ export default function MoneyTimelineWorkbench() {
           tone: 'accent',
         }));
         points.push({ time: focal, label: annuityDirection === 'present' ? 'Present' : 'Future', value: 'focal date', tone: 'primary' });
+        const visiblePayments = sampledTimes(start, end).length;
         return {
           result,
           resultLabel: annuityDirection === 'present' ? 'Present value' : 'Future value',
           resultDetail: annuityTiming === 'immediate' ? 'payments at each period end' : 'payments at each period start',
+          timelineSummary: visiblePayments < count
+            ? `Showing ${visiblePayments} sample points for ${count} scheduled payments; all ${count} are included in valuation.`
+            : `All ${count} scheduled payments are shown and included in valuation.`,
           points,
           ...bounds(points),
           step: { label: 'Payment 1', amount: annuityPayment, time: String(start), focalDate: String(focal), rate: annuityRate },
@@ -268,10 +277,14 @@ export default function MoneyTimelineWorkbench() {
       }));
       points.push({ time: count, label: 'Redemption', value: currency.format(decimalNumber(bondRedemption)), tone: 'accent' });
       points.push({ time: 0, label: 'Bond price', value: 'value here', tone: 'primary' });
+      const visibleCoupons = sampledTimes(1, count).length;
       return {
         result,
         resultLabel: 'Bond price',
         resultDetail: result.classification,
+        timelineSummary: visibleCoupons < count
+          ? `Showing ${visibleCoupons} sample points for ${count} scheduled coupon payments, plus redemption; all coupons and redemption are included in price.`
+          : `All ${count} coupon payments and redemption are shown and included in price.`,
         points,
         ...bounds(points),
         step: { label: 'Redemption', amount: bondRedemption, time: String(count), focalDate: '0', rate: bondYield },
@@ -312,6 +325,11 @@ export default function MoneyTimelineWorkbench() {
   const updateFlow = (id: number, patch: Partial<Flow>) => {
     setFlows((current) => current.map((flow) => flow.id === id ? { ...flow, ...patch } : flow));
   };
+  const selectScenario = (next: Scenario) => {
+    userInteracted.current = true;
+    setScenario(next);
+    setScenarioUrl(next, 'pushState');
+  };
 
   return (
     <section
@@ -324,243 +342,6 @@ export default function MoneyTimelineWorkbench() {
         if (event.target instanceof HTMLElement && event.target.closest('button,input,select')) userInteracted.current = true;
       }}
     >
-      {/* Mockup 7: Financial Mathematics Laboratory */}
-      <header className="fin-hero">
-        <h2 className="fin-title">Model. Calculate. See the future.</h2>
-        <p className="fin-lede">
-          Explore time value of money, compound interest, annuities, and more.
-        </p>
-
-        <div className="prob-mode-bar" role="group" aria-label="Finance mode selection">
-          <button 
-            type="button" 
-            className={`prob-mode-pill ${modeTab === 'compound' ? 'is-active' : ''}`}
-            aria-pressed={modeTab === 'compound'}
-            onClick={() => setModeTab('compound')}
-          >
-            Compound Interest
-          </button>
-          <button 
-            type="button" 
-            className={`prob-mode-pill ${modeTab === 'annuity' ? 'is-active' : ''}`}
-            aria-pressed={modeTab === 'annuity'}
-            onClick={() => setModeTab('annuity')}
-          >
-            Annuity
-          </button>
-        </div>
-      </header>
-
-      <div className="fin-instrument-grid" style={{ marginBottom: '2.5rem' }}>
-        <div className="fin-form-card apple-glass-card">
-          <div className="fin-input-row">
-            <div className="fin-input-label">
-              <span>Principal (P)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>${principal.toLocaleString()}</span>
-            </div>
-            <input 
-              type="number" 
-              className="fin-number-input"
-              aria-label="Principal amount"
-              value={principal} 
-              step="500" 
-              min="100" 
-              onChange={(e) => setPrincipal(Math.max(0, Number(e.target.value)))} 
-            />
-            <input 
-              type="range" 
-              className="prob-slider"
-              aria-label="Principal amount slider"
-              min="1000" 
-              max="100000" 
-              step="1000" 
-              value={principal} 
-              onChange={(e) => setPrincipal(Number(e.target.value))} 
-            />
-          </div>
-
-          <div className="fin-input-row">
-            <div className="fin-input-label">
-              <span>Annual Interest Rate (r)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>{annualRate.toFixed(1)}%</span>
-            </div>
-            <input 
-              type="number" 
-              className="fin-number-input"
-              aria-label="Annual interest rate"
-              value={annualRate} 
-              step="0.1" 
-              min="0.1" 
-              max="30" 
-              onChange={(e) => setAnnualRate(Math.max(0.1, Number(e.target.value)))} 
-            />
-            <input 
-              type="range" 
-              className="prob-slider"
-              aria-label="Annual interest rate slider"
-              min="0.5" 
-              max="20" 
-              step="0.5" 
-              value={annualRate} 
-              onChange={(e) => setAnnualRate(Number(e.target.value))} 
-            />
-          </div>
-
-          <div className="fin-input-row">
-            <div className="fin-input-label">
-              <span>Time in Years (t)</span>
-              <span style={{ fontFamily: 'var(--font-amat-mono)', color: 'var(--focus)' }}>{years} yrs</span>
-            </div>
-            <input 
-              type="number" 
-              className="fin-number-input"
-              aria-label="Time in years"
-              value={years} 
-              min="1" 
-              max="50" 
-              onChange={(e) => setYears(Math.max(1, Number(e.target.value)))} 
-            />
-            <input 
-              type="range" 
-              className="prob-slider"
-              aria-label="Time in years slider"
-              min="1"
-              max="40" 
-              step="1" 
-              value={years} 
-              onChange={(e) => setYears(Number(e.target.value))} 
-            />
-          </div>
-
-          <div className="fin-input-row">
-            <div className="fin-input-label">
-              <span>Compounding Frequency (n)</span>
-            </div>
-            <select 
-              className="fin-select"
-              aria-label="Compounding frequency"
-              value={compoundingN} 
-              onChange={(e) => setCompoundingN(Number(e.target.value))}
-            >
-              <option value="1">Annually (1 / yr)</option>
-              <option value="2">Semi-Annually (2 / yr)</option>
-              <option value="4">Quarterly (4 / yr)</option>
-              <option value="12">Monthly (12 / yr)</option>
-            </select>
-          </div>
-
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-            <button type="button" className="apple-btn-black" style={{ flex: 1, padding: '0.65rem 1rem' }}>
-              Calculate →
-            </button>
-            <button 
-              type="button" 
-              className="apple-btn-glass" 
-              style={{ padding: '0.65rem 1rem' }}
-              onClick={() => { setPrincipal(10000); setAnnualRate(5.0); setYears(10); setCompoundingN(1); }}
-            >
-              Reset
-            </button>
-          </div>
-        </div>
-
-        <div className="fin-chart-panel">
-          <div className="fin-chart-card apple-glass-card">
-            <svg viewBox="0 0 460 220" style={{ width: '100%', height: 'auto' }} aria-label="Investment growth curve">
-              {/* Grid lines */}
-              <line x1="50" y1="20" x2="50" y2="190" stroke="var(--border)" strokeWidth="1" />
-              <line x1="50" y1="190" x2="430" y2="190" stroke="var(--border)" strokeWidth="1" />
-              <line x1="50" y1="105" x2="430" y2="105" stroke="var(--border)" strokeDasharray="4 4" />
-              <line x1="50" y1="20" x2="430" y2="20" stroke="var(--border)" strokeDasharray="4 4" />
-
-              {/* Shaded Area Under Curve */}
-              <path 
-                d={`${curvePathD} L 430,190 L 50,190 Z`} 
-                fill="rgba(37, 99, 235, 0.08)" 
-              />
-
-              {/* Curve */}
-              <path 
-                d={curvePathD} 
-                fill="none" 
-                stroke="var(--editorial-data-blue)" 
-                strokeWidth="3" 
-                strokeLinecap="round" 
-              />
-
-              {/* Data points */}
-              {growthCurvePoints.map((pt, i) => (
-                <circle 
-                  key={i} 
-                  cx={pt.x} 
-                  cy={pt.y} 
-                  r={i === chartHoverIndex ? 6 : 3.5} 
-                  fill={i === chartHoverIndex ? 'var(--foreground)' : 'var(--editorial-data-blue)'} 
-                  stroke="var(--surface)" 
-                  strokeWidth="2" 
-                  style={{ cursor: 'pointer', transition: 'r 150ms ease' }}
-                  onMouseEnter={() => setChartHoverIndex(i)}
-                />
-              ))}
-
-              {/* Active Hover Tooltip */}
-              {chartHoverIndex !== null && growthCurvePoints[chartHoverIndex] && (
-                <g transform={`translate(${growthCurvePoints[chartHoverIndex].x}, ${growthCurvePoints[chartHoverIndex].y - 32})`}>
-                  <rect 
-                    x="-55" 
-                    y="-18" 
-                    width="110" 
-                    height="24" 
-                    rx="6" 
-                    fill="var(--foreground)" 
-                  />
-                  <text 
-                    x="0" 
-                    y="-2" 
-                    textAnchor="middle" 
-                    fill="var(--surface)" 
-                    fontSize="10.5" 
-                    fontWeight="600" 
-                    fontFamily="monospace"
-                  >
-                    Year {growthCurvePoints[chartHoverIndex].t}: ${growthCurvePoints[chartHoverIndex].fv.toLocaleString()}
-                  </text>
-                </g>
-              )}
-
-              {/* Axis Labels */}
-              <text x="50" y="206" fill="var(--foreground-muted)" fontSize="10" fontFamily="sans-serif">Yr 0</text>
-              <text x="240" y="206" fill="var(--foreground-muted)" fontSize="10" fontFamily="sans-serif" textAnchor="middle">Yr {Math.round(years / 2)}</text>
-              <text x="430" y="206" fill="var(--foreground-muted)" fontSize="10" fontFamily="sans-serif" textAnchor="end">Yr {years}</text>
-            </svg>
-          </div>
-
-          <div className="fin-metrics-deck">
-            <div className="fin-metric-box apple-glass-card">
-              <span>Future Value (A)</span>
-              <strong>${Math.round(futureVal).toLocaleString()}</strong>
-            </div>
-            <div className="fin-metric-box apple-glass-card">
-              <span>Total Interest</span>
-              <strong style={{ color: 'var(--editorial-data-green)' }}>+${Math.round(totalInt).toLocaleString()}</strong>
-            </div>
-            <div className="fin-metric-box apple-glass-card">
-              <span>Growth Multiple</span>
-              <strong>{growthMult}×</strong>
-            </div>
-          </div>
-
-          <div className="prob-formula-card">
-            <div className="prob-formula-math" style={{ fontSize: '1.15rem' }}>
-              A = P(1 + r/n)^(nt)
-            </div>
-            <p className="prob-formula-caption">
-              P = Principal (${principal.toLocaleString()}) · r = Rate ({annualRate}%) · n = Compounding ({compoundingN}×/yr) · t = Time ({years} yrs)
-            </p>
-          </div>
-        </div>
-      </div>
-
       <header className="money-timeline__header">
         <div>
           <h2>Move one cash flow.</h2>
@@ -571,7 +352,7 @@ export default function MoneyTimelineWorkbench() {
             value={scenario}
             options={TASK_OPTIONS}
             disabled={!hydrated}
-            onChange={(value) => { if (isScenario(value)) setScenario(value); }}
+            onChange={(value) => { if (isScenario(value)) selectScenario(value); }}
           />
         </div>
       </header>
@@ -584,6 +365,7 @@ export default function MoneyTimelineWorkbench() {
               maxTime={computed.maxTime}
               points={computed.points}
               ariaLabel={`${computed.resultLabel} timeline`}
+              summary={computed.timelineSummary}
             />
           ) : (
             <div className="money-timeline__empty">Edit the cash flows and rates to restore the timeline.</div>
@@ -598,7 +380,21 @@ export default function MoneyTimelineWorkbench() {
               {computed.resultDetail && <small>{computed.resultDetail}</small>}
               <small>{financeCertaintyLabel(computed.result)}</small>
             </output>
-            <StepTrace steps={computed.result.trace} title="Money timeline calculation" initialCount={computed.result.trace.length} />
+            <StepTrace
+              steps={computed.result.trace}
+              title="Money timeline calculation"
+              initialCount={computed.result.trace.length}
+              renderExpression={(step) => (
+                <FinanceTraceExpression
+                  step={step}
+                  scenario={scenario}
+                  direction={annuityDirection}
+                  timing={annuityTiming}
+                  zeroRate={scenario === 'annuity' ? Number(annuityRate) === 0 : scenario === 'bond' && Number(bondYield) === 0}
+                  certainty={computed.result!.certainty}
+                />
+              )}
+            />
           </MoneyStepCoach>
         )}
       </div>

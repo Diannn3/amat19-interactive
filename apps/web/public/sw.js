@@ -1,7 +1,7 @@
-const VERSION = 'amat19-blueprint-v4';
+const VERSION = 'amat19-blueprint-v5';
 // Emergency stale-shell migration. This exact release must be able to replace
 // an older worker even if offline precaching fails in production.
-const FORCE_ACTIVATE_RELEASE = VERSION === 'amat19-blueprint-v4';
+const FORCE_ACTIVATE_RELEASE = VERSION === 'amat19-blueprint-v5';
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
 const NAVIGATION_TIMEOUT_MS = 4000;
@@ -24,7 +24,6 @@ const CORE_ROUTES = [
   '/workbenches/probability',
   '/workbenches/finance',
   '/workbenches/linear',
-  '/workbenches/applications',
   '/offline.html',
   '/manifest.webmanifest'
 ];
@@ -49,9 +48,9 @@ self.addEventListener('install', (event) => {
         await Promise.all([pages.addAll(CORE_ROUTES), assets.addAll(manifest.assets)]);
       } catch (error) {
         if (!FORCE_ACTIVATE_RELEASE) throw error;
-        // Best-effort offline warmup for v4. Network freshness and worker
+        // Best-effort offline warmup for v5. Network freshness and worker
         // replacement take priority over offline readiness during migration.
-        console.warn('[AMAT 19] Blueprint v4 precache warmup failed; continuing stale-shell migration.', error);
+        console.warn('[AMAT 19] Blueprint v5 precache warmup failed; continuing stale-shell migration.', error);
       }
     })()
   );

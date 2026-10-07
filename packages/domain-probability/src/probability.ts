@@ -56,3 +56,18 @@ export function areIndependent(pA: Rational, pB: Rational, pIntersection: Ration
   validateJointProbabilities(pA,pB,pIntersection);
   return pIntersection.equals(pA.multiply(pB));
 }
+
+/** Approximate Wilson score interval for independent Bernoulli observations. */
+export function wilsonProportionInterval(successes: number, sampleSize: number, confidenceLevel: 90 | 95 | 99) {
+  if (!Number.isSafeInteger(sampleSize) || sampleSize < 1 || sampleSize > 1_000_000) throw new RangeError('Sample size must be a whole number from 1 to 1,000,000.');
+  if (!Number.isSafeInteger(successes) || successes < 0 || successes > sampleSize) throw new RangeError('Successes must be a whole number from 0 to the sample size.');
+  const critical = { 90: 1.6448536269514722, 95: 1.959963984540054, 99: 2.5758293035489004 }[confidenceLevel];
+  if (!critical) throw new RangeError('Choose a 90%, 95%, or 99% confidence level.');
+  const sampleProportion = new Rational(successes, sampleSize);
+  const observed = successes / sampleSize;
+  const zSquared = critical * critical;
+  const denominator = 1 + zSquared / sampleSize;
+  const center = (observed + zSquared / (2 * sampleSize)) / denominator;
+  const halfWidth = critical * Math.sqrt(observed * (1 - observed) / sampleSize + zSquared / (4 * sampleSize * sampleSize)) / denominator;
+  return { sampleProportion, lower: successes === 0 ? 0 : Math.max(0, center - halfWidth), upper: successes === sampleSize ? 1 : Math.min(1, center + halfWidth), confidenceLevel, method: 'Wilson score interval' as const };
+}
