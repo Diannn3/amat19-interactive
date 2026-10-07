@@ -11,7 +11,7 @@ test('four active workbenches and five course modules remain discoverable', asyn
 test('applications study notes are usable without an applications workbench', async ({ page }) => {
   await page.goto('/modules/applications');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  await expect(page.getByTestId('module-overview').getByRole('link', { name: 'Read the notes' })).toBeVisible();
+  await expect(page.getByTestId('module-overview').getByRole('link', { name: 'Read Applications notes' })).toBeVisible();
   await expect(page.locator('a[href^="/workbenches/applications"]')).toHaveCount(0);
   await page.goto('/workbenches/applications');
   await expect(page).toHaveURL(/\/modules\/applications\?view=notes$/);
