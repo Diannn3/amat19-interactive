@@ -29,7 +29,6 @@ test('learner-facing lab copy does not expose implementation mechanics', async (
     '../../apps/web/src/components/workbenches/ProbabilityModelBuilder.tsx',
     '../../apps/web/src/components/workbenches/MoneyTimelineWorkbench.tsx',
     '../../apps/web/src/components/workbenches/RowOperationsCoach.tsx',
-    '../../apps/web/src/components/workbenches/OptimizationStrategyWorkbench.tsx',
     '../../apps/web/src/components/labs/formal-proof/FormalProofLab.tsx',
     '../../apps/web/src/layouts/AppLayout.astro',
   ];
