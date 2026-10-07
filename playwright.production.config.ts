@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+const existingBaseURL = process.env.AMAT_PRODUCTION_E2E_BASE_URL;
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -8,14 +9,14 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['html', { open: 'never' }], ['list']] : 'list',
   use: {
-    baseURL: 'http://127.0.0.1:4321',
+    baseURL: existingBaseURL ?? 'http://127.0.0.1:4321',
     browserName: 'chromium',
     viewport: { width: 1280, height: 720 },
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     serviceWorkers: 'allow'
   },
-  webServer: {
+  webServer: existingBaseURL ? undefined : {
     command: 'node node_modules/astro/bin/astro.mjs preview --host 127.0.0.1',
     cwd: 'apps/web',
     env: { ASTRO_PREVIEW_BACKGROUND: '0' },

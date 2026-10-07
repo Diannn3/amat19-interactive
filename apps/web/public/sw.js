@@ -3,14 +3,7 @@ const BUILD_REVISION = '__AMAT19_BUILD_REVISION__';
 const VERSION = `${RELEASE}-${BUILD_REVISION}`;
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
-const RESCUE_MARKER_CACHE = `${VERSION}-rescue`;
 const NAVIGATION_TIMEOUT_MS = 4000;
-const LEGACY_CACHE_PREFIXES = [
-  'amat19-workbenches-v2-',
-  'amat19-blueprint-v3-',
-  'amat19-blueprint-v4-',
-  'amat19-blueprint-v5-',
-];
 const CORE_ROUTES = [
   '/',
   '/study',
@@ -34,100 +27,110 @@ const CORE_ROUTES = [
   '/manifest.webmanifest'
 ];
 
-function isLegacyCacheKey(key) {
-  return LEGACY_CACHE_PREFIXES.some((prefix) => key.startsWith(prefix));
+// New workers wait until every open tab has saved. Legacy tabs that do not
+// understand this protocol block activation until closed or normally reloaded.
+let transaction;
+const pageVersions = new Map();
+let cleanupRunning = false;
+async function appClients() {
+  return (await self.clients.matchAll({ type: 'window', includeUncontrolled: true }))
+    .filter(client => client.url.startsWith(self.registration.scope));
 }
-
-async function activeWorkerRelease(timeoutMs = 750) {
-  const active = self.registration.active;
-  if (!active) return null;
-
-  return new Promise((resolve) => {
-    const channel = new MessageChannel();
-    const timeout = setTimeout(() => resolve(null), timeoutMs);
-    channel.port1.onmessage = (event) => {
-      clearTimeout(timeout);
-      resolve(typeof event.data?.release === 'string' ? event.data.release : null);
-    };
-    active.postMessage({ type: 'GET_RELEASE' }, [channel.port2]);
-  });
+async function abortUpdate(state) {
+  for (const client of await appClients()) client.postMessage({ type: 'ABORT_UPDATE', version: VERSION, requestId: state.id });
 }
-
-async function shouldRescueLegacyClient() {
-  const keys = await caches.keys();
-  if (keys.some(isLegacyCacheKey)) return true;
-  if (!self.registration.active) return false;
-  return (await activeWorkerRelease()) !== RELEASE;
-}
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    (async () => {
-      // v6 is a one-time rescue for clients still carrying v2-v5 cache
-      // generations. Future v6 revisions remain learner-controlled.
-      const legacyMigration = await shouldRescueLegacyClient();
-      if (legacyMigration) {
-        await caches.open(RESCUE_MARKER_CACHE);
-        await self.skipWaiting();
-      }
-
-      try {
-        const response = await fetch('/sw-assets.json', { cache: 'no-store' });
-        if (!response.ok) throw new Error('The offline asset manifest is unavailable.');
-        const manifest = await response.json();
-        if (!Array.isArray(manifest.assets) || manifest.assets.length === 0 ||
-            !manifest.assets.every(asset => typeof asset === 'string' && /^\/_astro\/[\w./-]+\.(?:js|css|woff2?)$/.test(asset))) {
-          throw new Error('The offline asset manifest is invalid.');
+async function coordinateUpdate(port) {
+  if (transaction) { port?.postMessage({ status: 'busy' }); return; }
+  const state = { id: crypto.randomUUID(), expected: new Map(), sent: new Map(), failed: false };
+  transaction = state;
+  const deadline = Date.now() + 12000;
+  try {
+    while (Date.now() < deadline) {
+      const clients = await appClients();
+      const live = new Set(clients.map(client => client.id));
+      for (const id of state.expected.keys()) if (!live.has(id)) state.expected.delete(id);
+      for (const client of clients) {
+        if (!state.expected.has(client.id)) state.expected.set(client.id, false);
+        if (!state.expected.get(client.id) && Date.now() - (state.sent.get(client.id) ?? -1000) >= 250) {
+          state.sent.set(client.id, Date.now());
+          client.postMessage({ type: 'PREPARE_UPDATE', requestId: state.id, version: VERSION });
         }
-        const [pages, assets] = await Promise.all([caches.open(PAGE_CACHE), caches.open(STATIC_CACHE)]);
-        await Promise.all([pages.addAll(CORE_ROUTES), assets.addAll(manifest.assets)]);
-      } catch (error) {
-        if (!legacyMigration) throw error;
-        // Replacing a known-stale legacy worker is more important than keeping
-        // its offline cache warm. Normal v6 updates still fail closed.
-        console.warn('[AMAT 19] v6 rescue precache warmup failed; continuing legacy migration.', error);
       }
-    })()
-  );
-});
-
-self.addEventListener('message', (event) => {
-  if (event.data?.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-    return;
-  }
-  if (event.data?.type === 'GET_RELEASE' && event.ports?.[0]) {
-    event.ports[0].postMessage({ release: RELEASE, version: VERSION });
-  }
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil((async () => {
+      if (state.failed) throw new Error('A tab could not save');
+      if ([...state.expected.values()].every(Boolean)) {
+        // Recheck membership after acknowledgements, including newly opened tabs.
+        const finalClients = await appClients();
+        if (finalClients.every(client => state.expected.get(client.id))) {
+          for (const client of finalClients) client.postMessage({ type: 'COMMIT_UPDATE', requestId: state.id, version: VERSION });
+          port?.postMessage({ status: 'committing', version: VERSION });
+          await self.skipWaiting();
+          return;
+        }
+      }
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    throw new Error('A tab did not respond');
+  } catch {
+    await abortUpdate(state);
+    port?.postMessage({ status: 'blocked', version: VERSION });
+  } finally { transaction = undefined; }
+}
+async function cleanObsoleteCaches() {
+  if (cleanupRunning || self.registration.installing || self.registration.waiting) return;
+  cleanupRunning = true;
+  try {
+    const clients = await appClients();
+    if (!clients.every(client => pageVersions.get(client.id) === VERSION)) return;
     const keys = await caches.keys();
-    const legacyMigration = keys.some(isLegacyCacheKey) || keys.includes(RESCUE_MARKER_CACHE);
-
-    await Promise.all(
-      keys
-        .filter((key) => key.startsWith('amat19-') && ![STATIC_CACHE, PAGE_CACHE].includes(key))
-        .map((key) => caches.delete(key))
-    );
-
-    await self.clients.claim();
-    if (!legacyMigration) return;
-
-    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    await Promise.all(windows.map(async (client) => {
-      if (typeof client.navigate !== 'function') return;
-      try {
-        const url = new URL(client.url);
-        url.searchParams.set('__amat19_release', RELEASE);
-        url.searchParams.set('__amat19_reload', BUILD_REVISION);
-        await client.navigate(url.href);
-      } catch {
-        // One client that cannot navigate must not block the migration.
+    if (self.registration.installing || self.registration.waiting) return;
+    await Promise.all(keys.filter(key => /^amat19-(?:blueprint-v\d+|workbenches-v2)-/.test(key) &&
+      ![STATIC_CACHE, PAGE_CACHE].includes(key)).map(key => caches.delete(key)));
+  } finally { cleanupRunning = false; }
+}
+self.addEventListener('install', event => {
+  event.waitUntil((async () => {
+    try {
+      const response = await fetch('/sw-assets.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('Offline manifest unavailable');
+      const manifest = await response.json();
+      if (manifest.version !== VERSION || !Array.isArray(manifest.assets) || !manifest.assets.length ||
+          !manifest.assets.every(asset => typeof asset === 'string' && /^\/_astro\/[\w./-]+\.(?:js|css|woff2?)$/.test(asset))) {
+        throw new Error('Offline manifest does not match this release');
       }
-    }));
+      const [pages, assets] = await Promise.all([caches.open(PAGE_CACHE), caches.open(STATIC_CACHE)]);
+      await Promise.all([Promise.all(CORE_ROUTES.map(async route => {
+        const page = await fetch(route, { cache: 'no-store' });
+        if (!page.ok) throw new Error('Offline route unavailable');
+        if (!['/offline.html', '/manifest.webmanifest'].includes(route) &&
+            !(await page.clone().text()).includes(`name="amat-release" content="${VERSION}"`)) {
+          throw new Error('Offline page revision does not match this release');
+        }
+        await pages.put(route, page);
+      })), assets.addAll(manifest.assets)]);
+    } catch (error) {
+      await Promise.all([caches.delete(PAGE_CACHE), caches.delete(STATIC_CACHE)]);
+      throw error;
+    }
   })());
+});
+self.addEventListener('message', event => {
+  const data = event.data;
+  if (!data || !event.source || !event.source.url?.startsWith(self.registration.scope)) return;
+  if (data.type === 'COORDINATE_UPDATE' || data.type === 'SKIP_WAITING') {
+    event.waitUntil(coordinateUpdate(event.ports?.[0]));
+  } else if (data.type === 'UPDATE_SAVED' && transaction && data.requestId === transaction.id &&
+      data.version === VERSION && transaction.expected.has(event.source.id)) {
+    if (data.ok === true) transaction.expected.set(event.source.id, true);
+    else transaction.failed = true;
+  } else if (data.type === 'GET_RELEASE' && event.ports?.[0]) {
+    event.ports[0].postMessage({ release: RELEASE, version: VERSION, protocol: 1 });
+  } else if (data.type === 'CLIENT_READY' && data.version === VERSION) {
+    pageVersions.set(event.source.id, data.version);
+    event.waitUntil(cleanObsoleteCaches());
+  }
+});
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim());
 });
 
 function navigationCacheKey(request) {
@@ -136,7 +139,10 @@ function navigationCacheKey(request) {
 }
 
 async function cachedNavigation(request) {
-  return (await caches.match(navigationCacheKey(request), { ignoreSearch: true })) ||
+  const current = await caches.open(PAGE_CACHE);
+  return (await current.match(navigationCacheKey(request), { ignoreSearch: true })) ||
+    (await current.match('/offline.html')) ||
+    (await caches.match(navigationCacheKey(request), { ignoreSearch: true })) ||
     (await caches.match(request, { ignoreSearch: true })) ||
     (await caches.match('/offline.html'));
 }

@@ -7,6 +7,7 @@ import { Feedback } from '../ui/Feedback';
 import { Badge } from '../ui/Badge';
 import { generateMixedAssessment, type AssessmentExercise, type AssessmentModule } from '../../lib/mixed-assessment';
 import { recordAttempt, recordSkillEvidence } from '../../lib/local-progress';
+import { usePersistenceFlush } from '../../lib/use-persistence-flush';
 
 type Mode = 'practice' | 'exam';
 type Props = { mode?: Mode; questionCount?: number; module?: AssessmentModule; defaultPresetId?: string };
@@ -52,7 +53,37 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
   const [saved, setSaved] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
+  const restoredRelease = useRef(false);
+  const recoveryGeneration = useRef(0);
+  const pendingWrites = useRef(new Set<Promise<unknown>>());
+  const failedWrites = useRef(new Set<() => Promise<unknown>>());
+  const [restoredQuestions, setRestoredQuestions] = useState<AssessmentExercise[] | null>(null);
+  const releaseDraftKey = () => `amat19:release-practice:${window.location.pathname}${window.location.search}`;
+
   useEffect(() => {
+    const cancel = () => { recoveryGeneration.current += 1; sessionStorage.removeItem(releaseDraftKey()); };
+    window.addEventListener('amat:update-cancelled', cancel);
+    return () => window.removeEventListener('amat:update-cancelled', cancel);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(releaseDraftKey());
+      if (raw) {
+        const draft = JSON.parse(raw);
+        if (draft.mode === mode && Array.isArray(draft.questions) && draft.questions.length) {
+          restoredRelease.current = true;
+          setSeed(draft.seed); setPresetId(draft.presetId); setModules(draft.modules);
+          setSkillId(draft.skillId); setAdaptiveCount(draft.adaptiveCount);
+          setAnswers(draft.answers); setChecked(draft.checked);
+          setActiveQuestionIndex(draft.activeQuestionIndex);
+          setSubmitted(draft.submitted); setSaved(draft.saved);
+          setRestoredQuestions(draft.questions); setHydrated(true);
+          sessionStorage.removeItem(releaseDraftKey());
+          return;
+        }
+      }
+    } catch { /* Invalid recovery data must not prevent opening practice. */ }
     if (mode === 'exam') {
       setSeed(freshSeed(mode));
       setHydrated(true);
@@ -75,7 +106,7 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
   }, [availablePresets, mode, module]);
 
   useEffect(() => {
-    if (mode === 'exam') return;
+    if (mode === 'exam' || restoredRelease.current) return;
     const preset = practicePresets.find((item) => item.id === presetId);
     if (!preset) return;
 
@@ -123,10 +154,30 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
   }, [module, mode, presetId, skillId]);
 
   const modulesKey = modules?.join('|');
-  const questions = useMemo(
+  const generatedQuestions = useMemo(
     () => generateMixedAssessment(seed, mode === 'exam' ? questionCount : adaptiveCount, { modules, skillId }),
     [seed, mode, questionCount, adaptiveCount, modulesKey, skillId],
   );
+  const questions = restoredQuestions ?? generatedQuestions;
+  usePersistenceFlush(async () => {
+    const generation = recoveryGeneration.current;
+    await Promise.allSettled([...pendingWrites.current]);
+    await Promise.allSettled([...failedWrites.current].map(trackWrite));
+    if (failedWrites.current.size || generation !== recoveryGeneration.current) return false;
+    sessionStorage.setItem(releaseDraftKey(), JSON.stringify({ mode, seed, presetId, modules, skillId, adaptiveCount,
+      answers, checked, activeQuestionIndex, submitted, saved, questions }));
+    return true;
+  }, hydrated);
+
+  function trackWrite(operation: () => Promise<unknown>) {
+    const task = operation();
+    pendingWrites.current.add(task);
+    task.then(() => { pendingWrites.current.delete(task); failedWrites.current.delete(operation); }, () => {
+      failedWrites.current.add(operation); pendingWrites.current.delete(task);
+    });
+    return task;
+  }
+
   const activeIndex = Math.min(activeQuestionIndex, Math.max(questions.length - 1, 0));
   const activeQuestion = questions[activeIndex];
   const answeredCount = questions.filter((question) => answers[question.id] !== undefined).length;
@@ -135,6 +186,7 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
 
   function choosePreset(id: string) {
     if (!availablePresets.some((preset) => preset.id === id)) return;
+    restoredRelease.current = false; setRestoredQuestions(null);
     setPresetId(id);
     setSkillId(undefined);
     const url = new URL(window.location.href);
@@ -150,6 +202,7 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
   }
 
   function reset() {
+    restoredRelease.current = false; setRestoredQuestions(null);
     focusNextQuestion.current = true;
     setSeed(freshSeed(mode));
     setAnswers({});
@@ -176,8 +229,8 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
     if (selected === undefined) return;
     const correct = selected === question.correctIndex;
     await Promise.all([
-      recordAttempt({ prefix: 'mixed-practice', exerciseId: question.id, module: question.module, finalState: correct ? 'correct' : 'incomplete', payload: { seed, questionId: question.id, selected, correctIndex: question.correctIndex, mode, presetId }, skillIds: [question.skillId] }),
-      recordSkillEvidence(question.skillId, correct ? 1 : 0, { independent: correct }),
+      trackWrite(() => recordAttempt({ prefix: 'mixed-practice', exerciseId: question.id, module: question.module, finalState: correct ? 'correct' : 'incomplete', payload: { seed, questionId: question.id, selected, correctIndex: question.correctIndex, mode, presetId }, skillIds: [question.skillId] })),
+      trackWrite(() => recordSkillEvidence(question.skillId, correct ? 1 : 0, { independent: correct })),
     ]).catch(() => undefined);
   }
 
@@ -188,9 +241,11 @@ export default function MixedPracticeRunner({ mode = 'practice', questionCount =
     await Promise.all(questions.map(async (question) => {
       const selected = answers[question.id];
       const correct = selected === question.correctIndex;
-      await recordAttempt({ prefix: 'mixed-check', exerciseId: question.id, module: question.module, finalState: correct ? 'correct' : 'incomplete', payload: { seed, questionId: question.id, selected, correctIndex: question.correctIndex, mode: 'exam' }, skillIds: [question.skillId] }).catch(() => undefined);
-      await recordSkillEvidence(question.skillId, correct ? 0.9 : 0, { independent: correct }).catch(() => undefined);
-    }));
+      await Promise.all([
+        trackWrite(() => recordAttempt({ prefix: 'mixed-check', exerciseId: question.id, module: question.module, finalState: correct ? 'correct' : 'incomplete', payload: { seed, questionId: question.id, selected, correctIndex: question.correctIndex, mode: 'exam' }, skillIds: [question.skillId] })),
+        trackWrite(() => recordSkillEvidence(question.skillId, correct ? 0.9 : 0, { independent: correct })),
+      ]);
+    })).catch(() => undefined);
   }
 
   return <div className="mixed-practice" data-testid={mode === 'exam' ? 'mixed-exam' : 'mixed-practice'} data-module={module} data-hydrated={hydrated ? 'true' : undefined}>

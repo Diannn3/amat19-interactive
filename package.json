@@ -30,7 +30,8 @@
     "audit:content": "node scripts/audit-content.mjs",
     "test:e2e:production": "playwright test --config=playwright.production.config.ts",
     "test:math-core": "node scripts/setup-workspace-links.mjs && node scripts/run-math-certification.mjs",
-    "prepare:workspace-links": "node scripts/setup-workspace-links.mjs"
+    "prepare:workspace-links": "node scripts/setup-workspace-links.mjs",
+    "test:e2e:release": "playwright test --config=playwright.release.config.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
