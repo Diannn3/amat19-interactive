@@ -15,73 +15,73 @@
     position: sticky;
     top: 0;
     z-index: 40;
-    min-height: 56px !important;
-    height: 56px !important;
-    padding: 0 .8rem !important;
-    border-bottom: 1px solid var(--editorial-ink) !important;
-    background: color-mix(in srgb, var(--editorial-paper-pure) 96%, transparent) !important;
-    box-shadow: 0 2px 0 var(--editorial-secondary) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    min-height: 56px;
+    height: 56px;
+    padding: 0 .8rem;
+    border-bottom: 1px solid var(--editorial-ink);
+    background: color-mix(in srgb, var(--editorial-paper-pure) 96%, transparent);
+    box-shadow: 0 2px 0 var(--editorial-secondary);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .topbar-leading,
   .topbar-actions {
-    gap: .45rem !important;
+    gap: .45rem;
   }
 
   .topbar-heading {
-    display: flex !important;
+    display: flex;
     align-items: center;
   }
 
   .topbar-home {
-    min-width: 0 !important;
-    min-height: 40px !important;
-    padding: 0 .15rem !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    color: var(--editorial-ink) !important;
-    font-size: 1rem !important;
-    font-weight: 820 !important;
-    letter-spacing: -.035em !important;
-    box-shadow: none !important;
+    min-width: 0;
+    min-height: 40px;
+    padding: 0 .15rem;
+    border: 0;
+    border-radius: 0;
+    color: var(--editorial-ink);
+    font-size: 1rem;
+    font-weight: 820;
+    letter-spacing: -.035em;
+    box-shadow: none;
   }
 
   .topbar-title,
   .topbar-nav,
   .topbar-status,
   .topbar-more-menu {
-    display: none !important;
+    display: none;
   }
 
   .topbar-theme-toggle,
   .topbar-search {
-    width: 40px !important;
-    min-width: 40px !important;
-    height: 40px !important;
-    min-height: 40px !important;
-    padding: 0 !important;
-    border: 1.5px solid var(--editorial-ink) !important;
-    border-radius: .55rem !important;
-    background: var(--editorial-paper-pure) !important;
-    color: var(--editorial-ink) !important;
-    box-shadow: none !important;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    border: 1.5px solid var(--editorial-ink);
+    border-radius: .55rem;
+    background: var(--editorial-paper-pure);
+    color: var(--editorial-ink);
+    box-shadow: none;
   }
 
   .topbar-search > span,
   .topbar-search kbd {
-    display: none !important;
+    display: none;
   }
 
   .workspace-scroll {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom)) !important;
-    background-image: none !important;
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    background-image: none;
   }
 
   .workspace-scroll .page-width,
   .workspace-scroll .site-footer__inner {
-    width: min(calc(100% - 1.5rem), 92rem) !important;
+    width: min(calc(100% - 1.5rem), 92rem);
   }
 
   .mobile-nav {
@@ -215,12 +215,12 @@
 
 @media (max-width: 390px) {
   .topbar {
-    padding-inline: .65rem !important;
+    padding-inline: .65rem;
   }
 
   .workspace-scroll .page-width,
   .workspace-scroll .site-footer__inner {
-    width: min(calc(100% - 1.1rem), 92rem) !important;
+    width: min(calc(100% - 1.1rem), 92rem);
   }
 
   .mobile-nav-link,
@@ -236,15 +236,33 @@
   .mobile-more-menu__link,
   .topbar-theme-toggle,
   .topbar-search {
-    border-color: CanvasText !important;
-    background: Canvas !important;
-    color: CanvasText !important;
-    box-shadow: none !important;
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
   }
 
   .mobile-nav-link.is-active,
   .mobile-nav .mobile-more-menu > summary.is-active {
-    background: Highlight !important;
-    color: HighlightText !important;
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+
+@media (max-width: 900px) {
+  html[data-theme='dark'] .topbar,
+  html[data-theme='dark'] .mobile-nav,
+  html[data-theme='dark'] .mobile-more-menu__panel,
+  html[data-theme='dark'] .topbar-theme-toggle,
+  html[data-theme='dark'] .topbar-search {
+    background: var(--editorial-paper-pure);
+    color: var(--editorial-ink);
+    border-color: var(--editorial-ink);
+    box-shadow: none;
+  }
+
+  html[data-theme='dark'] .workspace-scroll {
+    background-image: none;
   }
 }
