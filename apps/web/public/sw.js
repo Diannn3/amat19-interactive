@@ -3,6 +3,7 @@ const BUILD_REVISION = '__AMAT19_BUILD_REVISION__';
 const VERSION = `${RELEASE}-${BUILD_REVISION}`;
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
+const RESCUE_MARKER_CACHE = `${VERSION}-rescue`;
 const NAVIGATION_TIMEOUT_MS = 4000;
 const LEGACY_CACHE_PREFIXES = [
   'amat19-workbenches-v2-',
@@ -37,9 +38,26 @@ function isLegacyCacheKey(key) {
   return LEGACY_CACHE_PREFIXES.some((prefix) => key.startsWith(prefix));
 }
 
-async function hasLegacyCaches() {
+async function activeWorkerRelease(timeoutMs = 750) {
+  const active = self.registration.active;
+  if (!active) return null;
+
+  return new Promise((resolve) => {
+    const channel = new MessageChannel();
+    const timeout = setTimeout(() => resolve(null), timeoutMs);
+    channel.port1.onmessage = (event) => {
+      clearTimeout(timeout);
+      resolve(typeof event.data?.release === 'string' ? event.data.release : null);
+    };
+    active.postMessage({ type: 'GET_RELEASE' }, [channel.port2]);
+  });
+}
+
+async function shouldRescueLegacyClient() {
   const keys = await caches.keys();
-  return keys.some(isLegacyCacheKey);
+  if (keys.some(isLegacyCacheKey)) return true;
+  if (!self.registration.active) return false;
+  return (await activeWorkerRelease()) !== RELEASE;
 }
 
 self.addEventListener('install', (event) => {
@@ -47,8 +65,11 @@ self.addEventListener('install', (event) => {
     (async () => {
       // v6 is a one-time rescue for clients still carrying v2-v5 cache
       // generations. Future v6 revisions remain learner-controlled.
-      const legacyMigration = await hasLegacyCaches();
-      if (legacyMigration) await self.skipWaiting();
+      const legacyMigration = await shouldRescueLegacyClient();
+      if (legacyMigration) {
+        await caches.open(RESCUE_MARKER_CACHE);
+        await self.skipWaiting();
+      }
 
       try {
         const response = await fetch('/sw-assets.json', { cache: 'no-store' });
@@ -71,13 +92,19 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+    return;
+  }
+  if (event.data?.type === 'GET_RELEASE' && event.ports?.[0]) {
+    event.ports[0].postMessage({ release: RELEASE, version: VERSION });
+  }
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    const legacyMigration = keys.some(isLegacyCacheKey);
+    const legacyMigration = keys.some(isLegacyCacheKey) || keys.includes(RESCUE_MARKER_CACHE);
 
     await Promise.all(
       keys
