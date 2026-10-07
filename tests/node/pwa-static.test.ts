@@ -26,12 +26,12 @@ test('explicit browser reloads bypass the normal four-second stale-page fallback
   assert.match(source, /fetch\(request,\s*\{\s*cache:\s*['"]no-store['"]\s*\}\)/);
 });
 
-test('v6 keeps a stable release family separate from the generated build revision', async () => {
+test('v7 keeps a stable release family separate from the generated build revision', async () => {
   const [source, buildScript] = await Promise.all([
     readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8'),
     readFile(new URL('../../scripts/build-offline-assets.mjs', import.meta.url), 'utf8'),
   ]);
-  assert.match(source, /RELEASE\s*=\s*['"]amat19-blueprint-v6['"]/);
+  assert.match(source, /RELEASE\s*=\s*['"]amat19-blueprint-v7['"]/);
   assert.match(source, /BUILD_REVISION\s*=\s*['"]__AMAT19_BUILD_REVISION__['"]/);
   assert.match(source, /const VERSION\s*=\s*`\$\{RELEASE\}-\$\{BUILD_REVISION\}`/);
   assert.match(buildScript, /BUILD_REVISION/);
@@ -39,7 +39,7 @@ test('v6 keeps a stable release family separate from the generated build revisio
   assert.doesNotMatch(buildScript, /replace\([^\n]*const VERSION/);
 });
 
-test('fresh v6 install does not force-activate when no legacy cache exists', async () => {
+test('fresh v7 install does not force-activate when no legacy cache exists', async () => {
   const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
   const handlers = new Map();
   const cached = new Map<string, string[]>();
@@ -69,12 +69,12 @@ test('fresh v6 install does not force-activate when no legacy cache exists', asy
 
   assert.equal(skipWaitingCalled, false);
   assert.deepEqual(
-    cached.get('amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-static'),
+    cached.get('amat19-blueprint-v7-__AMAT19_BUILD_REVISION__-static'),
     ['/_astro/workbench.js', '/_astro/styles.css'],
   );
 });
 
-test('v6 rescue force-activates legacy clients even when precache warmup fails', async () => {
+test('v7 rescue force-activates legacy clients even when precache warmup fails', async () => {
   const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
   const handlers = new Map();
   let skipWaitingCalled = false;
@@ -86,7 +86,7 @@ test('v6 rescue force-activates legacy clients even when precache warmup fails',
       skipWaiting: async () => { skipWaitingCalled = true; },
     },
     caches: {
-      keys: async () => ['amat19-blueprint-v5-deadbeef-pages'],
+      keys: async () => ['amat19-blueprint-v6-deadbeef-pages'],
       open: async () => ({ addAll: async () => { throw new Error('route unavailable'); } }),
     },
     fetch: async () => { throw new Error('manifest unavailable'); },
@@ -98,7 +98,7 @@ test('v6 rescue force-activates legacy clients even when precache warmup fails',
   assert.equal(skipWaitingCalled, true);
 });
 
-test('v6 migration claims clients, clears legacy caches, and uses stable release markers', async () => {
+test('v7 migration claims clients, clears legacy caches, and uses stable release markers', async () => {
   const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
   const handlers = new Map();
   const navigated: string[] = [];
@@ -123,9 +123,10 @@ test('v6 migration claims clients, clears legacy caches, and uses stable release
         'amat19-workbenches-v2-old-pages',
         'amat19-blueprint-v4-old-static',
         'amat19-blueprint-v5-old-pages',
-        'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-static',
-        'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-pages',
-        'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-rescue',
+        'amat19-blueprint-v6-old-pages',
+        'amat19-blueprint-v7-__AMAT19_BUILD_REVISION__-static',
+        'amat19-blueprint-v7-__AMAT19_BUILD_REVISION__-pages',
+        'amat19-blueprint-v7-__AMAT19_BUILD_REVISION__-rescue',
         'unrelated-cache',
       ],
       delete: async (key: string) => { deleted.push(key); return true; },
@@ -148,14 +149,15 @@ test('v6 migration claims clients, clears legacy caches, and uses stable release
   assert.deepEqual(deleted.sort(), [
     'amat19-blueprint-v4-old-static',
     'amat19-blueprint-v5-old-pages',
-    'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-rescue',
+    'amat19-blueprint-v6-old-pages',
+    'amat19-blueprint-v7-__AMAT19_BUILD_REVISION__-rescue',
     'amat19-workbenches-v2-old-pages',
   ]);
   assert.equal(navigated.length, 1);
   const resetUrl = new URL(navigated[0]);
   assert.equal(resetUrl.pathname, '/course');
   assert.equal(resetUrl.searchParams.get('keep'), '1');
-  assert.equal(resetUrl.searchParams.get('__amat19_release'), 'amat19-blueprint-v6');
+  assert.equal(resetUrl.searchParams.get('__amat19_release'), 'amat19-blueprint-v7');
   assert.equal(resetUrl.searchParams.get('__amat19_reload'), '__AMAT19_BUILD_REVISION__');
 });
 
@@ -171,7 +173,7 @@ test('application asks the browser to bypass HTTP cache when checking sw.js', as
 
 test('application recognizes revisioned migration markers and removes them after fresh load', async () => {
   const source = await readFile(new URL('../../apps/web/src/layouts/AppLayout.astro', import.meta.url), 'utf8');
-  assert.match(source, /amat19-blueprint-v6/);
+  assert.match(source, /amat19-blueprint-v7/);
   assert.match(source, /startsWith\(prefix\)/);
   assert.match(source, /history\.replaceState/);
 });
@@ -212,11 +214,14 @@ test('Vercel serves worker metadata without cache clearing side effects', async 
   const config = JSON.parse(await readFile(new URL('../../vercel.json', import.meta.url), 'utf8'));
   const swRule = config.headers.find((rule: { source?: string }) => rule.source === '/sw.js');
   const manifestRule = config.headers.find((rule: { source?: string }) => rule.source === '/sw-assets.json');
+  const versionRule = config.headers.find((rule: { source?: string }) => rule.source === '/version.json');
   assert.ok(swRule);
   assert.ok(manifestRule);
+  assert.ok(versionRule);
 
   const swHeaders = Object.fromEntries(swRule.headers.map((header: { key: string; value: string }) => [header.key, header.value]));
   const manifestHeaders = Object.fromEntries(manifestRule.headers.map((header: { key: string; value: string }) => [header.key, header.value]));
+  const versionHeaders = Object.fromEntries(versionRule.headers.map((header: { key: string; value: string }) => [header.key, header.value]));
 
   assert.match(swHeaders['Cache-Control'], /no-store/);
   assert.equal(swHeaders['CDN-Cache-Control'], 'no-store');
@@ -226,6 +231,9 @@ test('Vercel serves worker metadata without cache clearing side effects', async 
   assert.match(manifestHeaders['Cache-Control'], /no-store/);
   assert.equal(manifestHeaders['CDN-Cache-Control'], 'no-store');
   assert.equal(manifestHeaders['Vercel-CDN-Cache-Control'], 'no-store');
+  assert.match(versionHeaders['Cache-Control'], /no-store/);
+  assert.equal(versionHeaders['CDN-Cache-Control'], 'no-store');
+  assert.equal(versionHeaders['Vercel-CDN-Cache-Control'], 'no-store');
 });
 
 test('application proactively rechecks the worker without a redundant sw.js probe request', async () => {
