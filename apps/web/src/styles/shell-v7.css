@@ -1,0 +1,250 @@
+/* Blueprint v7 shell
+   Owns the mobile top bar and bottom navigation. Desktop shell remains in the
+   structural/base layers until the broader desktop migration is complete. */
+
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .workspace {
+    min-height: 100dvh;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    min-height: 56px !important;
+    height: 56px !important;
+    padding: 0 .8rem !important;
+    border-bottom: 1px solid var(--editorial-ink) !important;
+    background: color-mix(in srgb, var(--editorial-paper-pure) 96%, transparent) !important;
+    box-shadow: 0 2px 0 var(--editorial-secondary) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .topbar-leading,
+  .topbar-actions {
+    gap: .45rem !important;
+  }
+
+  .topbar-heading {
+    display: flex !important;
+    align-items: center;
+  }
+
+  .topbar-home {
+    min-width: 0 !important;
+    min-height: 40px !important;
+    padding: 0 .15rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    color: var(--editorial-ink) !important;
+    font-size: 1rem !important;
+    font-weight: 820 !important;
+    letter-spacing: -.035em !important;
+    box-shadow: none !important;
+  }
+
+  .topbar-title,
+  .topbar-nav,
+  .topbar-status,
+  .topbar-more-menu {
+    display: none !important;
+  }
+
+  .topbar-theme-toggle,
+  .topbar-search {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 !important;
+    border: 1.5px solid var(--editorial-ink) !important;
+    border-radius: .55rem !important;
+    background: var(--editorial-paper-pure) !important;
+    color: var(--editorial-ink) !important;
+    box-shadow: none !important;
+  }
+
+  .topbar-search > span,
+  .topbar-search kbd {
+    display: none !important;
+  }
+
+  .workspace-scroll {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom)) !important;
+    background-image: none !important;
+  }
+
+  .workspace-scroll .page-width,
+  .workspace-scroll .site-footer__inner {
+    width: min(calc(100% - 1.5rem), 92rem) !important;
+  }
+
+  .mobile-nav {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-height: calc(56px + env(safe-area-inset-bottom));
+    padding: 0 .35rem env(safe-area-inset-bottom);
+    border-top: 1px solid var(--editorial-ink);
+    border-radius: 0;
+    background: color-mix(in srgb, var(--editorial-paper-pure) 97%, transparent);
+    color: var(--editorial-ink);
+    box-shadow: 0 -8px 20px color-mix(in srgb, var(--editorial-ink) 7%, transparent);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .mobile-nav-link,
+  .mobile-nav .mobile-more-menu > summary {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    min-height: 56px;
+    place-items: center;
+    align-content: center;
+    gap: .16rem;
+    margin: 0;
+    padding: .3rem .15rem;
+    border: 0;
+    border-radius: .45rem;
+    background: transparent;
+    color: var(--editorial-ink-muted);
+    font: 700 .61rem/1 var(--font-amat-sans);
+    text-decoration: none;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .mobile-nav .mobile-more-menu > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-nav-link .nav-icon,
+  .mobile-nav .mobile-more-menu > summary .nav-icon {
+    display: inline-flex;
+    width: 1.25rem;
+    height: 1.25rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-nav-link.is-active,
+  .mobile-nav .mobile-more-menu > summary.is-active,
+  .mobile-nav .mobile-more-menu[open] > summary {
+    background: var(--editorial-secondary-soft);
+    color: var(--editorial-ink);
+  }
+
+  .mobile-nav-link.is-active::after,
+  .mobile-nav .mobile-more-menu > summary.is-active::after {
+    position: absolute;
+    top: 0;
+    right: 30%;
+    left: 30%;
+    height: 3px;
+    background: var(--editorial-signal);
+    content: "";
+  }
+
+  .mobile-more-menu {
+    position: relative;
+    min-width: 0;
+  }
+
+  .mobile-more-menu__panel {
+    position: fixed;
+    right: .6rem;
+    bottom: calc(64px + env(safe-area-inset-bottom));
+    z-index: 70;
+    display: grid;
+    width: min(19rem, calc(100vw - 1.2rem));
+    max-height: min(28rem, calc(100dvh - 8rem));
+    overflow-y: auto;
+    padding: .4rem;
+    border: 1px solid var(--editorial-ink);
+    border-radius: .65rem;
+    background: var(--editorial-paper-pure);
+    color: var(--editorial-ink);
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--editorial-ink) 16%, transparent);
+  }
+
+  .mobile-more-menu__link {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    min-height: 44px;
+    align-items: center;
+    gap: .65rem;
+    padding: .65rem .7rem;
+    border: 0;
+    border-radius: .4rem;
+    background: transparent;
+    color: var(--editorial-ink);
+    font: 680 .82rem/1.2 var(--font-amat-sans);
+    text-align: left;
+    text-decoration: none;
+  }
+
+  .mobile-more-menu__link:hover,
+  .mobile-more-menu__link[aria-current="page"] {
+    background: var(--editorial-secondary-soft);
+  }
+
+  .mobile-more-menu__action {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .theme-menu-toggle__state {
+    color: var(--editorial-ink-muted);
+    font: 650 .7rem/1 var(--font-amat-mono);
+  }
+
+  .site-footer {
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  .topbar {
+    padding-inline: .65rem !important;
+  }
+
+  .workspace-scroll .page-width,
+  .workspace-scroll .site-footer__inner {
+    width: min(calc(100% - 1.1rem), 92rem) !important;
+  }
+
+  .mobile-nav-link,
+  .mobile-nav .mobile-more-menu > summary {
+    font-size: .57rem;
+  }
+}
+
+@media (forced-colors: active) {
+  .mobile-nav,
+  .mobile-more-menu__panel,
+  .mobile-nav-link,
+  .mobile-more-menu__link,
+  .topbar-theme-toggle,
+  .topbar-search {
+    border-color: CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-nav-link.is-active,
+  .mobile-nav .mobile-more-menu > summary.is-active {
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+}
