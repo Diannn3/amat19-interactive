@@ -134,6 +134,7 @@ test.describe('Pass 7 navigation and workspace clarity', () => {
     await expect(dataManager).toBeVisible();
     await expect(dataManager).not.toContainText(/schema v|IndexedDB/i);
     await expect(dataManager).toContainText('Your work stays in this browser.');
+    await expect(dataManager.getByRole('button', { name: 'Repair offline app' })).toBeVisible();
   });
 
   test('shared workbench shell keeps the tool first and resources secondary', async ({ page }) => {
