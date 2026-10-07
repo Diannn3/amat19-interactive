@@ -7,7 +7,7 @@ const files = {
   settings: new URL('../../apps/web/src/components/settings/SettingsPanel.tsx', import.meta.url),
   theme: new URL('../../apps/web/src/styles/theme.css', import.meta.url),
   pass4: new URL('../../apps/web/src/styles/pass4.css', import.meta.url),
-  glass: new URL('../../apps/web/src/styles/apple-glass.css', import.meta.url),
+  editorial: new URL('../../apps/web/src/styles/editorial-grid.css', import.meta.url),
 };
 
 test('appearance contract is binary light or dark with a deterministic light fallback', async () => {
@@ -29,18 +29,16 @@ test('appearance contract is binary light or dark with a deterministic light fal
   assert.doesNotMatch(settings, /(?:value|theme)\s*[:=][^\n]*['"]system['"]/i);
 });
 
-test('mobile navigation no longer contains the legacy maroon dock treatment', async () => {
-  const [pass4, glass] = await Promise.all([
+test('legacy Apple glass layer is no longer part of the live design system', async () => {
+  const [layout, pass4, editorial] = await Promise.all([
+    readFile(files.layout, 'utf8'),
     readFile(files.pass4, 'utf8'),
-    readFile(files.glass, 'utf8'),
+    readFile(files.editorial, 'utf8'),
   ]);
 
-  for (const source of [pass4, glass]) {
-    assert.doesNotMatch(source, /#240509/i);
-    assert.doesNotMatch(source, /rgb\(230\s+106\s+25\s*\/\s*\.22\)/i);
-  }
-
-  assert.match(pass4, /background:\s*var\(--nav-surface\)/);
-  assert.match(glass, /background:\s*var\(--nav-surface\)\s*!important/);
-  assert.match(glass, /color:\s*var\(--nav-text-active\)\s*!important/);
+  assert.doesNotMatch(layout, /apple-glass\.css/);
+  assert.doesNotMatch(layout, /apple-glass-card/);
+  assert.doesNotMatch(pass4, /#240509/i);
+  assert.match(editorial, /\.mobile-nav/);
+  assert.match(editorial, /var\(--editorial-paper-pure\)/);
 });
