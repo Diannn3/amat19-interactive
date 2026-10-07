@@ -10,9 +10,9 @@ class FakeMessageChannel {
   };
 }
 
-test('generated production worker keeps v6 rescue semantics after revision stamping', async () => {
+test('generated production worker keeps v7 rescue semantics after revision stamping', async () => {
   const source = await readFile(new URL('../../apps/web/dist/sw.js', import.meta.url), 'utf8');
-  assert.match(source, /RELEASE\s*=\s*['"]amat19-blueprint-v6['"]/);
+  assert.match(source, /RELEASE\s*=\s*['"]amat19-blueprint-v7['"]/);
   assert.match(source, /BUILD_REVISION\s*=\s*['"][a-f0-9]{16}['"]/);
   assert.doesNotMatch(source, /__AMAT19_BUILD_REVISION__/);
 
@@ -29,7 +29,7 @@ test('generated production worker keeps v6 rescue semantics after revision stamp
       skipWaiting: async () => { skipWaitingCalled = true; },
     },
     caches: {
-      keys: async () => ['amat19-blueprint-v5-oldrevision-pages'],
+      keys: async () => ['amat19-blueprint-v6-oldrevision-pages'],
       open: async () => ({ addAll: async () => {} }),
     },
     fetch: async () => ({
@@ -44,7 +44,7 @@ test('generated production worker keeps v6 rescue semantics after revision stamp
   assert.equal(skipWaitingCalled, true);
 });
 
-test('generated production worker detects an older active controller even if legacy caches were cleared', async () => {
+test('generated v7 worker replaces an active v6 controller even if legacy caches were cleared', async () => {
   const source = await readFile(new URL('../../apps/web/dist/sw.js', import.meta.url), 'utf8');
   const handlers = new Map();
   let skipWaitingCalled = false;
@@ -57,8 +57,8 @@ test('generated production worker detects an older active controller even if leg
     self: {
       registration: {
         active: {
-          postMessage() {
-            // v5 and older ignore GET_RELEASE, so the handshake times out.
+          postMessage(_message: unknown, ports: Array<{ postMessage: (data: unknown) => void }>) {
+            ports[0]?.postMessage({ release: 'amat19-blueprint-v6', version: 'amat19-blueprint-v6-previousrevision' });
           },
         },
       },
@@ -81,7 +81,7 @@ test('generated production worker detects an older active controller even if leg
   assert.equal(skipWaitingCalled, true);
 });
 
-test('generated production worker keeps ordinary v6-to-v6 updates learner-controlled', async () => {
+test('generated production worker keeps ordinary v7-to-v7 updates learner-controlled', async () => {
   const source = await readFile(new URL('../../apps/web/dist/sw.js', import.meta.url), 'utf8');
   const handlers = new Map();
   let skipWaitingCalled = false;
@@ -94,7 +94,7 @@ test('generated production worker keeps ordinary v6-to-v6 updates learner-contro
       registration: {
         active: {
           postMessage(_message: unknown, ports: Array<{ postMessage: (data: unknown) => void }>) {
-            ports[0]?.postMessage({ release: 'amat19-blueprint-v6', version: 'amat19-blueprint-v6-previousrevision' });
+            ports[0]?.postMessage({ release: 'amat19-blueprint-v7', version: 'amat19-blueprint-v7-previousrevision' });
           },
         },
       },
@@ -102,7 +102,7 @@ test('generated production worker keeps ordinary v6-to-v6 updates learner-contro
       skipWaiting: async () => { skipWaitingCalled = true; },
     },
     caches: {
-      keys: async () => ['amat19-blueprint-v6-previousrevision-pages'],
+      keys: async () => ['amat19-blueprint-v7-previousrevision-pages'],
       open: async () => ({ addAll: async () => {} }),
     },
     fetch: async () => ({
@@ -115,4 +115,12 @@ test('generated production worker keeps ordinary v6-to-v6 updates learner-contro
   handlers.get('install')({ waitUntil: (promise: Promise<unknown>) => { installation = promise; } });
   await installation;
   assert.equal(skipWaitingCalled, false);
+});
+
+test('production build publishes a no-guessing commit fingerprint', async () => {
+  const version = JSON.parse(await readFile(new URL('../../apps/web/dist/version.json', import.meta.url), 'utf8'));
+  assert.equal(version.release, 'amat19-blueprint-v7');
+  assert.match(version.revision, /^[a-f0-9]{16}$/);
+  assert.ok(version.commit === 'local' || /^[a-f0-9]{40}$/.test(version.commit));
+  assert.doesNotThrow(() => new Date(version.builtAt).toISOString());
 });
