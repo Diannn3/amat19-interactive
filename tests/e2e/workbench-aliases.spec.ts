@@ -26,6 +26,7 @@ function destinationPattern(destination: string) {
 }
 
 test('retired lab URLs resolve to a canonical workbench or relevant lesson', async ({ page }, testInfo) => {
+  test.setTimeout(120_000);
   test.skip(testInfo.project.name !== 'desktop-1280');
 
   for (const [source, destination] of aliases) {

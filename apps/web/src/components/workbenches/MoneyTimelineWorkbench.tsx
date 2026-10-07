@@ -100,6 +100,13 @@ function isScenario(value: unknown): value is Scenario {
   return typeof value === 'string' && SCENARIOS.includes(value as Scenario);
 }
 
+function setScenarioUrl(scenario: Scenario, method: 'pushState' | 'replaceState') {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get('scenario') === scenario) return;
+  url.searchParams.set('scenario', scenario);
+  window.history[method](window.history.state, '', url);
+}
+
 export default function MoneyTimelineWorkbench() {
   const [hydrated, setHydrated] = useState(false);
   const [scenario, setScenario] = useState<Scenario>('cashflows');
@@ -140,7 +147,9 @@ export default function MoneyTimelineWorkbench() {
     loadDraft<Draft>(LAB_ID, CONTENT_VERSION).then((saved) => {
       const savedScenario = saved && isScenario(saved.scenario) ? saved.scenario : undefined;
       if (!userInteracted.current && saved) {
-        setScenario(requestedScenario ?? savedScenario ?? 'cashflows');
+        const selectedScenario = requestedScenario ?? savedScenario ?? 'cashflows';
+        setScenario(selectedScenario);
+        setScenarioUrl(selectedScenario, 'replaceState');
         setFlows(saved.flows);
         setCashflowRate(saved.cashflowRate);
         setFocalDate(saved.focalDate);
@@ -155,9 +164,27 @@ export default function MoneyTimelineWorkbench() {
         setBondYield(saved.bondYield);
         setBondPeriods(saved.bondPeriods);
       }
-      if (!userInteracted.current && !saved && requestedScenario) setScenario(requestedScenario);
+      if (!userInteracted.current && !saved) {
+        const selectedScenario = requestedScenario ?? 'cashflows';
+        setScenario(selectedScenario);
+        setScenarioUrl(selectedScenario, 'replaceState');
+      }
       setHydrated(true);
-    }).catch(() => setHydrated(true));
+    }).catch(() => {
+      const selectedScenario = requestedScenario ?? 'cashflows';
+      setScenario(selectedScenario);
+      setScenarioUrl(selectedScenario, 'replaceState');
+      setHydrated(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    const restoreScenario = () => {
+      const requestedScenario = readWorkbenchOption('scenario', SCENARIOS);
+      if (requestedScenario) setScenario(requestedScenario);
+    };
+    window.addEventListener('popstate', restoreScenario);
+    return () => window.removeEventListener('popstate', restoreScenario);
   }, []);
 
   useEffect(() => {
@@ -298,6 +325,11 @@ export default function MoneyTimelineWorkbench() {
   const updateFlow = (id: number, patch: Partial<Flow>) => {
     setFlows((current) => current.map((flow) => flow.id === id ? { ...flow, ...patch } : flow));
   };
+  const selectScenario = (next: Scenario) => {
+    userInteracted.current = true;
+    setScenario(next);
+    setScenarioUrl(next, 'pushState');
+  };
 
   return (
     <section
@@ -320,7 +352,7 @@ export default function MoneyTimelineWorkbench() {
             value={scenario}
             options={TASK_OPTIONS}
             disabled={!hydrated}
-            onChange={(value) => { if (isScenario(value)) setScenario(value); }}
+            onChange={(value) => { if (isScenario(value)) selectScenario(value); }}
           />
         </div>
       </header>

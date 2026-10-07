@@ -30,7 +30,7 @@ Implement the approved Blueprint Orange repair plan for Study, Reference, Logic 
 
 The complete unrelated browser suite was not run. Initial managed dev preview returned Vite Outdated Optimize Dep and unhydrated islands; verification moved to the built production preview. Production suite first hit an existing preview process conflict, resolved by stopping the owned process. A rerun started before a rebuild finished and was interrupted; the final run uses completed build assets. Axe discovered and prompted repairs for the practice counter and Notes count contrast. Automated accessibility checks do not establish complete accessibility compliance.
 
-Six pre-existing dirty files were preserved and excluded from implementation commits: MoneyTimelineWorkbench.tsx, use-persistence-flush.ts, apple-glass.css, pwa-production.spec.ts, workbench-aliases.spec.ts, workbench-task-picker.spec.ts. Verification covers the combined working tree, including these existing edits.
+During the merge preflight, five existing worktree edits directly related to CI blockers were reviewed and included: finance scenario URL/history restoration, mobile Logic summary visibility, production-test origin handling, and the paired browser assertions/time budget. A whitespace-only edit to use-persistence-flush.ts remains uncommitted and untouched.
 
 No deployment or remote push performed. Local production preview: http://127.0.0.1:4356.
 

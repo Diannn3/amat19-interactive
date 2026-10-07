@@ -28,6 +28,11 @@ test('Money Timeline keeps one accessible picker for its three focused models', 
 
   await picker.selectOption('annuity');
   await expect(picker).toHaveValue('annuity');
+  await expect(page).toHaveURL(/\/workbenches\/finance\?scenario=annuity$/);
+  await page.goBack();
+  await expect(picker).toHaveValue('cashflows');
+  await page.goForward();
+  await expect(picker).toHaveValue('annuity');
   await page.reload();
   await expect(finance.getByRole('combobox', { name: 'Choose a task' })).toHaveValue('annuity');
 });

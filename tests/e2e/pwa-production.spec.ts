@@ -127,7 +127,7 @@ test('built legacy redirects preserve task selection with a no-script fallback',
   await page.goto('/labs/truth-table?mode=argument');
   await expect(page).toHaveURL(/\/workbenches\/logic\?mode=argument$/);
   await expect(page.getByRole('tab', { name: 'Test an Argument' })).toHaveAttribute('aria-selected', 'true');
-  const noScript = await browser.newContext({ javaScriptEnabled: false, baseURL: 'http://127.0.0.1:4321' });
+  const noScript = await browser.newContext({ javaScriptEnabled: false, baseURL: new URL(page.url()).origin });
   try {
     const fallback = await noScript.newPage();
     await fallback.goto('/labs/annuity');
