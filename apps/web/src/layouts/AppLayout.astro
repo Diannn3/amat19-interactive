@@ -432,7 +432,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
         const WORKER_UPDATE_INTERVAL_MS = 30 * 60 * 1000;
         const PERSISTENCE_FLUSH_TIMEOUT_MS = 8000;
         const navigationEntry = performance.getEntriesByType('navigation')[0];
-        const reloadRequested = navigationEntry instanceof PerformanceNavigationTiming && navigationEntry.type === 'reload';
+        const reloadRequested = Boolean(navigationEntry && 'type' in navigationEntry && navigationEntry.type === 'reload');
 
         const setUpdateIdle = () => {
           updateInFlight = false;
