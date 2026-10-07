@@ -51,7 +51,7 @@ test('@core course modules expose one focused workbench and retain their notes',
   for (const module of ['logic', 'probability', 'finance', 'linear', 'applications']) {
     await page.goto(`/modules/${module}`);
     if (module === 'applications') {
-      await expect(page.getByTestId('module-overview').getByRole('link', { name: 'Read the notes' })).toHaveAttribute('href', '/modules/applications?view=notes');
+      await expect(page.getByTestId('module-overview').getByRole('link', { name: 'Read Applications notes' })).toHaveAttribute('href', '/modules/applications?view=notes');
     } else {
       const workbenchLink = page.getByRole('link', { name: /Open (Logic Workbench|Probability Workbench|Money Timeline|Matrices & Systems)/ });
       await expect(workbenchLink).toHaveAttribute('href', `/workbenches/${module}`);
