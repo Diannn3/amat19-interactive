@@ -72,3 +72,19 @@ test('public redesign does not expose the visual reference brand identity', asyn
   assert.doesNotMatch(source, /\bASES\b|Build\s+With\s+ASES|buildwithases/i);
   assert.doesNotMatch(source, /ASES\s+Manila/i);
 });
+
+
+test('retired workbench product names stay out of learner-facing surfaces', async () => {
+  const files = [
+    '../../apps/web/src/pages/course.astro',
+    '../../apps/web/src/pages/study.astro',
+    '../../apps/web/src/pages/index.astro',
+    '../../apps/web/src/components/reference/ReferenceBrowser.tsx',
+    '../../apps/web/src/components/course/ModuleJourney.astro',
+  ];
+  const source = (await Promise.all(files.map((file) => readFile(new URL(file, import.meta.url), 'utf8')))).join('\n');
+  assert.doesNotMatch(source, /Logic & Proof|Probability Model Builder|Row Operations Coach|Optimization & Strategy/);
+  assert.match(source, /Logic Workbench/);
+  assert.match(source, /Probability Workbench/);
+  assert.match(source, /Matrices & Systems/);
+});
