@@ -26,137 +26,11 @@ test('explicit browser reloads bypass the normal four-second stale-page fallback
   assert.match(source, /fetch\(request,\s*\{\s*cache:\s*['"]no-store['"]\s*\}\)/);
 });
 
-test('v6 keeps a stable release family separate from the generated build revision', async () => {
-  const [source, buildScript] = await Promise.all([
-    readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8'),
-    readFile(new URL('../../scripts/build-offline-assets.mjs', import.meta.url), 'utf8'),
-  ]);
-  assert.match(source, /RELEASE\s*=\s*['"]amat19-blueprint-v6['"]/);
+test('release families remain separate from build revisions', async () => {
+  const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
   assert.match(source, /BUILD_REVISION\s*=\s*['"]__AMAT19_BUILD_REVISION__['"]/);
   assert.match(source, /const VERSION\s*=\s*`\$\{RELEASE\}-\$\{BUILD_REVISION\}`/);
-  assert.match(buildScript, /BUILD_REVISION/);
-  assert.match(buildScript, /__AMAT19_BUILD_REVISION__/);
-  assert.doesNotMatch(buildScript, /replace\([^\n]*const VERSION/);
-});
-
-test('fresh v6 install does not force-activate when no legacy cache exists', async () => {
-  const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
-  const handlers = new Map();
-  const cached = new Map<string, string[]>();
-  let skipWaitingCalled = false;
-
-  runInNewContext(source, {
-    self: {
-      registration: { active: null },
-      addEventListener: (type: string, handler: unknown) => handlers.set(type, handler),
-      skipWaiting: async () => { skipWaitingCalled = true; },
-    },
-    caches: {
-      keys: async () => [],
-      open: async (name: string) => ({
-        addAll: async (urls: string[]) => cached.set(name, [...(cached.get(name) ?? []), ...urls]),
-      }),
-    },
-    fetch: async () => ({
-      ok: true,
-      json: async () => ({ assets: ['/_astro/workbench.js', '/_astro/styles.css'] }),
-    }),
-  });
-
-  let installation: Promise<unknown> | undefined;
-  handlers.get('install')({ waitUntil: (promise: Promise<unknown>) => { installation = promise; } });
-  await installation;
-
-  assert.equal(skipWaitingCalled, false);
-  assert.deepEqual(
-    cached.get('amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-static'),
-    ['/_astro/workbench.js', '/_astro/styles.css'],
-  );
-});
-
-test('v6 rescue force-activates legacy clients even when precache warmup fails', async () => {
-  const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
-  const handlers = new Map();
-  let skipWaitingCalled = false;
-
-  runInNewContext(source, {
-    console: { warn: () => {} },
-    self: {
-      addEventListener: (type: string, handler: unknown) => handlers.set(type, handler),
-      skipWaiting: async () => { skipWaitingCalled = true; },
-    },
-    caches: {
-      keys: async () => ['amat19-blueprint-v5-deadbeef-pages'],
-      open: async () => ({ addAll: async () => { throw new Error('route unavailable'); } }),
-    },
-    fetch: async () => { throw new Error('manifest unavailable'); },
-  });
-
-  let installation: Promise<unknown> | undefined;
-  handlers.get('install')({ waitUntil: (promise: Promise<unknown>) => { installation = promise; } });
-  await assert.doesNotReject(installation);
-  assert.equal(skipWaitingCalled, true);
-});
-
-test('v6 migration claims clients, clears legacy caches, and uses stable release markers', async () => {
-  const source = await readFile(new URL('../../apps/web/public/sw.js', import.meta.url), 'utf8');
-  const handlers = new Map();
-  const navigated: string[] = [];
-  const deleted: string[] = [];
-  let claimed = false;
-
-  runInNewContext(source, {
-    URL,
-    self: {
-      location: { origin: 'https://amat.test' },
-      skipWaiting: async () => {},
-      addEventListener: (type: string, handler: unknown) => handlers.set(type, handler),
-      clients: {
-        claim: async () => { claimed = true; },
-        matchAll: async () => [
-          { url: 'https://amat.test/course?keep=1', navigate: async (url: string) => { navigated.push(url); } },
-        ],
-      },
-    },
-    caches: {
-      keys: async () => [
-        'amat19-workbenches-v2-old-pages',
-        'amat19-blueprint-v4-old-static',
-        'amat19-blueprint-v5-old-pages',
-        'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-static',
-        'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-pages',
-        'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-rescue',
-        'unrelated-cache',
-      ],
-      delete: async (key: string) => { deleted.push(key); return true; },
-      open: async () => ({ addAll: async () => {}, put: async () => {} }),
-      match: async () => undefined,
-    },
-    fetch: async () => ({ ok: true, clone: () => ({}) }),
-    AbortController,
-    Request,
-    Promise,
-    setTimeout,
-    clearTimeout,
-  });
-
-  let activation: Promise<unknown> | undefined;
-  handlers.get('activate')({ waitUntil: (promise: Promise<unknown>) => { activation = promise; } });
-  await activation;
-
-  assert.equal(claimed, true);
-  assert.deepEqual(deleted.sort(), [
-    'amat19-blueprint-v4-old-static',
-    'amat19-blueprint-v5-old-pages',
-    'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-rescue',
-    'amat19-workbenches-v2-old-pages',
-  ]);
-  assert.equal(navigated.length, 1);
-  const resetUrl = new URL(navigated[0]);
-  assert.equal(resetUrl.pathname, '/course');
-  assert.equal(resetUrl.searchParams.get('keep'), '1');
-  assert.equal(resetUrl.searchParams.get('__amat19_release'), 'amat19-blueprint-v6');
-  assert.equal(resetUrl.searchParams.get('__amat19_reload'), '__AMAT19_BUILD_REVISION__');
+  assert.doesNotMatch(source, /client\.navigate|FORCE_ACTIVATE|RESCUE_MARKER/);
 });
 
 test('service-worker navigations bypass the browser HTTP cache', async () => {
@@ -165,7 +39,7 @@ test('service-worker navigations bypass the browser HTTP cache', async () => {
 });
 
 test('application asks the browser to bypass HTTP cache when checking sw.js', async () => {
-  const source = await readFile(new URL('../../apps/web/src/layouts/AppLayout.astro', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../../apps/web/src/lib/release-update.ts', import.meta.url), 'utf8');
   assert.match(source, /serviceWorker\.register\(['"]\/sw\.js['"],\s*\{\s*updateViaCache:\s*['"]none['"]\s*\}\)/);
 });
 
@@ -228,15 +102,9 @@ test('Vercel serves worker metadata without cache clearing side effects', async 
   assert.equal(manifestHeaders['Vercel-CDN-Cache-Control'], 'no-store');
 });
 
-test('application proactively rechecks the worker without a redundant sw.js probe request', async () => {
-  const source = await readFile(new URL('../../apps/web/src/layouts/AppLayout.astro', import.meta.url), 'utf8');
-  assert.match(source, /WORKER_UPDATE_INTERVAL_MS\s*=\s*30\s*\*\s*60\s*\*\s*1000/);
-  assert.doesNotMatch(source, /__amat19_probe/);
-  assert.match(source, /workerRegistration\.update\(\)/);
-  assert.match(source, /setInterval\(\(\)\s*=>\s*\{\s*void requestWorkerUpdate\(\);\s*\},\s*WORKER_UPDATE_INTERVAL_MS\)/);
-  assert.match(source, /visibilitychange/);
-  assert.match(source, /addEventListener\(['"]focus['"]/);
-  assert.match(source, /addEventListener\(['"]online['"]/);
-  assert.match(source, /addEventListener\(['"]pageshow['"]/);
-  assert.match(source, /event\.persisted/);
+test('updates check an uncached release manifest on lifecycle events and visible intervals', async () => {
+  const source = await readFile(new URL('../../apps/web/src/lib/release-update.ts', import.meta.url), 'utf8');
+  assert.match(source, /WORKER_UPDATE_INTERVAL_MS\s*=\s*5\s*\*\s*60\s*\*\s*1000/);
+  assert.match(source, /fetch\('\/release.json', \{ cache: 'no-store' \}\)/);
+  for (const event of ['visibilitychange', 'focus', 'online', 'pageshow']) assert.ok(source.includes(event));
 });

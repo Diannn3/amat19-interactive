@@ -3098,30 +3098,31 @@ html[data-motion="reduced"] .study-panel--primary::after {
 
 
 /* ==========================================================================
-   Phase 6 — Progress: sober evidence ledger
+   Phase 6 — Progress: learning history
    ========================================================================== */
 
 [data-route="/progress"] .page-intro {
-  padding-block: clamp(2.5rem, 6vw, 5.5rem) clamp(2rem, 4vw, 3.5rem) !important;
-  border-bottom: 2px solid var(--editorial-ink);
+  margin-block: 1.5rem !important;
+  padding: clamp(1.5rem, 4vw, 3rem) !important;
+  background: var(--editorial-secondary) !important;
+  color: var(--editorial-ink) !important;
+  border: 2px solid var(--editorial-ink) !important;
+  border-radius: var(--editorial-radius-md) !important;
+  box-shadow: var(--editorial-shadow-md) !important;
+  backdrop-filter: none !important;
 }
 
 [data-route="/progress"] .page-intro .display-title {
-  max-width: 13ch;
+  max-width: 20ch;
   margin: 0 !important;
   color: var(--editorial-ink) !important;
-  font: 820 clamp(3rem, 7vw, 7.2rem)/0.9 var(--font-amat-display) !important;
+  font: 820 clamp(2.3rem, 5vw, 5rem)/1.02 var(--font-amat-display) !important;
   letter-spacing: -0.065em !important;
   text-wrap: balance;
 }
 
 [data-route="/progress"] .page-intro .display-title::after {
-  display: inline-block;
-  width: 0.2em;
-  height: 0.2em;
-  margin-left: 0.08em;
-  background: var(--editorial-signal);
-  content: "";
+  content: none;
 }
 
 [data-route="/progress"] .page-intro .page-context {
@@ -3147,6 +3148,21 @@ html[data-motion="reduced"] .study-panel--primary::after {
 [data-route="/progress"] .route-note summary {
   color: var(--editorial-ink) !important;
   text-decoration-color: var(--editorial-signal);
+}
+
+[data-route="/progress"] .page-intro .page-context,
+[data-route="/progress"] .page-intro .lede,
+[data-route="/progress"] .page-intro .route-note {
+  color: var(--editorial-ink) !important;
+}
+[data-route="/progress"] .page-intro .page-context {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.9rem !important;
+}
+[data-route="/progress"] .route-note summary:focus-visible {
+  outline: 3px solid var(--editorial-ink);
+  outline-offset: 4px;
 }
 
 [data-route="/progress"] .section-shell {
@@ -7577,4 +7593,33 @@ html[data-theme='dark'] .workspace-scroll {
     outline-color: Highlight;
     background: Canvas !important;
   }
+}
+
+/* Progress introduction uses the approved teal surface in both themes. */
+[data-route="/progress"] .page-intro.progress-intro {
+  background: #8FD3C7 !important;
+  color: #102A43 !important;
+  border-color: #102A43 !important;
+  box-shadow: 6px 6px 0 #102A43 !important;
+}
+[data-route="/progress"] .progress-intro .display-title,
+[data-route="/progress"] .progress-intro .lede,
+[data-route="/progress"] .progress-intro .page-context,
+[data-route="/progress"] .progress-intro .route-note,
+[data-route="/progress"] .progress-intro .route-note p,
+[data-route="/progress"] .progress-intro .route-note summary { color: #102A43 !important; }
+[data-route="/progress"] .progress-intro .route-note { border-top-color: #102A43 !important; }
+@media (forced-colors: active) {
+  [data-route="/progress"] .page-intro.progress-intro { background: Canvas !important; color: CanvasText !important; border-color: CanvasText !important; box-shadow: none !important; }
+  [data-route="/progress"] .progress-intro .display-title,
+  [data-route="/progress"] .progress-intro .lede,
+  [data-route="/progress"] .progress-intro .page-context,
+  [data-route="/progress"] .progress-intro .route-note,
+  [data-route="/progress"] .progress-intro .route-note p,
+  [data-route="/progress"] .progress-intro .route-note summary { color: CanvasText !important; border-color: CanvasText !important; }
+}
+
+[data-route="/progress"] .progress-intro summary:focus-visible { outline-color: #102A43 !important; }
+@media (forced-colors: active) {
+  [data-route="/progress"] .progress-intro summary:focus-visible { outline-color: Highlight !important; }
 }

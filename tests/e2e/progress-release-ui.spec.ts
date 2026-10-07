@@ -1,0 +1,27 @@
+import { expect, test } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+test('Progress intro follows Blueprint teal and stays readable @core', async ({ page }, testInfo) => {
+  test.setTimeout(60000);
+  await page.goto('/progress');
+  const panel = page.locator('.progress-intro');
+  await expect(panel).toHaveCSS('opacity', '1');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your learning progress');
+  await expect(panel).toHaveCSS('background-color', 'rgb(143, 211, 199)');
+  await expect(panel).toHaveCSS('border-top-width', '2px');
+  await expect(panel).toHaveCSS('backdrop-filter', 'none');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const disclosure = page.getByText('How progress is measured', { exact: true });
+  await disclosure.focus(); await expect(disclosure).toHaveCSS('outline-style', 'solid');
+  await disclosure.press('Enter'); await expect(panel.locator('details')).toHaveAttribute('open', '');
+  const axe = await new AxeBuilder({ page }).include('.progress-intro').analyze();
+  expect(axe.violations).toEqual([]);
+  await page.screenshot({ path: testInfo.outputPath('progress-light.png'), fullPage: false, animations: 'disabled' });
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+  await expect(panel).toHaveCSS('background-color', 'rgb(143, 211, 199)');
+  await expect(panel.locator('h1')).toHaveCSS('color', 'rgb(16, 42, 67)');
+  expect((await new AxeBuilder({ page }).include('.progress-intro').analyze()).violations).toEqual([]);
+  await page.screenshot({ path: testInfo.outputPath('progress-dark.png'), fullPage: false, animations: 'disabled' });
+  await page.emulateMedia({ forcedColors: 'active' });
+  await expect(panel).toHaveCSS('box-shadow', 'none');
+  await page.screenshot({ path: testInfo.outputPath('progress-forced-colors.png'), fullPage: false, animations: 'disabled' });
+});
