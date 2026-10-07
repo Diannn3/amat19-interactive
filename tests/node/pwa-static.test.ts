@@ -47,6 +47,7 @@ test('fresh v6 install does not force-activate when no legacy cache exists', asy
 
   runInNewContext(source, {
     self: {
+      registration: { active: null },
       addEventListener: (type: string, handler: unknown) => handlers.set(type, handler),
       skipWaiting: async () => { skipWaitingCalled = true; },
     },
@@ -124,6 +125,7 @@ test('v6 migration claims clients, clears legacy caches, and uses stable release
         'amat19-blueprint-v5-old-pages',
         'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-static',
         'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-pages',
+        'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-rescue',
         'unrelated-cache',
       ],
       delete: async (key: string) => { deleted.push(key); return true; },
@@ -146,6 +148,7 @@ test('v6 migration claims clients, clears legacy caches, and uses stable release
   assert.deepEqual(deleted.sort(), [
     'amat19-blueprint-v4-old-static',
     'amat19-blueprint-v5-old-pages',
+    'amat19-blueprint-v6-__AMAT19_BUILD_REVISION__-rescue',
     'amat19-workbenches-v2-old-pages',
   ]);
   assert.equal(navigated.length, 1);
