@@ -449,10 +449,13 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
           maybeActivateOnReload();
         };
 
-        const runPersistenceTask = (task) => Promise.race([
-          Promise.resolve().then(task),
-          new Promise((resolve) => window.setTimeout(() => resolve(false), PERSISTENCE_FLUSH_TIMEOUT_MS)),
-        ]);
+        const runPersistenceTask = (task) => new Promise((resolve, reject) => {
+          const timeout = window.setTimeout(() => resolve(false), PERSISTENCE_FLUSH_TIMEOUT_MS);
+          Promise.resolve().then(task).then(
+            (value) => { window.clearTimeout(timeout); resolve(value); },
+            (error) => { window.clearTimeout(timeout); reject(error); },
+          );
+        });
 
         const activateWaitingWorker = async (automatic = false) => {
           const worker = waitingWorker ?? workerRegistration?.waiting;
