@@ -103,7 +103,7 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm build
       - name: Verify generated production worker
-        run: node --experimental-strip-types --test tests/node/pwa-built-artifact.test.ts
+        run: node --experimental-strip-types --test tests/postbuild/pwa-built-artifact.test.ts
       - run: pnpm test:e2e:production
       - name: Upload production PWA failure artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
