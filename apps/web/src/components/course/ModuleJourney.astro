@@ -22,16 +22,16 @@ const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-d
 
 <section class="page-width page-intro module-overview" data-testid="module-overview">
   <div class="module-overview__copy">
+    <p class="module-overview__context">Module {moduleNumber} · {module.title}</p>
     <h1 class="display-title">{headline}</h1>
     <p class="lede">{lede}</p>
-    <p class="module-overview__context">Module {moduleNumber} · {module.title}</p>
     <div class="hero-actions">
-      <a class="hero-action hero-action--primary" href={workbench?.href ?? `/modules/${moduleId}?view=notes`}>{workbench ? `Open ${workbench.title}` : 'Read the notes'} <ArrowRight size={17} aria-hidden="true" /></a>
+      <a class="hero-action hero-action--primary" href={workbench?.href ?? `/modules/${moduleId}?view=notes`}>{workbench ? `Open ${workbench.title}` : `Read ${module.title} notes`} <ArrowRight size={17} aria-hidden="true" /></a>
       <a class="hero-action hero-action--secondary" href={`/modules/${moduleId}?view=practice&preset=${practicePreset}`}><Route size={17} aria-hidden="true" /> Practice module</a>
     </div>
   </div>
   <div class="module-journey__metrics" aria-label={`${module.title} contents`}>
-    <div><strong>{workbench ? 1 : 0}</strong><span>workbenches</span></div>
+    <div><strong>{workbench ? '1' : 'Notes-first'}</strong><span>{workbench ? 'workbench' : 'delivery'}</span></div>
     <div><strong>{current.length}</strong><span>core skills</span></div>
     <div><strong>{lessons.length}</strong><span>notes</span></div>
   </div>
@@ -46,8 +46,8 @@ const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-d
 <section class="page-width module-view" data-module-view="overview" aria-labelledby={`${moduleId}-overview-heading`}>
   <div class="section-heading">
     <div>
-      <h2 id={`${moduleId}-overview-heading`}>{workbench ? 'Open the workbench.' : 'Explore the course material.'}</h2>
-      <p class="section-context">{workbench ? `One focused place for the hard parts of ${module.title}.` : 'Study applied models through worked examples, concept notes, and practice.'}</p>
+      <h2 id={`${moduleId}-overview-heading`}>{workbench ? 'Open the workbench.' : 'Start with the notes.'}</h2>
+      <p class="section-context">{workbench ? `One focused place for the hard parts of ${module.title}.` : 'Applications is intentionally notes-first: use worked examples and practice without pretending there is a fifth dedicated workbench.'}</p>
     </div>
   </div>
   <a class="module-next-step module-next-step--workbench" href={workbench?.href ?? `/modules/${moduleId}?view=notes`}>
@@ -85,7 +85,7 @@ const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-d
   <div class="section-heading">
     <div>
       <h2 id={`${moduleId}-notes-heading`}>Concept notes.</h2>
-      <p class="section-context">Read before or after the workbench.</p>
+      <p class="section-context">{workbench ? 'Read before or after the workbench.' : 'Use these notes as the main guided material for this module.'}</p>
     </div>
   </div>
   <ol class="lesson-list">
