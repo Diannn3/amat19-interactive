@@ -40,14 +40,19 @@
 
 ## PWA/offline
 - [ ] Production preview service-worker test passes.
+- [ ] Generated `apps/web/dist/sw.js` regression test passes after the production build.
 - [ ] Fresh install works offline for all core routes.
 - [ ] Query-based routes work offline.
-- [ ] Upgrade from previous service-worker cache version preserves local IndexedDB data.
+- [ ] Explicit Reload requests the network without the four-second stale-page timeout.
+- [ ] Upgrade from a legacy v2-v5 controller succeeds even when old Cache Storage was already cleared.
+- [ ] Ordinary v6-to-v6 updates remain waiting until Save & update or an explicit browser Reload.
+- [ ] Upgrade preserves local IndexedDB data.
 - [x] Update activation waits for an explicit persistence flush before reload.
 
 ## Deployment
 - [ ] Security headers verified with actual production response headers.
 - [ ] CSP produces no unexpected violations.
-- [ ] `sw.js` is revalidated rather than long-lived in browser/CDN cache.
+- [ ] `sw.js` and `sw-assets.json` are served with no-store browser/CDN headers.
+- [ ] `sw.js` does not send `Clear-Site-Data` during routine update checks.
 - [ ] No third-party runtime/CDN dependency is required for core study use.
 - [ ] Lighthouse/performance budget passes on representative mobile and desktop profiles.
