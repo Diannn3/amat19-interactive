@@ -8,12 +8,15 @@ const output = resolve(process.argv[2] ?? 'apps/web/dist');
 const files = (await readdir(output, { recursive: true, withFileTypes: true }))
   .filter(entry => entry.isFile())
   .map(entry => resolve(entry.parentPath, entry.name).slice(output.length + 1).replaceAll('\\', '/'))
-  .filter(name => !['sw.js', 'sw-assets.json'].includes(name))
+  .filter(name => !['sw.js', 'sw-assets.json', 'version.json'].includes(name))
   .sort();
 const assets = files.filter(name => name.startsWith('_astro/') && /\.(?:js|css|woff2?)$/.test(name)).map(name => `/${name}`);
 if (!assets.length) throw new Error('No built Astro assets found; run the production build first.');
 
 const worker = await readFile(new URL('../apps/web/public/sw.js', import.meta.url), 'utf8');
+const release = worker.match(/const RELEASE = '([^']+)';/)?.[1];
+if (!release) throw new Error('Service worker release family is missing.');
+const commit = process.env.VERCEL_GIT_COMMIT_SHA || process.env.GITHUB_SHA || 'local';
 const digest = createHash('sha256').update(worker);
 for (const name of files) digest.update(name).update(await readFile(resolve(output, name)));
 const revision = digest.digest('hex').slice(0, 16);
@@ -24,6 +27,12 @@ const versionedWorker = worker.replace(
   `const BUILD_REVISION = '${revision}';`,
 );
 if (versionedWorker.includes('__AMAT19_BUILD_REVISION__')) throw new Error('Service worker build revision was not fully stamped.');
-await writeFile(resolve(output, 'sw-assets.json'), JSON.stringify({ assets }));
+await writeFile(resolve(output, 'sw-assets.json'), JSON.stringify({ assets, release, revision }));
 await writeFile(resolve(output, 'sw.js'), versionedWorker);
-console.log(`Offline assets: ${assets.length} chunks, revision ${revision}`);
+await writeFile(resolve(output, 'version.json'), JSON.stringify({
+  commit,
+  release,
+  revision,
+  builtAt: new Date().toISOString(),
+}));
+console.log(`Offline assets: ${assets.length} chunks, release ${release}, revision ${revision}, commit ${commit}`);
