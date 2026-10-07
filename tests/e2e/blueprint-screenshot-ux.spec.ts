@@ -72,8 +72,9 @@ test('Applications is visibly notes-first and never revives the retired Optimiza
   await page.goto('/modules/applications');
   const overview = page.getByTestId('module-overview');
   await expect(overview.getByRole('link', { name: 'Read Applications notes' })).toHaveAttribute('href', '/modules/applications?view=notes');
-  await expect(overview).toContainText('Notes-first');
+  await expect(overview).toContainText('Primary');
+  await expect(overview).toContainText('Notes');
   await expect(page.getByRole('link', { name: /Open Optimization & Strategy/i })).toHaveCount(0);
   await expect(page.locator('a[href^="/workbenches/applications"]')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Start with the notes.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Start here.' })).toBeVisible();
 });
