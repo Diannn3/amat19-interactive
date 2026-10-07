@@ -27,14 +27,14 @@ const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-d
     <p class="lede">{lede}</p>
     <div class="hero-actions">
       <a class="hero-action hero-action--primary" href={workbench?.href ?? `/modules/${moduleId}?view=notes`}>{workbench ? `Open ${workbench.title}` : `Read ${module.title} notes`} <ArrowRight size={17} aria-hidden="true" /></a>
-      <a class="hero-action hero-action--secondary" href={`/modules/${moduleId}?view=practice&preset=${practicePreset}`}><Route size={17} aria-hidden="true" /> Practice module</a>
+      <a class="hero-action hero-action--secondary" href={`/modules/${moduleId}?view=practice&preset=${practicePreset}`}><Route size={17} aria-hidden="true" /> Practice</a>
     </div>
   </div>
-  <div class="module-journey__metrics" aria-label={`${module.title} contents`}>
-    <div><strong>{workbench ? '1' : 'Notes-first'}</strong><span>{workbench ? 'workbench' : 'delivery'}</span></div>
-    <div><strong>{current.length}</strong><span>core skills</span></div>
-    <div><strong>{lessons.length}</strong><span>notes</span></div>
-  </div>
+  <dl class="module-journey__metrics" aria-label={`${module.title} contents`}>
+    <div><dt>Primary</dt><dd>{workbench ? 'Workbench' : 'Notes'}</dd></div>
+    <div><dt>Core skills</dt><dd>{current.length}</dd></div>
+    <div><dt>Notes</dt><dd>{lessons.length}</dd></div>
+  </dl>
 </section>
 
 <nav class="page-width module-tabs" aria-label="Module sections">
@@ -46,8 +46,8 @@ const practicePreset = moduleId === 'linear' ? 'matrices-drill' : `${moduleId}-d
 <section class="page-width module-view" data-module-view="overview" aria-labelledby={`${moduleId}-overview-heading`}>
   <div class="section-heading">
     <div>
-      <h2 id={`${moduleId}-overview-heading`}>{workbench ? 'Open the workbench.' : 'Start with the notes.'}</h2>
-      <p class="section-context">{workbench ? `One focused place for the hard parts of ${module.title}.` : 'Applications is intentionally notes-first: use worked examples and practice without pretending there is a fifth dedicated workbench.'}</p>
+      <h2 id={`${moduleId}-overview-heading`}>Start here.</h2>
+      <p class="section-context">{workbench ? `Use the ${workbench.title} for the interactive parts of ${module.title}, then move into notes or practice as needed.` : 'Applications is intentionally notes-first: work through the examples, then use module practice to check transfer.'}</p>
     </div>
   </div>
   <a class="module-next-step module-next-step--workbench" href={workbench?.href ?? `/modules/${moduleId}?view=notes`}>
