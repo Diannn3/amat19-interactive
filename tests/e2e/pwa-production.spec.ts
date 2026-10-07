@@ -1,5 +1,14 @@
 import { expect, test } from '@playwright/test';
 
+test('production build exposes its release fingerprint', async ({ request }) => {
+  const response = await request.get('/version.json', { headers: { 'Cache-Control': 'no-cache' } });
+  expect(response.ok()).toBe(true);
+  const version = await response.json();
+  expect(version.release).toBe('amat19-blueprint-v7');
+  expect(version.revision).toMatch(/^[a-f0-9]{16}$/);
+  expect(version.commit === 'local' || /^[a-f0-9]{40}$/.test(version.commit)).toBe(true);
+});
+
 test('PWA update waits for slow persistence work before activating the worker', async ({ page }) => {
   await page.addInitScript(() => {
     const worker = {
