@@ -17,7 +17,13 @@ const worker = await readFile(new URL('../apps/web/public/sw.js', import.meta.ur
 const digest = createHash('sha256').update(worker);
 for (const name of files) digest.update(name).update(await readFile(resolve(output, name)));
 const revision = digest.digest('hex').slice(0, 16);
-const versionedWorker = worker.replace(/const VERSION = '([^']+)';/, (_, version) => `const VERSION = '${version}-${revision}';`);
+const revisionDeclaration = "const BUILD_REVISION = '__AMAT19_BUILD_REVISION__';";
+if (!worker.includes(revisionDeclaration)) throw new Error('Service worker build revision placeholder is missing.');
+const versionedWorker = worker.replace(
+  revisionDeclaration,
+  `const BUILD_REVISION = '${revision}';`,
+);
+if (versionedWorker.includes('__AMAT19_BUILD_REVISION__')) throw new Error('Service worker build revision was not fully stamped.');
 await writeFile(resolve(output, 'sw-assets.json'), JSON.stringify({ assets }));
 await writeFile(resolve(output, 'sw.js'), versionedWorker);
 console.log(`Offline assets: ${assets.length} chunks, revision ${revision}`);

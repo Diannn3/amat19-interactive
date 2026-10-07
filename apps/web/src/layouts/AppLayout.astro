@@ -54,7 +54,10 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
       (() => {
         try {
           const url = new URL(window.location.href);
-          if (['amat19-blueprint-v4', 'amat19-blueprint-v5'].includes(url.searchParams.get('__amat19_release') ?? '')) {
+          const releaseMarker = url.searchParams.get('__amat19_release') ?? '';
+          const knownReleaseMarker = ['amat19-blueprint-v4', 'amat19-blueprint-v5', 'amat19-blueprint-v6']
+            .some((prefix) => releaseMarker.startsWith(prefix));
+          if (knownReleaseMarker) {
             url.searchParams.delete('__amat19_release');
             url.searchParams.delete('__amat19_reload');
             window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
@@ -211,7 +214,7 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
 
         <div class="workspace-scroll">
           <div id="pwa-update" class="update-banner" hidden role="status" aria-live="polite">
-            <span id="pwa-update-message"><strong>Update ready.</strong> Your current page will reload only when you choose.</span>
+            <span id="pwa-update-message"><strong>Update ready.</strong> Choose Save &amp; update, or reload the page to apply it after local work is ready.</span>
             <button id="pwa-update-button" type="button">Save & update</button>
             <button id="pwa-update-dismiss" type="button">Later</button>
           </div>
@@ -417,52 +420,117 @@ const utilityIsCurrent = utilityNavigation.some((item) => item.kind === 'link' &
             .catch(() => {});
           return;
         }
-        const banner = document.getElementById('pwa-update'); const updateMessage = document.getElementById('pwa-update-message'); const updateButton = document.getElementById('pwa-update-button'); const dismissButton = document.getElementById('pwa-update-dismiss'); let waitingWorker; let reloadForUpdate = false; let updateInFlight = false; let workerRegistration;
+        const banner = document.getElementById('pwa-update');
+        const updateMessage = document.getElementById('pwa-update-message');
+        const updateButton = document.getElementById('pwa-update-button');
+        const dismissButton = document.getElementById('pwa-update-dismiss');
+        let waitingWorker;
+        let reloadForUpdate = false;
+        let updateInFlight = false;
+        let workerRegistration;
+        let reloadActivationAttempted = false;
         const WORKER_UPDATE_INTERVAL_MS = 30 * 60 * 1000;
-        const showUpdate = (worker) => { waitingWorker = worker; updateInFlight = false; if (updateButton) { updateButton.disabled = false; updateButton.textContent = 'Save & update'; } if (banner) banner.hidden = false; };
-        const requestWorkerUpdate = async () => {
-          try {
-            await fetch(`/sw.js?__amat19_probe=${Date.now()}`, { cache: 'no-store' });
-          } catch {
-            // The registration update below is still worth attempting.
-          }
-          if (workerRegistration && typeof workerRegistration.update === 'function') {
-            workerRegistration.update().catch(() => {});
+        const PERSISTENCE_FLUSH_TIMEOUT_MS = 8000;
+        const navigationEntry = performance.getEntriesByType('navigation')[0];
+        const reloadRequested = Boolean(navigationEntry && 'type' in navigationEntry && navigationEntry.type === 'reload');
+
+        const setUpdateIdle = () => {
+          updateInFlight = false;
+          if (updateButton) {
+            updateButton.disabled = false;
+            updateButton.textContent = 'Save & update';
           }
         };
+
+        const showUpdate = (worker) => {
+          waitingWorker = worker;
+          setUpdateIdle();
+          if (banner) banner.hidden = false;
+          maybeActivateOnReload();
+        };
+
+        const runPersistenceTask = (task) => new Promise((resolve, reject) => {
+          const timeout = window.setTimeout(() => resolve(false), PERSISTENCE_FLUSH_TIMEOUT_MS);
+          Promise.resolve().then(task).then(
+            (value) => { window.clearTimeout(timeout); resolve(value); },
+            (error) => { window.clearTimeout(timeout); reject(error); },
+          );
+        });
+
+        const activateWaitingWorker = async (automatic = false) => {
+          const worker = waitingWorker ?? workerRegistration?.waiting;
+          if (!worker || updateInFlight) return false;
+
+          updateInFlight = true;
+          reloadForUpdate = false;
+          if (updateButton) {
+            updateButton.disabled = true;
+            updateButton.textContent = automatic ? 'Updating…' : 'Saving…';
+          }
+
+          const tasks = [];
+          window.dispatchEvent(new CustomEvent('amat:before-update', { detail: { tasks } }));
+          const results = await Promise.allSettled(tasks.map(runPersistenceTask));
+          const failed = results.some((result) => result.status === 'rejected' || (result.status === 'fulfilled' && result.value === false));
+
+          if (failed) {
+            setUpdateIdle();
+            if (banner) banner.hidden = false;
+            if (updateMessage) {
+              updateMessage.textContent = automatic
+                ? 'Update ready. Local work was not ready to save, so this reload stayed on the current version. Try Save & update when you are ready.'
+                : 'Couldn’t save local work. Keep this tab open and try again.';
+            }
+            return false;
+          }
+
+          reloadForUpdate = true;
+          worker.postMessage({ type: 'SKIP_WAITING' });
+          return true;
+        };
+
+        function maybeActivateOnReload() {
+          if (!reloadRequested || reloadActivationAttempted || !waitingWorker) return;
+          reloadActivationAttempted = true;
+          const activate = () => window.setTimeout(() => { void activateWaitingWorker(true); }, 0);
+          if (document.readyState === 'complete') activate();
+          else window.addEventListener('load', activate, { once: true });
+        }
+
+        const requestWorkerUpdate = async () => {
+          if (!workerRegistration || typeof workerRegistration.update !== 'function') return;
+          try {
+            await workerRegistration.update();
+            if (workerRegistration.waiting) showUpdate(workerRegistration.waiting);
+          } catch {
+            // The current worker keeps serving the app; another lifecycle check will retry.
+          }
+        };
+
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (reloadForUpdate) window.location.reload();
+        });
+
         navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then((registration) => {
           workerRegistration = registration;
           if (registration.waiting) showUpdate(registration.waiting);
-          requestWorkerUpdate();
-          window.setInterval(requestWorkerUpdate, WORKER_UPDATE_INTERVAL_MS);
-          document.addEventListener('visibilitychange', () => { if (!document.hidden) requestWorkerUpdate(); });
-          window.addEventListener('focus', requestWorkerUpdate);
-          window.addEventListener('online', requestWorkerUpdate);
-          window.addEventListener('pageshow', (event) => { if (event.persisted) requestWorkerUpdate(); });
-          registration.addEventListener('updatefound', () => { const installing = registration.installing; if (!installing) return; installing.addEventListener('statechange', () => { if (installing.state === 'installed' && navigator.serviceWorker.controller) showUpdate(installing); }); });
+          void requestWorkerUpdate();
+          window.setInterval(() => { void requestWorkerUpdate(); }, WORKER_UPDATE_INTERVAL_MS);
+          document.addEventListener('visibilitychange', () => { if (!document.hidden) void requestWorkerUpdate(); });
+          window.addEventListener('focus', () => { void requestWorkerUpdate(); });
+          window.addEventListener('online', () => { void requestWorkerUpdate(); });
+          window.addEventListener('pageshow', (event) => { if (event.persisted) void requestWorkerUpdate(); });
+          registration.addEventListener('updatefound', () => {
+            const installing = registration.installing;
+            if (!installing) return;
+            installing.addEventListener('statechange', () => {
+              if (installing.state === 'installed' && navigator.serviceWorker.controller) showUpdate(installing);
+            });
+          });
         }).catch(() => {});
-        updateButton?.addEventListener('click', async () => {
-          if (!waitingWorker || updateInFlight) return;
-          updateInFlight = true;
-          reloadForUpdate = false;
-          updateButton.disabled = true;
-          updateButton.textContent = 'Saving\u2026';
-          const tasks = [];
-          window.dispatchEvent(new CustomEvent('amat:before-update', { detail: { tasks } }));
-          const results = await Promise.allSettled(tasks.map((task) => Promise.resolve().then(task)));
-          const failed = results.some((result) => result.status === 'rejected' || (result.status === 'fulfilled' && result.value === false));
-          if (failed) {
-            updateInFlight = false;
-            updateButton.disabled = false;
-            updateButton.textContent = 'Save & update';
-            if (updateMessage) updateMessage.textContent = 'Couldn\u2019t save local work. Keep this tab open and try again.';
-            return;
-          }
-          reloadForUpdate = true;
-          waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-        });
+
+        updateButton?.addEventListener('click', () => { void activateWaitingWorker(false); });
         dismissButton?.addEventListener('click', () => { if (banner) banner.hidden = true; });
-        navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloadForUpdate) window.location.reload(); });
       })();
     </script>
   </body>

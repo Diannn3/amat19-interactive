@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Database, Download, HardDriveDownload, Trash2, Upload } from 'lucide-react';
+import { Database, Download, HardDriveDownload, RotateCcw, Trash2, Upload } from 'lucide-react';
 import { CURRENT_SCHEMA_VERSION, DexiePersistence, projectSnapshotForScope, validateSnapshot, type LocalSnapshot, type SnapshotScope } from '@amat19/persistence';
 import { Button } from './ui/Button';
 import { Feedback } from './ui/Feedback';
@@ -80,6 +80,24 @@ export default function DataManager() {
     }
   }
 
+  async function repairOfflineApp() {
+    if (!window.confirm('Repair the offline app files for AMAT 19? This removes cached app files and service-worker registrations, but keeps your drafts, attempts, mastery, saved items, settings, and exported backups.')) return;
+    try {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      }
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.filter((key) => key.startsWith('amat19-')).map((key) => caches.delete(key)));
+      }
+      setMessage({ tone: 'success', text: 'Offline app files were reset. Reloading the latest version…' });
+      window.location.reload();
+    } catch (error) {
+      setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'Could not repair the offline app files.' });
+    }
+  }
+
   async function requestPersistence() {
     if (!navigator.storage?.persist) {
       setMessage({ tone: 'neutral', text: 'Persistent-storage requests are not supported in this browser.' });
@@ -129,6 +147,7 @@ export default function DataManager() {
           <input type="file" accept="application/json,.json" onChange={(event) => void importData(event.target.files?.[0])} />
         </label>
         <Button variant="secondary" type="button" onClick={requestPersistence}><HardDriveDownload size={16} aria-hidden="true" /> Protect local data</Button>
+        <Button variant="secondary" type="button" onClick={repairOfflineApp}><RotateCcw size={16} aria-hidden="true" /> Repair offline app</Button>
         <Button variant="ghost" type="button" onClick={refreshCounts}><Database size={16} aria-hidden="true" /> Refresh summary</Button>
         <Button variant="ghost" type="button" onClick={clearData}><Trash2 size={16} aria-hidden="true" /> Clear local data</Button>
       </div>
