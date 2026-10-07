@@ -25,7 +25,6 @@ const routes = [
   ['probability', '/workbenches/probability'],
   ['finance', '/workbenches/finance'],
   ['linear', '/workbenches/linear'],
-  ['applications', '/workbenches/applications'],
 ];
 
 async function captureRoute(context, viewportName, name, route, fullPage = false) {
