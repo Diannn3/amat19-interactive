@@ -78,6 +78,48 @@ test('PWA update stays pending when a persistence task fails', async ({ page }) 
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __amatTestWorker: { messages: unknown[] } }).__amatTestWorker.messages.length)).toBe(0);
 });
 
+test('explicit browser reload activates a waiting update after persistence is ready', async ({ page }) => {
+  await page.addInitScript(() => {
+    const worker = {
+      messages: [] as unknown[],
+      postMessage(message: unknown) { this.messages.push(message); },
+    };
+    const registration = {
+      waiting: worker,
+      installing: null,
+      update: async () => undefined,
+      addEventListener() {},
+    };
+    const serviceWorker = {
+      controller: {},
+      register: async () => registration,
+      addEventListener() {},
+    };
+
+    Object.defineProperty(navigator, 'serviceWorker', { configurable: true, value: serviceWorker });
+    const originalGetEntriesByType = performance.getEntriesByType.bind(performance);
+    Object.defineProperty(performance, 'getEntriesByType', {
+      configurable: true,
+      value: (type: string) => type === 'navigation' ? [{ type: 'reload' }] : originalGetEntriesByType(type),
+    });
+
+    Object.assign(window, { __amatTestWorker: worker });
+    window.addEventListener('amat:before-update', (event) => {
+      const detail = (event as CustomEvent<{ tasks: Array<() => unknown> }>).detail;
+      detail.tasks.push(() => true);
+    });
+  });
+
+  await page.goto('/settings');
+  await expect(page.getByTestId('settings-panel')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => (
+    window as typeof window & { __amatTestWorker: { messages: unknown[] } }
+  ).__amatTestWorker.messages.length), { timeout: 5_000 }).toBe(1);
+  expect(await page.evaluate(() => (
+    window as typeof window & { __amatTestWorker: { messages: unknown[] } }
+  ).__amatTestWorker.messages[0])).toEqual({ type: 'SKIP_WAITING' });
+});
+
 test('production PWA serves query-based study routes from the service-worker cache while offline', async ({ page, context }) => {
   await page.goto('/modules/logic?view=practice&preset=logic-drill');
   await expect(page.getByTestId('mixed-practice')).toBeVisible();
