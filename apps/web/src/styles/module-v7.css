@@ -1,0 +1,496 @@
+/* Blueprint v7 module routes
+   One owner for /modules/* surfaces. Keep this file free of shell/navigation rules. */
+
+[data-route^="/modules/"] .module-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+  align-items: end;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  margin-top: 0;
+  padding-block: clamp(2rem, 5vw, 4.5rem) 1.5rem;
+  border: 0;
+  border-bottom: 1px solid var(--editorial-rule);
+  border-radius: 0;
+  background: transparent;
+  color: var(--editorial-ink);
+  box-shadow: none;
+}
+
+[data-route^="/modules/"] .module-overview__copy {
+  min-width: 0;
+}
+
+[data-route^="/modules/"] .module-overview__context {
+  margin: 0 0 .7rem;
+  color: var(--editorial-signal-ink);
+  font: 750 .72rem/1.2 var(--font-amat-mono);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+[data-route^="/modules/"] .module-overview .display-title {
+  max-width: 15ch;
+  margin: 0;
+  color: var(--editorial-ink);
+  font: 820 clamp(2.75rem, 6vw, 5.75rem)/.96 var(--font-amat-display);
+  letter-spacing: -.06em;
+  text-wrap: balance;
+}
+
+[data-route^="/modules/"] .module-overview .lede {
+  max-width: 62ch;
+  margin: 1rem 0 0;
+  color: var(--editorial-ink-muted);
+  font-size: clamp(1rem, .35vw + .94rem, 1.15rem);
+  line-height: 1.62;
+}
+
+[data-route^="/modules/"] .module-overview .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  margin-top: 1.15rem;
+}
+
+[data-route^="/modules/"] .module-overview .hero-action {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  padding: .65rem .85rem;
+  border: 1.5px solid var(--editorial-ink);
+  border-radius: var(--editorial-radius-xs);
+  color: var(--editorial-ink);
+  font-weight: 760;
+  text-decoration: none;
+}
+
+[data-route^="/modules/"] .module-overview .hero-action--primary {
+  background: var(--editorial-signal);
+  box-shadow: 2px 2px 0 var(--editorial-ink);
+}
+
+[data-route^="/modules/"] .module-overview .hero-action--secondary {
+  background: var(--editorial-paper-pure);
+  box-shadow: none;
+}
+
+[data-route^="/modules/"] .module-overview .hero-action:hover {
+  background: var(--editorial-secondary-soft);
+}
+
+[data-route^="/modules/"] .module-overview .hero-action--primary:hover {
+  background: color-mix(in srgb, var(--editorial-signal) 88%, white);
+}
+
+[data-route^="/modules/"] .module-overview .hero-action:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+[data-route^="/modules/"] .module-journey__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0;
+  margin: 0;
+  border-block: 1px solid var(--editorial-rule);
+  background: transparent;
+}
+
+[data-route^="/modules/"] .module-journey__metrics > div {
+  min-width: 0;
+  padding: .85rem .9rem;
+  border-right: 1px solid var(--editorial-rule);
+}
+
+[data-route^="/modules/"] .module-journey__metrics > div:last-child {
+  border-right: 0;
+}
+
+[data-route^="/modules/"] .module-journey__metrics dt {
+  margin: 0 0 .28rem;
+  color: var(--editorial-ink-muted);
+  font: 700 .65rem/1.2 var(--font-amat-mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+[data-route^="/modules/"] .module-journey__metrics dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--editorial-ink);
+  font: 780 clamp(.95rem, 1.5vw, 1.15rem)/1.2 var(--font-amat-display);
+}
+
+[data-route^="/modules/"] .module-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: .75rem;
+  border-block: 1px solid var(--editorial-ink);
+  background: var(--editorial-paper-pure);
+}
+
+[data-route^="/modules/"] .module-tabs a {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+  padding: .55rem .65rem;
+  border-right: 1px solid var(--editorial-rule);
+  color: var(--editorial-ink-muted);
+  font-size: .78rem;
+  font-weight: 740;
+  text-decoration: none;
+}
+
+[data-route^="/modules/"] .module-tabs a:last-child {
+  border-right: 0;
+}
+
+[data-route^="/modules/"] .module-tabs a[aria-current="page"] {
+  background: var(--editorial-secondary-soft);
+  color: var(--editorial-ink);
+}
+
+[data-route^="/modules/"] .module-tabs a[aria-current="page"]::after {
+  position: absolute;
+  right: 18%;
+  bottom: 0;
+  left: 18%;
+  height: 3px;
+  background: var(--editorial-signal);
+  content: "";
+}
+
+[data-route^="/modules/"] .module-view {
+  padding-block: clamp(1.4rem, 3.5vw, 2.75rem);
+}
+
+[data-route^="/modules/"] .module-view > .section-heading {
+  margin-bottom: .9rem;
+}
+
+[data-route^="/modules/"] .module-view .section-heading h2 {
+  margin: 0;
+  color: var(--editorial-ink);
+  font: 780 clamp(1.45rem, 3vw, 2.15rem)/1.08 var(--font-amat-display);
+  letter-spacing: -.035em;
+}
+
+[data-route^="/modules/"] .module-view .section-context {
+  max-width: 68ch;
+  margin: .4rem 0 0;
+  color: var(--editorial-ink-muted);
+  line-height: 1.55;
+}
+
+[data-route^="/modules/"] .module-next-step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .9rem;
+  min-height: 4.75rem;
+  padding: .9rem 1rem;
+  border: 1.5px solid var(--editorial-ink);
+  border-radius: var(--editorial-radius-xs);
+  background: var(--editorial-paper-pure);
+  color: var(--editorial-ink);
+  text-decoration: none;
+}
+
+[data-route^="/modules/"] .module-next-step:hover {
+  background: var(--editorial-secondary-soft);
+}
+
+[data-route^="/modules/"] .module-next-step__index {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  padding: .3rem .45rem;
+  border: 1px solid var(--editorial-rule);
+  border-radius: var(--editorial-radius-xs);
+  background: var(--editorial-paper-muted);
+  color: var(--editorial-ink);
+  font: 700 .72rem/1 var(--font-amat-mono);
+  white-space: nowrap;
+}
+
+[data-route^="/modules/"] .module-next-step strong,
+[data-route^="/modules/"] .module-next-step small {
+  display: block;
+}
+
+[data-route^="/modules/"] .module-next-step strong {
+  color: var(--editorial-ink);
+  font: 760 1rem/1.25 var(--font-amat-display);
+}
+
+[data-route^="/modules/"] .module-next-step small {
+  margin-top: .2rem;
+  color: var(--editorial-ink-muted);
+  line-height: 1.4;
+}
+
+[data-route^="/modules/"] .module-view-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: .75rem;
+  border: 1px solid var(--editorial-rule);
+  background: var(--editorial-paper-pure);
+}
+
+[data-route^="/modules/"] .module-view-links a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 4.25rem;
+  align-items: center;
+  gap: .65rem;
+  padding: .8rem .9rem;
+  color: var(--editorial-ink);
+  text-decoration: none;
+}
+
+[data-route^="/modules/"] .module-view-links a + a {
+  border-left: 1px solid var(--editorial-rule);
+}
+
+[data-route^="/modules/"] .module-view-links a strong,
+[data-route^="/modules/"] .module-view-links a span {
+  display: block;
+}
+
+[data-route^="/modules/"] .module-view-links a span {
+  margin-top: .12rem;
+  color: var(--editorial-ink-muted);
+  font-size: .78rem;
+}
+
+[data-route^="/modules/"] .module-supplemental {
+  margin-top: .75rem;
+  border: 1px solid var(--editorial-rule);
+  background: var(--editorial-paper-pure);
+}
+
+[data-route^="/modules/"] .module-supplemental summary {
+  min-height: 44px;
+  padding: .7rem .9rem;
+  color: var(--editorial-ink);
+  font-weight: 720;
+  cursor: pointer;
+}
+
+[data-route^="/modules/"] .module-supplemental__list a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .75rem;
+  min-height: 4rem;
+  padding: .75rem .9rem;
+  border-top: 1px solid var(--editorial-rule);
+  color: var(--editorial-ink);
+  text-decoration: none;
+}
+
+[data-route^="/modules/"] .module-supplemental__list strong,
+[data-route^="/modules/"] .module-supplemental__list small {
+  display: block;
+}
+
+[data-route^="/modules/"] .module-supplemental__list small {
+  margin-top: .18rem;
+  color: var(--editorial-ink-muted);
+}
+
+[data-route^="/modules/"] .lesson-list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--editorial-rule);
+  list-style: none;
+}
+
+[data-route^="/modules/"] .lesson-list li {
+  margin: 0;
+}
+
+[data-route^="/modules/"] .lesson-list a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .9rem;
+  min-height: 4.5rem;
+  padding: .85rem .25rem;
+  border-bottom: 1px solid var(--editorial-rule);
+  color: var(--editorial-ink);
+  text-decoration: none;
+}
+
+[data-route^="/modules/"] .lesson-list strong,
+[data-route^="/modules/"] .lesson-list small {
+  display: block;
+}
+
+[data-route^="/modules/"] .lesson-list small {
+  margin-top: .18rem;
+  color: var(--editorial-ink-muted);
+  line-height: 1.4;
+}
+
+[data-route^="/modules/"] .mixed-practice__progress,
+[data-route^="/modules/"] .mixed-question {
+  border: 1px solid var(--editorial-rule);
+  border-radius: var(--editorial-radius-xs);
+  background: var(--editorial-paper-pure);
+  color: var(--editorial-ink);
+  box-shadow: none;
+}
+
+[data-route^="/modules/"] .mixed-practice__progress {
+  padding: .8rem 1rem;
+}
+
+[data-route^="/modules/"] .mixed-question {
+  padding: 1.15rem;
+}
+
+[data-route^="/modules/"] .choice-option {
+  min-height: 46px;
+  border: 1px solid var(--editorial-rule);
+  border-radius: var(--editorial-radius-xs);
+  background: var(--editorial-paper);
+  color: var(--editorial-ink);
+}
+
+[data-route^="/modules/"] .choice-option:has(input:checked) {
+  border-color: var(--editorial-ink);
+  background: var(--editorial-secondary-soft);
+}
+
+[data-route^="/modules/"] :where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  [data-route^="/modules/"] .module-overview {
+    grid-template-columns: 1fr;
+    gap: .9rem;
+    padding-block: 1.15rem .9rem;
+  }
+
+  [data-route^="/modules/"] .module-overview .display-title {
+    max-width: 11ch;
+    font-size: clamp(2.25rem, 11vw, 3.25rem);
+    line-height: .98;
+  }
+
+  [data-route^="/modules/"] .module-overview .lede {
+    margin-top: .75rem;
+    font-size: .96rem;
+    line-height: 1.52;
+  }
+
+  [data-route^="/modules/"] .module-overview .hero-actions {
+    flex-wrap: nowrap;
+    gap: .5rem;
+    margin-top: .9rem;
+  }
+
+  [data-route^="/modules/"] .module-overview .hero-action {
+    min-width: 0;
+    padding-inline: .7rem;
+    font-size: .82rem;
+  }
+
+  [data-route^="/modules/"] .module-overview .hero-action--primary {
+    flex: 1 1 auto;
+  }
+
+  [data-route^="/modules/"] .module-overview .hero-action--secondary {
+    flex: 0 0 auto;
+  }
+
+  [data-route^="/modules/"] .module-journey__metrics {
+    margin-top: .15rem;
+  }
+
+  [data-route^="/modules/"] .module-journey__metrics > div {
+    padding: .62rem .55rem;
+  }
+
+  [data-route^="/modules/"] .module-journey__metrics dt {
+    font-size: .57rem;
+  }
+
+  [data-route^="/modules/"] .module-journey__metrics dd {
+    font-size: .9rem;
+  }
+
+  [data-route^="/modules/"] .module-tabs {
+    margin-top: .55rem;
+  }
+
+  [data-route^="/modules/"] .module-tabs a {
+    padding-inline: .35rem;
+    font-size: .72rem;
+  }
+
+  [data-route^="/modules/"] .module-view {
+    padding-block: 1.15rem 1.75rem;
+  }
+
+  [data-route^="/modules/"] .module-next-step {
+    grid-template-columns: 1fr auto;
+    gap: .55rem;
+    padding: .8rem .85rem;
+  }
+
+  [data-route^="/modules/"] .module-next-step__index {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  [data-route^="/modules/"] .module-view-links {
+    grid-template-columns: 1fr;
+  }
+
+  [data-route^="/modules/"] .module-view-links a + a {
+    border-top: 1px solid var(--editorial-rule);
+    border-left: 0;
+  }
+
+  [data-route^="/modules/"] .lesson-list a {
+    padding-inline: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  [data-route^="/modules/"] .module-overview .hero-actions {
+    flex-wrap: wrap;
+  }
+
+  [data-route^="/modules/"] .module-overview .hero-action {
+    width: 100%;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-route^="/modules/"] .module-overview,
+  [data-route^="/modules/"] .module-journey__metrics,
+  [data-route^="/modules/"] .module-tabs,
+  [data-route^="/modules/"] .module-next-step,
+  [data-route^="/modules/"] .module-view-links,
+  [data-route^="/modules/"] .module-supplemental,
+  [data-route^="/modules/"] .lesson-list,
+  [data-route^="/modules/"] .mixed-practice__progress,
+  [data-route^="/modules/"] .mixed-question,
+  [data-route^="/modules/"] .choice-option {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+  }
+}
